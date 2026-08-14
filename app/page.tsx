@@ -1,6 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  departments,
+  getCourseById,
+  getCoursesForDepartment,
+  getDepartmentById,
+  getUniversityById,
+  universities,
+  type AcademicCourse,
+} from "../lib/academic-data";
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
@@ -27,6 +36,54 @@ type Post = {
   };
   poll?: { label: string; value: number }[];
 };
+
+type StudentProfile = {
+  displayName: string;
+  handle: string;
+  universityId: string;
+  universityName: string;
+  universityShortName: string;
+  universityCity: string;
+  departmentId: string;
+  departmentName: string;
+  classYear: number;
+  onboardingCompleted: boolean;
+  courses: AcademicCourse[];
+};
+
+type ProfileState =
+  | "loading"
+  | "ready"
+  | "needs-onboarding"
+  | "auth-required"
+  | "unavailable";
+
+const demoProfile: StudentProfile = {
+  displayName: "Deniz Öztürk",
+  handle: "denizoz",
+  universityId: "bogazici",
+  universityName: "Boğaziçi Üniversitesi",
+  universityShortName: "BÜ",
+  universityCity: "İstanbul",
+  departmentId: "endustri",
+  departmentName: "Endüstri Mühendisliği",
+  classYear: 3,
+  onboardingCompleted: true,
+  courses: getCoursesForDepartment("endustri").slice(0, 6),
+};
+
+function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toLocaleUpperCase("tr-TR") ?? "")
+    .join("") || "Ü";
+}
+
+function getFirstName(name: string) {
+  return name.trim().split(/\s+/)[0] || "öğrenci";
+}
 
 const navItems: { label: string; icon: IconName }[] = [
   { label: "Akış", icon: "home" },
@@ -398,23 +455,24 @@ function SavedView() {
   );
 }
 
-function ProfileView() {
+function ProfileView({ profile, onEdit }: { profile: StudentProfile; onEdit: () => void }) {
+  const initials = getInitials(profile.displayName);
   return (
     <div className="workspace-view profile-view">
-      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials="DÖ" className="avatar-violet"/><div><h1>Deniz Öztürk <span className="verified"><Icon name="check" size={11}/></span></h1><p>@denizoz · Boğaziçi Üniversitesi</p><small>Endüstri Mühendisliği · 3. sınıf</small></div><button type="button">Profili düzenle</button></div><p className="profile-bio">Öğrenmeyi, paylaşmayı ve iyi kahveyi seviyorum. ☕ Endüstri, veri ve biraz da tasarım.</p><div className="profile-stats"><strong>126<span>Gönderi</span></strong><strong>2.4K<span>Takipçi</span></strong><strong>384<span>Takip</span></strong><strong>18.7K<span>Not görüntülenmesi</span></strong></div></section>
+      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.departmentName} · {profile.classYear}. sınıf</small></div><button type="button" onClick={onEdit}>Profili düzenle</button></div><p className="profile-bio">Öğrenmeyi, paylaşmayı ve iyi kahveyi seviyorum. ☕ Ders çevrelerimde birlikte çalışıyorum.</p><div className="profile-stats"><strong>126<span>Gönderi</span></strong><strong>2.4K<span>Takipçi</span></strong><strong>384<span>Takip</span></strong><strong>18.7K<span>Not görüntülenmesi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
-      <FeedPost post={{...initialPosts[1], id: 92, name: "Deniz Öztürk", initials: "DÖ", avatarClass: "avatar-violet", school: "Boğaziçi Üniversitesi", department: "Endüstri Mühendisliği", time: "2 gün", course: "IE 305", text: "Yöneylem araştırması için çıkardığım kısa çözüm yöntemlerini akşam not olarak yükleyeceğim. Özellikle simplex tablosunda takılanlara yardımcı olabilir."}} />
+      <FeedPost post={{...initialPosts[1], id: 92, name: profile.displayName, initials, avatarClass: "avatar-violet", school: profile.universityName, department: profile.departmentName, time: "2 gün", course: profile.courses[0]?.code ?? "GENEL", text: "Bu dönem seçtiğim dersler için çıkardığım kısa çözüm yöntemlerini akşam not olarak yükleyeceğim. Takıldığınız yerleri yorumlarda paylaşabilirsiniz."}} />
     </div>
   );
 }
 
-function SecondaryView({ name, onUpload }: { name: string; onUpload: () => void }) {
+function SecondaryView({ name, onUpload, profile, onEditProfile }: { name: string; onUpload: () => void; profile: StudentProfile; onEditProfile: () => void }) {
   if (name === "Keşfet") return <DiscoverView/>;
   if (name === "Notlar") return <NotesView onUpload={onUpload}/>;
   if (name === "Topluluklar") return <CommunitiesView/>;
   if (name === "Bildirimler") return <NotificationsView/>;
   if (name === "Kaydedilenler") return <SavedView/>;
-  if (name === "Profil") return <ProfileView/>;
+  if (name === "Profil") return <ProfileView profile={profile} onEdit={onEditProfile}/>;
   return <DiscoverView/>;
 }
 
@@ -463,6 +521,240 @@ function ProductModal({ type, onClose }: { type: ModalType; onClose: () => void 
   );
 }
 
+function ProfileBoot() {
+  return (
+    <main className="profile-boot" aria-live="polite">
+      <div className="profile-boot-brand"><Logo/></div>
+      <span className="profile-boot-orb"><Icon name="sparkles" size={22}/></span>
+      <h1>Kampüsün hazırlanıyor</h1>
+      <p>Ders çevrelerini ve profilini getiriyoruz.</p>
+      <span className="profile-boot-line"><i/></span>
+    </main>
+  );
+}
+
+function AcademicOnboarding({
+  identityName,
+  initialProfile,
+  state,
+  onComplete,
+  onDemo,
+  onRetry,
+}: {
+  identityName: string;
+  initialProfile: StudentProfile | null;
+  state: Exclude<ProfileState, "loading" | "ready">;
+  onComplete: (profile: StudentProfile) => void;
+  onDemo: () => void;
+  onRetry: () => void;
+}) {
+  const [step, setStep] = useState(1);
+  const [universityId, setUniversityId] = useState(initialProfile?.universityId ?? "");
+  const [departmentId, setDepartmentId] = useState(initialProfile?.departmentId ?? "");
+  const [classYear, setClassYear] = useState(initialProfile?.classYear ?? 1);
+  const [courseIds, setCourseIds] = useState<string[]>(initialProfile?.courses.map((course) => course.id) ?? []);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const departmentCourses = getCoursesForDepartment(departmentId);
+  const selectedUniversity = getUniversityById(universityId);
+  const selectedDepartment = getDepartmentById(departmentId);
+  const selectedCourses = courseIds.map((courseId) => getCourseById(courseId)).filter((course): course is AcademicCourse => Boolean(course));
+  const firstName = getFirstName(identityName);
+
+  if (state === "auth-required") {
+    return (
+      <main className="onboarding-shell onboarding-state-shell">
+        <div className="onboarding-state-card">
+          <Logo/>
+          <span className="onboarding-state-icon"><Icon name="users" size={27}/></span>
+          <span className="onboarding-kicker">ÖĞRENCİ AĞIN SENİ BEKLİYOR</span>
+          <h1>Üniyra’ya kimliğinle devam et.</h1>
+          <p>Profilini ve seçtiğin dersleri güvenle saklayabilmemiz için önce giriş yapmalısın.</p>
+          <a className="onboarding-signin" href="/signin-with-chatgpt?return_to=%2F">Giriş yap ve profilini oluştur <Icon name="arrow" size={17}/></a>
+          <button className="onboarding-demo-link" type="button" onClick={onDemo}>Demo akışını aç</button>
+        </div>
+      </main>
+    );
+  }
+
+  if (state === "unavailable") {
+    return (
+      <main className="onboarding-shell onboarding-state-shell">
+        <div className="onboarding-state-card">
+          <Logo/>
+          <span className="onboarding-state-icon onboarding-state-warning"><Icon name="sparkles" size={27}/></span>
+          <span className="onboarding-kicker">KISA BİR ARA</span>
+          <h1>Profil alanını hazırlıyoruz.</h1>
+          <p>Akademik profil hizmetine şu an ulaşamadık. Yeniden deneyebilir veya ürün turuna devam edebilirsin.</p>
+          <button className="onboarding-signin" type="button" onClick={onRetry}>Yeniden dene <Icon name="arrow" size={17}/></button>
+          <button className="onboarding-demo-link" type="button" onClick={onDemo}>Demo akışını aç</button>
+        </div>
+      </main>
+    );
+  }
+
+  function chooseDepartment(nextDepartmentId: string) {
+    setDepartmentId(nextDepartmentId);
+    setCourseIds([]);
+    setError("");
+  }
+
+  function toggleCourse(courseId: string) {
+    setCourseIds((current) => {
+      if (current.includes(courseId)) return current.filter((id) => id !== courseId);
+      if (current.length >= 8) return current;
+      return [...current, courseId];
+    });
+    setError("");
+  }
+
+  async function saveProfile() {
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ universityId, departmentId, classYear, courseIds }),
+      });
+      const data = (await response.json()) as { profile?: StudentProfile; error?: string; signInPath?: string };
+
+      if (response.status === 401 && data.signInPath) {
+        window.location.assign(data.signInPath);
+        return;
+      }
+      if (!response.ok || !data.profile) {
+        throw new Error(data.error ?? "Profilin kaydedilemedi.");
+      }
+
+      onComplete(data.profile);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Profilin kaydedilemedi.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const nextDisabled =
+    (step === 1 && !universityId) ||
+    (step === 2 && (!departmentId || !classYear)) ||
+    (step === 3 && courseIds.length < 3) ||
+    saving;
+
+  return (
+    <main className="onboarding-shell">
+      <header className="onboarding-topbar">
+        <Logo/>
+        <div className="onboarding-progress-copy"><span>Profil kurulumu</span><strong>{step} / 4</strong></div>
+      </header>
+
+      <section className="onboarding-panel" aria-labelledby="onboarding-title">
+        <div className="onboarding-rail" aria-hidden="true">
+          {[1, 2, 3, 4].map((item) => <span className={item <= step ? "active" : ""} key={item}><i/></span>)}
+        </div>
+
+        <div className="onboarding-copy">
+          <span className="onboarding-kicker">
+            {step === 1 && "ÖNCE KAMPÜSÜN"}
+            {step === 2 && "AKADEMİK YOLUN"}
+            {step === 3 && "DERS ÇEVRELERİN"}
+            {step === 4 && "HER ŞEY HAZIR"}
+          </span>
+          <h1 id="onboarding-title">
+            {step === 1 && `Merhaba ${firstName}, üniversiten hangisi?`}
+            {step === 2 && "Bölümünü ve sınıfını seç."}
+            {step === 3 && "Bu dönem hangi derslerdesin?"}
+            {step === 4 && "Sana özel kampüsü kuralım."}
+          </h1>
+          <p>
+            {step === 1 && "Kampüsündeki öğrencileri, notları ve toplulukları sana daha yakın göstereceğiz."}
+            {step === 2 && "Akışını aynı akademik yolda yürüyen öğrencilerle eşleştireceğiz."}
+            {step === 3 && "En az 3 ders seç. Ders çevrelerin akışının temelini oluşturacak."}
+            {step === 4 && "Seçimlerini kontrol et. Profilin sonraki ziyaretlerinde de seni bekleyecek."}
+          </p>
+        </div>
+
+        <div className="onboarding-content">
+          {step === 1 && (
+            <div className="university-grid">
+              {universities.map((university) => (
+                <button className={universityId === university.id ? "selected" : ""} type="button" onClick={() => { setUniversityId(university.id); setError(""); }} key={university.id}>
+                  <span>{university.shortName}</span>
+                  <div><strong>{university.name}</strong><small>{university.city}</small></div>
+                  <i>{universityId === university.id && <Icon name="check" size={14}/>}</i>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="academic-step">
+              <div className="onboarding-field-title"><span>Bölümün</span><small>Akışını ve önerilen derslerini belirler.</small></div>
+              <div className="department-grid">
+                {departments.map((department) => (
+                  <button className={departmentId === department.id ? "selected" : ""} type="button" onClick={() => chooseDepartment(department.id)} key={department.id}>
+                    <span>{department.name}</span>{departmentId === department.id && <Icon name="check" size={15}/>}
+                  </button>
+                ))}
+              </div>
+              <div className="onboarding-field-title class-title"><span>Kaçıncı sınıftasın?</span><small>Hazırlık dahil seçim yapabilirsin.</small></div>
+              <div className="year-picker">
+                {[1, 2, 3, 4, 5, 6].map((year) => <button className={classYear === year ? "selected" : ""} type="button" onClick={() => setClassYear(year)} key={year}>{year === 1 ? "Hazırlık / 1" : year}<small>{year === 6 ? "+" : ". sınıf"}</small></button>)}
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="course-step">
+              <div className="course-count"><span><strong>{courseIds.length}</strong> ders seçtin</span><small>En az 3 · En fazla 8</small></div>
+              <div className="course-choice-grid">
+                {departmentCourses.map((course, index) => (
+                  <button className={courseIds.includes(course.id) ? "selected" : ""} type="button" onClick={() => toggleCourse(course.id)} key={course.id}>
+                    <span className={`course-choice-icon course-tone-${index % 6}`}>{course.code.split(" ")[0].slice(0, 3)}</span>
+                    <div><strong>{course.code}</strong><small>{course.name}</small></div>
+                    <i>{courseIds.includes(course.id) ? <Icon name="check" size={14}/> : <Icon name="plus" size={14}/>}</i>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="onboarding-summary">
+              <div className="summary-identity">
+                <span className="summary-avatar">{getInitials(identityName)}</span>
+                <div><span>Üniyra profilin</span><h2>{identityName}</h2><p>{selectedDepartment?.name} · {classYear}. sınıf</p></div>
+                <span className="summary-ready"><Icon name="check" size={15}/> Hazır</span>
+              </div>
+              <div className="summary-campus">
+                <span>{selectedUniversity?.shortName}</span>
+                <div><small>KAMPÜSÜN</small><strong>{selectedUniversity?.name}</strong><p>{selectedUniversity?.city} çevresindeki öğrencilerle buluş.</p></div>
+              </div>
+              <div className="summary-courses"><span>Ders çevrelerin</span><div>{selectedCourses.map((course) => <strong key={course.id}>{course.code}</strong>)}</div></div>
+              <div className="summary-note"><Icon name="sparkles" size={18}/><p>Akışın bu seçimlere göre kişiselleşecek. Profilini daha sonra istediğin zaman güncelleyebilirsin.</p></div>
+            </div>
+          )}
+        </div>
+
+        {error && <p className="onboarding-error" role="alert">{error}</p>}
+
+        <footer className="onboarding-actions">
+          <button className="onboarding-demo-link" type="button" onClick={onDemo}>Demo akışını aç</button>
+          <div>
+            {step > 1 && <button className="onboarding-back" type="button" onClick={() => { setStep((current) => current - 1); setError(""); }} disabled={saving}>Geri</button>}
+            <button className="onboarding-next" type="button" disabled={nextDisabled} onClick={() => { if (step < 4) { setStep((current) => current + 1); setError(""); } else { void saveProfile(); } }}>
+              {saving ? "Kaydediliyor…" : step === 4 ? "Üniyra’ya gir" : "Devam et"}
+              {!saving && <Icon name="arrow" size={17}/>}
+            </button>
+          </div>
+        </footer>
+      </section>
+    </main>
+  );
+}
+
 export default function Home() {
   const [activeNav, setActiveNav] = useState("Akış");
   const [feedTab, setFeedTab] = useState("Senin için");
@@ -470,8 +762,77 @@ export default function Home() {
   const [posts, setPosts] = useState(initialPosts);
   const [showSearch, setShowSearch] = useState(false);
   const [modal, setModal] = useState<ModalType | null>(null);
+  const [profileState, setProfileState] = useState<ProfileState>("loading");
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+  const [identityName, setIdentityName] = useState(demoProfile.displayName);
+  const [profileReloadToken, setProfileReloadToken] = useState(0);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
+  const profileSubjects = useMemo(() => {
+    if (!studentProfile) return subjects;
+    const tones = ["coral", "violet", "blue", "amber", "mint", "rose"];
+    const symbols = ["∑", "φ", "</>", "§", "Ψ", "△"];
+
+    return studentProfile.courses.slice(0, 6).map((course, index) => ({
+      code: course.code,
+      label: course.name,
+      tone: tones[index % tones.length],
+      icon: symbols[index % symbols.length],
+    }));
+  }, [studentProfile]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProfile() {
+      try {
+        const response = await fetch("/api/profile", { headers: { accept: "application/json" } });
+        const data = (await response.json()) as {
+          identity?: { displayName?: string };
+          profile?: StudentProfile | null;
+        };
+        if (!active) return;
+
+        if (data.identity?.displayName) setIdentityName(data.identity.displayName);
+        if (response.status === 401) {
+          setProfileState("auth-required");
+          return;
+        }
+        if (!response.ok) {
+          setProfileState("unavailable");
+          return;
+        }
+        if (data.profile) {
+          setStudentProfile(data.profile);
+          setProfileState("ready");
+          return;
+        }
+        setProfileState("needs-onboarding");
+      } catch {
+        if (active) setProfileState("unavailable");
+      }
+    }
+
+    void loadProfile();
+    return () => { active = false; };
+  }, [profileReloadToken]);
+
+  if (profileState === "loading") return <ProfileBoot/>;
+
+  if (profileState !== "ready" || !studentProfile) {
+    return (
+      <AcademicOnboarding
+        identityName={identityName}
+        initialProfile={studentProfile}
+        state={profileState}
+        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setProfileState("ready"); }}
+        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setProfileState("ready"); }}
+        onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
+      />
+    );
+  }
+
+  const initials = getInitials(studentProfile.displayName);
 
   function publishPost() {
     const clean = draft.trim();
@@ -479,13 +840,13 @@ export default function Home() {
     setPosts([
       {
         id: Date.now(),
-        name: "Deniz Öztürk",
-        initials: "DÖ",
+        name: studentProfile.displayName,
+        initials,
         avatarClass: "avatar-violet",
-        school: "Boğaziçi Üniversitesi",
-        department: "Endüstri Mühendisliği",
+        school: studentProfile.universityName,
+        department: studentProfile.departmentName,
         time: "şimdi",
-        course: "GENEL",
+        course: studentProfile.courses[0]?.code ?? "GENEL",
         text: clean,
         likes: 0,
         comments: 0,
@@ -516,8 +877,8 @@ export default function Home() {
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => setActiveNav("Profil")}>
-          <Avatar initials="DÖ" className="avatar-violet" />
-          <span><strong>Deniz Öztürk</strong><small>@denizoz</small></span>
+          <Avatar initials={initials} className="avatar-violet" />
+          <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle}</small></span>
           <Icon name="more" size={18}/>
         </button>
       </aside>
@@ -541,8 +902,8 @@ export default function Home() {
         <div className="feed-welcome">
           <div>
             <span>{dateLabel}</span>
-            <h1>Günaydın, Deniz <span>👋</span></h1>
-            <p>Kampüsünde bugün neler oluyor?</p>
+            <h1>Günaydın, {getFirstName(studentProfile.displayName)} <span>👋</span></h1>
+            <p>{studentProfile.universityShortName} çevrende bugün neler oluyor?</p>
           </div>
           <div className="welcome-stat">
             <span><Icon name="sparkles" size={17}/></span>
@@ -556,7 +917,7 @@ export default function Home() {
             <button type="button">Tümünü gör <Icon name="arrow" size={15}/></button>
           </div>
           <div className="subject-row">
-            {subjects.map((subject, index) => (
+            {profileSubjects.map((subject, index) => (
               <button className="subject-item" type="button" key={subject.code}>
                 <span className={`subject-ring subject-${subject.tone}`}><span>{subject.icon}</span>{index < 3 && <i>{index + 2}</i>}</span>
                 <strong>{subject.code}</strong><small>{subject.label}</small>
@@ -567,7 +928,7 @@ export default function Home() {
 
         <section className="composer-card" aria-label="Gönderi oluştur">
           <div className="composer-main">
-            <Avatar initials="DÖ" className="avatar-violet" />
+            <Avatar initials={initials} className="avatar-violet" />
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
             <textarea id="post-draft" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
           </div>
@@ -589,7 +950,7 @@ export default function Home() {
         </div>
 
         <div className="feed-list">{posts.map((post) => <FeedPost post={post} key={post.id}/>)}</div>
-        </> : <SecondaryView name={activeNav} onUpload={() => setModal("note")}/>} 
+        </> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} onEditProfile={() => setProfileState("needs-onboarding")}/>}
       </section>
 
       <aside className="right-sidebar">
