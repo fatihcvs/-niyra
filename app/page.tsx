@@ -245,12 +245,231 @@ function Logo() {
   );
 }
 
+const libraryNotes = [
+  { code: "FİZ 101", title: "Mekanik — Formül Kağıdı", author: "Bora Akın", meta: "18 sayfa · 1,2 B görüntülenme", tone: "purple", symbol: "F = ma", saved: true },
+  { code: "MAT 201", title: "Diferansiyel Denklemler", author: "İdil Şen", meta: "32 sayfa · 894 görüntülenme", tone: "blue", symbol: "dy/dx", saved: false },
+  { code: "HUK 204", title: "Borçlar Hukuku Özeti", author: "Mert Can", meta: "46 sayfa · 986 görüntülenme", tone: "amber", symbol: "§ 49", saved: false },
+  { code: "PSİ 202", title: "Gelişim Kuramları Tablosu", author: "Selin Aras", meta: "12 sayfa · 741 görüntülenme", tone: "mint", symbol: "Ψ", saved: true },
+];
+
+function ViewTitle({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description: string; action?: React.ReactNode }) {
+  return (
+    <header className="view-title">
+      <div>{eyebrow && <span>{eyebrow}</span>}<h1>{title}</h1><p>{description}</p></div>
+      {action}
+    </header>
+  );
+}
+
+function NoteCard({ note }: { note: (typeof libraryNotes)[number] }) {
+  const [saved, setSaved] = useState(note.saved);
+  return (
+    <article className="library-note-card">
+      <button className={`note-cover note-${note.tone}`} type="button" aria-label={`${note.title} notunu aç`}>
+        <span className="note-cover-code">{note.code}</span>
+        <strong>{note.symbol}</strong>
+        <span className="note-cover-lines" />
+        <i>ÜNİYRA NOTES</i>
+      </button>
+      <div className="note-card-body">
+        <div><span>{note.code}</span><button className={saved ? "active" : ""} type="button" onClick={() => setSaved(!saved)} aria-label="Notu kaydet"><Icon name="bookmark" size={17}/></button></div>
+        <h3>{note.title}</h3>
+        <p>{note.author}</p>
+        <small>{note.meta}</small>
+      </div>
+    </article>
+  );
+}
+
+function DiscoverView() {
+  const [category, setCategory] = useState("Sana özel");
+  return (
+    <div className="workspace-view">
+      <ViewTitle eyebrow="ÜNİYRA KEŞFET" title="Yeni şeyler keşfet" description="Kampüsünden ve Türkiye'nin dört bir yanından öğrencilerle buluş." />
+      <label className="discover-search"><Icon name="search" size={20}/><input placeholder="Ders, konu, topluluk veya öğrenci ara"/><kbd>⌘ K</kbd></label>
+      <div className="category-pills">
+        {["Sana özel", "Gündem", "Dersler", "Kampüsler", "Topluluklar"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} type="button" key={item}>{item}</button>)}
+      </div>
+
+      <section className="discover-hero">
+        <div className="discover-hero-copy"><span><Icon name="sparkles" size={15}/> BU HAFTANIN KONUSU</span><h2>Final dönemini<br/>birlikte atlatıyoruz.</h2><p>4.800+ öğrenci çalışma planlarını, özetlerini ve motivasyonunu paylaşıyor.</p><button type="button">Sohbete katıl <Icon name="arrow" size={17}/></button></div>
+        <div className="hero-orbit" aria-hidden="true"><span className="orbit-one">∑</span><span className="orbit-two">Ψ</span><span className="orbit-three">F</span><i/><strong>4.8K</strong><small>öğrenci</small></div>
+      </section>
+
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">YÜKSELENLER</span><h2>Bugün konuşulanlar</h2></div><button type="button">Tümünü gör <Icon name="arrow" size={15}/></button></div>
+      <div className="topic-grid">
+        <button className="topic-card topic-coral" type="button"><span>#01</span><small>12,8 B gönderi</small><h3>Final haftası</h3><p>Planlar, notlar ve çalışma arkadaşları</p><div><Avatar initials="EY" className="avatar-coral" small/><Avatar initials="BA" className="avatar-blue" small/><Avatar initials="SA" className="avatar-mint" small/><i>+2K</i></div></button>
+        <button className="topic-card topic-violet" type="button"><span>#02</span><small>8,4 B gönderi</small><h3>Staj Günlükleri</h3><p>Deneyimler, başvurular ve tavsiyeler</p><div><Avatar initials="NB" className="avatar-amber" small/><Avatar initials="MC" className="avatar-blue" small/><Avatar initials="İK" className="avatar-mint" small/><i>+960</i></div></button>
+      </div>
+
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">KAMPÜSLER</span><h2>Öne çıkan topluluklar</h2></div><button type="button">Tümünü gör <Icon name="arrow" size={15}/></button></div>
+      <div className="compact-community-list">
+        <article><span className="community-logo community-logo-blue">İTÜ</span><div><strong>İTÜ Yazılım Çevresi</strong><small>3.246 üye · Bugün 38 gönderi</small></div><button type="button">Katıl</button></article>
+        <article><span className="community-logo community-logo-red">ODTÜ</span><div><strong>ODTÜ Kampüs Dayanışma</strong><small>5.104 üye · Bugün 61 gönderi</small></div><button type="button">Katıl</button></article>
+        <article><span className="community-logo community-logo-mint">BÜ</span><div><strong>Boğaziçi Kariyer Ağı</strong><small>2.870 üye · Bugün 24 gönderi</small></div><button type="button">Katıl</button></article>
+      </div>
+    </div>
+  );
+}
+
+function NotesView({ onUpload }: { onUpload: () => void }) {
+  const [filter, setFilter] = useState("Tüm notlar");
+  return (
+    <div className="workspace-view">
+      <ViewTitle eyebrow="NOT KÜTÜPHANESİ" title="Aradığın bilgi burada" description="Öğrenciler tarafından hazırlanmış, ders ve okuluna göre düzenlenmiş notlar." action={<button className="view-primary" type="button" onClick={onUpload}><Icon name="plus" size={17}/> Not yükle</button>} />
+      <section className="notes-ai-search">
+        <div><span><Icon name="sparkles" size={16}/> Üniyra AI <i>Beta</i></span><h2>Ne aradığını doğal dilde anlat.</h2><p>Binlerce notun içinden sana en uygun olanları bulalım.</p></div>
+        <label><Icon name="search" size={19}/><input placeholder="Örn. Geçen yılın MAT 101 final özetleri"/><button type="button">Ara <Icon name="arrow" size={15}/></button></label>
+        <span className="notes-ai-decoration">ai</span>
+      </section>
+      <div className="library-toolbar">
+        <div>{["Tüm notlar", "Derslerim", "Kampüsüm", "Kaydettiklerim"].map((item) => <button className={filter === item ? "active" : ""} onClick={() => setFilter(item)} type="button" key={item}>{item}</button>)}</div>
+        <button className="filter-button" type="button"><Icon name="more" size={18}/> Filtrele</button>
+      </div>
+      <div className="note-library-grid">{libraryNotes.map((note) => <NoteCard note={note} key={note.title}/>)}</div>
+      <button className="load-more" type="button">Daha fazla not göster</button>
+    </div>
+  );
+}
+
+const communities = [
+  { logo: "İTÜ", tone: "blue", name: "İTÜ Yazılım Çevresi", category: "Teknoloji · İstanbul", members: "3.246", posts: "38", joined: true },
+  { logo: "PSİ", tone: "violet", name: "Psikoloji Öğrencileri", category: "Akademik · Türkiye", members: "8.920", posts: "72", joined: false },
+  { logo: "MİM", tone: "coral", name: "Genç Mimarlar", category: "Tasarım · Türkiye", members: "4.108", posts: "41", joined: false },
+  { logo: "ER", tone: "mint", name: "Erasmus Deneyimleri", category: "Seyahat · Global", members: "11.300", posts: "96", joined: true },
+];
+
+function CommunitiesView() {
+  return (
+    <div className="workspace-view">
+      <ViewTitle eyebrow="TOPLULUKLAR" title="Birlikte daha güçlüyüz" description="İlgi alanına, dersine veya kampüsüne uygun çevreni bul." action={<button className="view-primary" type="button"><Icon name="plus" size={17}/> Topluluk kur</button>} />
+      <section className="my-communities-banner"><div><span><Icon name="users" size={17}/></span><div><strong>5 topluluğa üyesin</strong><p>Bugün topluluklarında 32 yeni gönderi var.</p></div></div><button type="button">Üyeliklerim <Icon name="arrow" size={16}/></button></section>
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">SANA ÖZEL</span><h2>Keşfedebileceğin topluluklar</h2></div><button type="button">Kategoriler <Icon name="arrow" size={15}/></button></div>
+      <div className="community-grid">
+        {communities.map((community) => <CommunityCard community={community} key={community.name}/>) }
+      </div>
+      <section className="study-room-card"><div className="study-room-art"><span/><i/><strong>12</strong><small>canlı oda</small></div><div><span className="live-label"><i/> ŞİMDİ CANLI</span><h2>Birlikte çalışma odaları</h2><p>Kameranı açmak zorunda değilsin. Aynı derse çalışan öğrencilerle sessizce odaklan.</p><button type="button">Odaları gör <Icon name="arrow" size={16}/></button></div></section>
+    </div>
+  );
+}
+
+function CommunityCard({ community }: { community: (typeof communities)[number] }) {
+  const [joined, setJoined] = useState(community.joined);
+  return (
+    <article className="community-card">
+      <div className={`community-cover cover-${community.tone}`}><span className={`community-logo community-logo-${community.tone}`}>{community.logo}</span><i>● ● ●</i></div>
+      <div className="community-body"><span>{community.category}</span><h3>{community.name}</h3><div><strong>{community.members}<small>üye</small></strong><strong>{community.posts}<small>bugün</small></strong></div><button className={joined ? "joined" : ""} onClick={() => setJoined(!joined)} type="button">{joined ? <><Icon name="check" size={15}/> Katıldın</> : "Topluluğa katıl"}</button></div>
+    </article>
+  );
+}
+
+const notifications = [
+  { initials: "EY", avatar: "avatar-coral", title: "Ece Yılmaz notuna yorum yaptı", text: "“Özdeğer kısmındaki örnek gerçekten çok iyi olmuş.”", time: "5 dk", unread: true },
+  { initials: "BA", avatar: "avatar-blue", title: "Bora Akın seni takip etmeye başladı", text: "YTÜ · Makine Mühendisliği", time: "28 dk", unread: true },
+  { initials: "MAT", avatar: "avatar-violet", title: "MAT 101 çevresinde 7 yeni not var", text: "Son ziyaretinden beri yeni paylaşımlar yapıldı.", time: "1 sa", unread: true },
+  { initials: "SA", avatar: "avatar-mint", title: "Selin Aras gönderini beğendi", text: "“Yarın MAT 101 için ortak çalışma grubu...”", time: "3 sa", unread: false },
+  { initials: "Ü", avatar: "avatar-amber", title: "Final haftası yaklaşıyor", text: "Çalışma planını oluşturmak için 12 günün kaldı.", time: "Dün", unread: false },
+];
+
+function NotificationsView() {
+  const [tab, setTab] = useState("Tümü");
+  return (
+    <div className="workspace-view">
+      <ViewTitle eyebrow="BİLDİRİMLER" title="Gelişmeler" description="Notlarından, çevrelerinden ve kampüsünden haberler." action={<button className="text-action" type="button"><Icon name="check" size={15}/> Tümünü okundu işaretle</button>} />
+      <div className="notification-tabs">{["Tümü", "Etkileşimler", "Dersler", "Topluluklar"].map((item) => <button className={tab === item ? "active" : ""} onClick={() => setTab(item)} type="button" key={item}>{item}</button>)}</div>
+      <div className="notification-list">{notifications.map((item) => <article className={item.unread ? "unread" : ""} key={item.title}><Avatar initials={item.initials} className={item.avatar}/><div><strong>{item.title}</strong><p>{item.text}</p><small>{item.time} önce</small></div>{item.unread && <i/>}<button type="button" aria-label="Bildirim seçenekleri"><Icon name="more" size={18}/></button></article>)}</div>
+    </div>
+  );
+}
+
+function SavedView() {
+  return (
+    <div className="workspace-view">
+      <ViewTitle eyebrow="KAYDEDİLENLER" title="Sonra bakacakların" description="Kaydettiğin notlar, gönderiler ve topluluklar tek yerde." />
+      <section className="saved-summary"><div><span><Icon name="bookmark" size={22}/></span><div><strong>18 kayıt</strong><p>7 not · 9 gönderi · 2 topluluk</p></div></div><button type="button">Koleksiyon oluştur <Icon name="plus" size={16}/></button></section>
+      <div className="saved-collections">
+        <button type="button"><span className="collection-stack stack-purple"><i/><i/><i/></span><strong>Final Hazırlığı</strong><small>8 kayıt</small></button>
+        <button type="button"><span className="collection-stack stack-coral"><i/><i/><i/></span><strong>Staj & Kariyer</strong><small>5 kayıt</small></button>
+        <button type="button"><span className="collection-stack stack-mint"><i/><i/><i/></span><strong>Sonra Okurum</strong><small>5 kayıt</small></button>
+      </div>
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">SON KAYDEDİLENLER</span><h2>Tüm kayıtlar</h2></div><button type="button">Sırala <Icon name="more" size={15}/></button></div>
+      <div className="note-library-grid">{libraryNotes.filter((note) => note.saved).map((note) => <NoteCard note={note} key={note.title}/>)}</div>
+    </div>
+  );
+}
+
+function ProfileView() {
+  return (
+    <div className="workspace-view profile-view">
+      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials="DÖ" className="avatar-violet"/><div><h1>Deniz Öztürk <span className="verified"><Icon name="check" size={11}/></span></h1><p>@denizoz · Boğaziçi Üniversitesi</p><small>Endüstri Mühendisliği · 3. sınıf</small></div><button type="button">Profili düzenle</button></div><p className="profile-bio">Öğrenmeyi, paylaşmayı ve iyi kahveyi seviyorum. ☕ Endüstri, veri ve biraz da tasarım.</p><div className="profile-stats"><strong>126<span>Gönderi</span></strong><strong>2.4K<span>Takipçi</span></strong><strong>384<span>Takip</span></strong><strong>18.7K<span>Not görüntülenmesi</span></strong></div></section>
+      <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
+      <FeedPost post={{...initialPosts[1], id: 92, name: "Deniz Öztürk", initials: "DÖ", avatarClass: "avatar-violet", school: "Boğaziçi Üniversitesi", department: "Endüstri Mühendisliği", time: "2 gün", course: "IE 305", text: "Yöneylem araştırması için çıkardığım kısa çözüm yöntemlerini akşam not olarak yükleyeceğim. Özellikle simplex tablosunda takılanlara yardımcı olabilir."}} />
+    </div>
+  );
+}
+
+function SecondaryView({ name, onUpload }: { name: string; onUpload: () => void }) {
+  if (name === "Keşfet") return <DiscoverView/>;
+  if (name === "Notlar") return <NotesView onUpload={onUpload}/>;
+  if (name === "Topluluklar") return <CommunitiesView/>;
+  if (name === "Bildirimler") return <NotificationsView/>;
+  if (name === "Kaydedilenler") return <SavedView/>;
+  if (name === "Profil") return <ProfileView/>;
+  return <DiscoverView/>;
+}
+
+type ModalType = "note" | "ai";
+
+function ProductModal({ type, onClose }: { type: ModalType; onClose: () => void }) {
+  const [fileName, setFileName] = useState("");
+  const [noteTitle, setNoteTitle] = useState("");
+  const [query, setQuery] = useState("");
+  const [searched, setSearched] = useState(false);
+  const [completed, setCompleted] = useState(false);
+
+  return (
+    <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section className={`product-modal ${type === "ai" ? "ai-modal" : ""}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <header className="modal-header">
+          <span className={type === "ai" ? "modal-icon modal-icon-ai" : "modal-icon modal-icon-note"}><Icon name={type === "ai" ? "sparkles" : "file"} size={20}/></span>
+          <div><span>{type === "ai" ? "ÜNİYRA AI · BETA" : "NOT KÜTÜPHANESİ"}</span><h2 id="modal-title">{type === "ai" ? "Aradığın notu birlikte bulalım" : "Notunu Üniyra'ya ekle"}</h2><p>{type === "ai" ? "Neye çalıştığını anlat; en uygun kaynakları sıralayalım." : "Paylaşımın aynı dersi alan binlerce öğrenciye ulaşabilir."}</p></div>
+          <button type="button" onClick={onClose} aria-label="Pencereyi kapat"><Icon name="close" size={19}/></button>
+        </header>
+
+        {type === "note" ? (
+          completed ? <div className="modal-success"><span><Icon name="check" size={28}/></span><h3>Notun incelemeye hazır!</h3><p>Sonraki adımda ders bilgilerini doğrulayıp paylaşabileceksin.</p><button type="button" onClick={onClose}>Tamam</button></div> : <>
+            <label className={`upload-dropzone ${fileName ? "has-file" : ""}`}>
+              <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}/>
+              <span><Icon name={fileName ? "check" : "file"} size={23}/></span>
+              <strong>{fileName || "Dosyanı buraya bırak veya seç"}</strong>
+              <small>{fileName ? "Dosya başarıyla seçildi" : "PDF, DOCX, PPTX veya görsel · En fazla 50 MB"}</small>
+            </label>
+            <label className="modal-field"><span>Not başlığı</span><input value={noteTitle} onChange={(event) => setNoteTitle(event.target.value)} placeholder="Örn. Lineer Cebir Final Özeti"/></label>
+            <div className="modal-field-row">
+              <button type="button"><span>Ders</span><strong>MAT 101</strong><Icon name="arrow" size={14}/></button>
+              <button type="button"><span>Not türü</span><strong>Ders özeti</strong><Icon name="arrow" size={14}/></button>
+            </div>
+            <label className="ai-assist-toggle"><span><Icon name="sparkles" size={17}/></span><div><strong>AI ile düzenle</strong><small>Başlığı, açıklamayı ve etiketleri otomatik hazırla.</small></div><input type="checkbox" defaultChecked/><i/></label>
+            <footer className="modal-footer"><button type="button" onClick={onClose}>İptal</button><button type="button" onClick={() => setCompleted(true)} disabled={!fileName || !noteTitle.trim()}>Devam et <Icon name="arrow" size={16}/></button></footer>
+          </>
+        ) : (
+          <>
+            <label className="ai-query-box"><Icon name="sparkles" size={20}/><textarea value={query} onChange={(event) => { setQuery(event.target.value); setSearched(false); }} placeholder="Örn. Mikroekonomi finaline hazırlanıyorum; arz-talep ve esneklik için kısa, görsel bir özet arıyorum." rows={4}/><button type="button" onClick={() => setSearched(true)} disabled={!query.trim()}>Ara <Icon name="arrow" size={16}/></button></label>
+            {!searched ? <div className="ai-suggestions"><span>Şunları deneyebilirsin</span><div>{["MAT 101 çıkmış sorular", "Organik kimya reaksiyon özeti", "Borçlar hukuku final notu"].map((item) => <button type="button" onClick={() => setQuery(item)} key={item}>{item}</button>)}</div></div> : <div className="ai-results"><div><span><Icon name="check" size={14}/> 12 not içinde en uygun 2 sonuç</span><small>Üniyra AI yanılabilir; kaynakları kontrol et.</small></div><button type="button"><i className="mini-doc mini-doc-purple">F</i><span><strong>Mikroekonomi — Final Özeti</strong><small>Ece Yılmaz · 28 sayfa · %96 eşleşme</small></span><Icon name="arrow" size={17}/></button><button type="button"><i className="mini-doc mini-doc-mint">E</i><span><strong>Esneklik ve Piyasa Dengesi</strong><small>Nazlı Bilgin · 16 sayfa · %91 eşleşme</small></span><Icon name="arrow" size={17}/></button></div>}
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
 export default function Home() {
   const [activeNav, setActiveNav] = useState("Akış");
   const [feedTab, setFeedTab] = useState("Senin için");
   const [draft, setDraft] = useState("");
   const [posts, setPosts] = useState(initialPosts);
   const [showSearch, setShowSearch] = useState(false);
+  const [modal, setModal] = useState<ModalType | null>(null);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
 
@@ -296,7 +515,7 @@ export default function Home() {
           <div><strong>Final haftası</strong><span>12 gün kaldı</span></div>
           <span className="semester-progress"><i /></span>
         </div>
-        <button className="profile-mini" type="button">
+        <button className="profile-mini" type="button" onClick={() => setActiveNav("Profil")}>
           <Avatar initials="DÖ" className="avatar-violet" />
           <span><strong>Deniz Öztürk</strong><small>@denizoz</small></span>
           <Icon name="more" size={18}/>
@@ -318,6 +537,7 @@ export default function Home() {
           </div>
         )}
 
+        {activeNav === "Akış" ? <>
         <div className="feed-welcome">
           <div>
             <span>{dateLabel}</span>
@@ -354,8 +574,8 @@ export default function Home() {
           <div className="composer-tools">
             <div>
               <button type="button"><span className="tool-icon tool-image"><Icon name="image" size={18}/></span><span>Fotoğraf</span></button>
-              <button type="button"><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
-              <button type="button"><span className="tool-icon tool-ai"><Icon name="sparkles" size={18}/></span><span>Yapay zekâ</span><i>Beta</i></button>
+              <button type="button" onClick={() => setModal("note")}><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
+              <button type="button" onClick={() => setModal("ai")}><span className="tool-icon tool-ai"><Icon name="sparkles" size={18}/></span><span>Yapay zekâ</span><i>Beta</i></button>
             </div>
             <button className="publish-button" type="button" disabled={!draft.trim()} onClick={publishPost}>Paylaş</button>
           </div>
@@ -369,6 +589,7 @@ export default function Home() {
         </div>
 
         <div className="feed-list">{posts.map((post) => <FeedPost post={post} key={post.id}/>)}</div>
+        </> : <SecondaryView name={activeNav} onUpload={() => setModal("note")}/>} 
       </section>
 
       <aside className="right-sidebar">
@@ -381,7 +602,7 @@ export default function Home() {
           <div className="side-card-title"><span>Üniyra AI</span><i>Beta</i></div>
           <h2>Aradığın notu saniyeler içinde bul.</h2>
           <p>“Geçen yılın mikroekonomi final özetlerini bul” gibi yazman yeterli.</p>
-          <button type="button">AI ile ara <Icon name="arrow" size={16}/></button>
+          <button type="button" onClick={() => setModal("ai")}>AI ile ara <Icon name="arrow" size={16}/></button>
           <span className="ai-glow ai-glow-one"/><span className="ai-glow ai-glow-two"/>
         </section>
 
@@ -416,6 +637,7 @@ export default function Home() {
           </button>
         ))}
       </nav>
+      {modal && <ProductModal type={modal} onClose={() => setModal(null)}/>} 
     </main>
   );
 }
