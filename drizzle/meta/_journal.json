@@ -8,6 +8,20 @@
       "when": 1786733890285,
       "tag": "0000_curly_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786734282787,
+      "tag": "0001_jazzy_ink",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786734324354,
+      "tag": "0002_nervous_deadpool",
+      "breakpoints": true
     }
   ]
 }

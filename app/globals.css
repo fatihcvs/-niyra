@@ -201,6 +201,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .tool-icon { width: 27px; height: 27px; border-radius: 9px; display: grid; place-items: center; }.tool-image{background:#e9f7f1;color:#2d9b71}.tool-note{background:#fff0ec;color:#ef6d53}.tool-ai{background:#f0edff;color:var(--brand)}
 .publish-button { border: 0; border-radius: 9px; padding: 8px 16px; background: var(--brand); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
 .publish-button:disabled { background: #edecf3; color: #aaadba; cursor: default; }
+.composer-feedback { margin:9px 0 1px; padding:8px 10px; border-radius:9px; background:#fff1f1; color:#b8424e; font-size:9px; line-height:1.4; }
 
 .feed-tabs { position: relative; display: flex; align-items: center; gap: 23px; border-bottom: 1px solid #e5e5ec; margin: 21px 2px 13px; }
 .feed-tabs > button { border: 0; background: transparent; padding: 11px 1px; color: #9094a5; font-size: 11px; font-weight: 620; cursor: pointer; }

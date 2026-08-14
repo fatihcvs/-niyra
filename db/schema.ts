@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   email: text("email").primaryKey(),
@@ -61,4 +61,23 @@ export const studentCourses = sqliteTable(
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [primaryKey({ columns: [table.userEmail, table.courseId] })],
+);
+
+export const posts = sqliteTable(
+  "posts",
+  {
+    id: text("id").primaryKey(),
+    authorEmail: text("author_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    courseId: text("course_id").references(() => courses.id),
+    content: text("content").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    deletedAt: text("deleted_at"),
+  },
+  (table) => [
+    index("posts_created_at_idx").on(table.createdAt),
+    index("posts_author_created_idx").on(table.authorEmail, table.createdAt),
+  ],
 );

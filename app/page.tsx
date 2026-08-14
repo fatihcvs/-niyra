@@ -18,7 +18,7 @@ type IconName =
   | "close" | "send";
 
 type Post = {
-  id: number;
+  id: number | string;
   name: string;
   initials: string;
   avatarClass: string;
@@ -766,6 +766,9 @@ export default function Home() {
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [identityName, setIdentityName] = useState(demoProfile.displayName);
   const [profileReloadToken, setProfileReloadToken] = useState(0);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [composerError, setComposerError] = useState("");
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
@@ -804,6 +807,7 @@ export default function Home() {
         }
         if (data.profile) {
           setStudentProfile(data.profile);
+          setIsDemoMode(false);
           setProfileState("ready");
           return;
         }
@@ -817,6 +821,25 @@ export default function Home() {
     return () => { active = false; };
   }, [profileReloadToken]);
 
+  useEffect(() => {
+    if (profileState !== "ready" || isDemoMode) return;
+    let active = true;
+
+    async function loadPosts() {
+      try {
+        const response = await fetch("/api/posts", { headers: { accept: "application/json" } });
+        const data = (await response.json()) as { posts?: Post[] };
+        if (!active || !response.ok || !data.posts) return;
+        setPosts(data.posts.length > 0 ? [...data.posts, ...initialPosts] : initialPosts);
+      } catch {
+        // The sample feed remains usable while a transient request is retried on reload.
+      }
+    }
+
+    void loadPosts();
+    return () => { active = false; };
+  }, [profileState, isDemoMode]);
+
   if (profileState === "loading") return <ProfileBoot/>;
 
   if (profileState !== "ready" || !studentProfile) {
@@ -825,8 +848,8 @@ export default function Home() {
         identityName={identityName}
         initialProfile={studentProfile}
         state={profileState}
-        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setProfileState("ready"); }}
-        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setProfileState("ready"); }}
+        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setIsDemoMode(false); setProfileState("ready"); }}
+        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setIsDemoMode(true); setProfileState("ready"); }}
         onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
       />
     );
@@ -834,26 +857,51 @@ export default function Home() {
 
   const initials = getInitials(studentProfile.displayName);
 
-  function publishPost() {
+  async function publishPost() {
     const clean = draft.trim();
-    if (!clean) return;
-    setPosts([
-      {
-        id: Date.now(),
-        name: studentProfile.displayName,
-        initials,
-        avatarClass: "avatar-violet",
-        school: studentProfile.universityName,
-        department: studentProfile.departmentName,
-        time: "şimdi",
-        course: studentProfile.courses[0]?.code ?? "GENEL",
-        text: clean,
-        likes: 0,
-        comments: 0,
-      },
-      ...posts,
-    ]);
-    setDraft("");
+    if (!clean || publishing) return;
+    setComposerError("");
+
+    const optimisticPost: Post = {
+      id: Date.now(),
+      name: studentProfile.displayName,
+      initials,
+      avatarClass: "avatar-violet",
+      school: studentProfile.universityName,
+      department: studentProfile.departmentName,
+      time: "şimdi",
+      course: studentProfile.courses[0]?.code ?? "GENEL",
+      text: clean,
+      likes: 0,
+      comments: 0,
+    };
+
+    if (isDemoMode) {
+      setPosts((current) => [optimisticPost, ...current]);
+      setDraft("");
+      return;
+    }
+
+    setPublishing(true);
+    try {
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          content: clean,
+          courseId: studentProfile.courses[0]?.id ?? null,
+        }),
+      });
+      const data = (await response.json()) as { post?: Post; error?: string };
+      if (!response.ok || !data.post) throw new Error(data.error ?? "Gönderin paylaşılamadı.");
+
+      setPosts((current) => [data.post as Post, ...current]);
+      setDraft("");
+    } catch (publishError) {
+      setComposerError(publishError instanceof Error ? publishError.message : "Gönderin paylaşılamadı.");
+    } finally {
+      setPublishing(false);
+    }
   }
 
   return (
@@ -930,7 +978,7 @@ export default function Home() {
           <div className="composer-main">
             <Avatar initials={initials} className="avatar-violet" />
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
-            <textarea id="post-draft" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
+            <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
           </div>
           <div className="composer-tools">
             <div>
@@ -938,8 +986,9 @@ export default function Home() {
               <button type="button" onClick={() => setModal("note")}><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
               <button type="button" onClick={() => setModal("ai")}><span className="tool-icon tool-ai"><Icon name="sparkles" size={18}/></span><span>Yapay zekâ</span><i>Beta</i></button>
             </div>
-            <button className="publish-button" type="button" disabled={!draft.trim()} onClick={publishPost}>Paylaş</button>
+            <button className="publish-button" type="button" disabled={!draft.trim() || publishing} onClick={() => void publishPost()}>{publishing ? "Paylaşılıyor…" : "Paylaş"}</button>
           </div>
+          {composerError && <p className="composer-feedback" role="alert">{composerError}</p>}
         </section>
 
         <div className="feed-tabs" role="tablist" aria-label="Akış türü">
