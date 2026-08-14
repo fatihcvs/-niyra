@@ -514,21 +514,25 @@ function NoteCard({ note }: { note: (typeof libraryNotes)[number] }) {
 function DiscoverView({
   people,
   peopleStatus,
+  query,
   followPendingId,
   onOpenPerson,
+  onQueryChange,
   onToggleFollow,
 }: {
   people: CampusPerson[];
   peopleStatus: "loading" | "ready" | "empty" | "error";
+  query: string;
   followPendingId: string | null;
   onOpenPerson: (person: CampusPerson) => void;
+  onQueryChange: (query: string) => void;
   onToggleFollow: (publicId: string) => void;
 }) {
   const [category, setCategory] = useState("Sana özel");
   return (
     <div className="workspace-view">
       <ViewTitle eyebrow="OMÜ KEŞFET" title="Kampüsünü keşfet" description="Ondokuz Mayıs Üniversitesi’ndeki öğrenciler, ders çevreleri ve topluluklarla buluş." />
-      <label className="discover-search"><Icon name="search" size={20}/><input placeholder="Ders, konu, topluluk veya öğrenci ara"/><kbd>⌘ K</kbd></label>
+      <div className="discover-search"><Icon name="search" size={20}/><input aria-label="OMÜ öğrencisi ara" value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Ad, kullanıcı adı, fakülte veya bölüm ara"/>{query ? <button type="button" onClick={() => onQueryChange("")} aria-label="Aramayı temizle"><Icon name="close" size={16}/></button> : <kbd>⌘ K</kbd>}</div>
       <div className="category-pills">
         {["Sana özel", "Gündem", "Dersler", "Kampüsler", "Topluluklar"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} type="button" key={item}>{item}</button>)}
       </div>
@@ -538,10 +542,10 @@ function DiscoverView({
         <div className="hero-orbit" aria-hidden="true"><span className="orbit-one">∑</span><span className="orbit-two">Ψ</span><span className="orbit-three">F</span><i/><strong>OMÜ</strong><small>pilot kampüs</small></div>
       </section>
 
-      <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>Akademik çevreni genişlet</h2></div><span className="section-campus-label">OMÜ</span></div>
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">OMÜ</span></div>
       <div className="campus-people-grid">
         {peopleStatus === "loading" && <p className="campus-people-state">Bölümüne yakın öğrenciler getiriliyor…</p>}
-        {peopleStatus === "empty" && <p className="campus-people-state">Henüz başka bir OMÜ profili yok. İlk gönderinle öğrenci ağını başlatabilirsin.</p>}
+        {peopleStatus === "empty" && <p className="campus-people-state">{query ? "Bu aramayla eşleşen bir OMÜ öğrencisi bulunamadı." : "Henüz başka bir OMÜ profili yok. İlk gönderinle öğrenci ağını başlatabilirsin."}</p>}
         {peopleStatus === "error" && <p className="campus-people-state">Öğrenci ağı şu anda getirilemedi. Biraz sonra yeniden deneyebilirsin.</p>}
         {peopleStatus === "ready" && people.slice(0, 6).map((person) => (
           <article className="campus-person-card" key={person.publicId}>
@@ -672,6 +676,7 @@ function ProfileView({ profile, posts, onEdit }: { profile: StudentProfile; post
 function PublicProfileView({
   profile,
   loading,
+  shareable,
   viewerInitials,
   followPending,
   onBack,
@@ -679,11 +684,29 @@ function PublicProfileView({
 }: {
   profile: PublicProfile | null;
   loading: boolean;
+  shareable: boolean;
   viewerInitials: string;
   followPending: boolean;
   onBack: () => void;
   onToggleFollow: (publicId: string) => void;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  async function shareProfile() {
+    if (!profile) return;
+    const profileUrl = new URL(window.location.href);
+    profileUrl.searchParams.set("profile", profile.publicId);
+    const shareUrl = profileUrl.toString();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt("Profil bağlantısını kopyala", shareUrl);
+    }
+  }
+
   if (loading) {
     return (
       <div className="workspace-view public-profile-state" aria-live="polite">
@@ -704,7 +727,7 @@ function PublicProfileView({
 
   return (
     <div className="workspace-view profile-view">
-      <button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button>
+      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}</div>
       <section className="profile-hero">
         <div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div>
         <div className="profile-main">
@@ -721,14 +744,14 @@ function PublicProfileView({
   );
 }
 
-function SecondaryView({ name, onUpload, profile, posts, people, peopleStatus, followPendingId, onOpenPerson, onToggleFollow, onEditProfile }: { name: string; onUpload: () => void; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; followPendingId: string | null; onOpenPerson: (person: CampusPerson) => void; onToggleFollow: (publicId: string) => void; onEditProfile: () => void }) {
-  if (name === "Keşfet") return <DiscoverView people={people} peopleStatus={peopleStatus} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onToggleFollow={onToggleFollow}/>;
+function SecondaryView({ name, onUpload, profile, posts, people, peopleStatus, peopleQuery, followPendingId, onOpenPerson, onQueryPeople, onToggleFollow, onEditProfile }: { name: string; onUpload: () => void; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; followPendingId: string | null; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onEditProfile: () => void }) {
+  if (name === "Keşfet") return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
   if (name === "Notlar") return <NotesView onUpload={onUpload}/>;
   if (name === "Topluluklar") return <CommunitiesView/>;
   if (name === "Bildirimler") return <NotificationsView/>;
   if (name === "Kaydedilenler") return <SavedView/>;
   if (name === "Profil") return <ProfileView profile={profile} posts={posts} onEdit={onEditProfile}/>;
-  return <DiscoverView people={people} peopleStatus={peopleStatus} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onToggleFollow={onToggleFollow}/>;
+  return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
 }
 
 type ModalType = "note";
@@ -1040,6 +1063,7 @@ export default function Home() {
   const [composerError, setComposerError] = useState("");
   const [people, setPeople] = useState<CampusPerson[]>([]);
   const [peopleStatus, setPeopleStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
+  const [peopleQuery, setPeopleQuery] = useState("");
   const [followPendingId, setFollowPendingId] = useState<string | null>(null);
   const [followError, setFollowError] = useState("");
   const [publicProfile, setPublicProfile] = useState<PublicProfile | null>(null);
@@ -1086,6 +1110,25 @@ export default function Home() {
           setPostsLoading(true);
           setIsDemoMode(false);
           setProfileState("ready");
+          const sharedProfileId = new URLSearchParams(window.location.search).get("profile")?.trim() ?? "";
+          if (sharedProfileId) {
+            if (sharedProfileId === data.profile.publicId) {
+              setActiveNav("Profil");
+            } else {
+              setActiveNav("Öğrenci");
+              setPublicProfileLoading(true);
+              try {
+                const profileResponse = await fetch(`/api/people?id=${encodeURIComponent(sharedProfileId)}`, { headers: { accept: "application/json" } });
+                const profileData = (await profileResponse.json()) as { person?: PublicProfile; error?: string };
+                if (active && profileResponse.ok && profileData.person) setPublicProfile(profileData.person);
+                if (active && (!profileResponse.ok || !profileData.person)) setFollowError(profileData.error ?? "Paylaşılan öğrenci profili açılamadı.");
+              } catch {
+                if (active) setFollowError("Paylaşılan öğrenci profili açılamadı.");
+              } finally {
+                if (active) setPublicProfileLoading(false);
+              }
+            }
+          }
           return;
         }
         setProfileState("needs-onboarding");
@@ -1128,7 +1171,8 @@ export default function Home() {
 
     async function loadPeople() {
       try {
-        const response = await fetch("/api/people", { headers: { accept: "application/json" } });
+        const queryString = peopleQuery ? `?q=${encodeURIComponent(peopleQuery)}` : "";
+        const response = await fetch(`/api/people${queryString}`, { headers: { accept: "application/json" } });
         const data = (await response.json()) as { people?: CampusPerson[] };
         if (!active) return;
         if (!response.ok || !data.people) {
@@ -1142,9 +1186,26 @@ export default function Home() {
       }
     }
 
-    void loadPeople();
-    return () => { active = false; };
-  }, [profileState, isDemoMode]);
+    const timer = window.setTimeout(() => void loadPeople(), peopleQuery ? 240 : 0);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [profileState, isDemoMode, peopleQuery]);
+
+  useEffect(() => {
+    function handleHistoryChange() {
+      const sharedProfileId = new URLSearchParams(window.location.search).get("profile");
+      if (!sharedProfileId) {
+        setActiveNav("Akış");
+        setPublicProfile(null);
+        setPublicProfileLoading(false);
+        setFollowError("");
+        return;
+      }
+      window.location.reload();
+    }
+
+    window.addEventListener("popstate", handleHistoryChange);
+    return () => window.removeEventListener("popstate", handleHistoryChange);
+  }, []);
 
   if (profileState === "loading") return <ProfileBoot/>;
 
@@ -1154,8 +1215,8 @@ export default function Home() {
         identityName={identityName}
         initialProfile={studentProfile}
         state={profileState}
-        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setPeopleStatus("loading"); setIsDemoMode(false); setProfileState("ready"); }}
-        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setPosts(initialPosts); setPostsLoading(false); setPeople(demoPeople); setPeopleStatus("ready"); setIsDemoMode(true); setProfileState("ready"); }}
+        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setPeopleQuery(""); setPeopleStatus("loading"); setIsDemoMode(false); setProfileState("ready"); }}
+        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setPosts(initialPosts); setPostsLoading(false); setPeople(demoPeople); setPeopleQuery(""); setPeopleStatus("ready"); setIsDemoMode(true); setProfileState("ready"); }}
         onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
       />
     );
@@ -1234,6 +1295,10 @@ export default function Home() {
       return;
     }
 
+    const profileUrl = new URL(window.location.href);
+    profileUrl.searchParams.set("profile", person.publicId);
+    window.history.pushState({}, "", `${profileUrl.pathname}${profileUrl.search}`);
+
     try {
       const response = await fetch(`/api/people?id=${encodeURIComponent(person.publicId)}`, {
         headers: { accept: "application/json" },
@@ -1246,6 +1311,32 @@ export default function Home() {
     } finally {
       setPublicProfileLoading(false);
     }
+  }
+
+  function queryPeople(query: string) {
+    const nextQuery = query.slice(0, 60);
+    setPeopleQuery(nextQuery);
+    setPeopleStatus("loading");
+
+    if (!isDemoMode) return;
+    const normalized = nextQuery.trim().toLocaleLowerCase("tr-TR");
+    const matches = normalized
+      ? demoPeople.filter((person) => `${person.displayName} ${person.handle} ${person.facultyName} ${person.departmentName}`.toLocaleLowerCase("tr-TR").includes(normalized))
+      : demoPeople;
+    setPeople(matches);
+    setPeopleStatus(matches.length > 0 ? "ready" : "empty");
+  }
+
+  function navigateTo(name: string) {
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.has("profile")) {
+      currentUrl.searchParams.delete("profile");
+      window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.search}`);
+    }
+    setPublicProfile(null);
+    setPublicProfileLoading(false);
+    setFollowError("");
+    setActiveNav(name);
   }
 
   async function toggleFollow(publicId: string) {
@@ -1293,7 +1384,7 @@ export default function Home() {
         <Logo />
         <nav className="main-nav" aria-label="Ana menü">
           {navItems.map((item) => (
-            <button className={activeNav === item.label ? "active" : ""} key={item.label} onClick={() => setActiveNav(item.label)} type="button">
+            <button className={activeNav === item.label ? "active" : ""} key={item.label} onClick={() => navigateTo(item.label)} type="button">
               <span className="nav-icon"><Icon name={item.icon}/>{item.label === "Bildirimler" && <i />}</span>
               <span>{item.label}</span>
             </button>
@@ -1307,7 +1398,7 @@ export default function Home() {
           <div><strong>Final haftası</strong><span>12 gün kaldı</span></div>
           <span className="semester-progress"><i /></span>
         </div>
-        <button className="profile-mini" type="button" onClick={() => setActiveNav("Profil")}>
+        <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>
           <Avatar initials={initials} className="avatar-violet" />
           <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle}</small></span>
           <Icon name="more" size={18}/>
@@ -1381,21 +1472,21 @@ export default function Home() {
         </div>
 
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>OMÜ akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>OMÜ akışın henüz sakin</strong><p>İlk gönderiyi paylaşabilir veya öğrenci ağından bağlantılar kurabilirsin.</p></div>}</div>
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} viewerInitials={initials} followPending={followPendingId === publicProfile?.publicId} onBack={() => { setActiveNav("Akış"); setPublicProfile(null); setFollowError(""); }} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} followPendingId={followPendingId} onOpenPerson={(person) => void openPerson(person)} onToggleFollow={(publicId) => void toggleFollow(publicId)} onEditProfile={() => setProfileState("needs-onboarding")}/>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable={!isDemoMode} viewerInitials={initials} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} followPendingId={followPendingId} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onEditProfile={() => setProfileState("needs-onboarding")}/>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
       <aside className="right-sidebar">
-        <label className="search-box">
-          <Icon name="search" size={18}/><span className="sr-only">Ara</span><input placeholder="Ders, not veya öğrenci ara"/><kbd>⌘ K</kbd>
-        </label>
+        <div className="search-box">
+          <Icon name="search" size={18}/><input aria-label="OMÜ öğrencisi ara" value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="OMÜ öğrencisi ara"/>{peopleQuery ? <button type="button" onClick={() => queryPeople("")} aria-label="Aramayı temizle"><Icon name="close" size={15}/></button> : <kbd>⌘ K</kbd>}
+        </div>
 
         <section className="side-card campus-card">
           <span className="campus-orb"><Icon name="users" size={20}/></span>
           <div className="side-card-title"><span>OMÜ öğrenci ağı</span><i>Pilot</i></div>
           <h2>Kendi akademik çevreni kur.</h2>
           <p>Fakültene ve bölümüne yakın öğrencileri bul, paylaşımlarını takip et.</p>
-          <button type="button" onClick={() => setActiveNav("Keşfet")}>Kampüsü keşfet <Icon name="arrow" size={16}/></button>
+          <button type="button" onClick={() => navigateTo("Keşfet")}>Kampüsü keşfet <Icon name="arrow" size={16}/></button>
           <span className="campus-glow campus-glow-one"/><span className="campus-glow campus-glow-two"/>
         </section>
 
@@ -1433,7 +1524,7 @@ export default function Home() {
 
       <nav className="mobile-nav" aria-label="Mobil menü">
         {navItems.slice(0, 5).map((item) => (
-          <button className={activeNav === item.label ? "active" : ""} onClick={() => setActiveNav(item.label)} type="button" key={item.label} aria-label={item.label}>
+          <button className={activeNav === item.label ? "active" : ""} onClick={() => navigateTo(item.label)} type="button" key={item.label} aria-label={item.label}>
             {item.label === "Notlar" ? <span className="mobile-create"><Icon name="plus" size={23}/></span> : <><Icon name={item.icon} size={21}/><small>{item.label === "Topluluklar" ? "Gruplar" : item.label}</small></>}
           </button>
         ))}

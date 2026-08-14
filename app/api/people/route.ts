@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, like, ne, or, sql } from "drizzle-orm";
 import { getDb } from "../../../db";
 import {
   courses,
@@ -94,7 +94,10 @@ export async function GET(request: Request) {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
-  const publicId = new URL(request.url).searchParams.get("id")?.trim() ?? "";
+  const requestUrl = new URL(request.url);
+  const publicId = requestUrl.searchParams.get("id")?.trim() ?? "";
+  const rawQuery = requestUrl.searchParams.get("q")?.trim() ?? "";
+  const searchQuery = rawQuery.replace(/[%_]/g, "").slice(0, 60);
 
   try {
     const db = await getDb();
@@ -142,6 +145,24 @@ export async function GET(request: Request) {
     };
 
     if (!publicId) {
+      const directoryFilters = [
+        ne(users.email, identity.email),
+        isNotNull(users.publicId),
+        eq(universities.id, "omu"),
+        eq(studentProfiles.onboardingCompleted, true),
+      ];
+      if (searchQuery) {
+        const pattern = `%${searchQuery}%`;
+        directoryFilters.push(
+          or(
+            like(users.displayName, pattern),
+            like(users.handle, pattern),
+            like(faculties.name, pattern),
+            like(departments.name, pattern),
+          )!,
+        );
+      }
+
       const rows = await db
         .select(selection)
         .from(users)
@@ -149,18 +170,11 @@ export async function GET(request: Request) {
         .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
         .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
         .innerJoin(faculties, eq(departments.facultyId, faculties.id))
-        .where(
-          and(
-            ne(users.email, identity.email),
-            isNotNull(users.publicId),
-            eq(universities.id, "omu"),
-            eq(studentProfiles.onboardingCompleted, true),
-          ),
-        )
+        .where(and(...directoryFilters))
         .orderBy(desc(sameDepartment), desc(followerCount), asc(users.displayName))
         .limit(12);
 
-      return Response.json({ people: rows.map(publicPerson) });
+      return Response.json({ people: rows.map(publicPerson), query: searchQuery });
     }
 
     const [row] = await db
