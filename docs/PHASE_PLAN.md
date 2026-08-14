@@ -112,7 +112,9 @@ yeniden giriş yaptığında kişiselleştirilmiş akışını görebilir.
 ## Faz 2 — Sosyal grafik ve kalıcı akış
 
 **Durum:** Aktif geliştirme. Gerçek gönderi, beğeni, yorum ve kaydetme
-altyapısı tamamlandı; herkese açık öğrenci profili ve takip sistemi eklendi.
+altyapısı; herkese açık öğrenci profili, takip sistemi, OMÜ öğrenci araması,
+profil bağlantısı paylaşımı, gönderi düzenleme/yumuşak silme ve imleç tabanlı
+akış sayfalaması tamamlandı.
 
 **Kullanıcı sonucu:** Gönderiler ve etkileşimler artık demo değil; kullanıcıya
 ait, kalıcı ve ders bağlamına göre sıralanan gerçek içeriklerdir.
@@ -120,6 +122,7 @@ ait, kalıcı ve ders bağlamına göre sıralanan gerçek içeriklerdir.
 **Kapsam**
 
 - Kullanıcı profilleri ve herkese açık profil sayfaları
+- OMÜ öğrenci araması ve paylaşılabilir profil bağlantıları
 - Takip etme/bırakma ilişkisi
 - Metin gönderisi oluşturma, düzenleme ve silme
 - Ders, kampüs ve topluluk bağlamı

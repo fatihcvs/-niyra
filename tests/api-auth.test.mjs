@@ -47,6 +47,105 @@ test("post API rejects anonymous write attempts", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
 
+test("post API rejects malformed create payloads before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "oai-authenticated-user-email": "student@omu.edu.tr",
+      },
+      body: JSON.stringify({ content: "Ders gönderisi", courseId: 42 }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("post API rejects anonymous edit attempts", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id: "example", content: "Değiştirilen gönderi" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});
+
+test("post API rejects anonymous delete attempts", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id: "example" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});
+
+test("post API rejects malformed edit payloads before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts", {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        "oai-authenticated-user-email": "student@omu.edu.tr",
+      },
+      body: JSON.stringify({ id: 42, content: { text: "Geçersiz" } }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("post API rejects malformed delete payloads before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts", {
+      method: "DELETE",
+      headers: {
+        "content-type": "application/json",
+        "oai-authenticated-user-email": "student@omu.edu.tr",
+      },
+      body: JSON.stringify({ id: 42 }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("post API rejects malformed feed cursors before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/posts?cursor=not-a-cursor", {
+      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
 test("social actions reject anonymous interaction attempts", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

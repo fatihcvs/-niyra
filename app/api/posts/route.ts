@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
 import {
@@ -16,9 +16,12 @@ import {
 } from "../../../db/schema";
 
 type PostPayload = {
+  id?: string;
   content?: string;
   courseId?: string | null;
 };
+
+const PAGE_SIZE = 12;
 
 function signInResponse() {
   return Response.json(
@@ -31,7 +34,7 @@ function postError(error: unknown) {
   const detail = error instanceof Error ? error.message : "Bilinmeyen hata";
   return Response.json(
     {
-      error: detail.includes("no such table")
+      error: detail.includes("no such table") || detail.includes("no such column")
         ? "Gönderi alanı hazırlanıyor. Lütfen kısa süre sonra yeniden dene."
         : "Gönderi işlemi şu anda tamamlanamadı.",
     },
@@ -58,10 +61,20 @@ function relativeTime(createdAt: string) {
   return `${Math.floor(hours / 24)} gün`;
 }
 
-async function readLatestPosts(viewerEmail: string, feed: "all" | "following" | "campus") {
+async function readLatestPosts(
+  viewerEmail: string,
+  feed: "all" | "following" | "campus",
+  cursor: { createdAt: string; id: string } | null,
+) {
   const db = await getDb();
   const feedVisibility = feed === "following"
     ? sql<boolean>`EXISTS (SELECT 1 FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${viewerEmail} AND ${userFollows.followingEmail} = ${posts.authorEmail})`
+    : sql<boolean>`1 = 1`;
+  const cursorVisibility = cursor
+    ? or(
+        lt(posts.createdAt, cursor.createdAt),
+        and(eq(posts.createdAt, cursor.createdAt), lt(posts.id, cursor.id)),
+      )!
     : sql<boolean>`1 = 1`;
   const rows = await db
     .select({
@@ -69,6 +82,7 @@ async function readLatestPosts(viewerEmail: string, feed: "all" | "following" | 
       authorId: users.publicId,
       content: posts.content,
       createdAt: posts.createdAt,
+      updatedAt: posts.updatedAt,
       displayName: users.displayName,
       universityName: universities.name,
       departmentName: departments.name,
@@ -84,11 +98,12 @@ async function readLatestPosts(viewerEmail: string, feed: "all" | "following" | 
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility))
+    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility, cursorVisibility))
     .orderBy(desc(posts.createdAt), desc(posts.id))
-    .limit(30);
+    .limit(PAGE_SIZE + 1);
 
-  return rows.map((row) => ({
+  const pageRows = rows.slice(0, PAGE_SIZE);
+  const pagePosts = pageRows.map((row) => ({
     id: row.id,
     authorId: row.authorId ?? undefined,
     name: row.displayName,
@@ -99,22 +114,41 @@ async function readLatestPosts(viewerEmail: string, feed: "all" | "following" | 
     time: relativeTime(row.createdAt),
     course: row.courseCode ?? "GENEL",
     text: row.content,
+    edited: row.updatedAt !== row.createdAt,
     likes: Number(row.likeCount),
     comments: Number(row.commentCount),
     liked: Number(row.likedByViewer) > 0,
     saved: Number(row.savedByViewer) > 0,
   }));
+  const lastRow = pageRows.at(-1);
+
+  return {
+    posts: pagePosts,
+    nextCursor: rows.length > PAGE_SIZE && lastRow ? `${lastRow.createdAt}::${lastRow.id}` : null,
+  };
 }
 
 export async function GET(request: Request) {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
-  const requestedFeed = new URL(request.url).searchParams.get("feed");
+  const requestUrl = new URL(request.url);
+  const requestedFeed = requestUrl.searchParams.get("feed");
   const feed = requestedFeed === "following" || requestedFeed === "campus" ? requestedFeed : "all";
+  const rawCursor = requestUrl.searchParams.get("cursor");
+  let cursor: { createdAt: string; id: string } | null = null;
+  if (rawCursor) {
+    const divider = rawCursor.lastIndexOf("::");
+    const createdAt = divider > 0 ? rawCursor.slice(0, divider) : "";
+    const id = divider > 0 ? rawCursor.slice(divider + 2) : "";
+    if (!createdAt || !id || createdAt.length > 40 || id.length > 80) {
+      return Response.json({ error: "Akış imleci geçerli değil." }, { status: 400 });
+    }
+    cursor = { createdAt, id };
+  }
 
   try {
-    return Response.json({ posts: await readLatestPosts(identity.email, feed) });
+    return Response.json(await readLatestPosts(identity.email, feed, cursor));
   } catch (error) {
     return postError(error);
   }
@@ -131,12 +165,15 @@ export async function POST(request: Request) {
     return Response.json({ error: "Geçerli bir gönderi bilgisi gönderilmedi." }, { status: 400 });
   }
 
-  const content = payload.content?.trim() ?? "";
+  const content = typeof payload.content === "string" ? payload.content.trim() : "";
   if (!content || content.length > 1200) {
     return Response.json(
       { error: "Gönderin 1 ile 1200 karakter arasında olmalı." },
       { status: 400 },
     );
+  }
+  if (payload.courseId !== null && payload.courseId !== undefined && typeof payload.courseId !== "string") {
+    return Response.json({ error: "Ders çevresi bilgisi geçerli değil." }, { status: 400 });
   }
 
   try {
@@ -167,7 +204,8 @@ export async function POST(request: Request) {
     }
 
     let selectedCourse: { id: string; code: string } | null = null;
-    if (payload.courseId) {
+    const requestedCourseId = typeof payload.courseId === "string" ? payload.courseId.trim() : "";
+    if (requestedCourseId) {
       const [course] = await db
         .select({ id: courses.id, code: courses.code })
         .from(studentCourses)
@@ -175,7 +213,7 @@ export async function POST(request: Request) {
         .where(
           and(
             eq(studentCourses.userEmail, identity.email),
-            eq(studentCourses.courseId, payload.courseId),
+            eq(studentCourses.courseId, requestedCourseId),
           ),
         )
         .limit(1);
@@ -218,10 +256,88 @@ export async function POST(request: Request) {
           comments: 0,
           liked: false,
           saved: false,
+          edited: false,
         },
       },
       { status: 201 },
     );
+  } catch (error) {
+    return postError(error);
+  }
+}
+
+export async function PATCH(request: Request) {
+  const identity = await getChatGPTUser();
+  if (!identity) return signInResponse();
+
+  let payload: PostPayload;
+  try {
+    payload = (await request.json()) as PostPayload;
+  } catch {
+    return Response.json({ error: "Geçerli bir gönderi bilgisi gönderilmedi." }, { status: 400 });
+  }
+
+  const id = typeof payload.id === "string" ? payload.id.trim() : "";
+  const content = typeof payload.content === "string" ? payload.content.trim() : "";
+  if (!id || id.length > 80) return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
+  if (!content || content.length > 1200) {
+    return Response.json({ error: "Gönderin 1 ile 1200 karakter arasında olmalı." }, { status: 400 });
+  }
+
+  try {
+    const db = await getDb();
+    const [updated] = await db
+      .update(posts)
+      .set({ content, updatedAt: sql`STRFTIME('%Y-%m-%d %H:%M:%f', 'now')` })
+      .where(
+        and(
+          eq(posts.id, id),
+          eq(posts.authorEmail, identity.email),
+          isNull(posts.deletedAt),
+        ),
+      )
+      .returning({ id: posts.id });
+
+    if (!updated) return Response.json({ error: "Gönderi bulunamadı veya bu işlem için yetkin yok." }, { status: 404 });
+    return Response.json({ post: { id: updated.id, text: content, edited: true } });
+  } catch (error) {
+    return postError(error);
+  }
+}
+
+export async function DELETE(request: Request) {
+  const identity = await getChatGPTUser();
+  if (!identity) return signInResponse();
+
+  let payload: PostPayload;
+  try {
+    payload = (await request.json()) as PostPayload;
+  } catch {
+    return Response.json({ error: "Geçerli bir gönderi bilgisi gönderilmedi." }, { status: 400 });
+  }
+
+  const id = typeof payload.id === "string" ? payload.id.trim() : "";
+  if (!id || id.length > 80) return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
+
+  try {
+    const db = await getDb();
+    const [deleted] = await db
+      .update(posts)
+      .set({
+        deletedAt: sql`STRFTIME('%Y-%m-%d %H:%M:%f', 'now')`,
+        updatedAt: sql`STRFTIME('%Y-%m-%d %H:%M:%f', 'now')`,
+      })
+      .where(
+        and(
+          eq(posts.id, id),
+          eq(posts.authorEmail, identity.email),
+          isNull(posts.deletedAt),
+        ),
+      )
+      .returning({ id: posts.id });
+
+    if (!deleted) return Response.json({ error: "Gönderi bulunamadı veya bu işlem için yetkin yok." }, { status: 404 });
+    return Response.json({ deleted: true, id: deleted.id });
   } catch (error) {
     return postError(error);
   }

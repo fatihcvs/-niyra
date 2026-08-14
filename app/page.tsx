@@ -16,7 +16,7 @@ type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
   | "search" | "plus" | "image" | "file" | "sparkles" | "more"
   | "heart" | "comment" | "share" | "check" | "calendar" | "arrow"
-  | "close" | "send";
+  | "close" | "send" | "edit" | "trash";
 
 type Post = {
   id: number | string;
@@ -33,6 +33,7 @@ type Post = {
   comments: number;
   liked?: boolean;
   saved?: boolean;
+  edited?: boolean;
   attachment?: {
     title: string;
     meta: string;
@@ -291,6 +292,8 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     arrow: <><path d="M5 12h14M13 6l6 6-6 6"/></>,
     close: <><path d="m6 6 12 12M18 6 6 18"/></>,
     send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
+    edit: <><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></>,
+    trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></>,
   };
 
   return <svg {...common}>{paths[name]}</svg>;
@@ -324,7 +327,19 @@ function AttachmentCard({ attachment }: { attachment: NonNullable<Post["attachme
   );
 }
 
-function FeedPost({ post, viewerInitials = "DÖ" }: { post: Post; viewerInitials?: string }) {
+function FeedPost({
+  post,
+  viewerInitials = "DÖ",
+  viewerId,
+  onPostUpdated,
+  onPostDeleted,
+}: {
+  post: Post;
+  viewerInitials?: string;
+  viewerId?: string;
+  onPostUpdated?: (id: number | string, text: string) => void;
+  onPostDeleted?: (id: number | string) => void;
+}) {
   const [liked, setLiked] = useState(post.liked ?? false);
   const [saved, setSaved] = useState(post.saved ?? false);
   const [likeCount, setLikeCount] = useState(post.likes);
@@ -334,7 +349,16 @@ function FeedPost({ post, viewerInitials = "DÖ" }: { post: Post; viewerInitials
   const [commentText, setCommentText] = useState("");
   const [busyAction, setBusyAction] = useState<"like" | "save" | "comment" | null>(null);
   const [interactionError, setInteractionError] = useState("");
+  const [currentText, setCurrentText] = useState(post.text);
+  const [editText, setEditText] = useState(post.text);
+  const [editing, setEditing] = useState(false);
+  const [edited, setEdited] = useState(post.edited ?? false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [busyMutation, setBusyMutation] = useState<"edit" | "delete" | null>(null);
   const isPersistentPost = typeof post.id === "string";
+  const isOwnPost = Boolean(
+    viewerId && post.authorId === viewerId && onPostUpdated && onPostDeleted,
+  );
 
   async function runAction(type: "like" | "save" | "comment", content?: string) {
     setInteractionError("");
@@ -400,6 +424,67 @@ function FeedPost({ post, viewerInitials = "DÖ" }: { post: Post; viewerInitials
     setCommenting(false);
   }
 
+  async function saveEdit() {
+    const clean = editText.trim();
+    if (!clean || clean.length > 1200 || busyMutation) return;
+    setInteractionError("");
+
+    if (!isPersistentPost) {
+      setCurrentText(clean);
+      setEdited(true);
+      setEditing(false);
+      onPostUpdated?.(post.id, clean);
+      return;
+    }
+
+    setBusyMutation("edit");
+    try {
+      const response = await fetch("/api/posts", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: post.id, content: clean }),
+      });
+      const data = (await response.json()) as { post?: { id: string; text: string }; error?: string };
+      if (!response.ok || !data.post) throw new Error(data.error ?? "Gönderi güncellenemedi.");
+      setCurrentText(data.post.text);
+      setEditText(data.post.text);
+      setEdited(true);
+      setEditing(false);
+      onPostUpdated?.(post.id, data.post.text);
+    } catch (editError) {
+      setInteractionError(editError instanceof Error ? editError.message : "Gönderi güncellenemedi.");
+    } finally {
+      setBusyMutation(null);
+    }
+  }
+
+  async function deletePost() {
+    if (busyMutation || !window.confirm("Bu gönderiyi silmek istediğine emin misin? Bu işlem akıştan kaldırır.")) return;
+    setInteractionError("");
+
+    if (!isPersistentPost) {
+      onPostDeleted?.(post.id);
+      return;
+    }
+
+    setBusyMutation("delete");
+    try {
+      const response = await fetch("/api/posts", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: post.id }),
+      });
+      const data = (await response.json()) as { deleted?: boolean; error?: string };
+      if (!response.ok || !data.deleted) throw new Error(data.error ?? "Gönderi silinemedi.");
+      onPostDeleted?.(post.id);
+    } catch (deleteError) {
+      setInteractionError(deleteError instanceof Error ? deleteError.message : "Gönderi silinemedi.");
+    } finally {
+      setBusyMutation(null);
+      setMenuOpen(false);
+    }
+  }
+
   return (
     <article className="post-card">
       <header className="post-header">
@@ -412,12 +497,12 @@ function FeedPost({ post, viewerInitials = "DÖ" }: { post: Post; viewerInitials
           <span>{post.school} · {post.department}</span>
           <span className="post-time">{post.time === "şimdi" ? post.time : `${post.time} önce`}</span>
         </div>
-        <button className="icon-button post-menu" type="button" aria-label="Gönderi seçenekleri"><Icon name="more"/></button>
+        {isOwnPost && <div className="post-menu-wrap"><button className="icon-button post-menu" type="button" onClick={() => setMenuOpen((current) => !current)} aria-label="Gönderi seçenekleri" aria-expanded={menuOpen}><Icon name="more"/></button>{menuOpen && <div className="post-owner-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setEditText(currentText); setEditing(true); setMenuOpen(false); }}><Icon name="edit" size={15}/> Düzenle</button><button className="danger" type="button" role="menuitem" onClick={() => void deletePost()} disabled={busyMutation === "delete"}><Icon name="trash" size={15}/> {busyMutation === "delete" ? "Siliniyor…" : "Sil"}</button></div>}</div>}
       </header>
 
       <div className="post-body">
         <button className="course-tag" type="button">{post.course}</button>
-        <p>{post.text}</p>
+        {editing ? <div className="post-edit-box"><textarea aria-label="Gönderi metnini düzenle" autoFocus maxLength={1200} value={editText} onChange={(event) => setEditText(event.target.value)} rows={4}/><div><span>{editText.trim().length}/1200</span><button type="button" onClick={() => { setEditing(false); setEditText(currentText); }}>Vazgeç</button><button type="button" onClick={() => void saveEdit()} disabled={!editText.trim() || busyMutation === "edit"}>{busyMutation === "edit" ? "Kaydediliyor…" : "Değişiklikleri kaydet"}</button></div></div> : <p>{currentText}{edited && <small className="post-edited"> · düzenlendi</small>}</p>}
         {post.attachment && <AttachmentCard attachment={post.attachment} />}
         {post.poll && (
           <div className="poll" aria-label="Anket">
@@ -661,14 +746,29 @@ function SavedView() {
   );
 }
 
-function ProfileView({ profile, posts, onEdit }: { profile: StudentProfile; posts: Post[]; onEdit: () => void }) {
+function ProfileView({ profile, posts, shareable, onEdit, onPostUpdated, onPostDeleted }: { profile: StudentProfile; posts: Post[]; shareable: boolean; onEdit: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void }) {
   const initials = getInitials(profile.displayName);
   const profilePosts = posts.filter((post) => post.authorId === profile.publicId);
+  const [copied, setCopied] = useState(false);
+
+  async function shareOwnProfile() {
+    const profileUrl = new URL(window.location.href);
+    profileUrl.searchParams.set("profile", profile.publicId);
+    const shareUrl = profileUrl.toString();
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt("Profil bağlantını kopyala", shareUrl);
+    }
+  }
+
   return (
     <div className="workspace-view profile-view">
-      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><button type="button" onClick={onEdit}>Profili düzenle</button></div><p className="profile-bio">OMÜ ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
+      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}>Profili düzenle</button></div></div><p className="profile-bio">OMÜ ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
-      {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} post={post} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
+      {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} viewerId={profile.publicId} post={post} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
     </div>
   );
 }
@@ -678,6 +778,7 @@ function PublicProfileView({
   loading,
   shareable,
   viewerInitials,
+  viewerId,
   followPending,
   onBack,
   onToggleFollow,
@@ -686,6 +787,7 @@ function PublicProfileView({
   loading: boolean;
   shareable: boolean;
   viewerInitials: string;
+  viewerId: string;
   followPending: boolean;
   onBack: () => void;
   onToggleFollow: (publicId: string) => void;
@@ -739,18 +841,18 @@ function PublicProfileView({
         <div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div>
       </section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Ders çevreleri</button><button type="button">Hakkında</button></div>
-      {profile.posts.length > 0 ? profile.posts.map((post) => <FeedPost post={post} viewerInitials={viewerInitials} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderi yok</strong><p>{profile.displayName} ilk paylaşımını yaptığında burada görünecek.</p></div>}
+      {profile.posts.length > 0 ? profile.posts.map((post) => <FeedPost post={post} viewerInitials={viewerInitials} viewerId={viewerId} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderi yok</strong><p>{profile.displayName} ilk paylaşımını yaptığında burada görünecek.</p></div>}
     </div>
   );
 }
 
-function SecondaryView({ name, onUpload, profile, posts, people, peopleStatus, peopleQuery, followPendingId, onOpenPerson, onQueryPeople, onToggleFollow, onEditProfile }: { name: string; onUpload: () => void; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; followPendingId: string | null; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onEditProfile: () => void }) {
+function SecondaryView({ name, onUpload, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, onOpenPerson, onQueryPeople, onToggleFollow, onEditProfile, onPostUpdated, onPostDeleted }: { name: string; onUpload: () => void; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onEditProfile: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void }) {
   if (name === "Keşfet") return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
   if (name === "Notlar") return <NotesView onUpload={onUpload}/>;
   if (name === "Topluluklar") return <CommunitiesView/>;
   if (name === "Bildirimler") return <NotificationsView/>;
   if (name === "Kaydedilenler") return <SavedView/>;
-  if (name === "Profil") return <ProfileView profile={profile} posts={posts} onEdit={onEditProfile}/>;
+  if (name === "Profil") return <ProfileView profile={profile} posts={posts} shareable={shareableProfile} onEdit={onEditProfile} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted}/>;
   return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
 }
 
@@ -1052,6 +1154,9 @@ export default function Home() {
   const [draft, setDraft] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [feedError, setFeedError] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [modal, setModal] = useState<ModalType | null>(null);
   const [profileState, setProfileState] = useState<ProfileState>("loading");
@@ -1149,11 +1254,18 @@ export default function Home() {
       try {
         const feedQuery = feedTab === "Takip ettiklerin" ? "following" : feedTab === "Kampüsüm" ? "campus" : "all";
         const response = await fetch(`/api/posts?feed=${feedQuery}`, { headers: { accept: "application/json" } });
-        const data = (await response.json()) as { posts?: Post[] };
-        if (!active || !response.ok || !data.posts) return;
+        const data = (await response.json()) as { posts?: Post[]; nextCursor?: string | null; error?: string };
+        if (!active) return;
+        if (!response.ok || !data.posts) {
+          setFeedError(data.error ?? "Akış şu anda yenilenemedi.");
+          return;
+        }
         setPosts(data.posts);
+        setNextCursor(data.nextCursor ?? null);
+        setFeedError("");
       } catch {
         // A clear empty state remains available while a transient request is retried on reload.
+        if (active) setFeedError("Akış şu anda yenilenemedi.");
       } finally {
         if (active) setPostsLoading(false);
       }
@@ -1215,8 +1327,8 @@ export default function Home() {
         identityName={identityName}
         initialProfile={studentProfile}
         state={profileState}
-        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setPeopleQuery(""); setPeopleStatus("loading"); setIsDemoMode(false); setProfileState("ready"); }}
-        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setPosts(initialPosts); setPostsLoading(false); setPeople(demoPeople); setPeopleQuery(""); setPeopleStatus("ready"); setIsDemoMode(true); setProfileState("ready"); }}
+        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setNextCursor(null); setPeopleQuery(""); setPeopleStatus("loading"); setIsDemoMode(false); setProfileState("ready"); }}
+        onDemo={() => { setStudentProfile(demoProfile); setIdentityName(demoProfile.displayName); setPosts(initialPosts); setPostsLoading(false); setNextCursor(null); setPeople(demoPeople); setPeopleQuery(""); setPeopleStatus("ready"); setIsDemoMode(true); setProfileState("ready"); }}
         onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
       />
     );
@@ -1271,6 +1383,43 @@ export default function Home() {
       setComposerError(publishError instanceof Error ? publishError.message : "Gönderin paylaşılamadı.");
     } finally {
       setPublishing(false);
+    }
+  }
+
+  async function loadMorePosts() {
+    if (!nextCursor || loadingMore || isDemoMode) return;
+    setLoadingMore(true);
+    setFeedError("");
+
+    try {
+      const feedQuery = feedTab === "Takip ettiklerin" ? "following" : feedTab === "Kampüsüm" ? "campus" : "all";
+      const response = await fetch(`/api/posts?feed=${feedQuery}&cursor=${encodeURIComponent(nextCursor)}`, { headers: { accept: "application/json" } });
+      const data = (await response.json()) as { posts?: Post[]; nextCursor?: string | null; error?: string };
+      if (!response.ok || !data.posts) throw new Error(data.error ?? "Akışın devamı getirilemedi.");
+
+      setPosts((current) => {
+        const knownIds = new Set(current.map((post) => String(post.id)));
+        return [...current, ...data.posts!.filter((post) => !knownIds.has(String(post.id)))];
+      });
+      setNextCursor(data.nextCursor ?? null);
+    } catch (loadError) {
+      setFeedError(loadError instanceof Error ? loadError.message : "Akışın devamı getirilemedi.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  function updatePost(id: number | string, text: string) {
+    setPosts((current) => current.map((post) => post.id === id ? { ...post, text, edited: true } : post));
+    setPublicProfile((current) => current ? { ...current, posts: current.posts.map((post) => post.id === id ? { ...post, text, edited: true } : post) } : current);
+  }
+
+  function deletePost(id: number | string) {
+    const removedPost = posts.find((post) => post.id === id);
+    setPosts((current) => current.filter((post) => post.id !== id));
+    setPublicProfile((current) => current ? { ...current, posts: current.posts.filter((post) => post.id !== id), postCount: Math.max(0, current.postCount - (current.posts.some((post) => post.id === id) ? 1 : 0)) } : current);
+    if (removedPost?.authorId === studentProfile.publicId) {
+      setStudentProfile((current) => current ? { ...current, postCount: Math.max(0, current.postCount - 1) } : current);
     }
   }
 
@@ -1466,13 +1615,15 @@ export default function Home() {
 
         <div className="feed-tabs" role="tablist" aria-label="Akış türü">
           {["Senin için", "Takip ettiklerin", "Kampüsüm"].map((tab) => (
-            <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { setFeedTab(tab); if (!isDemoMode) setPostsLoading(true); }} type="button" role="tab" aria-selected={feedTab === tab}>{tab}</button>
+            <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { setFeedTab(tab); setNextCursor(null); setFeedError(""); if (!isDemoMode) setPostsLoading(true); }} type="button" role="tab" aria-selected={feedTab === tab}>{tab}</button>
           ))}
           <button className="feed-filter" type="button" aria-label="Akış seçenekleri"><Icon name="more"/></button>
         </div>
 
-        <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>OMÜ akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>OMÜ akışın henüz sakin</strong><p>İlk gönderiyi paylaşabilir veya öğrenci ağından bağlantılar kurabilirsin.</p></div>}</div>
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable={!isDemoMode} viewerInitials={initials} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} followPendingId={followPendingId} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onEditProfile={() => setProfileState("needs-onboarding")}/>}
+        <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>OMÜ akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>OMÜ akışın henüz sakin</strong><p>İlk gönderiyi paylaşabilir veya öğrenci ağından bağlantılar kurabilirsin.</p></div>}</div>
+        {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
+        {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable={!isDemoMode} viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile={!isDemoMode} followPendingId={followPendingId} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onEditProfile={() => setProfileState("needs-onboarding")} onPostUpdated={updatePost} onPostDeleted={deletePost}/>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 

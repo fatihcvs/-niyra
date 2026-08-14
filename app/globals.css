@@ -214,6 +214,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .feed-empty p { max-width:330px; margin:5px 0 0; color:#898d9f; font-size:9px; line-height:1.5; }
 .feed-loading>.profile-boot-line { width:150px; height:4px; margin:0 0 13px; border-radius:99px; background:#e8e7f0; }
 .feed-loading strong { margin-top:0; }
+.feed-error { margin:12px 0 0; padding:10px 12px; border:1px solid #ffd8dc; border-radius:11px; background:#fff6f7; color:#b44350; font-size:9px; line-height:1.45; }
+.feed-load-more { min-width:180px; min-height:39px; margin:15px auto 0; display:block; border:1px solid #dedbe9; border-radius:11px; background:#fff; color:#64697d; font-size:9px; font-weight:680; cursor:pointer; box-shadow:0 7px 18px rgba(37,39,68,.04); }
+.feed-load-more:hover { border-color:#bbb5f5; color:var(--brand); }
+.feed-load-more:disabled { background:#eeeeF3; color:#a5a7b2; cursor:wait; }
 .post-card { background: #fff; border: 1px solid var(--line); border-radius: 19px; box-shadow: var(--shadow); overflow: hidden; }
 .post-header { display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 11px; padding: 16px 17px 0; }
 .post-person { min-width: 0; }
@@ -225,9 +229,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .icon-button { display: grid; place-items: center; border: 0; background: transparent; padding: 7px; border-radius: 10px; cursor: pointer; color: #7f8496; }
 .icon-button:hover { background: #f2f2f7; color: var(--ink); }
 .post-menu { margin-top: -4px; margin-right: -5px; }
+.post-menu-wrap { position:relative; }
+.post-owner-menu { position:absolute; z-index:12; top:31px; right:0; width:122px; padding:5px; display:flex; flex-direction:column; gap:2px; border:1px solid #e4e3eb; border-radius:11px; background:#fff; box-shadow:0 14px 34px rgba(31,34,62,.14); }
+.post-owner-menu button { min-height:32px; padding:0 8px; display:flex; align-items:center; gap:7px; border:0; border-radius:8px; background:transparent; color:#606579; font-size:8px; font-weight:650; text-align:left; cursor:pointer; }
+.post-owner-menu button:hover { background:#f5f4fa; color:var(--ink); }
+.post-owner-menu button.danger { color:#c24b58; }
+.post-owner-menu button.danger:hover { background:#fff0f1; }
+.post-owner-menu button:disabled { opacity:.6; cursor:wait; }
 .post-body { padding: 12px 17px 0; }
 .course-tag { border: 0; border-radius: 7px; padding: 4px 7px; background: #f0edff; color: var(--brand); font-size: 8px; font-weight: 750; letter-spacing: .04em; cursor: pointer; }
 .post-body > p { margin: 9px 0 13px; font-size: 12px; line-height: 1.65; color: #3f4559; }
+.post-edited { color:#9b9eac; font-size:.72em; font-weight:500; }
+.post-edit-box { margin:9px 0 13px; padding:10px; border:1px solid #dcd8ff; border-radius:13px; background:#faf9ff; }
+.post-edit-box textarea { width:100%; min-height:92px; resize:vertical; border:0; outline:0; background:transparent; color:var(--ink); font-size:12px; line-height:1.6; }
+.post-edit-box>div { margin-top:7px; padding-top:8px; display:flex; align-items:center; justify-content:flex-end; gap:7px; border-top:1px solid #e9e6fa; }
+.post-edit-box>div>span { margin-right:auto; color:#a0a3b1; font-size:7px; }
+.post-edit-box button { min-height:30px; padding:0 10px; border:1px solid #dfdde9; border-radius:8px; background:#fff; color:#72778a; font-size:8px; font-weight:680; cursor:pointer; }
+.post-edit-box button:last-child { border-color:var(--brand); background:var(--brand); color:#fff; }
+.post-edit-box button:disabled { border-color:#e5e4eb; background:#ececf1; color:#adafba; cursor:default; }
 .attachment-card {
   position: relative; width: 100%; min-height: 196px; padding: 18px 20px;
   border: 0; border-radius: 15px; overflow: hidden; display: grid; grid-template-columns: 42% 1fr;
@@ -358,6 +377,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .public-profile-back { margin:0; padding:5px 0; display:flex; align-items:center; gap:6px; border:0; background:transparent; color:#73788b; font-size:9px; font-weight:680; cursor:pointer; }
 .public-profile-back svg { transform:rotate(180deg); }
 .public-profile-share { padding:7px 10px; display:flex; align-items:center; gap:6px; border:1px solid #dedce9; border-radius:9px; background:#fff; color:var(--brand); font-size:8px; font-weight:700; cursor:pointer; }
+.profile-own-actions { flex:0 0 auto; margin-left:auto; display:flex; align-items:center; gap:7px; }
+.profile-own-actions button { min-height:31px; padding:0 10px; display:flex; align-items:center; gap:5px; border:1px solid #dcd9ec; border-radius:9px; background:#fff; color:#5f6477; font-size:8px; font-weight:680; white-space:nowrap; cursor:pointer; }
+.profile-own-actions button.profile-own-share { border-color:#d9d5ff; color:var(--brand); }
+.profile-own-actions button:hover { border-color:#bbb5f5; background:#faf9ff; color:var(--brand); }
 .public-profile-state { min-height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#85899b; }
 .public-profile-state>span:not(.profile-boot-line) { width:48px; height:48px; display:grid; place-items:center; margin-bottom:12px; border-radius:15px; background:var(--brand-soft); color:var(--brand); }
 .public-profile-state strong { color:var(--ink); font-size:12px; }
@@ -414,7 +437,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 @media (max-width: 430px) {
-  .topic-grid,.community-grid{grid-template-columns:1fr}.topic-card{min-height:135px}.community-body h3{min-height:0}.study-room-card{grid-template-columns:1fr}.study-room-art{display:none}.profile-main>button{padding:7px;font-size:0}.profile-main>button::after{content:"Düzenle";font-size:8px}.profile-stats strong:last-child{display:none}
+  .topic-grid,.community-grid{grid-template-columns:1fr}.topic-card{min-height:135px}.community-body h3{min-height:0}.study-room-card{grid-template-columns:1fr}.study-room-art{display:none}.profile-main>button{padding:7px 8px}.profile-own-actions{gap:5px}.profile-own-actions button{width:31px;padding:0;justify-content:center;font-size:0}.profile-own-actions button:last-child{width:auto;padding:0 8px;font-size:8px}.profile-stats strong:last-child{display:none}
   .modal-backdrop{padding:10px;align-items:end}.product-modal{max-height:calc(100vh - 20px);border-radius:22px 22px 16px 16px}.modal-header{padding:16px 15px 13px}.modal-header p{max-width:240px}.upload-dropzone{margin:14px 15px 12px}.modal-field{margin-left:15px;margin-right:15px}.modal-field-row,.ai-assist-toggle{margin-left:15px;margin-right:15px}.modal-footer{padding:11px 15px 15px}.ai-query-box{margin:15px}.ai-suggestions,.ai-results{padding-left:15px;padding-right:15px}.ai-results>div{align-items:flex-start;flex-direction:column}
 }
 
