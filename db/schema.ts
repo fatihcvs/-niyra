@@ -81,3 +81,52 @@ export const posts = sqliteTable(
     index("posts_author_created_idx").on(table.authorEmail, table.createdAt),
   ],
 );
+
+export const postLikes = sqliteTable(
+  "post_likes",
+  {
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userEmail: text("user_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [primaryKey({ columns: [table.postId, table.userEmail] })],
+);
+
+export const postSaves = sqliteTable(
+  "post_saves",
+  {
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userEmail: text("user_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [primaryKey({ columns: [table.postId, table.userEmail] })],
+);
+
+export const postComments = sqliteTable(
+  "post_comments",
+  {
+    id: text("id").primaryKey(),
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    authorEmail: text("author_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    deletedAt: text("deleted_at"),
+  },
+  (table) => [
+    index("post_comments_post_created_idx").on(table.postId, table.createdAt),
+    index("post_comments_author_idx").on(table.authorEmail),
+  ],
+);

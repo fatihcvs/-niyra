@@ -1,9 +1,12 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
 import {
   courses,
   departments,
+  postComments,
+  postLikes,
+  postSaves,
   posts,
   studentCourses,
   studentProfiles,
@@ -54,7 +57,7 @@ function relativeTime(createdAt: string) {
   return `${Math.floor(hours / 24)} gün`;
 }
 
-async function readLatestPosts() {
+async function readLatestPosts(viewerEmail: string) {
   const db = await getDb();
   const rows = await db
     .select({
@@ -65,6 +68,10 @@ async function readLatestPosts() {
       universityName: universities.name,
       departmentName: departments.name,
       courseCode: courses.code,
+      likeCount: sql<number>`(SELECT COUNT(*) FROM ${postLikes} WHERE ${postLikes.postId} = ${posts.id})`,
+      commentCount: sql<number>`(SELECT COUNT(*) FROM ${postComments} WHERE ${postComments.postId} = ${posts.id} AND ${postComments.deletedAt} IS NULL)`,
+      likedByViewer: sql<number>`EXISTS (SELECT 1 FROM ${postLikes} WHERE ${postLikes.postId} = ${posts.id} AND ${postLikes.userEmail} = ${viewerEmail})`,
+      savedByViewer: sql<number>`EXISTS (SELECT 1 FROM ${postSaves} WHERE ${postSaves.postId} = ${posts.id} AND ${postSaves.userEmail} = ${viewerEmail})`,
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorEmail, users.email))
@@ -86,8 +93,10 @@ async function readLatestPosts() {
     time: relativeTime(row.createdAt),
     course: row.courseCode ?? "GENEL",
     text: row.content,
-    likes: 0,
-    comments: 0,
+    likes: Number(row.likeCount),
+    comments: Number(row.commentCount),
+    liked: Number(row.likedByViewer) > 0,
+    saved: Number(row.savedByViewer) > 0,
   }));
 }
 
@@ -96,7 +105,7 @@ export async function GET() {
   if (!identity) return signInResponse();
 
   try {
-    return Response.json({ posts: await readLatestPosts() });
+    return Response.json({ posts: await readLatestPosts(identity.email) });
   } catch (error) {
     return postError(error);
   }
@@ -190,6 +199,8 @@ export async function POST(request: Request) {
           text: content,
           likes: 0,
           comments: 0,
+          liked: false,
+          saved: false,
         },
       },
       { status: 201 },

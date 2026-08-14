@@ -29,6 +29,8 @@ type Post = {
   text: string;
   likes: number;
   comments: number;
+  liked?: boolean;
+  saved?: boolean;
   attachment?: {
     title: string;
     meta: string;
@@ -222,11 +224,81 @@ function AttachmentCard({ attachment }: { attachment: NonNullable<Post["attachme
   );
 }
 
-function FeedPost({ post }: { post: Post }) {
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
+function FeedPost({ post, viewerInitials = "DÖ" }: { post: Post; viewerInitials?: string }) {
+  const [liked, setLiked] = useState(post.liked ?? false);
+  const [saved, setSaved] = useState(post.saved ?? false);
+  const [likeCount, setLikeCount] = useState(post.likes);
+  const [commentCount, setCommentCount] = useState(post.comments);
   const [voted, setVoted] = useState<number | null>(null);
   const [commenting, setCommenting] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [busyAction, setBusyAction] = useState<"like" | "save" | "comment" | null>(null);
+  const [interactionError, setInteractionError] = useState("");
+  const isPersistentPost = typeof post.id === "string";
+
+  async function runAction(type: "like" | "save" | "comment", content?: string) {
+    setInteractionError("");
+    setBusyAction(type);
+
+    try {
+      const response = await fetch("/api/post-actions", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ postId: post.id, type, content }),
+      });
+      const data = (await response.json()) as { active?: boolean; count?: number; error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Etkileşim kaydedilemedi.");
+      return data;
+    } catch (actionError) {
+      setInteractionError(actionError instanceof Error ? actionError.message : "Etkileşim kaydedilemedi.");
+      return null;
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  async function toggleLike() {
+    if (busyAction) return;
+    if (!isPersistentPost) {
+      const nextLiked = !liked;
+      setLiked(nextLiked);
+      setLikeCount((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
+      return;
+    }
+
+    const result = await runAction("like");
+    if (!result) return;
+    setLiked(Boolean(result.active));
+    if (typeof result.count === "number") setLikeCount(result.count);
+  }
+
+  async function toggleSave() {
+    if (busyAction) return;
+    if (!isPersistentPost) {
+      setSaved((current) => !current);
+      return;
+    }
+
+    const result = await runAction("save");
+    if (result) setSaved(Boolean(result.active));
+  }
+
+  async function sendComment() {
+    const clean = commentText.trim();
+    if (!clean || busyAction) return;
+    if (!isPersistentPost) {
+      setCommentCount((count) => count + 1);
+      setCommentText("");
+      setCommenting(false);
+      return;
+    }
+
+    const result = await runAction("comment", clean);
+    if (!result) return;
+    if (typeof result.count === "number") setCommentCount(result.count);
+    setCommentText("");
+    setCommenting(false);
+  }
 
   return (
     <article className="post-card">
@@ -268,27 +340,28 @@ function FeedPost({ post }: { post: Post }) {
 
       <footer className="post-footer">
         <div className="post-actions">
-          <button className={`action-button ${liked ? "liked" : ""}`} onClick={() => setLiked(!liked)} type="button" aria-pressed={liked}>
-            <Icon name="heart" size={19}/><span>{post.likes + (liked ? 1 : 0)}</span>
+          <button className={`action-button ${liked ? "liked" : ""}`} onClick={() => void toggleLike()} type="button" aria-pressed={liked} disabled={busyAction === "like"}>
+            <Icon name="heart" size={19}/><span>{likeCount}</span>
           </button>
           <button className="action-button" onClick={() => setCommenting(!commenting)} type="button" aria-expanded={commenting}>
-            <Icon name="comment" size={19}/><span>{post.comments}</span>
+            <Icon name="comment" size={19}/><span>{commentCount}</span>
           </button>
           <button className="action-button" type="button"><Icon name="share" size={19}/><span>Paylaş</span></button>
         </div>
-        <button className={`action-button save-button ${saved ? "saved" : ""}`} onClick={() => setSaved(!saved)} type="button" aria-pressed={saved} aria-label="Gönderiyi kaydet">
+        <button className={`action-button save-button ${saved ? "saved" : ""}`} onClick={() => void toggleSave()} type="button" aria-pressed={saved} aria-label="Gönderiyi kaydet" disabled={busyAction === "save"}>
           <Icon name="bookmark" size={19}/>
         </button>
       </footer>
 
       {commenting && (
         <div className="quick-comment">
-          <Avatar initials="DÖ" className="avatar-violet" small />
+          <Avatar initials={viewerInitials} className="avatar-violet" small />
           <label className="sr-only" htmlFor={`comment-${post.id}`}>Yorum yaz</label>
-          <input id={`comment-${post.id}`} autoFocus placeholder="Bir yorum yaz..." />
-          <button type="button" aria-label="Yorumu gönder"><Icon name="send" size={17}/></button>
+          <input id={`comment-${post.id}`} autoFocus maxLength={500} value={commentText} onChange={(event) => { setCommentText(event.target.value); setInteractionError(""); }} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void sendComment(); } }} placeholder="Bir yorum yaz..." />
+          <button type="button" onClick={() => void sendComment()} disabled={!commentText.trim() || busyAction === "comment"} aria-label="Yorumu gönder"><Icon name="send" size={17}/></button>
         </div>
       )}
+      {interactionError && <p className="interaction-feedback" role="alert">{interactionError}</p>}
     </article>
   );
 }
@@ -461,7 +534,7 @@ function ProfileView({ profile, onEdit }: { profile: StudentProfile; onEdit: () 
     <div className="workspace-view profile-view">
       <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.departmentName} · {profile.classYear}. sınıf</small></div><button type="button" onClick={onEdit}>Profili düzenle</button></div><p className="profile-bio">Öğrenmeyi, paylaşmayı ve iyi kahveyi seviyorum. ☕ Ders çevrelerimde birlikte çalışıyorum.</p><div className="profile-stats"><strong>126<span>Gönderi</span></strong><strong>2.4K<span>Takipçi</span></strong><strong>384<span>Takip</span></strong><strong>18.7K<span>Not görüntülenmesi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
-      <FeedPost post={{...initialPosts[1], id: 92, name: profile.displayName, initials, avatarClass: "avatar-violet", school: profile.universityName, department: profile.departmentName, time: "2 gün", course: profile.courses[0]?.code ?? "GENEL", text: "Bu dönem seçtiğim dersler için çıkardığım kısa çözüm yöntemlerini akşam not olarak yükleyeceğim. Takıldığınız yerleri yorumlarda paylaşabilirsiniz."}} />
+      <FeedPost viewerInitials={initials} post={{...initialPosts[1], id: 92, name: profile.displayName, initials, avatarClass: "avatar-violet", school: profile.universityName, department: profile.departmentName, time: "2 gün", course: profile.courses[0]?.code ?? "GENEL", text: "Bu dönem seçtiğim dersler için çıkardığım kısa çözüm yöntemlerini akşam not olarak yükleyeceğim. Takıldığınız yerleri yorumlarda paylaşabilirsiniz."}} />
     </div>
   );
 }
@@ -998,7 +1071,7 @@ export default function Home() {
           <button className="feed-filter" type="button" aria-label="Akış seçenekleri"><Icon name="more"/></button>
         </div>
 
-        <div className="feed-list">{posts.map((post) => <FeedPost post={post} key={post.id}/>)}</div>
+        <div className="feed-list">{posts.map((post) => <FeedPost post={post} viewerInitials={initials} key={post.id}/>)}</div>
         </> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} onEditProfile={() => setProfileState("needs-onboarding")}/>}
       </section>
 
