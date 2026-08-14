@@ -27,6 +27,7 @@ test("all database migrations apply cleanly in order", async () => {
       [
         "courses",
         "departments",
+        "faculties",
         "post_comments",
         "post_likes",
         "post_saves",
@@ -34,6 +35,7 @@ test("all database migrations apply cleanly in order", async () => {
         "student_courses",
         "student_profiles",
         "universities",
+        "user_follows",
         "users",
       ].sort(),
       tables.sort(),

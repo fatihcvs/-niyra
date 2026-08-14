@@ -11,6 +11,7 @@ import {
   studentCourses,
   studentProfiles,
   universities,
+  userFollows,
   users,
 } from "../../../db/schema";
 
@@ -57,11 +58,15 @@ function relativeTime(createdAt: string) {
   return `${Math.floor(hours / 24)} gün`;
 }
 
-async function readLatestPosts(viewerEmail: string) {
+async function readLatestPosts(viewerEmail: string, feed: "all" | "following" | "campus") {
   const db = await getDb();
+  const feedVisibility = feed === "following"
+    ? sql<boolean>`EXISTS (SELECT 1 FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${viewerEmail} AND ${userFollows.followingEmail} = ${posts.authorEmail})`
+    : sql<boolean>`1 = 1`;
   const rows = await db
     .select({
       id: posts.id,
+      authorId: users.publicId,
       content: posts.content,
       createdAt: posts.createdAt,
       displayName: users.displayName,
@@ -79,12 +84,13 @@ async function readLatestPosts(viewerEmail: string) {
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(isNull(posts.deletedAt))
+    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility))
     .orderBy(desc(posts.createdAt), desc(posts.id))
     .limit(30);
 
   return rows.map((row) => ({
     id: row.id,
+    authorId: row.authorId ?? undefined,
     name: row.displayName,
     initials: initials(row.displayName),
     avatarClass: "avatar-violet",
@@ -100,12 +106,15 @@ async function readLatestPosts(viewerEmail: string) {
   }));
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
+  const requestedFeed = new URL(request.url).searchParams.get("feed");
+  const feed = requestedFeed === "following" || requestedFeed === "campus" ? requestedFeed : "all";
+
   try {
-    return Response.json({ posts: await readLatestPosts(identity.email) });
+    return Response.json({ posts: await readLatestPosts(identity.email, feed) });
   } catch (error) {
     return postError(error);
   }
@@ -134,13 +143,20 @@ export async function POST(request: Request) {
     const db = await getDb();
     const [profile] = await db
       .select({
+        authorId: users.publicId,
         universityName: universities.name,
         departmentName: departments.name,
       })
       .from(studentProfiles)
+      .innerJoin(users, eq(studentProfiles.userEmail, users.email))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
-      .where(eq(studentProfiles.userEmail, identity.email))
+      .where(
+        and(
+          eq(studentProfiles.userEmail, identity.email),
+          eq(universities.id, "omu"),
+        ),
+      )
       .limit(1);
 
     if (!profile) {
@@ -189,6 +205,7 @@ export async function POST(request: Request) {
       {
         post: {
           id: created.id,
+          authorId: profile.authorId ?? undefined,
           name: displayName,
           initials: initials(displayName),
           avatarClass: "avatar-violet",

@@ -6,6 +6,8 @@ import {
   postLikes,
   postSaves,
   posts,
+  studentProfiles,
+  universities,
   users,
 } from "../../../db/schema";
 
@@ -59,7 +61,9 @@ export async function POST(request: Request) {
       db
         .select({ email: users.email })
         .from(users)
-        .where(eq(users.email, identity.email))
+        .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
+        .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
+        .where(and(eq(users.email, identity.email), eq(universities.id, "omu")))
         .limit(1),
     ]);
 

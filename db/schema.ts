@@ -1,13 +1,18 @@
 import { sql } from "drizzle-orm";
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-export const users = sqliteTable("users", {
-  email: text("email").primaryKey(),
-  displayName: text("display_name").notNull(),
-  handle: text("handle").notNull(),
-  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+export const users = sqliteTable(
+  "users",
+  {
+    email: text("email").primaryKey(),
+    publicId: text("public_id"),
+    displayName: text("display_name").notNull(),
+    handle: text("handle").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [uniqueIndex("users_public_id_unique").on(table.publicId)],
+);
 
 export const universities = sqliteTable("universities", {
   id: text("id").primaryKey(),
@@ -16,8 +21,18 @@ export const universities = sqliteTable("universities", {
   city: text("city").notNull(),
 });
 
+export const faculties = sqliteTable("faculties", {
+  id: text("id").primaryKey(),
+  universityId: text("university_id")
+    .notNull()
+    .references(() => universities.id),
+  name: text("name").notNull(),
+  shortName: text("short_name").notNull(),
+});
+
 export const departments = sqliteTable("departments", {
   id: text("id").primaryKey(),
+  facultyId: text("faculty_id").references(() => faculties.id),
   name: text("name").notNull(),
 });
 
@@ -128,5 +143,23 @@ export const postComments = sqliteTable(
   (table) => [
     index("post_comments_post_created_idx").on(table.postId, table.createdAt),
     index("post_comments_author_idx").on(table.authorEmail),
+  ],
+);
+
+export const userFollows = sqliteTable(
+  "user_follows",
+  {
+    followerEmail: text("follower_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    followingEmail: text("following_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.followerEmail, table.followingEmail] }),
+    index("user_follows_follower_idx").on(table.followerEmail),
+    index("user_follows_following_idx").on(table.followingEmail),
   ],
 );

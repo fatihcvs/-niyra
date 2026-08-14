@@ -62,3 +62,31 @@ test("social actions reject anonymous interaction attempts", async () => {
   assert.equal(response.status, 401);
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
+
+test("student directory rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/people", { headers: { accept: "application/json" } }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});
+
+test("follow system rejects anonymous writes", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/follows", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ targetId: "example" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});

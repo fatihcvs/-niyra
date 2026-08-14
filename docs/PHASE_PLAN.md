@@ -8,8 +8,9 @@ tekrar kullanım alışkanlığı, ders bazlı içerik yoğunluğu ve güvenilir
 
 ## Ürün hedefi
 
-Üniyra; üniversite, bölüm ve ders bağlamını merkeze alan bir öğrenci sosyal
-ağıdır. Öğrenciler kendi akademik çevrelerini oluşturur, gönderi ve not
+Üniyra; ilk sürümde yalnızca Ondokuz Mayıs Üniversitesi'ne (OMÜ) açık,
+fakülte, bölüm ve ders bağlamını merkeze alan bir öğrenci sosyal ağıdır.
+Öğrenciler kendi akademik çevrelerini oluşturur, gönderi ve not
 paylaşır, topluluklara katılır ve ihtiyaç duydukları kaynağa hızlıca ulaşır.
 
 Başarıyı ilk aşamada şu göstergelerle ölçeceğiz:
@@ -30,7 +31,7 @@ Başarıyı ilk aşamada şu göstergelerle ölçeceğiz:
   tutulacak.
 - Mobil deneyim masaüstünün küçültülmüş hâli değil, birinci sınıf ürün yüzeyi
   olacak.
-- Yapay zekâ sonucu kaynak göstermeden kesin bilgi gibi sunulmayacak.
+- Yapay zekâ araması ve “nota sor” özellikleri MVP sonrasına ertelenecek.
 - Her faz; erişilebilirlik, mobil kullanım, hata durumları ve üretim doğrulaması
   tamamlanmadan kapanmış sayılmayacak.
 
@@ -47,8 +48,8 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 - Akış, Keşfet, Notlar, Topluluklar, Bildirimler, Kaydedilenler ve Profil
 - Mobil ve masaüstü navigasyon
 - Gönderi oluşturma, beğeni, yorum, kaydetme, anket ve topluluk etkileşimleri
-- Not yükleme ve Üniyra AI arama akışlarının arayüz prototipleri
-- Dört adımlı akademik ilk katılım deneyimi
+- Not yükleme ve standart not arama akışlarının arayüz prototipleri
+- Beş adımlı OMÜ akademik ilk katılım deneyimi
 
 **Kabul ölçütleri**
 
@@ -61,17 +62,18 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 
 ## Faz 1 — Gerçek kimlik ve akademik profil temeli
 
-**Durum:** Aktif geliştirme.
+**Durum:** Tamamlandı; üretim doğrulaması sürüyor.
 
-**Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; üniversite, bölüm,
-sınıf ve derslerini bir kez seçer. Bu profil sonraki oturumlarda hatırlanır ve
-Üniyra deneyimini kişiselleştirir.
+**Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; OMÜ fakültesini,
+bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
+hatırlanır ve Üniyra deneyimini kişiselleştirir.
 
 **Veri modeli**
 
 - `users`: doğrulanmış kimlik, görünen ad ve hesap zamanları
 - `universities`: üniversite kataloğu
-- `departments`: bölüm kataloğu
+- `faculties`: OMÜ fakülte kataloğu
+- `departments`: fakülteye bağlı bölüm kataloğu
 - `courses`: bölümle ilişkili ders kataloğu
 - `student_profiles`: üniversite, bölüm, sınıf ve katılım durumu
 - `student_courses`: kullanıcı ile seçtiği dersler arasındaki ilişki
@@ -80,16 +82,17 @@ sınıf ve derslerini bir kez seçer. Bu profil sonraki oturumlarda hatırlanır
 
 - Platform tarafından doğrulanmış kullanıcı kimliğini sunucuda okuma
 - Profil okuma ve güncelleme uçları
-- Gönderilen üniversite, bölüm, sınıf ve dersleri izinli katalogla doğrulama
+- Gönderilen üniversite, fakülte, bölüm, sınıf ve dersleri izinli katalogla doğrulama
 - Kimliği olmayan yazma isteklerini reddetme
 - Veritabanı şemasını sürümlü göç dosyalarıyla yönetme
 - Kişisel profil verisini kalıcı platform veritabanında saklama
 
 **Arayüz kapsamı**
 
-- 4 adımlı ilk katılım akışı
-- Üniversite seçimi
-- Bölüm ve sınıf seçimi
+- 5 adımlı ilk katılım akışı
+- Sabit OMÜ pilot kampüsü
+- Fakülte seçimi
+- Fakülteye bağlı bölüm ve sınıf seçimi
 - En az 3 ders seçimi
 - Kaydetme, hata, yeniden deneme ve başarı durumları
 - Profil bilgilerini akış başlığına, ders çevrelerine ve Profil görünümüne taşıma
@@ -107,6 +110,9 @@ sınıf ve derslerini bir kez seçer. Bu profil sonraki oturumlarda hatırlanır
 yeniden giriş yaptığında kişiselleştirilmiş akışını görebilir.
 
 ## Faz 2 — Sosyal grafik ve kalıcı akış
+
+**Durum:** Aktif geliştirme. Gerçek gönderi, beğeni, yorum ve kaydetme
+altyapısı tamamlandı; herkese açık öğrenci profili ve takip sistemi eklendi.
 
 **Kullanıcı sonucu:** Gönderiler ve etkileşimler artık demo değil; kullanıcıya
 ait, kalıcı ve ders bağlamına göre sıralanan gerçek içeriklerdir.
@@ -184,6 +190,8 @@ topluluklar kurar ve yönetir.
 
 ## Faz 5 — Arama ve kaynaklı Üniyra AI
 
+**Durum:** MVP sonrasına ertelendi. İlk sürümde yalnızca standart arama olacak.
+
 **Kullanıcı sonucu:** Öğrenci doğal dille ne aradığını anlatır; sistem ilgili
 notları gerekçesi ve kaynağıyla sıralar.
 
@@ -237,7 +245,7 @@ ihlalleri için anlaşılır güvenlik araçlarına sahiptir.
 
 **Kapsam**
 
-- 1–3 üniversitede bölüm ve ders bazlı pilot
+- Yalnızca OMÜ'de fakülte, bölüm ve ders bazlı pilot
 - Davet bağlantıları ve kontrollü kullanıcı kabulü
 - İlk hafta görevleri: 3 ders seç, 1 kişiyi takip et, 1 not kaydet
 - İçerik boşluğunu önleyen ders elçileri ve başlangıç içerikleri
