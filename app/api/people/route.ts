@@ -15,6 +15,7 @@ import {
   users,
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { initialsOf, relativeTime } from "../../../lib/user-identity";
 
 function signInResponse() {
   return Response.json(
@@ -37,33 +38,15 @@ function peopleError(error: unknown) {
   );
 }
 
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toLocaleUpperCase("tr-TR") ?? "")
-    .join("") || "Ü";
-}
-
-function relativeTime(createdAt: string) {
-  const created = new Date(createdAt.replace(" ", "T") + (createdAt.includes("Z") ? "" : "Z"));
-  const minutes = Math.max(0, Math.floor((Date.now() - created.getTime()) / 60_000));
-  if (minutes < 1) return "şimdi";
-  if (minutes < 60) return `${minutes} dk`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} sa`;
-  return `${Math.floor(hours / 24)} gün`;
-}
-
 function publicPerson(row: {
   publicId: string | null;
   displayName: string;
   handle: string;
+  campusVerified: boolean;
   universityName: string;
   universityShortName: string;
-  facultyName: string;
-  facultyShortName: string;
+  facultyName: string | null;
+  facultyShortName: string | null;
   departmentName: string;
   classYear: number;
   postCount: number;
@@ -75,12 +58,13 @@ function publicPerson(row: {
     publicId: row.publicId ?? "",
     displayName: row.displayName,
     handle: row.handle,
-    initials: initials(row.displayName),
+    initials: initialsOf(row.displayName),
     avatarClass: "avatar-blue",
+    verified: row.campusVerified,
     universityName: row.universityName,
     universityShortName: row.universityShortName,
-    facultyName: row.facultyName,
-    facultyShortName: row.facultyShortName,
+    facultyName: row.facultyName ?? "",
+    facultyShortName: row.facultyShortName ?? "",
     departmentName: row.departmentName,
     classYear: row.classYear,
     postCount: Number(row.postCount),
@@ -132,6 +116,7 @@ export async function GET(request: Request) {
       publicId: users.publicId,
       displayName: users.displayName,
       handle: users.handle,
+      campusVerified: users.campusVerified,
       universityName: universities.name,
       universityShortName: universities.shortName,
       facultyName: faculties.name,
@@ -169,7 +154,7 @@ export async function GET(request: Request) {
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
         .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
         .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
-        .innerJoin(faculties, eq(departments.facultyId, faculties.id))
+        .leftJoin(faculties, eq(departments.facultyId, faculties.id))
         .where(and(...directoryFilters))
         .orderBy(desc(sameDepartment), desc(followerCount), asc(users.displayName))
         .limit(12);
@@ -183,7 +168,7 @@ export async function GET(request: Request) {
       .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
-      .innerJoin(faculties, eq(departments.facultyId, faculties.id))
+      .leftJoin(faculties, eq(departments.facultyId, faculties.id))
       .where(and(eq(users.publicId, publicId), eq(universities.id, "omu")))
       .limit(1);
 
@@ -231,6 +216,7 @@ export async function GET(request: Request) {
           name: person.displayName,
           initials: person.initials,
           avatarClass: person.avatarClass,
+          verified: person.verified,
           school: person.universityName,
           department: person.departmentName,
           time: relativeTime(post.createdAt),

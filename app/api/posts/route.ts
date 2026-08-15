@@ -14,6 +14,7 @@ import {
   userFollows,
   users,
 } from "../../../db/schema";
+import { initialsOf, publicDisplayName, relativeTime } from "../../../lib/user-identity";
 
 type PostPayload = {
   id?: string;
@@ -42,25 +43,6 @@ function postError(error: unknown) {
   );
 }
 
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toLocaleUpperCase("tr-TR") ?? "")
-    .join("") || "Ü";
-}
-
-function relativeTime(createdAt: string) {
-  const created = new Date(createdAt.replace(" ", "T") + (createdAt.includes("Z") ? "" : "Z"));
-  const minutes = Math.max(0, Math.floor((Date.now() - created.getTime()) / 60_000));
-  if (minutes < 1) return "şimdi";
-  if (minutes < 60) return `${minutes} dk`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} sa`;
-  return `${Math.floor(hours / 24)} gün`;
-}
-
 async function readLatestPosts(
   viewerEmail: string,
   feed: "all" | "following" | "campus",
@@ -84,6 +66,7 @@ async function readLatestPosts(
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
       displayName: users.displayName,
+      campusVerified: users.campusVerified,
       universityName: universities.name,
       departmentName: departments.name,
       courseCode: courses.code,
@@ -107,8 +90,9 @@ async function readLatestPosts(
     id: row.id,
     authorId: row.authorId ?? undefined,
     name: row.displayName,
-    initials: initials(row.displayName),
+    initials: initialsOf(row.displayName),
     avatarClass: "avatar-violet",
+    verified: row.campusVerified,
     school: row.universityName,
     department: row.departmentName,
     time: relativeTime(row.createdAt),
@@ -181,6 +165,7 @@ export async function POST(request: Request) {
     const [profile] = await db
       .select({
         authorId: users.publicId,
+        campusVerified: users.campusVerified,
         universityName: universities.name,
         departmentName: departments.name,
       })
@@ -237,7 +222,7 @@ export async function POST(request: Request) {
         content,
       })
       .returning({ id: posts.id, createdAt: posts.createdAt });
-    const displayName = identity.fullName ?? identity.displayName;
+    const displayName = publicDisplayName(identity);
 
     return Response.json(
       {
@@ -245,8 +230,9 @@ export async function POST(request: Request) {
           id: created.id,
           authorId: profile.authorId ?? undefined,
           name: displayName,
-          initials: initials(displayName),
+          initials: initialsOf(displayName),
           avatarClass: "avatar-violet",
+          verified: profile.campusVerified,
           school: profile.universityName,
           department: profile.departmentName,
           time: relativeTime(created.createdAt),

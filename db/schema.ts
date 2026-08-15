@@ -8,6 +8,7 @@ export const users = sqliteTable(
     publicId: text("public_id"),
     displayName: text("display_name").notNull(),
     handle: text("handle").notNull(),
+    campusVerified: integer("campus_verified", { mode: "boolean" }).notNull().default(false),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },

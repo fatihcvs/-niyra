@@ -174,6 +174,33 @@ test("student directory rejects anonymous reads", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
 
+test("comment reads reject anonymous requests", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/comments?postId=example", {
+      headers: { accept: "application/json" },
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});
+
+test("comment reads reject a missing post reference before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/comments", {
+      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
 test("follow system rejects anonymous writes", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

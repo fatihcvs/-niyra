@@ -24,6 +24,8 @@ type Post = {
   name: string;
   initials: string;
   avatarClass: string;
+  /** True only for students whose verified identity carries a campus address. */
+  verified?: boolean;
   school: string;
   department: string;
   time: string;
@@ -42,6 +44,17 @@ type Post = {
   poll?: { label: string; value: number }[];
 };
 
+type PostComment = {
+  id: string;
+  authorId?: string;
+  name: string;
+  initials: string;
+  verified?: boolean;
+  own?: boolean;
+  time: string;
+  text: string;
+};
+
 type StudentProfile = {
   publicId: string;
   displayName: string;
@@ -56,6 +69,7 @@ type StudentProfile = {
   departmentId: string;
   departmentName: string;
   classYear: number;
+  campusVerified: boolean;
   onboardingCompleted: boolean;
   postCount: number;
   followerCount: number;
@@ -69,6 +83,7 @@ type CampusPerson = {
   handle: string;
   initials: string;
   avatarClass: string;
+  verified: boolean;
   universityName: string;
   universityShortName: string;
   facultyName: string;
@@ -107,6 +122,7 @@ const demoProfile: StudentProfile = {
   departmentId: "bilgisayar",
   departmentName: "Bilgisayar Mühendisliği",
   classYear: 3,
+  campusVerified: true,
   onboardingCompleted: true,
   postCount: 4,
   followerCount: 128,
@@ -121,6 +137,7 @@ const demoPeople: CampusPerson[] = [
     handle: "eceyilmaz",
     initials: "EY",
     avatarClass: "avatar-coral",
+    verified: true,
     universityName: "Ondokuz Mayıs Üniversitesi",
     universityShortName: "OMÜ",
     facultyName: "Mühendislik Fakültesi",
@@ -138,6 +155,7 @@ const demoPeople: CampusPerson[] = [
     handle: "boraakin",
     initials: "BA",
     avatarClass: "avatar-blue",
+    verified: true,
     universityName: "Ondokuz Mayıs Üniversitesi",
     universityShortName: "OMÜ",
     facultyName: "Mühendislik Fakültesi",
@@ -155,6 +173,7 @@ const demoPeople: CampusPerson[] = [
     handle: "selinaras",
     initials: "SA",
     avatarClass: "avatar-mint",
+    verified: true,
     universityName: "Ondokuz Mayıs Üniversitesi",
     universityShortName: "OMÜ",
     facultyName: "Eğitim Fakültesi",
@@ -212,6 +231,7 @@ const initialPosts: Post[] = [
     name: "Ece Yılmaz",
     initials: "EY",
     avatarClass: "avatar-coral",
+    verified: true,
     school: "Ondokuz Mayıs Üniversitesi",
     department: "Bilgisayar Mühendisliği",
     time: "18 dk",
@@ -230,6 +250,7 @@ const initialPosts: Post[] = [
     name: "Mert Can",
     initials: "MC",
     avatarClass: "avatar-blue",
+    verified: true,
     school: "Ondokuz Mayıs Üniversitesi",
     department: "Hukuk",
     time: "42 dk",
@@ -243,6 +264,7 @@ const initialPosts: Post[] = [
     name: "Selin Aras",
     initials: "SA",
     avatarClass: "avatar-mint",
+    verified: true,
     school: "Ondokuz Mayıs Üniversitesi",
     department: "Rehberlik ve Psikolojik Danışmanlık",
     time: "1 sa",
@@ -355,10 +377,36 @@ function FeedPost({
   const [edited, setEdited] = useState(post.edited ?? false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [busyMutation, setBusyMutation] = useState<"edit" | "delete" | null>(null);
+  const [comments, setComments] = useState<PostComment[]>([]);
+  const [commentsStatus, setCommentsStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const isPersistentPost = typeof post.id === "string";
   const isOwnPost = Boolean(
     viewerId && post.authorId === viewerId && onPostUpdated && onPostDeleted,
   );
+
+  // Comments are fetched the first time the thread is opened, not on every
+  // feed render — most posts in a page are never expanded.
+  async function toggleComments() {
+    const opening = !commenting;
+    setCommenting(opening);
+    if (!opening || !isPersistentPost || commentsStatus !== "idle") return;
+
+    setCommentsStatus("loading");
+    try {
+      const response = await fetch(`/api/comments?postId=${encodeURIComponent(String(post.id))}`, {
+        headers: { accept: "application/json" },
+      });
+      const data = (await response.json()) as { comments?: PostComment[]; error?: string };
+      if (!response.ok || !data.comments) {
+        setCommentsStatus("error");
+        return;
+      }
+      setComments(data.comments);
+      setCommentsStatus("ready");
+    } catch {
+      setCommentsStatus("error");
+    }
+  }
 
   async function runAction(type: "like" | "save" | "comment", content?: string) {
     setInteractionError("");
@@ -370,7 +418,12 @@ function FeedPost({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ postId: post.id, type, content }),
       });
-      const data = (await response.json()) as { active?: boolean; count?: number; error?: string };
+      const data = (await response.json()) as {
+        active?: boolean;
+        count?: number;
+        comment?: PostComment;
+        error?: string;
+      };
       if (!response.ok) throw new Error(data.error ?? "Etkileşim kaydedilemedi.");
       return data;
     } catch (actionError) {
@@ -411,17 +464,21 @@ function FeedPost({
     const clean = commentText.trim();
     if (!clean || busyAction) return;
     if (!isPersistentPost) {
+      setComments((current) => [
+        ...current,
+        { id: `local-${Date.now()}`, name: "Sen", initials: viewerInitials, own: true, time: "şimdi", text: clean },
+      ]);
       setCommentCount((count) => count + 1);
       setCommentText("");
-      setCommenting(false);
       return;
     }
 
     const result = await runAction("comment", clean);
     if (!result) return;
     if (typeof result.count === "number") setCommentCount(result.count);
+    // Thread stays open so the student sees the comment they just wrote.
+    if (result.comment) setComments((current) => [...current, result.comment as PostComment]);
     setCommentText("");
-    setCommenting(false);
   }
 
   async function saveEdit() {
@@ -492,7 +549,7 @@ function FeedPost({
         <div className="post-person">
           <div className="post-name-line">
             <strong>{post.name}</strong>
-            <span className="verified" title="Doğrulanmış öğrenci"><Icon name="check" size={11}/></span>
+            {post.verified && <span className="verified" title="Kampüs e-postasıyla doğrulanmış OMÜ öğrencisi"><Icon name="check" size={11}/></span>}
           </div>
           <span>{post.school} · {post.department}</span>
           <span className="post-time">{post.time === "şimdi" ? post.time : `${post.time} önce`}</span>
@@ -528,7 +585,7 @@ function FeedPost({
           <button className={`action-button ${liked ? "liked" : ""}`} onClick={() => void toggleLike()} type="button" aria-pressed={liked} disabled={busyAction === "like"}>
             <Icon name="heart" size={19}/><span>{likeCount}</span>
           </button>
-          <button className="action-button" onClick={() => setCommenting(!commenting)} type="button" aria-expanded={commenting}>
+          <button className="action-button" onClick={() => void toggleComments()} type="button" aria-expanded={commenting}>
             <Icon name="comment" size={19}/><span>{commentCount}</span>
           </button>
           <button className="action-button" type="button"><Icon name="share" size={19}/><span>Paylaş</span></button>
@@ -537,6 +594,29 @@ function FeedPost({
           <Icon name="bookmark" size={19}/>
         </button>
       </footer>
+
+      {commenting && (
+        <div className="comment-thread" aria-live="polite">
+          {commentsStatus === "loading" && <p className="comment-state">Yorumlar getiriliyor…</p>}
+          {commentsStatus === "error" && <p className="comment-state">Yorumlar şu anda getirilemedi.</p>}
+          {(commentsStatus === "ready" || !isPersistentPost) && comments.length === 0 && (
+            <p className="comment-state">Henüz yorum yok. İlk yorumu sen yazabilirsin.</p>
+          )}
+          {comments.map((comment) => (
+            <article className="comment-item" key={comment.id}>
+              <Avatar initials={comment.initials} className={comment.own ? "avatar-violet" : "avatar-blue"} small />
+              <div>
+                <div className="comment-meta">
+                  <strong>{comment.name}</strong>
+                  {comment.verified && <span className="verified" title="Kampüs e-postasıyla doğrulanmış OMÜ öğrencisi"><Icon name="check" size={10}/></span>}
+                  <small>{comment.time === "şimdi" ? comment.time : `${comment.time} önce`}</small>
+                </div>
+                <p>{comment.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
 
       {commenting && (
         <div className="quick-comment">
@@ -766,7 +846,7 @@ function ProfileView({ profile, posts, shareable, onEdit, onPostUpdated, onPostD
 
   return (
     <div className="workspace-view profile-view">
-      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}>Profili düzenle</button></div></div><p className="profile-bio">OMÜ ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
+      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName} {profile.campusVerified && <span className="verified" title="Kampüs e-postasıyla doğrulanmış OMÜ öğrencisi"><Icon name="check" size={11}/></span>}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}>Profili düzenle</button></div></div><p className="profile-bio">OMÜ ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
       {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} viewerId={profile.publicId} post={post} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
     </div>
@@ -834,7 +914,7 @@ function PublicProfileView({
         <div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div>
         <div className="profile-main">
           <Avatar initials={profile.initials} className={profile.avatarClass}/>
-          <div><h1>{profile.displayName} <span className="verified"><Icon name="check" size={11}/></span></h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div>
+          <div><h1>{profile.displayName} {profile.verified && <span className="verified" title="Kampüs e-postasıyla doğrulanmış OMÜ öğrencisi"><Icon name="check" size={11}/></span>}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div>
           <button className={profile.isFollowing ? "profile-following" : ""} type="button" disabled={followPending} onClick={() => onToggleFollow(profile.publicId)}>{followPending ? "Bekle…" : profile.isFollowing ? "Takiptesin" : "Takip et"}</button>
         </div>
         <p className="profile-bio">{profile.universityShortName} içindeki ders çevrelerinde öğreniyor ve paylaşıyor.</p>
@@ -1347,6 +1427,7 @@ export default function Home() {
       name: studentProfile.displayName,
       initials,
       avatarClass: "avatar-violet",
+      verified: studentProfile.campusVerified,
       school: studentProfile.universityName,
       department: studentProfile.departmentName,
       time: "şimdi",

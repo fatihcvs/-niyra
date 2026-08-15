@@ -10,6 +10,7 @@ import {
   universities,
   users,
 } from "../../../db/schema";
+import { initialsOf, publicDisplayName, relativeTime } from "../../../lib/user-identity";
 
 type ActionPayload = {
   postId?: string;
@@ -59,7 +60,11 @@ export async function POST(request: Request) {
         .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
         .limit(1),
       db
-        .select({ email: users.email })
+        .select({
+          email: users.email,
+          publicId: users.publicId,
+          campusVerified: users.campusVerified,
+        })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
         .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
@@ -133,15 +138,22 @@ export async function POST(request: Request) {
       .from(postComments)
       .where(and(eq(postComments.postId, postId), isNull(postComments.deletedAt)));
 
+    const displayName = publicDisplayName(identity);
+
     return Response.json(
       {
         type: "comment",
         count: total.value,
+        // Same shape as GET /api/comments so the client can append without a refetch.
         comment: {
           id: comment.id,
-          content,
-          authorName: identity.fullName ?? identity.displayName,
-          createdAt: comment.createdAt,
+          authorId: actor.publicId ?? undefined,
+          name: displayName,
+          initials: initialsOf(displayName),
+          verified: actor.campusVerified,
+          own: true,
+          time: relativeTime(comment.createdAt),
+          text: content,
         },
       },
       { status: 201 },

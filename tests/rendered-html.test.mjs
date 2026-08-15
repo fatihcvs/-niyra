@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import "./api-auth.test.mjs";
+import "./campus-access.test.mjs";
 import "./migrations.test.mjs";
 
 const developmentPreviewMeta =

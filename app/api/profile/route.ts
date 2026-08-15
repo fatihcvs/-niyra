@@ -18,6 +18,8 @@ import {
   getFacultyById,
   getUniversityById,
 } from "../../../lib/academic-data";
+import { REQUIRE_CAMPUS_EMAIL, isCampusEmail } from "../../../lib/campus-access";
+import { createHandle, publicDisplayName } from "../../../lib/user-identity";
 
 type ProfilePayload = {
   universityId?: string;
@@ -51,12 +53,6 @@ function databaseError(error: unknown) {
   );
 }
 
-function createHandle(email: string) {
-  const prefix = email.split("@")[0] ?? "ogrenci";
-  const handle = prefix.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9._]/g, "");
-  return handle || "ogrenci";
-}
-
 export async function GET() {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
@@ -68,6 +64,7 @@ export async function GET() {
         publicId: users.publicId,
         displayName: users.displayName,
         handle: users.handle,
+        campusVerified: users.campusVerified,
         classYear: studentProfiles.classYear,
         onboardingCompleted: studentProfiles.onboardingCompleted,
         universityId: universities.id,
@@ -87,7 +84,9 @@ export async function GET() {
       .innerJoin(users, eq(studentProfiles.userEmail, users.email))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
-      .innerJoin(faculties, eq(departments.facultyId, faculties.id))
+      // Left join: a department row without a faculty must never make a saved
+      // profile look absent and push the student back through onboarding.
+      .leftJoin(faculties, eq(departments.facultyId, faculties.id))
       .where(eq(studentProfiles.userEmail, identity.email))
       .limit(1);
 
@@ -120,6 +119,9 @@ export async function GET() {
       },
       profile: {
         ...profile,
+        facultyId: profile.facultyId ?? "",
+        facultyName: profile.facultyName ?? "",
+        facultyShortName: profile.facultyShortName ?? "",
         postCount: Number(profile.postCount),
         followerCount: Number(profile.followerCount),
         followingCount: Number(profile.followingCount),
@@ -134,6 +136,20 @@ export async function GET() {
 export async function PUT(request: Request) {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
+
+  // Sign-in proves an identity, not campus membership. The address decides
+  // whether this student is shown as verified, and — once the closed pilot
+  // gate is switched on — whether a profile may be created at all.
+  const campusVerified = isCampusEmail(identity.email);
+  if (REQUIRE_CAMPUS_EMAIL && !campusVerified) {
+    return Response.json(
+      {
+        error:
+          "Üniyra şu anda yalnızca OMÜ e-posta adresiyle giriş yapan öğrencilere açık. Kampüs adresinle yeniden giriş yapabilirsin.",
+      },
+      { status: 403 },
+    );
+  }
 
   let payload: ProfilePayload;
   try {
@@ -176,21 +192,22 @@ export async function PUT(request: Request) {
   try {
     const { env } = await import("cloudflare:workers");
     const d1 = env.DB;
-    const displayName = identity.fullName ?? identity.displayName;
+    const displayName = publicDisplayName(identity);
     const handle = createHandle(identity.email);
     const publicIdCandidate = crypto.randomUUID();
     const statements = [
       d1
         .prepare(
-          `INSERT INTO users (email, public_id, display_name, handle)
-           VALUES (?, ?, ?, ?)
+          `INSERT INTO users (email, public_id, display_name, handle, campus_verified)
+           VALUES (?, ?, ?, ?, ?)
            ON CONFLICT(email) DO UPDATE SET
              public_id = COALESCE(users.public_id, excluded.public_id),
              display_name = excluded.display_name,
              handle = excluded.handle,
+             campus_verified = excluded.campus_verified,
              updated_at = CURRENT_TIMESTAMP`,
         )
-        .bind(identity.email, publicIdCandidate, displayName, handle),
+        .bind(identity.email, publicIdCandidate, displayName, handle, campusVerified ? 1 : 0),
       d1
         .prepare(
           `INSERT INTO universities (id, name, short_name, city)
@@ -278,6 +295,7 @@ export async function PUT(request: Request) {
         publicId: storedUser?.public_id ?? publicIdCandidate,
         displayName,
         handle,
+        campusVerified,
         universityId: university.id,
         universityName: university.name,
         universityShortName: university.shortName,
