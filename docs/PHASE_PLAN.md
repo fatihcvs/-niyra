@@ -380,7 +380,10 @@ kahve, spor veya etkinlik buluşması oluşturur.
 
 ## Faz 11 — Kampüs haritası, mekânlar ve günlük öneriler (v1.3)
 
-**Durum:** Planlandı.
+**Durum:** Tamamlandı. Koordinatlı veya konumu belirsiz kampüs noktaları,
+erişilebilirlik ve saat bilgisi, iki öğrenci onayıyla güncellik işareti,
+etkinlik takvimi ve İstanbul gününe göre kararlı günlük öneri uçtan uca
+doğrulandı. Harita yüklenmezse mekân listesi işlevini korur.
 
 **Kullanıcı sonucu:** Öğrenci kampüsündeki bina, çalışma alanı, yemek, spor ve
 etkinlik noktalarını haritada/listede bulur; her gün kampüsüne ve ilgilerine

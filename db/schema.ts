@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable(
   "users",
@@ -135,6 +135,62 @@ export const meetupRequests = sqliteTable(
     index("meetup_requests_recipient_status_idx").on(table.recipientEmail, table.status, table.createdAt),
     index("meetup_requests_sender_status_idx").on(table.senderEmail, table.status, table.createdAt),
   ],
+);
+
+export const campusPlaces = sqliteTable(
+  "campus_places",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    creatorEmail: text("creator_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    category: text("category").notNull(),
+    description: text("description").notNull().default(""),
+    address: text("address").notNull().default(""),
+    latitude: real("latitude"),
+    longitude: real("longitude"),
+    accessibilityJson: text("accessibility_json").notNull().default("[]"),
+    openingHours: text("opening_hours").notNull().default(""),
+    status: text("status").notNull().default("active"),
+    verifiedAt: text("verified_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("campus_places_university_category_idx").on(table.universityId, table.category, table.status),
+    index("campus_places_university_updated_idx").on(table.universityId, table.updatedAt),
+  ],
+);
+
+export const campusPlaceConfirmations = sqliteTable(
+  "campus_place_confirmations",
+  {
+    placeId: text("place_id").notNull().references(() => campusPlaces.id, { onDelete: "cascade" }),
+    userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    state: text("state").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [primaryKey({ columns: [table.placeId, table.userEmail] })],
+);
+
+export const campusEvents = sqliteTable(
+  "campus_events",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    creatorEmail: text("creator_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    placeId: text("place_id").references(() => campusPlaces.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    category: text("category").notNull(),
+    startsAt: text("starts_at").notNull(),
+    endsAt: text("ends_at"),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("campus_events_university_starts_idx").on(table.universityId, table.status, table.startsAt)],
 );
 
 export const posts = sqliteTable(

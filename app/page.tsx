@@ -23,6 +23,7 @@ import {
 } from "./product-features";
 import { CampusPulseWorkspace } from "./campus-pulse";
 import { SocialMatchWorkspace } from "./social-match";
+import { CampusGuideWorkspace } from "./campus-guide";
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
@@ -142,6 +143,7 @@ const navItems: { label: string; icon: IconName }[] = [
   { label: "Keşfet", icon: "compass" },
   { label: "Kampüs Anlık", icon: "sparkles" },
   { label: "Eşleş", icon: "users" },
+  { label: "Kampüs", icon: "compass" },
   { label: "Notlar", icon: "notes" },
   { label: "Topluluklar", icon: "users" },
   { label: "Bildirimler", icon: "bell" },
@@ -843,6 +845,7 @@ function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
+  if (name === "Kampüs") return <CampusGuideWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Notlar") return <NotesWorkspace courses={profile.courses}/>;
   if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses}/>;
   if (name === "Bildirimler") return <NotificationsWorkspace/>;
@@ -906,7 +909,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   return (
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
-        <div className="auth-brand"><Logo/><span>MVP v1.2</span></div>
+        <div className="auth-brand"><Logo/><span>MVP v1.3</span></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
@@ -1659,7 +1662,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Üniyra v1.2</strong><span>Güvenli eşleşmeler yayında</span></div>
+          <div><strong>Üniyra v1.3</strong><span>Kampüs rehberi yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>

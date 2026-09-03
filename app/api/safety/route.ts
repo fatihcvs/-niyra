@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'event', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -156,6 +156,15 @@ export async function POST(request: Request) {
            AND (mr.sender_email = ? OR mr.recipient_email = ?)
          LIMIT 1`,
       ).bind(entityId, profile.university_id, profile.university_id, identity.email, identity.email).first<Record<string, unknown>>();
+      if (entityType === "place") evidence = await DB.prepare(
+        `SELECT id, creator_email, name, category, description, address, latitude, longitude,
+                accessibility_json, opening_hours, verified_at, created_at
+         FROM campus_places WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "event") evidence = await DB.prepare(
+        `SELECT id, creator_email, place_id, title, description, category, starts_at, ends_at, created_at
+         FROM campus_events WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email

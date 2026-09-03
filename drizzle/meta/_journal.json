@@ -64,6 +64,13 @@
       "when": 1788469795852,
       "tag": "0008_lyrical_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788470615590,
+      "tag": "0009_flowery_sandman",
+      "breakpoints": true
     }
   ]
 }

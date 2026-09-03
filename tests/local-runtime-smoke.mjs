@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.2.0");
+assert.equal(healthBody.version, "1.3.0");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -197,6 +197,31 @@ const meetupReport = await fetch(`${baseUrl}/api/safety`, {
 });
 assert.equal(meetupReport.status, 201);
 
+const otherCampusPlace = (await json("/api/campus-guide", {
+  method: "POST",
+  body: JSON.stringify({ action: "place", name: `Kuzey Çalışma Alanı ${runId}`, category: "study", description: "Diğer kampüs izolasyonu için çalışma alanı.", address: "Kuzey kampüs", latitude: 41.084, longitude: 29.052, openingHours: "Hafta içi 09.00–18.00", accessibility: ["wifi"] }),
+}, otherCampusEmail)).body.place;
+const campusPlace = (await json("/api/campus-guide", {
+  method: "POST",
+  body: JSON.stringify({ action: "place", name: `Merkez Kütüphane ${runId}`, category: "library", description: "Sessiz çalışma salonu, grup odaları ve prizli masalar.", address: "Merkez kampüs", latitude: 41.365, longitude: 36.193, openingHours: "Hafta içi 08.00–22.00", accessibility: ["step-free", "quiet", "power", "wifi"] }),
+})).body.place;
+const isolatedPlaces = (await json("/api/campus-guide")).body.places;
+assert.ok(isolatedPlaces.some((item) => item.id === campusPlace.id));
+assert.ok(!isolatedPlaces.some((item) => item.id === otherCampusPlace.id));
+await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "confirm", id: campusPlace.id, state: "current" }) });
+await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "confirm", id: campusPlace.id, state: "current" }) }, peerEmail);
+const verifiedPlace = (await json("/api/campus-guide")).body.places.find((item) => item.id === campusPlace.id);
+assert.equal(verifiedPlace.verification.label, "Toplulukça güncel");
+assert.equal(verifiedPlace.currentCount, 2);
+const campusEvent = (await json("/api/campus-guide", {
+  method: "POST",
+  body: JSON.stringify({ action: "event", name: `Kampüs Teknoloji Buluşması ${runId}`, category: "social", description: "Öğrencilerin projelerini tanıttığı açık kampüs buluşması.", placeId: campusPlace.id, startsAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), endsAt: new Date(Date.now() + 50 * 60 * 60 * 1000).toISOString() }),
+})).body.event;
+const firstDaily = (await json("/api/campus-guide")).body.suggestion;
+const secondDaily = (await json("/api/campus-guide")).body.suggestion;
+assert.equal(firstDaily.id, secondDaily.id);
+assert.ok((await json("/api/campus-guide")).body.events.some((item) => item.id === campusEvent.id && item.placeName.includes("Merkez Kütüphane")));
+
 const otherCampusCommunity = (await json("/api/communities", {
   method: "POST",
   body: JSON.stringify({
@@ -271,7 +296,10 @@ assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: livePulse.id }) });
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: confession.id }) });
+await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-event", id: campusEvent.id }) });
+await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: campusPlace.id }) });
+await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: otherCampusPlace.id }) }, otherCampusEmail);
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.2 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, interest matching, safe meetups, moderation evidence, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.3 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, matching, safe meetups, campus map, place verification, stable daily suggestions, events, moderation, community, note/R2, search, notifications and safety.");

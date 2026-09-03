@@ -229,6 +229,32 @@ test("social matching rejects invalid meetup dates before database access", asyn
   assert.equal(response.status, 400);
 });
 
+test("campus guide rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-guide"), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 401);
+});
+
+test("campus guide validates paired coordinates before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-guide", {
+    method: "POST",
+    headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "place", name: "Merkez Kütüphane", category: "library", description: "Sessiz çalışma alanı ve grup odaları.", latitude: 41.2, longitude: "" , accessibility: [] }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
+test("campus guide validates event chronology before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-guide", {
+    method: "POST",
+    headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "event", name: "Kampüs Etkinliği", category: "social", description: "Öğrenciler için kampüs buluşması.", startsAt: "not-a-date" }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
 test("post API rejects malformed create payloads before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(
