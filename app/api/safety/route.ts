@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'event', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -164,6 +164,16 @@ export async function POST(request: Request) {
       if (entityType === "event") evidence = await DB.prepare(
         `SELECT id, creator_email, place_id, title, description, category, starts_at, ends_at, created_at
          FROM campus_events WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "listing") evidence = await DB.prepare(
+        `SELECT id, owner_email, kind, category, title, description, price_cents, condition,
+                meetup_place, status, created_at
+         FROM marketplace_listings WHERE id = ? AND university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "price") evidence = await DB.prepare(
+        `SELECT id, reporter_email, place_id, place_name, item_name, category, price_cents,
+                observed_at, source_note, created_at
+         FROM campus_price_reports WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u

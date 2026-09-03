@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.3.0");
+assert.equal(healthBody.version, "1.4.0");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -222,6 +222,40 @@ const secondDaily = (await json("/api/campus-guide")).body.suggestion;
 assert.equal(firstDaily.id, secondDaily.id);
 assert.ok((await json("/api/campus-guide")).body.events.some((item) => item.id === campusEvent.id && item.placeName.includes("Merkez Kütüphane")));
 
+const otherCampusListing = (await json("/api/campus-market", {
+  method: "POST",
+  body: JSON.stringify({ action: "listing", kind: "sell", category: "books", title: `Diğer Kampüs Kitabı ${runId}`, description: "Kampüsler arası ilan izolasyonu doğrulaması.", price: 250, condition: "used-good", meetupPlace: "Kuzey kampüs" }),
+}, otherCampusEmail)).body.listing;
+const listing = (await json("/api/campus-market", {
+  method: "POST",
+  body: JSON.stringify({ action: "listing", kind: "sell", category: "electronics", title: `Bilimsel Hesap Makinesi ${runId}`, description: "Tüm tuşları çalışan, temiz ve çiziksiz hesap makinesi.", price: 450.5, condition: "like-new", meetupPlace: "Merkez kütüphane girişi" }),
+})).body.listing;
+const marketFeed = (await json("/api/campus-market")).body.listings;
+assert.ok(marketFeed.some((item) => item.id === listing.id && item.priceCents === 45050));
+assert.ok(!marketFeed.some((item) => item.id === otherCampusListing.id));
+const inquiry = (await json("/api/campus-market", {
+  method: "POST",
+  body: JSON.stringify({ action: "inquiry", listingId: listing.id, message: "Hesap makinesini yarın kampüste görebilir miyim?" }),
+}, peerEmail)).body.inquiry;
+const ownerInquiries = (await json("/api/campus-market")).body.inquiries;
+assert.ok(ownerInquiries.some((item) => item.id === inquiry.id && item.direction === "incoming"));
+assert.equal((await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "inquiry-status", id: inquiry.id, status: "accepted" }) })).body.status, "accepted");
+const observedAt = new Date().toISOString();
+const ownerPrice = (await json("/api/campus-market", {
+  method: "POST",
+  body: JSON.stringify({ action: "price", category: "food", placeId: campusPlace.id, placeName: `Merkez Kütüphane ${runId}`, itemName: "Öğrenci tost menüsü", price: 95, observedAt, sourceNote: "Kasadaki güncel menüde içecek dahil gördüm." }),
+})).body.price;
+await json("/api/campus-market", {
+  method: "POST",
+  body: JSON.stringify({ action: "price", category: "food", placeId: campusPlace.id, placeName: `Merkez Kütüphane ${runId}`, itemName: "Öğrenci tost menüsü", price: 100, observedAt, sourceNote: "Aynı gün kasada ödenen menü fiyatı." }),
+}, peerEmail);
+const priceGroups = (await json("/api/campus-market")).body.prices;
+const groupedPrice = priceGroups.find((item) => item.itemName === "Öğrenci tost menüsü");
+assert.equal(groupedPrice.sampleCount, 2);
+assert.equal(groupedPrice.minPriceCents, 9500);
+assert.equal(groupedPrice.maxPriceCents, 10000);
+assert.equal(groupedPrice.freshness.state, "fresh");
+
 const otherCampusCommunity = (await json("/api/communities", {
   method: "POST",
   body: JSON.stringify({
@@ -299,7 +333,10 @@ await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: c
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-event", id: campusEvent.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: campusPlace.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: otherCampusPlace.id }) }, otherCampusEmail);
+await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "listing-status", id: listing.id, status: "closed" }) });
+await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "listing-status", id: otherCampusListing.id, status: "closed" }) }, otherCampusEmail);
+await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "archive-price", id: ownerPrice.id }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.3 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, matching, safe meetups, campus map, place verification, stable daily suggestions, events, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.4 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, marketplace lifecycle, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");

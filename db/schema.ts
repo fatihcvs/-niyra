@@ -193,6 +193,66 @@ export const campusEvents = sqliteTable(
   (table) => [index("campus_events_university_starts_idx").on(table.universityId, table.status, table.startsAt)],
 );
 
+export const marketplaceListings = sqliteTable(
+  "marketplace_listings",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    ownerEmail: text("owner_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    category: text("category").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    priceCents: integer("price_cents"),
+    condition: text("condition").notNull().default("used-good"),
+    meetupPlace: text("meetup_place").notNull().default(""),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("marketplace_listings_university_status_idx").on(table.universityId, table.status, table.createdAt),
+    index("marketplace_listings_owner_status_idx").on(table.ownerEmail, table.status, table.createdAt),
+  ],
+);
+
+export const marketplaceInquiries = sqliteTable(
+  "marketplace_inquiries",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id").notNull().references(() => marketplaceListings.id, { onDelete: "cascade" }),
+    senderEmail: text("sender_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    message: text("message").notNull(),
+    status: text("status").notNull().default("open"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("marketplace_inquiries_listing_status_idx").on(table.listingId, table.status, table.createdAt)],
+);
+
+export const campusPriceReports = sqliteTable(
+  "campus_price_reports",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    reporterEmail: text("reporter_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    placeId: text("place_id").references(() => campusPlaces.id, { onDelete: "set null" }),
+    placeName: text("place_name").notNull(),
+    itemName: text("item_name").notNull(),
+    category: text("category").notNull(),
+    priceCents: integer("price_cents").notNull(),
+    observedAt: text("observed_at").notNull(),
+    sourceNote: text("source_note").notNull().default(""),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("campus_price_reports_university_observed_idx").on(table.universityId, table.status, table.observedAt),
+    index("campus_price_reports_place_item_idx").on(table.universityId, table.placeName, table.itemName),
+  ],
+);
+
 export const posts = sqliteTable(
   "posts",
   {

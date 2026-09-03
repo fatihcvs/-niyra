@@ -406,7 +406,10 @@ uygun bir etkinlik veya mekân önerisi alır.
 
 ## Faz 12 — Öğrenci pazarı ve kampüs fiyatları (v1.4)
 
-**Durum:** Planlandı.
+**Durum:** Tamamlandı. Satılık, aranan ve ücretsiz ilan yaşam döngüsü, ilan
+mesajı ve karşılıklı karar akışı, aynı kampüs izolasyonu; tarih, kaynak notu,
+örnek sayısı, fiyat aralığı ve bayatlık uyarısı içeren fiyat gözlemleri yerel
+uçtan uca testle doğrulandı. Ürün ödeme veya teslim aracılığı yapmaz.
 
 **Kullanıcı sonucu:** Öğrenciler aynı kampüste eşya ilanı yayınlar; kampüs
 çevresindeki ürün ve hizmetlerin güncel, zaman damgalı fiyatlarını karşılaştırır.

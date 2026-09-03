@@ -71,6 +71,13 @@
       "when": 1788470615590,
       "tag": "0009_flowery_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1788471272097,
+      "tag": "0010_magical_whistler",
+      "breakpoints": true
     }
   ]
 }

@@ -255,6 +255,30 @@ test("campus guide validates event chronology before database access", async () 
   assert.equal(response.status, 400);
 });
 
+test("campus market rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-market"), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 401);
+});
+
+test("campus market validates listing prices before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-market", {
+    method: "POST", headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "listing", kind: "sell", category: "books", title: "Ders kitabı", description: "Temiz ve eksiksiz ders kitabı.", condition: "used-good", price: "yanlış" }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
+test("campus market requires sourced price observations before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/campus-market", {
+    method: "POST", headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "price", category: "food", placeName: "Kafe", itemName: "Çay", price: 20, observedAt: new Date().toISOString(), sourceNote: "x" }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
 test("post API rejects malformed create payloads before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(
