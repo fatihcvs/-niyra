@@ -5,15 +5,44 @@ const runId = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 const ownerEmail = `runtime.owner.${runId}@omu.edu.tr`;
 const peerEmail = `runtime.peer.${runId}@omu.edu.tr`;
 const otherCampusEmail = `runtime.campus.${runId}@bogazici.edu.tr`;
+const testPassword = `UniyraMvp${runId}!`;
+const sessionCookies = new Map();
 
 function headers(email, json = false) {
-  const value = new Headers({
-    "oai-authenticated-user-email": email,
-    "oai-authenticated-user-full-name": encodeURIComponent(email === ownerEmail ? "Runtime Owner" : email === peerEmail ? "Runtime Peer" : "Runtime Campus"),
-    "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
-  });
+  const value = new Headers();
+  const cookie = sessionCookies.get(email);
+  if (cookie) value.set("cookie", cookie);
   if (json) value.set("content-type", "application/json");
   return value;
+}
+
+function storeSession(email, response) {
+  const setCookie = response.headers.get("set-cookie");
+  assert.ok(setCookie, `Session cookie missing for ${email}`);
+  sessionCookies.set(email, setCookie.split(";", 1)[0]);
+}
+
+async function register(email, displayName) {
+  const response = await fetch(`${baseUrl}/api/auth/register`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email, displayName, password: testPassword }),
+  });
+  const body = await response.json();
+  assert.equal(response.status, 201, `Registration failed (${response.status}): ${body.error ?? JSON.stringify(body)}`);
+  assert.equal(body.approvalRequired, false);
+  storeSession(email, response);
+}
+
+async function login(email) {
+  const response = await fetch(`${baseUrl}/api/auth/session`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email, password: testPassword }),
+  });
+  const body = await response.json();
+  assert.ok(response.ok, `Login failed (${response.status}): ${body.error ?? JSON.stringify(body)}`);
+  storeSession(email, response);
 }
 
 async function json(path, init = {}, email = ownerEmail) {
@@ -55,7 +84,21 @@ async function createOtherCampusProfile() {
 
 const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
-assert.equal((await health.json()).storage, "configured");
+const healthBody = await health.json();
+assert.equal(healthBody.storage, "configured");
+assert.equal(healthBody.version, "1.0.0");
+
+const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
+  headers: {
+    "oai-authenticated-user-id": "spoofed-user",
+    "oai-authenticated-user-email": "spoofed@omu.edu.tr",
+  },
+});
+assert.equal(spoofedIdentity.status, 401);
+
+await register(ownerEmail, "Runtime Owner");
+await register(peerEmail, "Runtime Peer");
+await register(otherCampusEmail, "Runtime Campus");
 
 const owner = (await createProfile(ownerEmail)).body.profile;
 const peer = (await createProfile(peerEmail)).body.profile;
@@ -64,6 +107,12 @@ assert.equal(owner.courses.length, 3);
 assert.equal(peer.courses.length, 3);
 assert.equal(otherCampus.universityName, "Boğaziçi Üniversitesi");
 assert.equal(otherCampus.courses.length, 3);
+
+const logout = await fetch(`${baseUrl}/api/auth/session`, { method: "DELETE", headers: headers(otherCampusEmail) });
+assert.equal(logout.status, 200);
+sessionCookies.delete(otherCampusEmail);
+assert.equal((await fetch(`${baseUrl}/api/profile`, { headers: headers(otherCampusEmail) })).status, 401);
+await login(otherCampusEmail);
 
 const isolatedPeople = (await json(`/api/people?q=${encodeURIComponent("Runtime")}`)).body.people;
 assert.ok(!isolatedPeople.some((item) => item.publicId === otherCampus.publicId));
@@ -156,4 +205,4 @@ await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id 
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra local runtime smoke passed: multi-campus profile isolation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra MVP v1.0 runtime smoke passed: self-service auth, session renewal, spoof protection, multi-campus isolation, community, note/R2, search, notifications and safety.");

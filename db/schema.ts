@@ -14,6 +14,33 @@ export const users = sqliteTable(
   (table) => [uniqueIndex("users_public_id_unique").on(table.publicId)],
 );
 
+export const userCredentials = sqliteTable("user_credentials", {
+  userEmail: text("user_email")
+    .primaryKey()
+    .references(() => users.email, { onDelete: "cascade" }),
+  passwordHash: text("password_hash").notNull(),
+  passwordSalt: text("password_salt").notNull(),
+  passwordIterations: integer("password_iterations").notNull(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const userSessions = sqliteTable(
+  "user_sessions",
+  {
+    tokenHash: text("token_hash").primaryKey(),
+    userEmail: text("user_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    expiresAt: text("expires_at").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("user_sessions_user_expires_idx").on(table.userEmail, table.expiresAt),
+    index("user_sessions_expires_idx").on(table.expiresAt),
+  ],
+);
+
 export const universities = sqliteTable("universities", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),

@@ -19,6 +19,12 @@ const runtimeContext = {
   passThroughOnException() {},
 };
 
+const platformHeaders = {
+  host: "uniyra.test.chatgpt.site",
+  "oai-authenticated-user-id": "test-platform-user",
+  "oai-authenticated-user-email": "student@omu.edu.tr",
+};
+
 test("academic profile API rejects requests without verified identity", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(
@@ -29,6 +35,68 @@ test("academic profile API rejects requests without verified identity", async ()
 
   assert.equal(response.status, 401);
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+});
+
+test("Railway-style requests cannot spoof platform identity headers", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      headers: {
+        "oai-authenticated-user-id": "spoofed-user",
+        "oai-authenticated-user-email": "spoofed@omu.edu.tr",
+      },
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test("self-service registration validates account fields before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/auth/register", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ displayName: "A", email: "not-an-email", password: "weak" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("self-service registration rejects cross-origin browser requests", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/auth/register", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "https://attacker.example" },
+      body: JSON.stringify({ displayName: "Runtime Student", email: "student@example.edu", password: "StrongPassword123" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 403);
+});
+
+test("login returns a generic error for malformed credentials", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/auth/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "invalid", password: "wrong" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+  assert.equal((await response.json()).error, "E-posta veya parola hatalı.");
 });
 
 test("post API rejects anonymous write attempts", async () => {
@@ -54,7 +122,7 @@ test("post API rejects malformed create payloads before database access", async 
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ content: "Ders gönderisi", courseId: 42 }),
     }),
@@ -104,7 +172,7 @@ test("post API rejects malformed edit payloads before database access", async ()
       method: "PATCH",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ id: 42, content: { text: "Geçersiz" } }),
     }),
@@ -122,7 +190,7 @@ test("post API rejects malformed delete payloads before database access", async 
       method: "DELETE",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ id: 42 }),
     }),
@@ -137,7 +205,7 @@ test("post API rejects malformed feed cursors before database access", async () 
   const worker = await builtWorker();
   const response = await worker.fetch(
     new Request("http://localhost/api/posts?cursor=not-a-cursor", {
-      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: platformHeaders,
     }),
     runtimeEnv,
     runtimeContext,
@@ -151,7 +219,7 @@ test("post API accepts ranked feed cursor shape before database access", async (
   const cursor = encodeURIComponent("8::2026-09-03 12:00:00::example-post");
   const response = await worker.fetch(
     new Request(`http://localhost/api/posts?cursor=${cursor}`, {
-      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: platformHeaders,
     }),
     runtimeEnv,
     runtimeContext,
@@ -164,7 +232,7 @@ test("post API rejects oversized shared post identifiers before database access"
   const worker = await builtWorker();
   const response = await worker.fetch(
     new Request(`http://localhost/api/posts?id=${"a".repeat(81)}`, {
-      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: platformHeaders,
     }),
     runtimeEnv,
     runtimeContext,
@@ -196,7 +264,7 @@ test("social actions reject malformed post identifiers before database access", 
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ postId: 42, type: "like" }),
     }),
@@ -214,7 +282,7 @@ test("social actions reject malformed comments before database access", async ()
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ postId: "example", type: "comment", content: 42 }),
     }),
@@ -262,7 +330,7 @@ test("comment API rejects malformed post identifiers before database access", as
       method: "DELETE",
       headers: {
         "content-type": "application/json",
-        "oai-authenticated-user-email": "student@omu.edu.tr",
+        ...platformHeaders,
       },
       body: JSON.stringify({ id: 42 }),
     }),
@@ -277,7 +345,7 @@ test("comment API requires a post identifier before database access", async () =
   const worker = await builtWorker();
   const response = await worker.fetch(
     new Request("http://localhost/api/comments", {
-      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: platformHeaders,
     }),
     runtimeEnv,
     runtimeContext,
@@ -320,7 +388,6 @@ for (const [label, path] of [
   ["notification center", "/api/notifications"],
   ["unified search", "/api/search?q=mat"],
   ["safety center", "/api/safety"],
-  ["pilot progress", "/api/pilot"],
 ]) {
   test(`${label} rejects anonymous reads`, async () => {
     const worker = await builtWorker();
@@ -343,7 +410,7 @@ test("note upload rejects unsupported files before storage access", async () => 
   const response = await worker.fetch(
     new Request("http://localhost/api/notes", {
       method: "POST",
-      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: platformHeaders,
       body: form,
     }),
     runtimeEnv,
@@ -357,7 +424,7 @@ test("community creation rejects invalid join policies before database access", 
   const response = await worker.fetch(
     new Request("http://localhost/api/communities", {
       method: "POST",
-      headers: { "content-type": "application/json", "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: { "content-type": "application/json", ...platformHeaders },
       body: JSON.stringify({ name: "Matematik çevresi", description: "Birlikte düzenli matematik çalışırız.", joinPolicy: "secret" }),
     }),
     runtimeEnv,
@@ -371,7 +438,7 @@ test("safety reports reject malformed entity types before database access", asyn
   const response = await worker.fetch(
     new Request("http://localhost/api/safety", {
       method: "POST",
-      headers: { "content-type": "application/json", "oai-authenticated-user-email": "student@omu.edu.tr" },
+      headers: { "content-type": "application/json", ...platformHeaders },
       body: JSON.stringify({ action: "report", entityType: "unknown", entityId: "example", reason: "spam" }),
     }),
     runtimeEnv,

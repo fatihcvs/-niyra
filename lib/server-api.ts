@@ -18,7 +18,7 @@ export async function requireIdentity() {
 
 export function signInResponse(message = "Bu işlemi yapmak için giriş yapmalısın.") {
   return Response.json(
-    { error: message, signInPath: "/signin-with-chatgpt?return_to=%2F" },
+    { error: message, authRequired: true },
     { status: 401 },
   );
 }
@@ -165,10 +165,4 @@ export function relativeTime(createdAt: string) {
   const hours = Math.floor(elapsedMinutes / 60);
   if (hours < 24) return `${hours} sa`;
   return `${Math.floor(hours / 24)} gün`;
-}
-
-export async function sha256(value: string) {
-  const bytes = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }

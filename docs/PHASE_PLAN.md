@@ -62,8 +62,9 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 
 ## Faz 1 — Gerçek kimlik ve akademik profil temeli
 
-**Durum:** Teknik kapsam tamamlandı ve canlı tek kullanıcı profili doğrulandı.
-İkinci gerçek pilot kullanıcının yeniden giriş kanıtı pilot operasyonuna bağlıdır.
+**Durum:** MVP v1.0 kapsamında tamamlandı. E-posta/parola tabanlı self-servis
+kayıt, güvenli oturum, çıkış ve yeniden giriş akışı yerel uçtan uca testte üç
+ayrı hesapla doğrulandı; hesap açılışı yönetici onayı gerektirmez.
 
 **Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; üniversitesini,
 fakültesini, bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
@@ -71,7 +72,9 @@ hatırlanır ve Üniyra deneyimini kişiselleştirir.
 
 **Veri modeli**
 
-- `users`: doğrulanmış kimlik, görünen ad ve hesap zamanları
+- `users`: hesap kimliği, görünen ad ve hesap zamanları
+- `user_credentials`: tuzlanmış PBKDF2 parola özetleri
+- `user_sessions`: yalnız özeti saklanan, süreli oturum belirteçleri
 - `universities`: üniversite kataloğu
 - `faculties`: üniversiteye bağlı akademik birimler
 - `departments`: fakülteye bağlı bölüm kataloğu
@@ -81,7 +84,9 @@ hatırlanır ve Üniyra deneyimini kişiselleştirir.
 
 **Sunucu ve güvenlik kapsamı**
 
-- Platform tarafından doğrulanmış kullanıcı kimliğini sunucuda okuma
+- D1 tabanlı self-servis hesap ve `HttpOnly`, `SameSite=Lax` oturum çerezi
+- Yalnız `.chatgpt.site` alanında platform kimliğini güvenilir ek yol olarak okuma
+- Railway alanında istemcinin taklit ettiği platform başlıklarını reddetme
 - Profil okuma ve güncelleme uçları
 - Gönderilen üniversite, fakülte, bölüm, sınıf ve dersleri izinli katalogla doğrulama
 - Kimliği olmayan yazma isteklerini reddetme
@@ -143,7 +148,7 @@ ait, kalıcı ve ders bağlamına göre sıralanan gerçek içeriklerdir.
 - Akış ilk yüklemede ve devam sayfalarında kararlı sıralanır.
 - Mobilde gönderi oluşturma ve yorumlama kesintisiz tamamlanır.
 
-**Çıkış koşulu:** Pilot kullanıcıları tek oturumda gerçek gönderi, takip ve
+**Çıkış koşulu:** Kullanıcılar tek oturumda gerçek gönderi, takip ve
 yorum döngüsünü tamamlayabilir.
 
 ## Faz 3 — Gerçek not kütüphanesi ve dosya yükleme
@@ -152,7 +157,7 @@ yorum döngüsünü tamamlayabilir.
 dosya imzası/MIME/uzantı/boyut doğrulaması, ilerleme-hata-yeniden deneme,
 detay/önizleme/indirme, kaydetme, tekil görüntülenme, ders filtreleri ve
 sahiplik kontrollü silme bağlıdır. Yerel D1+R2 uçtan uca doğrulaması geçti;
-canlı ikinci gerçek kullanıcı kanıtı pilot operasyonuna bağlıdır.
+canlı gerçek kullanıcı ölçümü üretim kullanımına bağlıdır.
 
 **Kullanıcı sonucu:** Öğrenciler ders notlarını güvenle yükler; diğer öğrenciler
 ders, okul ve konuya göre notu görüntüler veya kaydeder.
@@ -176,7 +181,7 @@ ders, okul ve konuya göre notu görüntüler veya kaydeder.
 - Yarım kalan yüklemeler görünür hata durumuna dönüşür.
 - Not silme, dosya ve ilişkili bilgileri tutarlı biçimde kaldırır.
 
-**Çıkış koşulu:** Pilot kullanıcı gerçek bir PDF yükleyebilir ve ikinci kullanıcı
+**Çıkış koşulu:** Bir kullanıcı gerçek bir PDF yükleyebilir ve ikinci kullanıcı
 bu notu ilgili ders altında bulabilir.
 
 ## Faz 4 — Topluluklar ve kampüs alanları
@@ -203,7 +208,7 @@ topluluklar kurar ve yönetir.
 - Üye sayıları ve üyelik durumu tutarlıdır.
 - Topluluk silme veya arşivleme geri alınabilir güvenli akışla yapılır.
 
-**Çıkış koşulu:** Pilot ekip en az üç aktif topluluğu gerçek üyelerle yönetir.
+**Çıkış koşulu:** Ürün ekibi en az üç aktif topluluğu gerçek üyelerle yönetir.
 
 ## Faz 5 — Arama ve kaynaklı Üniyra AI
 
@@ -229,10 +234,10 @@ notları gerekçesi ve kaynağıyla sıralar.
 
 - AI cevabı kaynak not bağlantısı olmadan akademik iddia üretmez.
 - Yetkisiz içerik arama veya AI sonucu üzerinden sızmaz.
-- Sonuç kalitesi gerçek pilot sorgularıyla ölçülür.
+- Sonuç kalitesi gerçek kullanıcı sorgularıyla ölçülür.
 - Hızlı klasik arama, AI katmanı çalışmadığında kullanılabilir kalır.
 
-**Çıkış koşulu:** Pilot sorguların çoğunda kullanıcı iki etkileşim içinde yararlı
+**Çıkış koşulu:** Gerçek sorguların çoğunda kullanıcı iki etkileşim içinde yararlı
 bir kaynağa ulaşır.
 
 ## Faz 6 — Bildirim, moderasyon ve güven
@@ -241,7 +246,7 @@ bir kaynağa ulaşır.
 okundu bilgisi/tercihler; şikâyet, kanıt, karar ve itiraz kaydı; iki yönlü
 engelleme, sessize alma; rol korumalı moderasyon kuyruğu; hız sınırı ve denetim
 kayıtları hazırdır. Üretim moderatör rolü ataması ve gerçek örnek olay tatbikatı
-pilot operasyonuna bağlıdır.
+üretim operasyonuna bağlıdır.
 
 **Kullanıcı sonucu:** Öğrenci önemli gelişmeleri kaçırmaz; taciz, spam ve telif
 ihlalleri için anlaşılır güvenlik araçlarına sahiptir.
@@ -262,45 +267,42 @@ ihlalleri için anlaşılır güvenlik araçlarına sahiptir.
 - Şikâyet kaydı kanıt, durum ve karar geçmişini korur.
 - Kritik yazma uçları hız sınırı ve denetim kaydı içerir.
 
-**Çıkış koşulu:** Pilot moderatör ekibi örnek olayları baştan sona çözebilir.
+**Çıkış koşulu:** Moderatör ekibi örnek olayları baştan sona çözebilir.
 
-## Faz 7 — Kapalı üniversite pilotu ve büyüme döngüsü
+## Faz 7 — Self-servis MVP geçişi
 
-**Durum:** Ürün altyapısı tamamlandı; sonuç kapısı gerçek zaman ve katılımcı
-gerektirir. Tek kullanımlı/yedi günlük davet kodu, ilk hafta görevleri, gerçek
-ilerleme hesabı, ürün olayları, geri bildirim yüzeyi ve haftalık pilot çalışma
-kitabı hazırdır. İki ardışık haftalık artış ancak gerçek pilot yürütülerek
-kanıtlanabilir.
+**Durum:** Tamamlandı. Ürün sahibi kararıyla kapalı üniversite pilotu atlandı;
+davet kodu, pilot görev paneli, demo profil ve sahte sosyal içerik kullanıcı
+yüzeyinden kaldırıldı. Her öğrenci gerekli hesap ve akademik profil bilgilerini
+girerek onaysız biçimde ürüne katılabilir.
 
-**Kullanıcı sonucu:** Sınırlı kampüslerde içerik yoğunluğu yüksek, faydası
-ölçülebilir bir Üniyra deneyimi oluşur.
+**Kullanıcı sonucu:** Ziyaretçi kendi hesabını anında açar, üniversite ve ders
+profilini tamamlar ve gerçek ürün verisiyle çalışmaya başlar.
 
 **Kapsam**
 
-- İlk operasyonel kohort olarak OMÜ'de fakülte, bölüm ve ders bazlı pilot
-- Davet bağlantıları ve kontrollü kullanıcı kabulü
-- İlk hafta görevleri: 3 ders seç, 1 kişiyi takip et, 1 not kaydet
-- İçerik boşluğunu önleyen ders elçileri ve başlangıç içerikleri
-- Ürün analitiği, geri bildirim formu ve haftalık görüşmeler
-- Erişilebilirlik ve düşük bağlantı kalitesi testleri
+- Self-servis e-posta/parola kaydı ve yeniden giriş
+- Yönetici onayı olmadan anında aktif hesap
+- Türkiye ve Kıbrıs kataloğuyla beş adımlı akademik profil
+- Demo ve pilot/davet yüzeylerinin kaldırılması
+- Gerçek boş durumlar ve kaynaklı editoryal başlangıç notları
+- Masaüstü ve dar ekran kayıt görünümü doğrulaması
 
 **Kabul ölçütleri**
 
-- Kritik derslerde başlangıç içeriği boş değildir.
-- Pilot kullanıcı hataları ve geri bildirimleri izlenebilir işlere dönüşür.
-- Geri dönüş, ilk değer ve katkı oranları tanımlanan hedefe yaklaşır.
+- Kayıt yanıtı hesabın onay gerektirmediğini açıkça bildirir.
+- Parola ve ham oturum belirteci veritabanında düz metin tutulmaz.
+- Taklit edilmiş platform kimlik başlıkları Railway isteklerinde reddedilir.
+- Kayıt, çıkış, yeniden giriş ve profil oluşturma otomatik testte tamamlanır.
 
-**Çıkış koşulu:** İki ardışık hafta boyunca geri dönüş ve içerik üretimi
-istikrarlı artar.
+**Çıkış koşulu:** Yeni öğrenci davetsiz kayıt olup kalıcı akademik profilini
+oluşturabilir ve yeniden girişte aynı profile ulaşabilir.
 
-## Faz 8 — Açık beta ve üretim sağlamlaştırma
+## Faz 8 — MVP v1.0 üretim sürümü
 
-**Durum:** Teknik ve operasyonel hazırlık tamamlandı; açık erişim kararı kapalı
-bir yayın kapısıdır. Sağlık ucu, performans bütçeleri, sınırlı sorgular, üretim
-olay/geri alma planı, veri saklama-yedekleme-silme politikası, güvenlik
-gözden geçirmesi ile gizlilik/kullanım/topluluk/kaldırma metinleri hazırdır.
-Sitenin erişim politikasını açmak ve açık betayı başlatmak ayrı ürün sahibi
-onayı gerektirir.
+**Durum:** MVP v1.0 teknik kapsamı tamamlandı. Sağlık ucu sürüm numarası verir;
+şema, API, üretim derlemesi ve kritik kullanıcı yolculuğu otomatik olarak
+doğrulanır. Railway herkese açık ana ürün yüzeyidir.
 
 **Kullanıcı sonucu:** Üniyra daha geniş öğrenci kitlesine güvenilir, hızlı ve
 izlenebilir biçimde açılır.
@@ -312,7 +314,7 @@ izlenebilir biçimde açılır.
 - Yedekleme, veri saklama ve silme politikaları
 - Gizlilik metni, kullanım koşulları ve topluluk ilkeleri
 - Güvenlik gözden geçirmesi ve kritik uç testleri
-- Kademeli erişim açma ve geri alma planı
+- Herkese açık Railway dağıtımı ve geri alma planı
 
 **Kabul ölçütleri**
 
@@ -320,21 +322,21 @@ izlenebilir biçimde açılır.
 - Veri kaybı, güvenlik olayı ve hizmet kesintisi için yazılı prosedür vardır.
 - Ana mobil ekranlar performans bütçesini karşılar.
 
-**Çıkış koşulu:** Açık beta kontrollü biçimde başlatılır ve ürün sağlığı günlük
-olarak izlenebilir.
+**Çıkış koşulu:** `v1.0.0` Railway üzerinde sağlıklı çalışır, kayıt ekranı ve
+kritik API uçları canlı adreste doğrulanır.
 
 ## Kalan gerçek dünya çıkış kapıları
 
 Kodla tamamlanamayan aşağıdaki maddeler ürünün içinde izlenebilir hâle
 getirilmiştir; bunlar gerçek kullanıcı, süre veya erişim kararı gerektirir:
 
-1. İkinci gerçek hesapla canlı profil → takip → yorum → kaydetme ve not yükleme
-   döngüsünü mobil cihazda tamamlamak.
+1. Gerçek öğrencilerle profil → takip → yorum → kaydetme ve not yükleme
+   döngüsünü farklı mobil cihazlarda izlemek.
 2. Üretim moderatörlerini kontrollü olarak atayıp örnek şikâyet ve itirazı
    baştan sona çözmek.
 3. Kritik derslere izinli başlangıç içeriklerini ders elçileriyle eklemek ve iki
    ardışık hafta geri dönüş/katkı ölçümü toplamak.
 4. Açık beta öncesi hukuki metinleri kurumsal incelemeden geçirmek, dosya zararlı
    içerik taramasını bağlamak ve veri geri yükleme tatbikatını yapmak.
-5. Ürün sahibi açık beta kararını verdiğinde Sites erişim politikasını kademeli
-   açmak; ölçümlerde gerileme veya güvenlik olayı varsa geri almak.
+5. ChatGPT Sites dağıtımını da Railway ile aynı açık erişim politikasına almak
+   istenirse Sites erişim politikasını ayrıca güncellemek.

@@ -38,7 +38,7 @@ function signInResponse() {
   return Response.json(
     {
       error: "Profilini kullanmak için giriş yapmalısın.",
-      signInPath: "/signin-with-chatgpt?return_to=%2F",
+      authRequired: true,
     },
     { status: 401 },
   );

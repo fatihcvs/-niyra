@@ -3,9 +3,10 @@
 Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencileri için ders, not, topluluk
 ve akademik çevre odaklı sosyal öğrenme ürünüdür. 241 kurumluk resmî kaynaklı
 katalog ilk katılımda aranabilir; öğrenci akışı ve sosyal yüzeyler seçilen
-üniversiteye göre ayrılır. Uygulama vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
-yüklenen not dosyaları R2'de tutulur ve kullanıcı kimliği platformun doğrulanmış
-başlıklarından okunur.
+üniversiteye göre ayrılır. MVP v1.0 vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
+yüklenen not dosyaları R2'de tutulur. Öğrenciler e-posta ve parolayla yönetici
+onayı olmadan hesap açar; ChatGPT Sites kimliği desteklenen alan adında ek giriş
+yolu olarak kullanılabilir.
 
 ## Ürün yüzeyleri
 
@@ -16,7 +17,7 @@ başlıklarından okunur.
 - Rol ve üyelik politikası olan topluluklar
 - Öğrenci, ders, gönderi, not ve topluluk birleşik araması
 - Bildirim tercihleri, şikâyet, engelleme, sessize alma ve moderasyon kaydı
-- Kapalı pilot görevleri, geri bildirim ve sağlık kontrolü
+- Self-servis hesap, güvenli oturum ve sağlık kontrolü
 
 Katalog kaynakları ve bakım sözleşmesi için `docs/UNIVERSITY_CATALOG.md`, faz
 durumu ve gerçek dünya çıkış kapıları için `docs/PHASE_PLAN.md`; üretim
@@ -128,10 +129,9 @@ bindings. The service must keep a persistent volume mounted at `/data`; without
 that volume, profiles and uploaded notes would be lost on a redeploy. The
 deployment health check is `/api/health`.
 
-The ChatGPT Sites deployment remains the authenticated product surface. Railway
-does not provide Sites' Sign in with ChatGPT dispatch routes, so anonymous Railway
-visitors can use the product demo while authenticated account flows remain on the
-Sites domain.
+Railway herkese açık MVP v1.0 yüzeyidir. Ziyaretçiler e-posta ve parolayla hesap
+oluşturur; davet kodu veya yönetici onayı gerekmez. ChatGPT Sites dağıtımı aynı
+veri modelini kullanır ve uygun alan adında platform kimliğini de kabul eder.
 
 The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
 

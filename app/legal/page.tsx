@@ -11,18 +11,18 @@ const sections = [
     id: "privacy",
     title: "Gizlilik özeti",
     paragraphs: [
-      "Üniyra pilotunda hesap kimliği, görünen ad, akademik profil seçimleri, gönderiler, yorumlar, takip ilişkileri, kaydedilen içerikler, yüklenen notların bilgileri, topluluk üyelikleri, güvenlik kayıtları ve temel ürün kullanım olayları işlenir.",
+      "Üniyra'da hesap e-postası, görünen ad, akademik profil seçimleri, gönderiler, yorumlar, takip ilişkileri, kaydedilen içerikler, yüklenen notların bilgileri, topluluk üyelikleri, güvenlik kayıtları ve temel ürün kullanım olayları işlenir.",
       "Dosya baytları nesne depolamada; aranabilir başlık, ders, etiket, sahiplik ve durum bilgileri veritabanında ayrı tutulur. Dosyalar yalnızca izin verilen ürün akışlarından açılır. Gizli anahtarlar ve altyapı kimlikleri kullanıcı arayüzüne gönderilmez.",
-      "Pilot ölçümleri; ilk katılım, arama, katkı ve geri dönüş deneyimini iyileştirmek için kullanılır. Üniyra bu ilk sürümde reklam profili oluşturmaz, kişisel veriyi satmaz ve ödeme verisi işlemez.",
+      "Parolalar geri döndürülebilir biçimde saklanmaz; tuzlanmış parola özetleri kullanılır ve oturum çerezleri tarayıcı betiklerine kapalıdır. Üniyra bu sürümde reklam profili oluşturmaz, kişisel veriyi satmaz ve ödeme verisi işlemez.",
     ],
   },
   {
     id: "terms",
     title: "Kullanım koşulları",
     paragraphs: [
-      "Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencilerinin öğrenme ve kampüs dayanışması için kullanılan kapalı bir pilot üründür. Kullanıcılar paylaştıkları içeriğin doğruluğundan, paylaşma hakkına sahip olmaktan ve kişisel verileri izinsiz yayımlamamaktan sorumludur.",
+      "Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencilerinin öğrenme ve kampüs dayanışması için kullanılan herkese açık bir MVP ürünüdür. Hesaplar yönetici onayı olmadan açılır; bu nedenle profil bilgileri Üniyra tarafından öğrenci belgesiyle doğrulanmış sayılmaz. Kullanıcılar paylaştıkları içeriğin doğruluğundan, paylaşma hakkına sahip olmaktan ve kişisel verileri izinsiz yayımlamamaktan sorumludur.",
       "Notlar ve gönderiler akademik danışmanlık ya da resmî ders materyali yerine geçmez. Sınav güvenliğini ihlal eden, başkasına ait çalışmayı izinsiz çoğaltan, taciz içeren veya yasa dışı içerik kaldırılabilir; hesap görünürlüğü geçici ya da kalıcı biçimde kısıtlanabilir.",
-      "Pilot ürün değişebilir ve zaman zaman kesintiye uğrayabilir. Önemli ders materyalinin tek kopyasını Üniyra'da tutma; kendi yedeğini koru.",
+      "MVP özellikleri gelişmeye devam eder ve zaman zaman kesintiye uğrayabilir. Önemli ders materyalinin tek kopyasını Üniyra'da tutma; kendi yedeğini koru.",
     ],
   },
   {
@@ -46,8 +46,8 @@ const sections = [
     id: "help",
     title: "Yardım ve veri talepleri",
     paragraphs: [
-      "Hesap, erişim, veri kopyası veya silme talebi için pilot yöneticisine çalışma alanındaki destek kanalı üzerinden ulaş. Talebin güvenli biçimde eşleştirilebilmesi için Üniyra'ya giriş yaptığın hesabı kullan.",
-      "Bir güvenlik olayı şüphesinde hassas ayrıntıları genel gönderide paylaşma. Güvenlik Merkezi'nden kayıt oluştur ve gerekiyorsa pilot yöneticisine doğrudan bildir.",
+      "Hesap, erişim, veri kopyası veya silme talebi için Güvenlik Merkezi üzerinden kayıt oluştur. Talebin güvenli biçimde eşleştirilebilmesi için Üniyra'ya giriş yaptığın hesabı kullan.",
+      "Bir güvenlik olayı şüphesinde hassas ayrıntıları genel gönderide paylaşma. Güvenlik Merkezi'nden kayıt oluştur ve ilgili içerik bağlantısını ekle.",
     ],
   },
 ];
@@ -55,9 +55,9 @@ const sections = [
 export default function LegalPage() {
   return <main className={styles.shell}>
     <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><span>ü</span><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>ÜNİYRA KAPALI PİLOTU</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · Pilot metni</small></section>
+    <section className={styles.hero}><span>ÜNİYRA MVP v1.0</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · MVP v1.0</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
     <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
-    <footer><p>Bu metin kapalı pilotun çalışma kurallarını açıklar. Açık beta öncesinde hukuki ve kurumsal inceleme ile güncellenecektir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
+    <footer><p>Bu metin Üniyra MVP v1.0 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
   </main>;
 }

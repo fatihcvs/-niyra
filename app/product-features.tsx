@@ -79,7 +79,7 @@ function EmptyState({ icon, title, text }: { icon: string; title: string; text: 
   return <div className="feature-empty" role="status"><span>{icon}</span><strong>{title}</strong><p>{text}</p></div>;
 }
 
-export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCourse[]; demo?: boolean }) {
+export function NotesWorkspace({ courses }: { courses: FeatureCourse[] }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
@@ -108,11 +108,6 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
   }, [query, scope, selectedCourse]);
 
   async function loadNotes() {
-    if (demo) {
-      setNotes([]);
-      setState("ready");
-      return;
-    }
     setState("loading");
     setError("");
     try {
@@ -138,7 +133,7 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
   // loadNotes is intentionally scoped to the selected filters.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, courseId, scope, demo]);
+  }, [query, courseId, scope]);
 
   async function toggleSave(note: Note) {
     const previous = note.saved;
@@ -158,7 +153,6 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
 
   function uploadNote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (demo) { setUploadError("Dosya yüklemek için giriş yapmalısın."); return; }
     const form = event.currentTarget;
     const data = new FormData(form);
     setUploading(true);
@@ -224,8 +218,8 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
         </article>;
       })}</div> : <div className="curated-empty"><strong>Bu filtreyle editoryal not bulunamadı.</strong><p>Arama terimini veya ders filtresini değiştirerek yeniden dene.</p></div>}
     </section>}
-    <div className="campus-notes-heading"><div><span>KAMPÜS KÜTÜPHANESİ</span><h2>Öğrenci notları</h2></div>{demo && <p>Dosyaları görmek ve paylaşmak için giriş yap.</p>}</div>
-    {state === "loading" ? <EmptyState icon="…" title="Notlar getiriliyor" text="Kampüs kütüphanen hazırlanıyor."/> : notes.length === 0 ? <EmptyState icon="▤" title={demo ? "Gerçek notlar girişten sonra açılır" : "Bu görünümde not yok"} text={demo ? "Profilinle giriş yaptığında yüklenen dosyaları güvenli biçimde görebilirsin." : "Aramayı veya filtreleri değiştir; istersen ilk notu sen yükle."}/> : <div className="feature-note-grid">{notes.map((note) => <article className="feature-note-card" key={note.id}>
+    <div className="campus-notes-heading"><div><span>KAMPÜS KÜTÜPHANESİ</span><h2>Öğrenci notları</h2></div></div>
+    {state === "loading" ? <EmptyState icon="…" title="Notlar getiriliyor" text="Kampüs kütüphanen hazırlanıyor."/> : notes.length === 0 ? <EmptyState icon="▤" title="Bu görünümde not yok" text="Aramayı veya filtreleri değiştir; istersen ilk notu sen yükle."/> : <div className="feature-note-grid">{notes.map((note) => <article className="feature-note-card" key={note.id}>
       <button className="feature-note-cover" type="button" onClick={() => setSelected(note)}><span>{note.courseCode}</span><strong>{note.contentType === "application/pdf" ? "PDF" : note.originalFileName.split('.').at(-1)?.toLocaleUpperCase("tr-TR")}</strong><i>{note.status === "published" ? "YAYINDA" : note.status === "processing" ? "İŞLENİYOR" : "İNCELENDİ"}</i></button>
       <div><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div><button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small></div>
     </article>)}</div>}
@@ -261,7 +255,7 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
   </div>;
 }
 
-export function CommunitiesWorkspace({ courses, demo = false }: { courses: FeatureCourse[]; demo?: boolean }) {
+export function CommunitiesWorkspace({ courses }: { courses: FeatureCourse[] }) {
   const [items, setItems] = useState<Community[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
@@ -275,7 +269,6 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    if (demo) { setItems([]); setState("ready"); return; }
     setState("loading"); setError("");
     try {
       const params = new URLSearchParams(); if (query) params.set("q", query); if (mine) params.set("mine", "1");
@@ -285,11 +278,10 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
       setItems(data.communities); setState("ready");
     } catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Topluluklar getirilemedi."); setState("error"); }
   }
-  useEffect(() => { const timer = setTimeout(() => void load(), query ? 250 : 0); return () => clearTimeout(timer); }, [query, mine, demo]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const timer = setTimeout(() => void load(), query ? 250 : 0); return () => clearTimeout(timer); }, [query, mine]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function openCommunity(community: Community) {
     setSelected(community); setError("");
-    if (demo) return;
     try {
       const [detailResponse, postsResponse] = await Promise.all([fetch(`/api/communities?id=${community.id}`), fetch(`/api/community-posts?communityId=${community.id}`)]);
       const detail = await detailResponse.json() as { community?: Community; members?: Array<Record<string, unknown>>; error?: string };
@@ -300,7 +292,6 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
   }
 
   async function membership(community: Community) {
-    if (demo) { setError("Topluluğa katılmak için giriş yapmalısın."); return; }
     const action = community.joined || community.pending ? "leave" : "join";
     const optimistic = { ...community, joined: action === "join" && community.joinPolicy === "open", pending: action === "join" && community.joinPolicy === "request" };
     setItems((current) => current.map((item) => item.id === community.id ? optimistic : item));
@@ -313,7 +304,7 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
   }
 
   async function create(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); if (demo) return;
+    event.preventDefault();
     setBusy(true); setError("");
     const form = new FormData(event.currentTarget);
     try {
@@ -374,12 +365,12 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
     <FeatureHeader eyebrow="TOPLULUKLAR" title="Kampüs çevreni birlikte kur" description="Ders, kampüs ve ilgi alanlarında kalıcı topluluklara katıl veya kendi çevreni oluştur." action={<button className="feature-primary" type="button" onClick={() => setCreateOpen(true)}>＋ Topluluk kur</button>}/>
     <section className="feature-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Topluluk adı, ders veya kategori ara"/><button type="button" onClick={() => setMine((value) => !value)} className={mine ? "active" : ""}>{mine ? "Tümünü göster" : "Üyeliklerim"}</button></section>
     {error && <p className="feature-error" role="alert">{error}</p>}
-    {state === "loading" ? <EmptyState icon="…" title="Topluluklar hazırlanıyor" text="Kampüsteki çevreler getiriliyor."/> : items.length === 0 ? <EmptyState icon="◎" title={demo ? "Gerçek topluluklar girişten sonra açılır" : "Henüz eşleşen topluluk yok"} text={demo ? "Giriş yaptığında üniversitendeki topluluklara güvenle katılabilirsin." : "Aramayı değiştir veya ilk topluluğu sen kur."}/> : <div className="feature-community-grid">{items.map((community) => <article className="feature-community-card" key={community.id}><button className="feature-community-main" type="button" onClick={() => void openCommunity(community)}><span className={`feature-community-mark tone-${community.category}`}>{community.courseCode ?? initials(community.name)}</span><div><small>{community.category} {community.courseCode && `· ${community.courseCode}`}</small><h2>{community.name}</h2><p>{community.description}</p><footer><span>{community.memberCount} üye</span><span>{community.postCount} gönderi</span>{community.joinPolicy === "request" && <span>Onaylı katılım</span>}</footer></div></button><button className={community.joined ? "joined" : community.pending ? "pending" : ""} type="button" onClick={() => void membership(community)}>{community.joined ? "Katıldın" : community.pending ? "İstek gönderildi" : "Katıl"}</button></article>)}</div>}
+    {state === "loading" ? <EmptyState icon="…" title="Topluluklar hazırlanıyor" text="Kampüsteki çevreler getiriliyor."/> : items.length === 0 ? <EmptyState icon="◎" title="Henüz eşleşen topluluk yok" text="Aramayı değiştir veya ilk topluluğu sen kur."/> : <div className="feature-community-grid">{items.map((community) => <article className="feature-community-card" key={community.id}><button className="feature-community-main" type="button" onClick={() => void openCommunity(community)}><span className={`feature-community-mark tone-${community.category}`}>{community.courseCode ?? initials(community.name)}</span><div><small>{community.category} {community.courseCode && `· ${community.courseCode}`}</small><h2>{community.name}</h2><p>{community.description}</p><footer><span>{community.memberCount} üye</span><span>{community.postCount} gönderi</span>{community.joinPolicy === "request" && <span>Onaylı katılım</span>}</footer></div></button><button className={community.joined ? "joined" : community.pending ? "pending" : ""} type="button" onClick={() => void membership(community)}>{community.joined ? "Katıldın" : community.pending ? "İstek gönderildi" : "Katıl"}</button></article>)}</div>}
     {createOpen && <div className="feature-overlay"><section className="feature-dialog" role="dialog" aria-modal="true" aria-labelledby="community-create-title"><header><div><span>YENİ ÇEVRE</span><h2 id="community-create-title">Topluluk kur</h2></div><button type="button" onClick={() => setCreateOpen(false)}>×</button></header><form onSubmit={create}>
       <label>Topluluk adı<input name="name" required minLength={3} maxLength={80}/></label><label>Amaç ve kapsam<textarea name="description" required minLength={12} maxLength={500} rows={3}/></label>
       <div className="feature-field-row"><label>Kategori<select name="category" defaultValue="akademik"><option value="akademik">Akademik</option><option value="teknoloji">Teknoloji</option><option value="kampus">Kampüs</option><option value="kariyer">Kariyer</option><option value="ilgi">İlgi alanı</option></select></label><label>Katılım<select name="joinPolicy" defaultValue="open"><option value="open">Herkese açık</option><option value="request">İstekle katılım</option></select></label></div>
       <label>Ders bağlamı<select name="courseId" defaultValue=""><option value="">Genel topluluk</option>{courses.map((course) => <option value={course.id} key={course.id}>{course.code} · {course.name}</option>)}</select></label><label>Topluluk kuralları<textarea name="rules" maxLength={800} rows={3} placeholder="Saygılı ol, kaynak belirt, kişisel veri paylaşma…"/></label>
-      <footer><button type="button" onClick={() => setCreateOpen(false)}>Vazgeç</button><button className="feature-primary" type="submit" disabled={busy || demo}>{busy ? "Kuruluyor…" : "Topluluğu kur"}</button></footer>
+      <footer><button type="button" onClick={() => setCreateOpen(false)}>Vazgeç</button><button className="feature-primary" type="submit" disabled={busy}>{busy ? "Kuruluyor…" : "Topluluğu kur"}</button></footer>
     </form></section></div>}
     {selected && <div className="feature-overlay"><section className="feature-dialog feature-community-detail" role="dialog" aria-modal="true" aria-labelledby="community-detail-title"><header><div><span>{selected.category} {selected.courseCode && `· ${selected.courseCode}`}</span><h2 id="community-detail-title">{selected.name}</h2></div><button type="button" onClick={() => setSelected(null)}>×</button></header><p className="feature-detail-description">{selected.description}</p>{selected.rules && <aside className="feature-rules"><strong>Topluluk kuralları</strong><p>{selected.rules}</p></aside>}
       {selected.joined && <div className="feature-community-composer"><textarea value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={1200} placeholder="Topluluğunla bir şey paylaş…"/><button className="feature-primary" type="button" onClick={() => void createPost()} disabled={!draft.trim() || busy}>Paylaş</button></div>}
@@ -390,14 +381,13 @@ export function CommunitiesWorkspace({ courses, demo = false }: { courses: Featu
   </div>;
 }
 
-export function NotificationsWorkspace({ demo = false }: { demo?: boolean }) {
+export function NotificationsWorkspace() {
   const [items, setItems] = useState<Notice[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [tab, setTab] = useState("all");
   const [error, setError] = useState("");
   const [preferences, setPreferences] = useState({ interactions: true, courses: true, communities: true });
   async function load() {
-    if (demo) { setItems([]); setState("ready"); return; }
     setState("loading");
     try {
       const response = await fetch(`/api/notifications${tab === "all" ? "" : `?kind=${tab}`}`);
@@ -407,7 +397,6 @@ export function NotificationsWorkspace({ demo = false }: { demo?: boolean }) {
     } catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Bildirimler getirilemedi."); setState("error"); }
   }
   useEffect(() => {
-    if (demo) return;
     let active = true;
     void fetch(`/api/notifications${tab === "all" ? "" : `?kind=${tab}`}`)
       .then(async (response) => {
@@ -426,13 +415,13 @@ export function NotificationsWorkspace({ demo = false }: { demo?: boolean }) {
         }
       });
     return () => { active = false; };
-  }, [tab, demo]);
+  }, [tab]);
   async function markAllRead() { setItems((current) => current.map((item) => ({ ...item, read: true }))); await fetch("/api/notifications", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "read-all" }) }); }
   async function savePreferences(next: typeof preferences) { setPreferences(next); const response = await fetch("/api/notifications", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "preferences", ...next }) }); if (!response.ok) { setError("Bildirim tercihleri kaydedilemedi."); void load(); } }
   return <div className="workspace-view feature-workspace"><FeatureHeader eyebrow="BİLDİRİMLER" title="Gelişmeler" description="Gönderilerin, notların ve topluluklarındaki önemli hareketler." action={<button className="feature-text-action" type="button" onClick={() => void markAllRead()} disabled={!items.some((item) => !item.read)}>✓ Tümünü okundu işaretle</button>}/>
     <div className="feature-toolbar"><div role="tablist">{([['all','Tümü'],['interaction','Etkileşimler'],['course','Dersler'],['community','Topluluklar']] as const).map(([value,label]) => <button type="button" role="tab" aria-selected={tab === value} className={tab === value ? "active" : ""} onClick={() => setTab(value)} key={value}>{label}</button>)}</div></div>
     {error && <p className="feature-error" role="alert">{error}</p>}
-    {state === "loading" ? <EmptyState icon="…" title="Bildirimler getiriliyor" text="Son gelişmeler hazırlanıyor."/> : items.length === 0 ? <EmptyState icon="○" title={demo ? "Gerçek bildirimler girişten sonra açılır" : "Yeni bildirimin yok"} text="Etkileşimler, dersler ve topluluk hareketleri burada görünecek."/> : <div className="feature-notice-list">{items.map((item) => <article className={item.read ? "" : "unread"} key={item.id}><span className="feature-avatar">{item.kind === "community" ? "◎" : item.kind === "course" ? "D" : "♥"}</span><div><strong>{item.title}</strong>{item.body && <p>{item.body}</p>}<small>{item.time} önce</small></div>{!item.read && <i/>}</article>)}</div>}
+    {state === "loading" ? <EmptyState icon="…" title="Bildirimler getiriliyor" text="Son gelişmeler hazırlanıyor."/> : items.length === 0 ? <EmptyState icon="○" title="Yeni bildirimin yok" text="Etkileşimler, dersler ve topluluk hareketleri burada görünecek."/> : <div className="feature-notice-list">{items.map((item) => <article className={item.read ? "" : "unread"} key={item.id}><span className="feature-avatar">{item.kind === "community" ? "◎" : item.kind === "course" ? "D" : "♥"}</span><div><strong>{item.title}</strong>{item.body && <p>{item.body}</p>}<small>{item.time} önce</small></div>{!item.read && <i/>}</article>)}</div>}
     <section className="feature-preferences"><h2>Bildirim tercihleri</h2><p>Hangi gelişmelerin bildirim listene düşeceğini seç.</p>{([['interactions','Etkileşimler'],['courses','Ders çevreleri'],['communities','Topluluklar']] as const).map(([key,label]) => <label key={key}><span><strong>{label}</strong><small>{key === 'interactions' ? 'Beğeni, yorum ve takipler' : key === 'courses' ? 'Seçtiğin derslerdeki hareketler' : 'Üye olduğun topluluklar'}</small></span><input type="checkbox" checked={preferences[key]} onChange={(event) => void savePreferences({ ...preferences, [key]: event.target.checked })}/></label>)}</section>
   </div>;
 }
@@ -478,27 +467,15 @@ function SearchGroup({ title, children }: { title: string; children: React.React
   return <div className="search-group"><h2>{title}</h2><div>{children}</div></div>;
 }
 
-export function SafetyWorkspace({ demo = false }: { demo?: boolean }) {
+export function SafetyWorkspace() {
   const [data, setData] = useState<{ reports: Array<{ id: string; entityType: string; reason: string; status: string; decision?: string; time: string }>; blocked: Array<{ public_id: string; display_name: string; handle: string }>; muted: Array<{ public_id: string; display_name: string; handle: string }>; moderator: boolean } | null>(null);
   const [error, setError] = useState("");
-  useEffect(() => { if (demo) return; void (async () => { try { const response = await fetch("/api/safety"); const body = await response.json(); if (!response.ok) throw new Error(body.error); setData(body); } catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Güvenlik merkezi getirilemedi."); } })(); }, [demo]);
+  useEffect(() => { void (async () => { try { const response = await fetch("/api/safety"); const body = await response.json(); if (!response.ok) throw new Error(body.error); setData(body); } catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Güvenlik merkezi getirilemedi."); } })(); }, []);
   return <div className="workspace-view feature-workspace"><FeatureHeader eyebrow="GÜVENLİK MERKEZİ" title="Kontrol sende" description="Şikâyetlerinin durumunu izle; engellediğin ve sessize aldığın hesapları yönet."/>
     <section className="safety-principles"><article><span>01</span><h2>Şikâyet ve kanıt</h2><p>Gönderi, yorum, not, topluluk veya kullanıcı için olay anındaki içerik güvenli kayda alınır.</p></article><article><span>02</span><h2>İki yönlü engelleme</h2><p>Engellenen hesaplar birbirinin profilini, akışını ve etkileşim alanlarını göremez.</p></article><article><span>03</span><h2>Karar ve itiraz</h2><p>Moderasyon kararı geçmişi korunur; sonuçlanan kayıtlarda itiraz yolu açıktır.</p></article></section>
     {error && <p className="feature-error" role="alert">{error}</p>}
-    {demo ? <EmptyState icon="◉" title="Güvenlik kayıtları hesabına özeldir" text="Giriş yaptıktan sonra şikâyetlerini ve görünürlük tercihlerini burada yönetebilirsin."/> : !data ? <EmptyState icon="…" title="Güvenlik merkezi hazırlanıyor" text="Hesabına ait kayıtlar getiriliyor."/> : <div className="safety-columns"><section><h2>Şikâyetlerin</h2>{data.reports.length ? data.reports.map((report) => <article key={report.id}><span className={`feature-status status-${report.status}`}>{report.status === 'open' ? 'İncelemede' : report.status === 'appealed' ? 'İtirazda' : 'Sonuçlandı'}</span><strong>{report.entityType} · {report.reason}</strong><small>{report.time} önce</small>{report.decision && <p>{report.decision}</p>}</article>) : <p className="feature-muted">Açık şikâyetin yok.</p>}</section><section><h2>Engellenenler</h2>{data.blocked.length ? data.blocked.map((user) => <article key={user.public_id}><strong>{user.display_name}</strong><small>@{user.handle}</small></article>) : <p className="feature-muted">Engellediğin hesap yok.</p>}<h2 className="safety-second-title">Sessize alınanlar</h2>{data.muted.length ? data.muted.map((user) => <article key={user.public_id}><strong>{user.display_name}</strong><small>@{user.handle}</small></article>) : <p className="feature-muted">Sessize aldığın hesap yok.</p>}</section></div>}
+    {!data ? <EmptyState icon="…" title="Güvenlik merkezi hazırlanıyor" text="Hesabına ait kayıtlar getiriliyor."/> : <div className="safety-columns"><section><h2>Şikâyetlerin</h2>{data.reports.length ? data.reports.map((report) => <article key={report.id}><span className={`feature-status status-${report.status}`}>{report.status === 'open' ? 'İncelemede' : report.status === 'appealed' ? 'İtirazda' : 'Sonuçlandı'}</span><strong>{report.entityType} · {report.reason}</strong><small>{report.time} önce</small>{report.decision && <p>{report.decision}</p>}</article>) : <p className="feature-muted">Açık şikâyetin yok.</p>}</section><section><h2>Engellenenler</h2>{data.blocked.length ? data.blocked.map((user) => <article key={user.public_id}><strong>{user.display_name}</strong><small>@{user.handle}</small></article>) : <p className="feature-muted">Engellediğin hesap yok.</p>}<h2 className="safety-second-title">Sessize alınanlar</h2>{data.muted.length ? data.muted.map((user) => <article key={user.public_id}><strong>{user.display_name}</strong><small>@{user.handle}</small></article>) : <p className="feature-muted">Sessize aldığın hesap yok.</p>}</section></div>}
   </div>;
-}
-
-export function PilotPanel({ demo = false, onNavigate }: { demo?: boolean; onNavigate: (name: string) => void }) {
-  const [goals, setGoals] = useState<Array<{ id: string; label: string; complete: boolean }>>([]);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackState, setFeedbackState] = useState("");
-  const [inviteUrl, setInviteUrl] = useState("");
-  useEffect(() => { if (demo) return; void fetch("/api/pilot").then((response) => response.ok ? response.json() : null).then((data) => { if (data?.goals) setGoals(data.goals); }).catch(() => undefined); }, [demo]);
-  const completed = useMemo(() => goals.filter((goal) => goal.complete).length, [goals]);
-  return <><section className="pilot-panel"><header><div><span>PİLOT HAFTASI</span><strong>{demo ? "Girişle başla" : `${completed}/${goals.length || 4} tamamlandı`}</strong></div><i>{demo ? 0 : Math.round((completed / Math.max(1, goals.length)) * 100)}%</i></header><div className="pilot-progress"><span style={{ width: `${demo ? 0 : (completed / Math.max(1, goals.length)) * 100}%` }}/></div>{demo ? <p>İlk hafta görevlerin ve geri bildirim alanın hesabınla birlikte açılır.</p> : goals.map((goal) => <button type="button" className={goal.complete ? "complete" : ""} key={goal.id} onClick={() => onNavigate(goal.id === "courses" ? "Profil" : goal.id === "follow" ? "Keşfet" : goal.id === "save-note" ? "Notlar" : "Akış")}><span>{goal.complete ? "✓" : "○"}</span>{goal.label}</button>)}{inviteUrl && <p className="pilot-invite" role="status">Davet bağlantısı panoya kopyalandı. Kod 7 gün ve tek kullanım için geçerli.</p>}<button className="pilot-feedback-button" type="button" onClick={() => setFeedbackOpen(true)}>Geri bildirim gönder</button>{!demo && <button className="pilot-feedback-button" type="button" onClick={() => { void fetch("/api/pilot", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "invite" }) }).then(async (response) => { const body = await response.json(); if (!response.ok || !body.invite?.code) throw new Error(body.error ?? "Davet oluşturulamadı."); const url = new URL(window.location.origin); url.searchParams.set("invite", body.invite.code); setInviteUrl(url.toString()); return navigator.clipboard.writeText(url.toString()); }).catch((inviteError) => setFeedbackState(inviteError instanceof Error ? inviteError.message : "Davet oluşturulamadı.")); }}>Pilot daveti oluştur</button>}</section>
-    {feedbackOpen && <div className="feature-overlay"><section className="feature-dialog feature-feedback" role="dialog" aria-modal="true" aria-labelledby="feedback-title"><header><div><span>PİLOT GERİ BİLDİRİMİ</span><h2 id="feedback-title">Deneyimini paylaş</h2></div><button type="button" onClick={() => setFeedbackOpen(false)}>×</button></header><form onSubmit={(event) => { event.preventDefault(); if (demo) { setFeedbackState("Geri bildirim için giriş yapmalısın."); return; } const form = new FormData(event.currentTarget); setFeedbackState("Gönderiliyor…"); void fetch("/api/pilot", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "feedback", rating: Number(form.get("rating")), message: form.get("message") }) }).then(async (response) => { const body = await response.json(); if (!response.ok) throw new Error(body.error); setFeedbackState("Teşekkürler, geri bildirimin kaydedildi."); }).catch((feedbackError) => setFeedbackState(feedbackError instanceof Error ? feedbackError.message : "Geri bildirim gönderilemedi.")); }}><label>Puan<select name="rating" defaultValue="5"><option value="5">5 · Çok iyi</option><option value="4">4 · İyi</option><option value="3">3 · Orta</option><option value="2">2 · Zorlandım</option><option value="1">1 · Kullanamadım</option></select></label><label>Neyi iyileştirelim?<textarea name="message" required minLength={5} maxLength={1200} rows={5}/></label>{feedbackState && <p className="feature-feedback-state" role="status">{feedbackState}</p>}<footer><button type="button" onClick={() => setFeedbackOpen(false)}>Kapat</button><button className="feature-primary" type="submit">Gönder</button></footer></form></section></div>}
-  </>;
 }
 
 export function ProfileSafetyMenu({ targetId, targetName }: { targetId: string; targetName: string }) {
