@@ -255,6 +255,30 @@ test("campus guide validates event chronology before database access", async () 
   assert.equal(response.status, 400);
 });
 
+test("library occupancy rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/library-occupancy"), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 401);
+});
+
+test("library occupancy rejects fabricated capacities before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/library-occupancy", {
+    method: "POST", headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "area", name: "Merkez Kütüphane", floorLabel: "2. Kat", zoneLabel: "Sessiz Alan", description: "Prizli ve sessiz çalışma alanı.", capacity: 0, features: ["quiet"] }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
+test("library occupancy only accepts bounded check-in durations before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/library-occupancy", {
+    method: "POST", headers: { "content-type": "application/json", ...platformHeaders },
+    body: JSON.stringify({ action: "check-in", areaId: "area-test", durationMinutes: 1440 }),
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 400);
+});
+
 test("campus market rejects anonymous reads", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(new Request("http://localhost/api/campus-market"), runtimeEnv, runtimeContext);

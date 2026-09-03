@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.4.1");
+assert.equal(healthBody.version, "1.5.0");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -222,6 +222,43 @@ const secondDaily = (await json("/api/campus-guide")).body.suggestion;
 assert.equal(firstDaily.id, secondDaily.id);
 assert.ok((await json("/api/campus-guide")).body.events.some((item) => item.id === campusEvent.id && item.placeName.includes("Merkez Kütüphane")));
 
+const otherLibraryArea = (await json("/api/library-occupancy", {
+  method: "POST",
+  body: JSON.stringify({ action: "area", name: `Kuzey Kütüphane ${runId}`, floorLabel: "1. Kat", zoneLabel: "Kuzey Salon", description: "Diğer kampüs doluluk izolasyonu için çalışma alanı.", capacity: 40, placeId: otherCampusPlace.id, features: ["quiet", "wifi"] }),
+}, otherCampusEmail)).body.area;
+const libraryArea = (await json("/api/library-occupancy", {
+  method: "POST",
+  body: JSON.stringify({ action: "area", name: `Merkez Kütüphane ${runId}`, floorLabel: "2. Kat", zoneLabel: "Sessiz Salon A", description: "Prizli masaları ve gün ışığı olan sessiz çalışma salonu.", capacity: 120, placeId: campusPlace.id, features: ["quiet", "power", "wifi", "natural-light"] }),
+})).body.area;
+const secondLibraryArea = (await json("/api/library-occupancy", {
+  method: "POST",
+  body: JSON.stringify({ action: "area", name: `Merkez Kütüphane ${runId}`, floorLabel: "3. Kat", zoneLabel: "Grup Çalışma B", description: "Küçük ekiplerin birlikte çalışabildiği grup masaları.", capacity: 60, placeId: campusPlace.id, features: ["group", "power", "wifi"] }),
+})).body.area;
+const initialLibraryAreas = (await json("/api/library-occupancy")).body.areas;
+const initialLibraryArea = initialLibraryAreas.find((item) => item.id === libraryArea.id);
+assert.equal(initialLibraryArea.estimatedFreeSeats, null);
+assert.ok(!initialLibraryAreas.some((item) => item.id === otherLibraryArea.id));
+const peerLibraryCheckin = (await json("/api/library-occupancy", {
+  method: "POST", body: JSON.stringify({ action: "check-in", areaId: libraryArea.id, durationMinutes: 60 }),
+}, peerEmail)).body.checkin;
+const ownerLibraryCheckin = (await json("/api/library-occupancy", {
+  method: "POST", body: JSON.stringify({ action: "check-in", areaId: libraryArea.id, durationMinutes: 90 }),
+})).body.checkin;
+const duplicateLibraryCheckin = await fetch(`${baseUrl}/api/library-occupancy`, {
+  method: "POST", headers: headers(ownerEmail, true), body: JSON.stringify({ action: "check-in", areaId: secondLibraryArea.id, durationMinutes: 30 }),
+});
+assert.equal(duplicateLibraryCheckin.status, 409);
+const occupiedLibraryArea = (await json("/api/library-occupancy")).body.areas.find((item) => item.id === libraryArea.id);
+assert.equal(occupiedLibraryArea.activeCount, 2);
+assert.equal(occupiedLibraryArea.estimatedFreeSeats, 118);
+assert.equal(occupiedLibraryArea.viewerCheckin.id, ownerLibraryCheckin.id);
+await json("/api/library-occupancy", { method: "PATCH", body: JSON.stringify({ action: "check-out", areaId: libraryArea.id }) });
+await json("/api/library-occupancy", { method: "PATCH", body: JSON.stringify({ action: "check-out", areaId: libraryArea.id }) }, peerEmail);
+const clearedLibraryArea = (await json("/api/library-occupancy")).body.areas.find((item) => item.id === libraryArea.id);
+assert.equal(clearedLibraryArea.activeCount, 0);
+assert.equal(clearedLibraryArea.estimatedFreeSeats, 120);
+assert.equal(peerLibraryCheckin.areaId, libraryArea.id);
+
 const otherCampusListing = (await json("/api/campus-market", {
   method: "POST",
   body: JSON.stringify({ action: "listing", kind: "sell", category: "books", title: `Diğer Kampüs Kitabı ${runId}`, description: "Kampüsler arası ilan izolasyonu doğrulaması.", price: 250, condition: "used-good", meetupPlace: "Kuzey kampüs" }),
@@ -345,6 +382,9 @@ await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: c
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-event", id: campusEvent.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: campusPlace.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: otherCampusPlace.id }) }, otherCampusEmail);
+await json("/api/library-occupancy", { method: "PATCH", body: JSON.stringify({ action: "archive-area", areaId: libraryArea.id }) });
+await json("/api/library-occupancy", { method: "PATCH", body: JSON.stringify({ action: "archive-area", areaId: secondLibraryArea.id }) });
+await json("/api/library-occupancy", { method: "PATCH", body: JSON.stringify({ action: "archive-area", areaId: otherLibraryArea.id }) }, otherCampusEmail);
 await json("/api/campus-market/images", { method: "DELETE", body: JSON.stringify({ id: uploadedListingImages[0].id }) });
 await json("/api/campus-market/images", { method: "DELETE", body: JSON.stringify({ id: uploadedListingImages[1].id }) });
 await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "listing-status", id: listing.id, status: "closed" }) });
@@ -353,4 +393,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.4.1 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.5 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");

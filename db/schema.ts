@@ -174,6 +174,47 @@ export const campusPlaceConfirmations = sqliteTable(
   (table) => [primaryKey({ columns: [table.placeId, table.userEmail] })],
 );
 
+export const libraryAreas = sqliteTable(
+  "library_areas",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    placeId: text("place_id").references(() => campusPlaces.id, { onDelete: "set null" }),
+    creatorEmail: text("creator_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    floorLabel: text("floor_label").notNull().default(""),
+    zoneLabel: text("zone_label").notNull().default(""),
+    description: text("description").notNull().default(""),
+    capacity: integer("capacity"),
+    featuresJson: text("features_json").notNull().default("[]"),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("library_areas_university_status_idx").on(table.universityId, table.status, table.updatedAt),
+    index("library_areas_place_idx").on(table.placeId, table.status),
+  ],
+);
+
+export const libraryCheckins = sqliteTable(
+  "library_checkins",
+  {
+    id: text("id").primaryKey(),
+    areaId: text("area_id").notNull().references(() => libraryAreas.id, { onDelete: "cascade" }),
+    userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    status: text("status").notNull().default("active"),
+    expiresAt: text("expires_at").notNull(),
+    checkedOutAt: text("checked_out_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("library_checkins_area_status_expiry_idx").on(table.areaId, table.status, table.expiresAt),
+    uniqueIndex("library_checkins_one_active_user_idx").on(table.userEmail).where(sql`${table.status} = 'active'`),
+  ],
+);
+
 export const campusEvents = sqliteTable(
   "campus_events",
   {

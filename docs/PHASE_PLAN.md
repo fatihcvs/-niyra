@@ -417,6 +417,7 @@ uçtan uca testle doğrulandı. Ürün ödeme veya teslim aracılığı yapmaz.
 **Kapsam**
 
 - Satılık, aranan ve ücretsiz ilan türleri
+- İlan başına en fazla 6 doğrulanan PNG, JPG veya WEBP ürün fotoğrafı
 - Kategori, fiyat, durum, teslim noktası ve ilan yaşam döngüsü
 - Kampüs içi teklif/iletişim isteği; ilk sürümde uygulama içi ödeme yok
 - Mekâna bağlı, tarih ve kaynak açıklamalı fiyat gözlemleri
@@ -431,7 +432,11 @@ uçtan uca testle doğrulandı. Ürün ödeme veya teslim aracılığı yapmaz.
 
 ## Faz 13 — Kütüphane çalışma alanı doluluğu (v1.5)
 
-**Durum:** Planlandı.
+**Durum:** Tamamlandı. Kütüphane alanı kataloğu, kampüs mekânı bağlantısı,
+süreli check-in/check-out, aynı anda tek aktif alan kuralı, son iki saatlik
+sinyale dayalı tahmin ve veri yoksa bilinmiyor durumu yerel uçtan uca testle
+doğrulandı. Masa görselleştirmesi fiziksel plan değil oran göstergesi olarak
+açıkça etiketlendi.
 
 **Kullanıcı sonucu:** Öğrenci kampüs kütüphanelerindeki çalışma bölgelerini,
 bildirilen kapasiteyi ve yakın zamandaki check-in verisine dayanan tahmini boş

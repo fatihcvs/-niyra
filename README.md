@@ -3,7 +3,7 @@
 Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencileri için ders, not, topluluk
 ve akademik çevre odaklı sosyal öğrenme ürünüdür. 241 kurumluk resmî kaynaklı
 katalog ilk katılımda aranabilir; öğrenci akışı ve sosyal yüzeyler seçilen
-üniversiteye göre ayrılır. MVP v1.4.1 vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
+üniversiteye göre ayrılır. MVP v1.5 vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
 yüklenen not dosyaları ve ilan başına en fazla 6 ürün fotoğrafı R2'de tutulur. Öğrenciler e-posta ve parolayla yönetici
 onayı olmadan hesap açar; ChatGPT Sites kimliği desteklenen alan adında ek giriş
 yolu olarak kullanılabilir.
@@ -19,6 +19,7 @@ yolu olarak kullanılabilir.
 - Açıklanabilir ilgi alanı eşleşmesi ve karşılıklı güvenli buluşma istekleri
 - Toplulukça doğrulanan kampüs mekânları, etkinlik takvimi ve günlük öneri
 - İlan başına 6 güvenli ürün fotoğrafını destekleyen, aynı kampüse kapalı öğrenci ilanları ve tarihli/kaynaklı fiyat gözlemleri
+- Süreli check-in verisinden tahmin üreten, veri yoksa boş masa uydurmayan kütüphane çalışma alanı görünümü
 - Öğrenci, ders, gönderi, not ve topluluk birleşik araması
 - Bildirim tercihleri, şikâyet, engelleme, sessize alma ve moderasyon kaydı
 - Self-servis hesap, güvenli oturum ve sağlık kontrolü
@@ -133,7 +134,7 @@ bindings. The service must keep a persistent volume mounted at `/data`; without
 that volume, profiles and uploaded notes would be lost on a redeploy. The
 deployment health check is `/api/health`.
 
-Railway herkese açık MVP v1.4.1 yüzeyidir. Ziyaretçiler e-posta ve parolayla hesap
+Railway herkese açık MVP v1.5 yüzeyidir. Ziyaretçiler e-posta ve parolayla hesap
 oluşturur; davet kodu veya yönetici onayı gerekmez. ChatGPT Sites dağıtımı aynı
 veri modelini kullanır ve uygun alan adında platform kimliğini de kabul eder.
 

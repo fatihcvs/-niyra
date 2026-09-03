@@ -85,6 +85,13 @@
       "when": 1788471991645,
       "tag": "0011_special_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1788473595920,
+      "tag": "0012_rainy_pride",
+      "breakpoints": true
     }
   ]
 }
