@@ -18,7 +18,7 @@ test("university catalog covers Turkey and all Cyprus regions with stable unique
     return result;
   }, {});
 
-  assert.equal(universityCatalogUpdatedAt, "2026-09-03");
+  assert.equal(universityCatalogUpdatedAt, "2026-09-04");
   assert.equal(universities.length, 241);
   assert.deepEqual(counts, { Türkiye: 204, "Kuzey Kıbrıs": 23, "Kıbrıs Cumhuriyeti": 14 });
   assert.equal(new Set(universities.map((university) => university.id)).size, universities.length);

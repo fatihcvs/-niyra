@@ -8,7 +8,7 @@ export type University = {
   region: UniversityRegion;
 };
 
-export const universityCatalogUpdatedAt = "2026-09-03";
+export const universityCatalogUpdatedAt = "2026-09-04";
 
 export const universityCatalogSources = [
   "https://www.turkiye.gov.tr/universite-hizmet-listesi?theme=default",

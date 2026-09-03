@@ -2,12 +2,6 @@
 
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
-  faculties,
-  getCourseById,
-  getCoursesForDepartment,
-  getDepartmentById,
-  getDepartmentsForFaculty,
-  getFacultyById,
   getUniversityById,
   universities,
   type AcademicCourse,
@@ -916,7 +910,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   return (
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
-        <div className="auth-brand"><Logo/><span>MVP v1.5</span></div>
+        <div className="auth-brand"><Logo/><span>MVP v1.6</span></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
@@ -937,6 +931,45 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   );
 }
 
+type CatalogUnit = {
+  id: string;
+  name: string;
+  type: string;
+  programCount: number;
+};
+
+type CatalogProgram = {
+  id: string;
+  unitId: string;
+  name: string;
+  degreeLevel: "associate" | "bachelor" | "integrated-master" | "master" | "doctorate";
+  durationYears?: number | null;
+  scoreType?: string | null;
+  language?: string | null;
+  accreditation?: string | null;
+  validThrough?: string | null;
+  curriculumUrls?: string[];
+};
+
+type CatalogPayload = {
+  coverage: "official-programs" | "catalog-only";
+  updatedAt: string;
+  units: CatalogUnit[];
+  referenceUnitCount: number;
+  programs: CatalogProgram[];
+  sources: Array<{ id: string; authority: string; title: string; url: string }>;
+  limitations: string;
+  error?: string;
+};
+
+const degreeLabels: Record<CatalogProgram["degreeLevel"], string> = {
+  associate: "Önlisans",
+  bachelor: "Lisans",
+  "integrated-master": "Bütünleşik yüksek lisans",
+  master: "Yüksek lisans",
+  doctorate: "Doktora",
+};
+
 function AcademicOnboarding({
   identityName,
   initialProfile,
@@ -953,28 +986,34 @@ function AcademicOnboarding({
   const [step, setStep] = useState(1);
   const [universityId, setUniversityId] = useState(initialProfile?.universityId ?? "omu");
   const [universityQuery, setUniversityQuery] = useState("");
-  const [facultyId, setFacultyId] = useState(initialProfile?.universityId === "omu" ? initialProfile.facultyId : "");
-  const [departmentId, setDepartmentId] = useState(initialProfile?.universityId === "omu" ? initialProfile.departmentId : "");
-  const [customFacultyName, setCustomFacultyName] = useState(initialProfile?.universityId !== "omu" ? initialProfile?.facultyName ?? "" : "");
-  const [customDepartmentName, setCustomDepartmentName] = useState(initialProfile?.universityId !== "omu" ? initialProfile?.departmentName ?? "" : "");
+  const [facultyId, setFacultyId] = useState(initialProfile?.facultyId ?? "");
+  const [departmentId, setDepartmentId] = useState(initialProfile?.departmentId ?? "");
+  const [customFacultyName, setCustomFacultyName] = useState(initialProfile?.facultyName ?? "");
+  const [customDepartmentName, setCustomDepartmentName] = useState(initialProfile?.departmentName ?? "");
   const [classYear, setClassYear] = useState(initialProfile?.classYear ?? 1);
-  const [courseIds, setCourseIds] = useState<string[]>(initialProfile?.universityId === "omu" ? initialProfile.courses.map((course) => course.id) : []);
   const [customCourses, setCustomCourses] = useState<Array<{ code: string; name: string }>>(
-    initialProfile?.universityId !== "omu" && initialProfile?.courses.length
+    initialProfile?.courses.length
       ? initialProfile.courses.map((course) => ({ code: course.code, name: course.name }))
       : [{ code: "", name: "" }, { code: "", name: "" }, { code: "", name: "" }],
   );
+  const [catalog, setCatalog] = useState<CatalogPayload | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
+  const [manualAcademic, setManualAcademic] = useState(false);
+  const [unitQuery, setUnitQuery] = useState("");
+  const [programQuery, setProgramQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const isDetailedUniversity = universityId === "omu";
-  const universityFaculties = faculties.filter((faculty) => faculty.universityId === universityId);
-  const facultyDepartments = getDepartmentsForFaculty(facultyId);
-  const departmentCourses = getCoursesForDepartment(departmentId);
   const selectedUniversity = getUniversityById(universityId);
-  const selectedFaculty = getFacultyById(facultyId);
-  const selectedDepartment = getDepartmentById(departmentId);
-  const selectedCourses = courseIds.map((courseId) => getCourseById(courseId)).filter((course): course is AcademicCourse => Boolean(course));
+  const usesOfficialCatalog = !manualAcademic && Boolean(catalog?.units.length);
+  const selectedFaculty = catalog?.units.find((unit) => unit.id === facultyId);
+  const selectedDepartment = catalog?.programs.find((program) => program.id === departmentId);
+  const facultyDepartments = catalog?.programs.filter((program) => program.unitId === facultyId) ?? [];
+  const normalizedUnitQuery = unitQuery.trim().toLocaleLowerCase("tr-TR");
+  const normalizedProgramQuery = programQuery.trim().toLocaleLowerCase("tr-TR");
+  const visibleUnits = (catalog?.units ?? []).filter((unit) => `${unit.name} ${unit.type}`.toLocaleLowerCase("tr-TR").includes(normalizedUnitQuery));
+  const visiblePrograms = facultyDepartments.filter((program) => `${program.name} ${degreeLabels[program.degreeLevel]} ${program.scoreType ?? ""}`.toLocaleLowerCase("tr-TR").includes(normalizedProgramQuery));
   const validCustomCourses = customCourses
     .map((course) => ({ code: course.code.trim(), name: course.name.trim() }))
     .filter((course) => course.code && course.name);
@@ -990,6 +1029,37 @@ function AcademicOnboarding({
     });
   }, [universityId, universityQuery]);
   const firstName = getFirstName(identityName);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void fetch(`/api/academic-catalog?universityId=${encodeURIComponent(universityId)}`, {
+      headers: { accept: "application/json" },
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as CatalogPayload;
+        if (!response.ok) throw new Error(payload.error ?? "Akademik katalog yüklenemedi.");
+        setCatalog(payload);
+        setFacultyId((current) => {
+          if (!current || payload.units.some((unit) => unit.id === current)) return current;
+          setManualAcademic(true);
+          setDepartmentId("");
+          return "";
+        });
+        if (payload.units.length === 0) setManualAcademic(true);
+      })
+      .catch((catalogLoadError) => {
+        if (controller.signal.aborted) return;
+        setCatalogError(catalogLoadError instanceof Error ? catalogLoadError.message : "Akademik katalog yüklenemedi.");
+        setManualAcademic(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCatalogLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [universityId]);
 
   if (state === "unavailable") {
     return (
@@ -1009,33 +1079,28 @@ function AcademicOnboarding({
   function chooseFaculty(nextFacultyId: string) {
     setFacultyId(nextFacultyId);
     setDepartmentId("");
-    setCourseIds([]);
+    setProgramQuery("");
     setError("");
   }
 
   function chooseUniversity(nextUniversityId: string) {
     setUniversityId(nextUniversityId);
+    setCatalog(null);
+    setCatalogLoading(true);
+    setCatalogError("");
     setFacultyId("");
     setDepartmentId("");
     setCustomFacultyName("");
     setCustomDepartmentName("");
-    setCourseIds([]);
     setCustomCourses([{ code: "", name: "" }, { code: "", name: "" }, { code: "", name: "" }]);
+    setManualAcademic(false);
+    setUnitQuery("");
+    setProgramQuery("");
     setError("");
   }
 
   function chooseDepartment(nextDepartmentId: string) {
     setDepartmentId(nextDepartmentId);
-    setCourseIds([]);
-    setError("");
-  }
-
-  function toggleCourse(courseId: string) {
-    setCourseIds((current) => {
-      if (current.includes(courseId)) return current.filter((id) => id !== courseId);
-      if (current.length >= 8) return current;
-      return [...current, courseId];
-    });
     setError("");
   }
 
@@ -1054,13 +1119,12 @@ function AcademicOnboarding({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           universityId,
-          facultyId: isDetailedUniversity ? facultyId : undefined,
-          departmentId: isDetailedUniversity ? departmentId : undefined,
-          facultyName: isDetailedUniversity ? undefined : customFacultyName,
-          departmentName: isDetailedUniversity ? undefined : customDepartmentName,
+          facultyId: usesOfficialCatalog ? facultyId : undefined,
+          departmentId: usesOfficialCatalog ? departmentId : undefined,
+          facultyName: usesOfficialCatalog ? undefined : customFacultyName,
+          departmentName: usesOfficialCatalog ? undefined : customDepartmentName,
           classYear,
-          courseIds: isDetailedUniversity ? courseIds : [],
-          customCourses: isDetailedUniversity ? [] : validCustomCourses,
+          customCourses: validCustomCourses,
         }),
       });
       const data = (await response.json()) as { profile?: StudentProfile; error?: string; authRequired?: boolean };
@@ -1083,9 +1147,9 @@ function AcademicOnboarding({
 
   const nextDisabled =
     (step === 1 && !universityId) ||
-    (step === 2 && (isDetailedUniversity ? !facultyId : customFacultyName.trim().length < 2)) ||
-    (step === 3 && (isDetailedUniversity ? !departmentId : customDepartmentName.trim().length < 2)) ||
-    (step === 4 && (isDetailedUniversity ? courseIds.length < 3 : validCustomCourses.length < 3)) ||
+    (step === 2 && (catalogLoading || (usesOfficialCatalog ? !facultyId : customFacultyName.trim().length < 2))) ||
+    (step === 3 && (usesOfficialCatalog ? !departmentId : customDepartmentName.trim().length < 2)) ||
+    (step === 4 && validCustomCourses.length < 3) ||
     saving;
 
   return (
@@ -1119,7 +1183,7 @@ function AcademicOnboarding({
             {step === 1 && "Türkiye ve Kıbrıs’taki üniversiteler arasından okulunu ara ve seç."}
             {step === 2 && "Fakülten, sana gösterilecek bölüm çevrelerini ve kampüs önerilerini belirler."}
             {step === 3 && `Akışını ${selectedUniversity?.shortName ?? "kampüsündeki"} öğrencileriyle eşleştireceğiz.`}
-            {step === 4 && (isDetailedUniversity ? "En az 3 ders seç. Ders çevrelerin akışının temelini oluşturacak." : "En az 3 dersini kodu ve adıyla ekle; not ve ders çevrelerin bunlarla kurulacak.")}
+            {step === 4 && "Bu dönem aldığın en az 3 dersi kodu ve adıyla ekle; not ve ders çevrelerin bunlarla kurulacak."}
             {step === 5 && "Seçimlerini kontrol et. Profilin sonraki ziyaretlerinde de seni bekleyecek."}
           </p>
         </div>
@@ -1137,7 +1201,7 @@ function AcademicOnboarding({
                 <input value={universityQuery} onChange={(event) => setUniversityQuery(event.target.value)} placeholder="Üniversite adı, kısaltma veya bölge ara" autoComplete="off"/>
                 {universityQuery && <button type="button" onClick={() => setUniversityQuery("")} aria-label="Üniversite aramasını temizle"><Icon name="close" size={15}/></button>}
               </label>
-              <div className="university-catalog-meta"><span>{universities.filter((university) => university.region === "Türkiye").length} Türkiye</span><span>{universities.filter((university) => university.region !== "Türkiye").length} Kıbrıs</span><small>Resmî katalog · 3 Eylül 2026</small></div>
+              <div className="university-catalog-meta"><span>{universities.filter((university) => university.region === "Türkiye").length} Türkiye</span><span>{universities.filter((university) => university.region !== "Türkiye").length} Kıbrıs</span><small>Resmî katalog · 4 Eylül 2026</small></div>
               <div className="university-grid university-catalog-grid">
                 {visibleUniversities.slice(0, 80).map((university) => (
                   <button className={universityId === university.id ? "selected" : ""} type="button" onClick={() => chooseUniversity(university.id)} key={university.id}>
@@ -1152,27 +1216,39 @@ function AcademicOnboarding({
 
           {step === 2 && (
             <div className="academic-step">
-              <div className="onboarding-field-title"><span>Fakülten</span><small>{selectedUniversity?.name}</small></div>
-              {isDetailedUniversity ? <div className="faculty-grid">
-                {universityFaculties.map((faculty) => (
+              <div className="onboarding-field-title"><span>Akademik birimin</span><small>{selectedUniversity?.name}</small></div>
+              {catalogLoading && <div className="catalog-loading"><Icon name="sparkles" size={18}/> Resmî akademik katalog yükleniyor…</div>}
+              {!catalogLoading && catalog?.units.length ? <>
+                <div className="catalog-source-note"><Icon name="check" size={15}/><span><strong>{catalog.units.length} seçilebilir birim · {catalog.programs.length} resmî program</strong><small>{catalog.sources.map((source) => source.authority).filter((value, index, values) => values.indexOf(value) === index).join(" + ")} · {catalog.updatedAt}</small></span></div>
+                {!manualAcademic && <label className="catalog-inline-search"><Icon name="search" size={16}/><input value={unitQuery} onChange={(event) => setUnitQuery(event.target.value)} placeholder="Fakülte, yüksekokul veya akademik birim ara"/></label>}
+                {!manualAcademic && <div className="faculty-grid">
+                {visibleUnits.map((faculty) => (
                   <button className={facultyId === faculty.id ? "selected" : ""} type="button" onClick={() => chooseFaculty(faculty.id)} key={faculty.id}>
-                    <span>{faculty.shortName}</span><div><strong>{faculty.name}</strong><small>{selectedUniversity?.name}</small></div><i>{facultyId === faculty.id && <Icon name="check" size={14}/>}</i>
+                    <span>{faculty.type.slice(0, 3).toLocaleUpperCase("tr-TR")}</span><div><strong>{faculty.name}</strong><small>{faculty.type} · {faculty.programCount} program</small></div><i>{facultyId === faculty.id && <Icon name="check" size={14}/>}</i>
                   </button>
                 ))}
-              </div> : <label className="custom-academic-field"><span>Fakülte, yüksekokul veya enstitü adı</span><input value={customFacultyName} onChange={(event) => { setCustomFacultyName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Mühendislik Fakültesi"/><small>Resmî öğrenci kaydında gördüğün akademik birim adını yaz.</small></label>}
+                </div>}
+                <button className="catalog-manual-toggle" type="button" onClick={() => { setManualAcademic((current) => !current); setFacultyId(""); setDepartmentId(""); setError(""); }}>{manualAcademic ? "Resmî listeden seç" : "Birimim listede yok"}</button>
+              </> : null}
+              {!catalogLoading && (manualAcademic || !catalog?.units.length) && <label className="custom-academic-field"><span>Fakülte, yüksekokul veya enstitü adı</span><input value={customFacultyName} onChange={(event) => { setCustomFacultyName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Mühendislik Fakültesi"/><small>Resmî öğrenci kaydında gördüğün akademik birim adını yaz.</small></label>}
+              {!catalogLoading && (catalogError || !catalog?.units.length) && <p className="catalog-coverage-warning">{catalogError || "Bu kurum için merkezî resmî program kaydı bulunamadı; bilgini öğrenci kaydındaki biçimiyle yazabilirsin."}</p>}
             </div>
           )}
 
           {step === 3 && (
             <div className="academic-step">
-              <div className="onboarding-field-title"><span>Bölümün</span><small>{isDetailedUniversity ? selectedFaculty?.name : customFacultyName}</small></div>
-              {isDetailedUniversity ? <div className="department-grid">
-                {facultyDepartments.map((department) => (
+              <div className="onboarding-field-title"><span>Programın</span><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName}</small></div>
+              {usesOfficialCatalog ? <>
+                <label className="catalog-inline-search"><Icon name="search" size={16}/><input value={programQuery} onChange={(event) => setProgramQuery(event.target.value)} placeholder="Bölüm veya program ara"/></label>
+                <div className="department-grid catalog-program-grid">
+                {visiblePrograms.map((department) => (
                   <button className={departmentId === department.id ? "selected" : ""} type="button" onClick={() => chooseDepartment(department.id)} key={department.id}>
-                    <span>{department.name}</span>{departmentId === department.id && <Icon name="check" size={15}/>}
+                    <span><strong>{department.name}</strong><small>{degreeLabels[department.degreeLevel]}{department.durationYears ? ` · ${department.durationYears} yıl` : ""}{department.scoreType ? ` · ${department.scoreType}` : ""}{department.language ? ` · ${department.language}` : ""}</small></span>{departmentId === department.id && <Icon name="check" size={15}/>}
                   </button>
                 ))}
-              </div> : <label className="custom-academic-field"><span>Bölüm veya program adı</span><input value={customDepartmentName} onChange={(event) => { setCustomDepartmentName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Bilgisayar Mühendisliği"/><small>Önlisans, lisans veya lisansüstü program adını kullanabilirsin.</small></label>}
+                </div>
+                {visiblePrograms.length === 0 && <p className="university-catalog-empty">Bu birimde aramanla eşleşen program bulunamadı.</p>}
+              </> : <label className="custom-academic-field"><span>Bölüm veya program adı</span><input value={customDepartmentName} onChange={(event) => { setCustomDepartmentName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Bilgisayar Mühendisliği"/><small>Önlisans, lisans veya lisansüstü program adını kullanabilirsin.</small></label>}
               <div className="onboarding-field-title class-title"><span>Kaçıncı sınıftasın?</span><small>Hazırlık dahil seçim yapabilirsin.</small></div>
               <div className="year-picker">
                 {[1, 2, 3, 4, 5, 6].map((year) => <button className={classYear === year ? "selected" : ""} type="button" onClick={() => setClassYear(year)} key={year}>{year === 1 ? "Hazırlık / 1" : year}<small>{year === 6 ? "+" : ". sınıf"}</small></button>)}
@@ -1182,23 +1258,16 @@ function AcademicOnboarding({
 
           {step === 4 && (
             <div className="course-step">
-              <div className="course-count"><span><strong>{isDetailedUniversity ? courseIds.length : validCustomCourses.length}</strong> ders ekledin</span><small>En az 3 · En fazla 8</small></div>
-              {isDetailedUniversity ? <div className="course-choice-grid">
-                {departmentCourses.map((course, index) => (
-                  <button className={courseIds.includes(course.id) ? "selected" : ""} type="button" onClick={() => toggleCourse(course.id)} key={course.id}>
-                    <span className={`course-choice-icon course-tone-${index % 6}`}>{course.code.split(" ")[0].slice(0, 3)}</span>
-                    <div><strong>{course.code}</strong><small>{course.name}</small></div>
-                    <i>{courseIds.includes(course.id) ? <Icon name="check" size={14}/> : <Icon name="plus" size={14}/>}</i>
-                  </button>
-                ))}
-              </div> : <div className="custom-course-list">
+              <div className="course-count"><span><strong>{validCustomCourses.length}</strong> ders ekledin</span><small>En az 3 · En fazla 8</small></div>
+              {selectedDepartment?.curriculumUrls?.[0] && <a className="catalog-curriculum-link" href={selectedDepartment.curriculumUrls[0]} target="_blank" rel="noreferrer"><Icon name="file" size={16}/> CYQAA onaylı ders dağılımını aç <Icon name="arrow" size={14}/></a>}
+              <div className="custom-course-list">
                 {customCourses.map((course, index) => <div className="custom-course-row" key={index}>
                   <label><span>Ders kodu</span><input value={course.code} onChange={(event) => updateCustomCourse(index, "code", event.target.value)} maxLength={20} placeholder="BİL 101"/></label>
                   <label><span>Ders adı</span><input value={course.name} onChange={(event) => updateCustomCourse(index, "name", event.target.value)} maxLength={100} placeholder="Programlamaya Giriş"/></label>
                   {customCourses.length > 3 && <button type="button" onClick={() => setCustomCourses((current) => current.filter((_, courseIndex) => courseIndex !== index))} aria-label={`${index + 1}. dersi kaldır`}><Icon name="trash" size={16}/></button>}
                 </div>)}
                 {customCourses.length < 8 && <button className="custom-course-add" type="button" onClick={() => setCustomCourses((current) => [...current, { code: "", name: "" }])}><Icon name="plus" size={15}/> Ders ekle</button>}
-              </div>}
+              </div>
             </div>
           )}
 
@@ -1206,14 +1275,14 @@ function AcademicOnboarding({
             <div className="onboarding-summary">
               <div className="summary-identity">
                 <span className="summary-avatar">{getInitials(identityName)}</span>
-                <div><span>Üniyra profilin</span><h2>{identityName}</h2><p>{isDetailedUniversity ? selectedFaculty?.shortName : customFacultyName} · {isDetailedUniversity ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</p></div>
+                <div><span>Üniyra profilin</span><h2>{identityName}</h2><p>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} · {usesOfficialCatalog ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</p></div>
                 <span className="summary-ready"><Icon name="check" size={15}/> Hazır</span>
               </div>
               <div className="summary-campus">
                 <span>{selectedUniversity?.shortName}</span>
-                <div><small>KAMPÜSÜN</small><strong>{selectedUniversity?.name}</strong><p>{isDetailedUniversity ? selectedFaculty?.name : customFacultyName} çevresindeki öğrencilerle buluş.</p></div>
+                <div><small>KAMPÜSÜN</small><strong>{selectedUniversity?.name}</strong><p>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} çevresindeki öğrencilerle buluş.</p></div>
               </div>
-              <div className="summary-courses"><span>Ders çevrelerin</span><div>{(isDetailedUniversity ? selectedCourses : validCustomCourses).map((course) => <strong key={`${course.code}-${course.name}`}>{course.code}</strong>)}</div></div>
+              <div className="summary-courses"><span>Ders çevrelerin</span><div>{validCustomCourses.map((course) => <strong key={`${course.code}-${course.name}`}>{course.code}</strong>)}</div></div>
               <div className="summary-note"><Icon name="sparkles" size={18}/><p>Akışın bu seçimlere göre kişiselleşecek. Profilini daha sonra istediğin zaman güncelleyebilirsin.</p></div>
             </div>
           )}
@@ -1674,7 +1743,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Üniyra v1.5</strong><span>Kütüphane Anlık yayında</span></div>
+          <div><strong>Üniyra v1.6</strong><span>Akademik katalog yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>

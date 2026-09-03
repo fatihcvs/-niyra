@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import "./api-auth.test.mjs";
+import "./academic-catalog.test.mjs";
 import "./migrations.test.mjs";
+import "./university-catalog.test.mjs";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;

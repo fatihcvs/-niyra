@@ -21,6 +21,7 @@ import {
   type Department,
   type Faculty,
 } from "../../../lib/academic-data";
+import { getOfficialAcademicProgram, getOfficialAcademicUnit } from "../../../lib/academic-catalog";
 import { makeAcademicShortName } from "../../../lib/university-catalog";
 
 type ProfilePayload = {
@@ -174,9 +175,12 @@ export async function PUT(request: Request) {
   let department: Department | undefined;
   let selectedCourses: AcademicCourse[] = [];
 
-  if (university.id === "omu") {
-    faculty = getFacultyById(payload.facultyId ?? "");
-    department = getDepartmentById(payload.departmentId ?? "");
+  const legacyFaculty = getFacultyById(payload.facultyId ?? "");
+  const legacyDepartment = getDepartmentById(payload.departmentId ?? "");
+
+  if (university.id === "omu" && legacyFaculty && legacyDepartment && (payload.courseIds?.length ?? 0) > 0) {
+    faculty = legacyFaculty;
+    department = legacyDepartment;
     const uniqueCourseIds = [...new Set(payload.courseIds ?? [])];
     selectedCourses = uniqueCourseIds
       .map((courseId) => getCourseById(courseId))
@@ -192,6 +196,8 @@ export async function PUT(request: Request) {
       return Response.json({ error: "Seçilen derslerden biri bu bölüme ait değil." }, { status: 400 });
     }
   } else {
+    const officialUnit = getOfficialAcademicUnit(university.id, payload.facultyId ?? "");
+    const officialProgram = getOfficialAcademicProgram(university.id, payload.departmentId ?? "");
     const facultyName = cleanAcademicText(payload.facultyName, 100);
     const departmentName = cleanAcademicText(payload.departmentName, 100);
     const rawCourses = Array.isArray(payload.customCourses) ? payload.customCourses : [];
@@ -200,8 +206,23 @@ export async function PUT(request: Request) {
       name: cleanAcademicText(course?.name, 100),
     }));
 
-    if (facultyName.length < 2 || departmentName.length < 2) {
-      return Response.json({ error: "Fakülte ve bölüm adları en az 2 karakter olmalı." }, { status: 400 });
+    if (officialUnit && officialProgram && officialProgram.unitId === officialUnit.id) {
+      faculty = {
+        id: officialUnit.id,
+        universityId: university.id,
+        name: officialUnit.name,
+        shortName: makeAcademicShortName(officialUnit.name),
+      };
+      department = { id: officialProgram.id, facultyId: officialUnit.id, name: officialProgram.name };
+    } else if (payload.facultyId || payload.departmentId) {
+      return Response.json({ error: "Seçilen resmî akademik birim veya program bu üniversiteye bağlı değil." }, { status: 400 });
+    } else if (facultyName.length < 2 || departmentName.length < 2) {
+      return Response.json({ error: "Akademik birim ve program adları en az 2 karakter olmalı." }, { status: 400 });
+    } else {
+      const facultyId = await stableCatalogId("fac", `${university.id}:${facultyName.toLocaleLowerCase("tr-TR")}`);
+      const departmentId = await stableCatalogId("dep", `${facultyId}:${departmentName.toLocaleLowerCase("tr-TR")}`);
+      faculty = { id: facultyId, universityId: university.id, name: facultyName, shortName: makeAcademicShortName(facultyName) };
+      department = { id: departmentId, facultyId, name: departmentName };
     }
     if (cleanedCourses.some((course) => course.code.length < 2 || course.name.length < 2)) {
       return Response.json({ error: "Her ders için geçerli bir kod ve ders adı yazmalısın." }, { status: 400 });
@@ -210,13 +231,13 @@ export async function PUT(request: Request) {
       return Response.json({ error: "Aynı ders kodunu birden fazla kez ekleyemezsin." }, { status: 400 });
     }
 
-    const facultyId = await stableCatalogId("fac", `${university.id}:${facultyName.toLocaleLowerCase("tr-TR")}`);
-    const departmentId = await stableCatalogId("dep", `${facultyId}:${departmentName.toLocaleLowerCase("tr-TR")}`);
-    faculty = { id: facultyId, universityId: university.id, name: facultyName, shortName: makeAcademicShortName(facultyName) };
-    department = { id: departmentId, facultyId, name: departmentName };
+    if (!department) {
+      return Response.json({ error: "Akademik program doğrulanamadı." }, { status: 400 });
+    }
+    const courseDepartmentId = department.id;
     selectedCourses = await Promise.all(cleanedCourses.map(async (course) => ({
-      id: await stableCatalogId("crs", `${departmentId}:${course.code}:${course.name.toLocaleLowerCase("tr-TR")}`),
-      departmentId,
+      id: await stableCatalogId("crs", `${courseDepartmentId}:${course.code}:${course.name.toLocaleLowerCase("tr-TR")}`),
+      departmentId: courseDepartmentId,
       code: course.code,
       name: course.name,
     })));
