@@ -120,6 +120,19 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 Use build and validation commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
 
+## Railway deployment
+
+Railway builds the root `Dockerfile`, applies the D1 migrations to the attached
+`/data` volume, and serves the validated Worker bundle with local D1/R2-compatible
+bindings. The service must keep a persistent volume mounted at `/data`; without
+that volume, profiles and uploaded notes would be lost on a redeploy. The
+deployment health check is `/api/health`.
+
+The ChatGPT Sites deployment remains the authenticated product surface. Railway
+does not provide Sites' Sign in with ChatGPT dispatch routes, so anonymous Railway
+visitors can use the product demo while authenticated account flows remain on the
+Sites domain.
+
 The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
 
 ## Learn More
