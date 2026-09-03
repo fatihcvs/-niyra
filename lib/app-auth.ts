@@ -119,7 +119,19 @@ export function sameOriginRequest(request: Request) {
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {
-    return new URL(origin).origin === new URL(request.url).origin;
+    const browserOrigin = new URL(origin);
+    const requestUrl = new URL(request.url);
+    if (browserOrigin.origin === requestUrl.origin) return true;
+
+    // Railway terminates TLS before forwarding the request to the Worker, so
+    // request.url can be http even though the browser is correctly using
+    // https. Host is controlled by the browser/proxy rather than JavaScript;
+    // combine it with the proxy protocol instead of trusting Origin alone.
+    const forwardedProtocol = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().replace(/:$/, "");
+    if (!forwardedProtocol || !/^(?:http|https)$/.test(forwardedProtocol)) return false;
+    const forwardedHost = (request.headers.get("host") ?? requestUrl.host).split(",")[0]?.trim();
+    if (!forwardedHost) return false;
+    return browserOrigin.origin === new URL(`${forwardedProtocol}://${forwardedHost}`).origin;
   } catch {
     return false;
   }

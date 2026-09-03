@@ -83,6 +83,27 @@ test("self-service registration rejects cross-origin browser requests", async ()
   assert.equal(response.status, 403);
 });
 
+test("self-service registration accepts its public HTTPS origin behind Railway TLS termination", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://web-production-da44f.up.railway.app/api/auth/register", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        host: "web-production-da44f.up.railway.app",
+        origin: "https://web-production-da44f.up.railway.app",
+        "x-forwarded-proto": "https",
+      },
+      body: JSON.stringify({ displayName: "Runtime Student", email: "student@example.edu", password: "StrongPassword123" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.notEqual(response.status, 403);
+  assert.equal(response.status, 503);
+});
+
 test("login returns a generic error for malformed credentials", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(
