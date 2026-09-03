@@ -10,6 +10,7 @@ import {
   universities,
   users,
 } from "../../../db/schema";
+import { audit, enforceRateLimit, getRuntime, notify, rateLimitResponse } from "../../../lib/server-api";
 
 type ActionPayload = {
   postId?: string;
@@ -69,10 +70,13 @@ export async function POST(request: Request) {
   }
 
   try {
+    const { DB } = await getRuntime();
+    const limit = await enforceRateLimit(DB, identity.email, `post-${payload.type}`, payload.type === "comment" ? 40 : 160, 3600);
+    if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
     const [[post], [actor]] = await Promise.all([
       db
-        .select({ id: posts.id })
+        .select({ id: posts.id, authorEmail: posts.authorEmail, content: posts.content, communityId: posts.communityId })
         .from(posts)
         .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
         .limit(1),
@@ -91,6 +95,20 @@ export async function POST(request: Request) {
         { error: "Etkileşimden önce akademik profilini tamamlamalısın." },
         { status: 409 },
       );
+    }
+    const blocked = await DB.prepare(
+      `SELECT 1 AS blocked FROM user_blocks
+       WHERE (blocker_email = ? AND blocked_email = ?) OR (blocker_email = ? AND blocked_email = ?) LIMIT 1`,
+    ).bind(identity.email, post.authorEmail, post.authorEmail, identity.email).first();
+    if (blocked) return Response.json({ error: "Bu gönderiyle etkileşim kullanılamıyor." }, { status: 403 });
+    if (post.communityId) {
+      const communityAccess = await DB.prepare(
+        `SELECT c.id FROM communities c
+         WHERE c.id = ? AND c.status = 'active' AND (c.join_policy = 'open' OR EXISTS (
+           SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
+         )) LIMIT 1`,
+      ).bind(post.communityId, identity.email).first();
+      if (!communityAccess) return Response.json({ error: "Bu topluluk gönderisine erişim iznin yok." }, { status: 403 });
     }
 
     if (payload.type === "like") {
@@ -112,6 +130,8 @@ export async function POST(request: Request) {
         .select({ value: count() })
         .from(postLikes)
         .where(eq(postLikes.postId, postId));
+      await audit(DB, identity.email, existing ? "post.unliked" : "post.liked", "post", postId);
+      if (!existing) await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderini beğendi`, body: post.content.slice(0, 120), entityType: "post", entityId: postId });
       return Response.json({ type: "like", active: !existing, count: total.value });
     }
 
@@ -130,6 +150,7 @@ export async function POST(request: Request) {
         await db.insert(postSaves).values({ postId, userEmail: identity.email });
       }
 
+      await audit(DB, identity.email, existing ? "post.unsaved" : "post.saved", "post", postId);
       return Response.json({ type: "save", active: !existing });
     }
 
@@ -142,6 +163,8 @@ export async function POST(request: Request) {
       .select({ value: count() })
       .from(postComments)
       .where(and(eq(postComments.postId, postId), isNull(postComments.deletedAt)));
+    await audit(DB, identity.email, "comment.created", "comment", id, { postId });
+    await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderine yorum yaptı`, body: commentContent.slice(0, 120), entityType: "post", entityId: postId });
 
     return Response.json(
       {

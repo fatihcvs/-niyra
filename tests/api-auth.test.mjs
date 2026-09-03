@@ -313,3 +313,69 @@ test("follow system rejects anonymous writes", async () => {
   assert.equal(response.status, 401);
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
+
+for (const [label, path] of [
+  ["note library", "/api/notes"],
+  ["community directory", "/api/communities"],
+  ["notification center", "/api/notifications"],
+  ["unified search", "/api/search?q=mat"],
+  ["safety center", "/api/safety"],
+  ["pilot progress", "/api/pilot"],
+]) {
+  test(`${label} rejects anonymous reads`, async () => {
+    const worker = await builtWorker();
+    const response = await worker.fetch(
+      new Request(`http://localhost${path}`, { headers: { accept: "application/json" } }),
+      runtimeEnv,
+      runtimeContext,
+    );
+    assert.equal(response.status, 401);
+    assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
+  });
+}
+
+test("note upload rejects unsupported files before storage access", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("title", "Örnek not");
+  form.set("courseId", "mat101");
+  form.set("file", new File(["unsafe"], "payload.exe", { type: "application/octet-stream" }));
+  const response = await worker.fetch(
+    new Request("http://localhost/api/notes", {
+      method: "POST",
+      headers: { "oai-authenticated-user-email": "student@omu.edu.tr" },
+      body: form,
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 415);
+});
+
+test("community creation rejects invalid join policies before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/communities", {
+      method: "POST",
+      headers: { "content-type": "application/json", "oai-authenticated-user-email": "student@omu.edu.tr" },
+      body: JSON.stringify({ name: "Matematik çevresi", description: "Birlikte düzenli matematik çalışırız.", joinPolicy: "secret" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 400);
+});
+
+test("safety reports reject malformed entity types before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/safety", {
+      method: "POST",
+      headers: { "content-type": "application/json", "oai-authenticated-user-email": "student@omu.edu.tr" },
+      body: JSON.stringify({ action: "report", entityType: "unknown", entityId: "example", reason: "spam" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 400);
+});

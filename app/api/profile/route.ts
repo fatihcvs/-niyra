@@ -254,6 +254,12 @@ export async function PUT(request: Request) {
           )
           .bind(identity.email, course.id, index),
       ),
+      d1
+        .prepare(
+          `INSERT INTO product_events (id, user_email, name, properties_json)
+           VALUES (?, ?, 'onboarding.completed', ?)`,
+        )
+        .bind(crypto.randomUUID(), identity.email, JSON.stringify({ courseCount: selectedCourses.length, classYear })),
     ];
 
     await d1.batch(statements);

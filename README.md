@@ -1,8 +1,22 @@
-# vinext-starter
+# Üniyra
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Üniyra, OMÜ öğrencileri için ders, not, topluluk ve akademik çevre odaklı sosyal
+öğrenme ürünüdür. Uygulama vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
+yüklenen not dosyaları R2'de tutulur ve kullanıcı kimliği platformun doğrulanmış
+başlıklarından okunur.
+
+## Ürün yüzeyleri
+
+- Akademik profil ve ders bazlı ilk katılım
+- Kalıcı gönderi, yorum, beğeni, kaydetme, takip ve öğrenci profilleri
+- Güvenli PDF/DOCX/görsel not kütüphanesi
+- Rol ve üyelik politikası olan topluluklar
+- Öğrenci, ders, gönderi, not ve topluluk birleşik araması
+- Bildirim tercihleri, şikâyet, engelleme, sessize alma ve moderasyon kaydı
+- Kapalı pilot görevleri, geri bildirim ve sağlık kontrolü
+
+Faz durumu ve gerçek dünya çıkış kapıları için `docs/PHASE_PLAN.md`; üretim
+işletimi için `docs/OPERATIONS.md` belgesine bak.
 
 ## Prerequisites
 
@@ -23,10 +37,10 @@ Scripts that need writable project-scoped home, npm, XDG, and temporary paths us
 
 - edit site code under `app/`
 - `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
+- `.openai/hosting.json` declares the Sites D1 and R2 bindings
 - `vite.config.ts` simulates declared bindings for local development
 - `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
+- `db/schema.ts` contains the versioned Üniyra product schema
 - `examples/d1/` contains an optional D1 example surface
 - `drizzle.config.ts` supports local migration generation when needed
 
@@ -95,6 +109,8 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm run build`: build and validate the deployable Sites artifact
 - `npm run start`: start the built Vinext application
 - `npm test`: build, validate, and verify the rendered development-preview metadata
+- `npm run test:runtime`: açık yerel önizlemede profil, topluluk, R2 not,
+  arama, bildirim ve güvenlik kritik yollarını uçtan uca doğrula
 - `npm run validate:artifact`: recheck an existing artifact's manifest and ESM `default.fetch` export
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 

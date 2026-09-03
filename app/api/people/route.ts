@@ -150,6 +150,11 @@ export async function GET(request: Request) {
         isNotNull(users.publicId),
         eq(universities.id, "omu"),
         eq(studentProfiles.onboardingCompleted, true),
+        sql<boolean>`NOT EXISTS (
+          SELECT 1 FROM user_blocks b
+          WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${users.email})
+             OR (b.blocker_email = ${users.email} AND b.blocked_email = ${identity.email})
+        )`,
       ];
       if (searchQuery) {
         const pattern = `%${searchQuery}%`;
@@ -184,7 +189,15 @@ export async function GET(request: Request) {
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
       .innerJoin(faculties, eq(departments.facultyId, faculties.id))
-      .where(and(eq(users.publicId, publicId), eq(universities.id, "omu")))
+      .where(and(
+        eq(users.publicId, publicId),
+        eq(universities.id, "omu"),
+        sql<boolean>`NOT EXISTS (
+          SELECT 1 FROM user_blocks b
+          WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${users.email})
+             OR (b.blocker_email = ${users.email} AND b.blocked_email = ${identity.email})
+        )`,
+      ))
       .limit(1);
 
     if (!row) return Response.json({ error: "Öğrenci profili bulunamadı." }, { status: 404 });

@@ -14,6 +14,7 @@ import {
   userFollows,
   users,
 } from "../../../db/schema";
+import { audit, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
 
 type PostPayload = {
   id?: string;
@@ -150,6 +151,29 @@ async function readLatestPosts(
     : feed === "saved"
       ? sql<boolean>`EXISTS (SELECT 1 FROM ${postSaves} WHERE ${postSaves.userEmail} = ${viewerEmail} AND ${postSaves.postId} = ${posts.id})`
     : sql<boolean>`1 = 1`;
+  const safetyVisibility = sql<boolean>`
+    NOT EXISTS (
+      SELECT 1 FROM user_blocks b
+      WHERE (b.blocker_email = ${viewerEmail} AND b.blocked_email = ${posts.authorEmail})
+         OR (b.blocker_email = ${posts.authorEmail} AND b.blocked_email = ${viewerEmail})
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM user_mutes m
+      WHERE m.muter_email = ${viewerEmail} AND m.muted_email = ${posts.authorEmail}
+    )`;
+  const communityVisibility = sql<boolean>`
+    ${posts.communityId} IS NULL
+    OR EXISTS (
+      SELECT 1 FROM communities c
+      WHERE c.id = ${posts.communityId} AND c.status = 'active'
+        AND (
+          c.join_policy = 'open'
+          OR EXISTS (
+            SELECT 1 FROM community_members cm
+            WHERE cm.community_id = c.id AND cm.user_email = ${viewerEmail} AND cm.status = 'active'
+          )
+        )
+    )`;
   const rank = feedRank(viewerEmail, feed);
   const cursorVisibility = cursor
     ? sql<boolean>`(
@@ -166,7 +190,7 @@ async function readLatestPosts(
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility, cursorVisibility))
+    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
     .orderBy(desc(rank), desc(posts.createdAt), desc(posts.id))
     .limit(PAGE_SIZE + 1);
 
@@ -193,7 +217,26 @@ async function readSharedPost(viewerEmail: string, postId: string) {
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(eq(posts.id, postId), isNull(posts.deletedAt), eq(universities.id, "omu")))
+    .where(and(
+      eq(posts.id, postId),
+      isNull(posts.deletedAt),
+      eq(universities.id, "omu"),
+      sql<boolean>`NOT EXISTS (
+        SELECT 1 FROM user_blocks b
+        WHERE (b.blocker_email = ${viewerEmail} AND b.blocked_email = ${posts.authorEmail})
+           OR (b.blocker_email = ${posts.authorEmail} AND b.blocked_email = ${viewerEmail})
+      )`,
+      sql<boolean>`
+        ${posts.communityId} IS NULL
+        OR EXISTS (
+          SELECT 1 FROM communities c
+          WHERE c.id = ${posts.communityId} AND c.status = 'active'
+            AND (c.join_policy = 'open' OR EXISTS (
+              SELECT 1 FROM community_members cm
+              WHERE cm.community_id = c.id AND cm.user_email = ${viewerEmail} AND cm.status = 'active'
+            ))
+        )`,
+    ))
     .limit(1);
 
   return row ? serializePost(row) : null;
@@ -265,6 +308,9 @@ export async function POST(request: Request) {
   }
 
   try {
+    const { DB } = await getRuntime();
+    const limit = await enforceRateLimit(DB, identity.email, "post-create", 30, 3600);
+    if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
     const [profile] = await db
       .select({
@@ -326,6 +372,7 @@ export async function POST(request: Request) {
       })
       .returning({ id: posts.id, createdAt: posts.createdAt });
     const displayName = identity.fullName ?? identity.displayName;
+    await audit(DB, identity.email, "post.created", "post", created.id, { courseId: selectedCourse?.id ?? null });
 
     return Response.json(
       {
@@ -373,6 +420,9 @@ export async function PATCH(request: Request) {
   }
 
   try {
+    const { DB } = await getRuntime();
+    const limit = await enforceRateLimit(DB, identity.email, "post-edit", 60, 3600);
+    if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
     const [updated] = await db
       .update(posts)
@@ -387,6 +437,7 @@ export async function PATCH(request: Request) {
       .returning({ id: posts.id });
 
     if (!updated) return Response.json({ error: "Gönderi bulunamadı veya bu işlem için yetkin yok." }, { status: 404 });
+    await audit(DB, identity.email, "post.edited", "post", updated.id);
     return Response.json({ post: { id: updated.id, text: content, edited: true } });
   } catch (error) {
     return postError(error);
@@ -408,6 +459,7 @@ export async function DELETE(request: Request) {
   if (!id || id.length > 80) return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
 
   try {
+    const { DB } = await getRuntime();
     const db = await getDb();
     const [deleted] = await db
       .update(posts)
@@ -425,6 +477,7 @@ export async function DELETE(request: Request) {
       .returning({ id: posts.id });
 
     if (!deleted) return Response.json({ error: "Gönderi bulunamadı veya bu işlem için yetkin yok." }, { status: 404 });
+    await audit(DB, identity.email, "post.deleted", "post", deleted.id);
     return Response.json({ deleted: true, id: deleted.id });
   } catch (error) {
     return postError(error);

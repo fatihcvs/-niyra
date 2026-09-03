@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   faculties,
   getCourseById,
@@ -11,6 +12,14 @@ import {
   getUniversityById,
   type AcademicCourse,
 } from "../lib/academic-data";
+
+const CommunitiesWorkspace = dynamic(() => import("./product-features").then((module) => module.CommunitiesWorkspace));
+const NotesWorkspace = dynamic(() => import("./product-features").then((module) => module.NotesWorkspace));
+const NotificationsWorkspace = dynamic(() => import("./product-features").then((module) => module.NotificationsWorkspace));
+const PilotPanel = dynamic(() => import("./product-features").then((module) => module.PilotPanel));
+const ProfileSafetyMenu = dynamic(() => import("./product-features").then((module) => module.ProfileSafetyMenu));
+const SafetyWorkspace = dynamic(() => import("./product-features").then((module) => module.SafetyWorkspace));
+const UnifiedSearchResults = dynamic(() => import("./product-features").then((module) => module.UnifiedSearchResults));
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
@@ -207,6 +216,7 @@ const navItems: { label: string; icon: IconName }[] = [
   { label: "Topluluklar", icon: "users" },
   { label: "Bildirimler", icon: "bell" },
   { label: "Kaydedilenler", icon: "bookmark" },
+  { label: "Güvenlik", icon: "check" },
 ];
 
 const subjects = [
@@ -387,6 +397,10 @@ function FeedPost({
   const [menuOpen, setMenuOpen] = useState(false);
   const [busyMutation, setBusyMutation] = useState<"edit" | "delete" | null>(null);
   const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("misinformation");
+  const [reportDetails, setReportDetails] = useState("");
+  const [reportState, setReportState] = useState("");
   const isPersistentPost = typeof post.id === "string";
   const isOwnPost = Boolean(
     viewerId && post.authorId === viewerId && onPostUpdated && onPostDeleted,
@@ -640,6 +654,24 @@ function FeedPost({
     }
   }
 
+  async function reportPost() {
+    if (!isPersistentPost || reportState === "Gönderiliyor…") return;
+    setReportState("Gönderiliyor…");
+    try {
+      const response = await fetch("/api/safety", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "report", entityType: "post", entityId: post.id, reason: reportReason, details: reportDetails }),
+      });
+      const data = (await response.json()) as { report?: unknown; error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Şikâyet kaydedilemedi.");
+      setReportState("Şikâyetin inceleme kuyruğuna alındı.");
+      setReportDetails("");
+    } catch (reportError) {
+      setReportState(reportError instanceof Error ? reportError.message : "Şikâyet kaydedilemedi.");
+    }
+  }
+
   return (
     <article className="post-card" id={`post-${post.id}`}>
       <header className="post-header">
@@ -652,7 +684,7 @@ function FeedPost({
           <span>{post.school} · {post.department}</span>
           <span className="post-time">{post.time === "şimdi" ? post.time : `${post.time} önce`}</span>
         </div>
-        {isOwnPost && <div className="post-menu-wrap"><button className="icon-button post-menu" type="button" onClick={() => setMenuOpen((current) => !current)} aria-label="Gönderi seçenekleri" aria-expanded={menuOpen}><Icon name="more"/></button>{menuOpen && <div className="post-owner-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setEditText(currentText); setEditing(true); setMenuOpen(false); }}><Icon name="edit" size={15}/> Düzenle</button><button className="danger" type="button" role="menuitem" onClick={() => void deletePost()} disabled={busyMutation === "delete"}><Icon name="trash" size={15}/> {busyMutation === "delete" ? "Siliniyor…" : "Sil"}</button></div>}</div>}
+        {isPersistentPost && <div className="post-menu-wrap"><button className="icon-button post-menu" type="button" onClick={() => setMenuOpen((current) => !current)} aria-label="Gönderi seçenekleri" aria-expanded={menuOpen}><Icon name="more"/></button>{menuOpen && <div className="post-owner-menu" role="menu">{isOwnPost ? <><button type="button" role="menuitem" onClick={() => { setEditText(currentText); setEditing(true); setMenuOpen(false); }}><Icon name="edit" size={15}/> Düzenle</button><button className="danger" type="button" role="menuitem" onClick={() => void deletePost()} disabled={busyMutation === "delete"}><Icon name="trash" size={15}/> {busyMutation === "delete" ? "Siliniyor…" : "Sil"}</button></> : <button className="danger" type="button" role="menuitem" onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Icon name="more" size={15}/> Şikâyet et</button>}</div>}</div>}
       </header>
 
       <div className="post-body">
@@ -692,6 +724,8 @@ function FeedPost({
           <Icon name="bookmark" size={19}/>
         </button>
       </footer>
+
+      {reportOpen && <div className="feature-overlay"><section className="feature-dialog post-report-dialog" role="dialog" aria-modal="true" aria-labelledby={`report-${post.id}`}><header><div><span>GÜVENLİK MERKEZİ</span><h2 id={`report-${post.id}`}>Gönderiyi şikâyet et</h2></div><button type="button" onClick={() => setReportOpen(false)} aria-label="Pencereyi kapat">×</button></header><form onSubmit={(event) => { event.preventDefault(); void reportPost(); }}><label>Neden<select value={reportReason} onChange={(event) => setReportReason(event.target.value)}><option value="misinformation">Yanıltıcı akademik içerik</option><option value="spam">Spam</option><option value="harassment">Taciz veya zorbalık</option><option value="privacy">Kişisel veri ihlali</option><option value="copyright">Telif ihlali</option><option value="other">Diğer</option></select></label><label>Açıklama<textarea value={reportDetails} onChange={(event) => setReportDetails(event.target.value)} maxLength={800} rows={4} placeholder="İncelemeye yardımcı olacak ayrıntıları yaz."/></label>{reportState && <p className="feature-feedback-state" role="status">{reportState}</p>}<footer><button type="button" onClick={() => setReportOpen(false)}>Kapat</button><button className="feature-danger" type="submit">Şikâyeti gönder</button></footer></form></section></div>}
 
       {commenting && (
         <section className="comment-thread" id={`comments-${post.id}`} aria-label="Gönderi yorumları">
@@ -774,6 +808,7 @@ function DiscoverView({
   onOpenPerson,
   onQueryChange,
   onToggleFollow,
+  onNavigate,
 }: {
   people: CampusPerson[];
   peopleStatus: "loading" | "ready" | "empty" | "error";
@@ -782,12 +817,14 @@ function DiscoverView({
   onOpenPerson: (person: CampusPerson) => void;
   onQueryChange: (query: string) => void;
   onToggleFollow: (publicId: string) => void;
+  onNavigate: (name: string) => void;
 }) {
   const [category, setCategory] = useState("Sana özel");
   return (
     <div className="workspace-view">
       <ViewTitle eyebrow="OMÜ KEŞFET" title="Kampüsünü keşfet" description="Ondokuz Mayıs Üniversitesi’ndeki öğrenciler, ders çevreleri ve topluluklarla buluş." />
       <div className="discover-search"><Icon name="search" size={20}/><input aria-label="OMÜ öğrencisi ara" value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Ad, kullanıcı adı, fakülte veya bölüm ara"/>{query ? <button type="button" onClick={() => onQueryChange("")} aria-label="Aramayı temizle"><Icon name="close" size={16}/></button> : <kbd>⌘ K</kbd>}</div>
+      <UnifiedSearchResults query={query} onNavigate={onNavigate}/>
       <div className="category-pills">
         {["Sana özel", "Gündem", "Dersler", "Kampüsler", "Topluluklar"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} type="button" key={item}>{item}</button>)}
       </div>
@@ -826,76 +863,6 @@ function DiscoverView({
         <article><span className="community-logo community-logo-red">HUK</span><div><strong>OMÜ Hukuk Dayanışma</strong><small>Hukuk · Ders ve kaynak paylaşımı</small></div><button type="button">Katıl</button></article>
         <article><span className="community-logo community-logo-mint">PDR</span><div><strong>OMÜ PDR Çevresi</strong><small>Eğitim · Birlikte çalışma</small></div><button type="button">Katıl</button></article>
       </div>
-    </div>
-  );
-}
-
-function NotesView({ onUpload }: { onUpload: () => void }) {
-  const [filter, setFilter] = useState("Tüm notlar");
-  return (
-    <div className="workspace-view">
-      <ViewTitle eyebrow="NOT KÜTÜPHANESİ" title="Aradığın bilgi burada" description="Öğrenciler tarafından hazırlanmış, ders ve okuluna göre düzenlenmiş notlar." action={<button className="view-primary" type="button" onClick={onUpload}><Icon name="plus" size={17}/> Not yükle</button>} />
-      <section className="notes-ai-search notes-search-standard">
-        <div><span><Icon name="search" size={16}/> OMÜ NOT ARAMA</span><h2>Ders notunu hızlıca bul.</h2><p>Ders kodu, konu veya not başlığıyla OMÜ kütüphanesinde ara.</p></div>
-        <label><Icon name="search" size={19}/><input placeholder="Örn. MAT 101 final özeti"/><button type="button">Ara <Icon name="arrow" size={15}/></button></label>
-        <span className="notes-ai-decoration">not</span>
-      </section>
-      <div className="library-toolbar">
-        <div>{["Tüm notlar", "Derslerim", "Kampüsüm", "Kaydettiklerim"].map((item) => <button className={filter === item ? "active" : ""} onClick={() => setFilter(item)} type="button" key={item}>{item}</button>)}</div>
-        <button className="filter-button" type="button"><Icon name="more" size={18}/> Filtrele</button>
-      </div>
-      <div className="note-library-grid">{libraryNotes.map((note) => <NoteCard note={note} key={note.title}/>)}</div>
-      <button className="load-more" type="button">Daha fazla not göster</button>
-    </div>
-  );
-}
-
-const communities = [
-  { logo: "OMÜ", tone: "blue", name: "OMÜ Yazılım Çevresi", category: "Teknoloji · Mühendislik", members: "Yeni", posts: "12", joined: true },
-  { logo: "PDR", tone: "violet", name: "PDR Öğrencileri", category: "Akademik · Eğitim", members: "Yeni", posts: "8", joined: false },
-  { logo: "HUK", tone: "coral", name: "OMÜ Hukuk Çevresi", category: "Akademik · Hukuk", members: "Yeni", posts: "6", joined: false },
-  { logo: "TIP", tone: "mint", name: "OMÜ Tıp Dayanışma", category: "Akademik · Tıp", members: "Yeni", posts: "9", joined: true },
-];
-
-function CommunitiesView() {
-  return (
-    <div className="workspace-view">
-      <ViewTitle eyebrow="TOPLULUKLAR" title="Birlikte daha güçlüyüz" description="İlgi alanına, dersine veya kampüsüne uygun çevreni bul." action={<button className="view-primary" type="button"><Icon name="plus" size={17}/> Topluluk kur</button>} />
-      <section className="my-communities-banner"><div><span><Icon name="users" size={17}/></span><div><strong>5 topluluğa üyesin</strong><p>Bugün topluluklarında 32 yeni gönderi var.</p></div></div><button type="button">Üyeliklerim <Icon name="arrow" size={16}/></button></section>
-      <div className="section-heading workspace-heading"><div><span className="eyebrow">SANA ÖZEL</span><h2>Keşfedebileceğin topluluklar</h2></div><button type="button">Kategoriler <Icon name="arrow" size={15}/></button></div>
-      <div className="community-grid">
-        {communities.map((community) => <CommunityCard community={community} key={community.name}/>) }
-      </div>
-      <section className="study-room-card"><div className="study-room-art"><span/><i/><strong>12</strong><small>canlı oda</small></div><div><span className="live-label"><i/> ŞİMDİ CANLI</span><h2>Birlikte çalışma odaları</h2><p>Kameranı açmak zorunda değilsin. Aynı derse çalışan öğrencilerle sessizce odaklan.</p><button type="button">Odaları gör <Icon name="arrow" size={16}/></button></div></section>
-    </div>
-  );
-}
-
-function CommunityCard({ community }: { community: (typeof communities)[number] }) {
-  const [joined, setJoined] = useState(community.joined);
-  return (
-    <article className="community-card">
-      <div className={`community-cover cover-${community.tone}`}><span className={`community-logo community-logo-${community.tone}`}>{community.logo}</span><i>● ● ●</i></div>
-      <div className="community-body"><span>{community.category}</span><h3>{community.name}</h3><div><strong>{community.members}<small>üye</small></strong><strong>{community.posts}<small>bugün</small></strong></div><button className={joined ? "joined" : ""} onClick={() => setJoined(!joined)} type="button">{joined ? <><Icon name="check" size={15}/> Katıldın</> : "Topluluğa katıl"}</button></div>
-    </article>
-  );
-}
-
-const notifications = [
-  { initials: "EY", avatar: "avatar-coral", title: "Ece Yılmaz notuna yorum yaptı", text: "“Özdeğer kısmındaki örnek gerçekten çok iyi olmuş.”", time: "5 dk", unread: true },
-  { initials: "BA", avatar: "avatar-blue", title: "Bora Akın seni takip etmeye başladı", text: "OMÜ · Makine Mühendisliği", time: "28 dk", unread: true },
-  { initials: "MAT", avatar: "avatar-violet", title: "MAT 101 çevresinde 7 yeni not var", text: "Son ziyaretinden beri yeni paylaşımlar yapıldı.", time: "1 sa", unread: true },
-  { initials: "SA", avatar: "avatar-mint", title: "Selin Aras gönderini beğendi", text: "“Yarın MAT 101 için ortak çalışma grubu...”", time: "3 sa", unread: false },
-  { initials: "Ü", avatar: "avatar-amber", title: "Final haftası yaklaşıyor", text: "Çalışma planını oluşturmak için 12 günün kaldı.", time: "Dün", unread: false },
-];
-
-function NotificationsView() {
-  const [tab, setTab] = useState("Tümü");
-  return (
-    <div className="workspace-view">
-      <ViewTitle eyebrow="BİLDİRİMLER" title="Gelişmeler" description="Notlarından, çevrelerinden ve kampüsünden haberler." action={<button className="text-action" type="button"><Icon name="check" size={15}/> Tümünü okundu işaretle</button>} />
-      <div className="notification-tabs">{["Tümü", "Etkileşimler", "Dersler", "Topluluklar"].map((item) => <button className={tab === item ? "active" : ""} onClick={() => setTab(item)} type="button" key={item}>{item}</button>)}</div>
-      <div className="notification-list">{notifications.map((item) => <article className={item.unread ? "unread" : ""} key={item.title}><Avatar initials={item.initials} className={item.avatar}/><div><strong>{item.title}</strong><p>{item.text}</p><small>{item.time} önce</small></div>{item.unread && <i/>}<button type="button" aria-label="Bildirim seçenekleri"><Icon name="more" size={18}/></button></article>)}</div>
     </div>
   );
 }
@@ -1031,7 +998,7 @@ function PublicProfileView({
 
   return (
     <div className="workspace-view profile-view">
-      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}</div>
+      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
       <section className="profile-hero">
         <div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div>
         <div className="profile-main">
@@ -1048,49 +1015,15 @@ function PublicProfileView({
   );
 }
 
-function SecondaryView({ name, onUpload, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, demo, onOpenPerson, onQueryPeople, onToggleFollow, onEditProfile, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; onUpload: () => void; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; demo: boolean; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onEditProfile: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
-  if (name === "Keşfet") return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
-  if (name === "Notlar") return <NotesView onUpload={onUpload}/>;
-  if (name === "Topluluklar") return <CommunitiesView/>;
-  if (name === "Bildirimler") return <NotificationsView/>;
+function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, demo, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; demo: boolean; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+  if (name === "Keşfet") return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
+  if (name === "Notlar") return <NotesWorkspace courses={profile.courses} demo={demo}/>;
+  if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses} demo={demo}/>;
+  if (name === "Bildirimler") return <NotificationsWorkspace demo={demo}/>;
+  if (name === "Güvenlik") return <SafetyWorkspace demo={demo}/>;
   if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} demo={demo} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} onSavedChange={onSavedChange}/>;
   if (name === "Profil") return <ProfileView profile={profile} posts={posts} shareable={shareableProfile} onEdit={onEditProfile} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted}/>;
-  return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow}/>;
-}
-
-type ModalType = "note";
-
-function ProductModal({ onClose }: { onClose: () => void }) {
-  const [fileName, setFileName] = useState("");
-  const [noteTitle, setNoteTitle] = useState("");
-  const [completed, setCompleted] = useState(false);
-
-  return (
-    <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <section className="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <header className="modal-header">
-          <span className="modal-icon modal-icon-note"><Icon name="file" size={20}/></span>
-          <div><span>NOT KÜTÜPHANESİ</span><h2 id="modal-title">Notunu Üniyra&apos;ya ekle</h2><p>Paylaşımın aynı dersi alan OMÜ öğrencilerine ulaşabilir.</p></div>
-          <button type="button" onClick={onClose} aria-label="Pencereyi kapat"><Icon name="close" size={19}/></button>
-        </header>
-
-        {completed ? <div className="modal-success"><span><Icon name="check" size={28}/></span><h3>Notun incelemeye hazır!</h3><p>Sonraki adımda ders bilgilerini doğrulayıp paylaşabileceksin.</p><button type="button" onClick={onClose}>Tamam</button></div> : <>
-          <label className={`upload-dropzone ${fileName ? "has-file" : ""}`}>
-            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}/>
-            <span><Icon name={fileName ? "check" : "file"} size={23}/></span>
-            <strong>{fileName || "Dosyanı buraya bırak veya seç"}</strong>
-            <small>{fileName ? "Dosya başarıyla seçildi" : "PDF, DOCX, PPTX veya görsel · En fazla 50 MB"}</small>
-          </label>
-          <label className="modal-field"><span>Not başlığı</span><input value={noteTitle} onChange={(event) => setNoteTitle(event.target.value)} placeholder="Örn. Lineer Cebir Final Özeti"/></label>
-          <div className="modal-field-row">
-            <button type="button"><span>Ders</span><strong>MAT 101</strong><Icon name="arrow" size={14}/></button>
-            <button type="button"><span>Not türü</span><strong>Ders özeti</strong><Icon name="arrow" size={14}/></button>
-          </div>
-          <footer className="modal-footer"><button type="button" onClick={onClose}>İptal</button><button type="button" onClick={() => setCompleted(true)} disabled={!fileName || !noteTitle.trim()}>Devam et <Icon name="arrow" size={16}/></button></footer>
-        </>}
-      </section>
-    </div>
-  );
+  return <DiscoverView people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
 }
 
 function ProfileBoot() {
@@ -1360,7 +1293,6 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [feedError, setFeedError] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const [modal, setModal] = useState<ModalType | null>(null);
   const [profileState, setProfileState] = useState<ProfileState>("loading");
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [identityName, setIdentityName] = useState(demoProfile.displayName);
@@ -1378,7 +1310,26 @@ export default function Home() {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [savedPostsLoading, setSavedPostsLoading] = useState(false);
   const [savedPostsError, setSavedPostsError] = useState("");
+  const [pilotMessage, setPilotMessage] = useState("");
   const sharedPostFocused = useRef(false);
+
+  useEffect(() => {
+    if (profileState !== "ready" || isDemoMode) return;
+    const currentUrl = new URL(window.location.href);
+    const inviteCode = currentUrl.searchParams.get("invite")?.trim();
+    if (!inviteCode) return;
+    currentUrl.searchParams.delete("invite");
+    window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.search}`);
+    void fetch("/api/pilot", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "claim", code: inviteCode }),
+    }).then(async (response) => {
+      const data = await response.json() as { claimed?: boolean; error?: string };
+      if (!response.ok || !data.claimed) throw new Error(data.error ?? "Davet doğrulanamadı.");
+      setPilotMessage("Pilot davetin doğrulandı. Hoş geldin!");
+    }).catch((inviteError) => setPilotMessage(inviteError instanceof Error ? inviteError.message : "Davet doğrulanamadı."));
+  }, [profileState, isDemoMode]);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
@@ -1842,13 +1793,13 @@ export default function Home() {
           <Logo />
           <div>
             <button className="icon-button" type="button" onClick={() => setShowSearch(!showSearch)} aria-label="Ara"><Icon name="search"/></button>
-            <button className="icon-button notification-button" type="button" aria-label="Bildirimler"><Icon name="bell"/><i /></button>
+            <button className="icon-button notification-button" type="button" onClick={() => navigateTo("Bildirimler")} aria-label="Bildirimler"><Icon name="bell"/><i /></button>
           </div>
         </header>
 
         {showSearch && (
           <div className="mobile-search">
-            <Icon name="search" size={18}/><input autoFocus placeholder="Ders, not veya öğrenci ara"/><button onClick={() => setShowSearch(false)} aria-label="Aramayı kapat"><Icon name="close" size={17}/></button>
+            <Icon name="search" size={18}/><input autoFocus value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="Ders, not, topluluk veya öğrenci ara"/><button onClick={() => setShowSearch(false)} aria-label="Aramayı kapat"><Icon name="close" size={17}/></button>
           </div>
         )}
 
@@ -1864,6 +1815,7 @@ export default function Home() {
             <div><strong>7 yeni not</strong><small>takip ettiğin derslerde</small></div>
           </div>
         </div>
+        {pilotMessage && <p className="pilot-message" role="status">{pilotMessage}<button type="button" onClick={() => setPilotMessage("")} aria-label="Mesajı kapat">×</button></p>}
 
         <section className="subject-section" aria-labelledby="subjects-title">
           <div className="section-heading">
@@ -1889,7 +1841,7 @@ export default function Home() {
           <div className="composer-tools">
             <div>
               <button type="button"><span className="tool-icon tool-image"><Icon name="image" size={18}/></span><span>Fotoğraf</span></button>
-              <button type="button" onClick={() => setModal("note")}><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
+              <button type="button" onClick={() => navigateTo("Notlar")}><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
             </div>
             <button className="publish-button" type="button" disabled={!draft.trim() || publishing} onClick={() => void publishPost()}>{publishing ? "Paylaşılıyor…" : "Paylaş"}</button>
           </div>
@@ -1906,13 +1858,13 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>OMÜ akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable={!isDemoMode} viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} onUpload={() => setModal("note")} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile={!isDemoMode} followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} demo={isDemoMode} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onEditProfile={() => setProfileState("needs-onboarding")} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable={!isDemoMode} viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile={!isDemoMode} followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} demo={isDemoMode} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => setProfileState("needs-onboarding")} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
       <aside className="right-sidebar">
         <div className="search-box">
-          <Icon name="search" size={18}/><input aria-label="OMÜ öğrencisi ara" value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="OMÜ öğrencisi ara"/>{peopleQuery ? <button type="button" onClick={() => queryPeople("")} aria-label="Aramayı temizle"><Icon name="close" size={15}/></button> : <kbd>⌘ K</kbd>}
+          <Icon name="search" size={18}/><input aria-label="Üniyra'da ara" value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="Ders, not veya öğrenci ara"/>{peopleQuery ? <button type="button" onClick={() => queryPeople("")} aria-label="Aramayı temizle"><Icon name="close" size={15}/></button> : <kbd>⌘ K</kbd>}
         </div>
 
         <section className="side-card campus-card">
@@ -1923,6 +1875,8 @@ export default function Home() {
           <button type="button" onClick={() => navigateTo("Keşfet")}>Kampüsü keşfet <Icon name="arrow" size={16}/></button>
           <span className="campus-glow campus-glow-one"/><span className="campus-glow campus-glow-two"/>
         </section>
+
+        <PilotPanel demo={isDemoMode} onNavigate={navigateTo}/>
 
         <section className="side-card">
           <div className="side-heading"><h2>Gündemdeki notlar</h2><button type="button">Tümü</button></div>
@@ -1951,7 +1905,7 @@ export default function Home() {
         </section>
 
         <footer className="side-footer">
-          <div><a href="#top">Hakkımızda</a><a href="#top">Güvenlik</a><a href="#top">Yardım</a><a href="#top">Gizlilik</a></div>
+          <div><a href="/legal#about">Hakkımızda</a><button type="button" onClick={() => navigateTo("Güvenlik")}>Güvenlik</button><a href="/legal#help">Yardım</a><a href="/legal#privacy">Gizlilik</a></div>
           <span>© 2026 Üniyra · Öğrencilerle, öğrenciler için.</span>
         </footer>
       </aside>
@@ -1963,7 +1917,6 @@ export default function Home() {
           </button>
         ))}
       </nav>
-      {modal && <ProductModal onClose={() => setModal(null)}/>}
     </main>
   );
 }

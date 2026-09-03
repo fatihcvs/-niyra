@@ -37,7 +37,7 @@ Başarıyı ilk aşamada şu göstergelerle ölçeceğiz:
 
 ## Faz 0 — Ürün yönü ve deneyim temeli
 
-**Durum:** Büyük ölçüde tamamlandı.
+**Durum:** Tamamlandı.
 
 **Kullanıcı sonucu:** Üniyra'nın ne olduğu ilk ekranda anlaşılır; akış, notlar,
 topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
@@ -62,7 +62,8 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 
 ## Faz 1 — Gerçek kimlik ve akademik profil temeli
 
-**Durum:** Tamamlandı; üretim doğrulaması sürüyor.
+**Durum:** Teknik kapsam tamamlandı ve canlı tek kullanıcı profili doğrulandı.
+İkinci gerçek pilot kullanıcının yeniden giriş kanıtı pilot operasyonuna bağlıdır.
 
 **Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; OMÜ fakültesini,
 bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
@@ -111,8 +112,8 @@ yeniden giriş yaptığında kişiselleştirilmiş akışını görebilir.
 
 ## Faz 2 — Sosyal grafik ve kalıcı akış
 
-**Durum:** Kod kapsamı tamamlandı; pilot kullanıcı ve mobil üretim doğrulaması
-sürüyor. Gerçek gönderi, beğeni, okunabilir/silinebilir yorum ve kaydetme
+**Durum:** Teknik kapsam tamamlandı. Gerçek gönderi, beğeni,
+okunabilir/silinebilir yorum ve kaydetme
 altyapısı; herkese açık öğrenci profili, takip sistemi, OMÜ öğrenci araması,
 profil ve gönderi bağlantısı paylaşımı, gönderi düzenleme/yumuşak silme,
 kişiselleştirilmiş sıralama, gerçek kaydedilenler görünümü ve imleç tabanlı
@@ -146,6 +147,12 @@ yorum döngüsünü tamamlayabilir.
 
 ## Faz 3 — Gerçek not kütüphanesi ve dosya yükleme
 
+**Durum:** Teknik kapsam tamamlandı. R2 dosya alanı, D1 not meta verisi,
+dosya imzası/MIME/uzantı/boyut doğrulaması, ilerleme-hata-yeniden deneme,
+detay/önizleme/indirme, kaydetme, tekil görüntülenme, ders filtreleri ve
+sahiplik kontrollü silme bağlıdır. Yerel D1+R2 uçtan uca doğrulaması geçti;
+canlı ikinci gerçek kullanıcı kanıtı pilot operasyonuna bağlıdır.
+
 **Kullanıcı sonucu:** Öğrenciler ders notlarını güvenle yükler; diğer öğrenciler
 ders, okul ve konuya göre notu görüntüler veya kaydeder.
 
@@ -173,6 +180,10 @@ bu notu ilgili ders altında bulabilir.
 
 ## Faz 4 — Topluluklar ve kampüs alanları
 
+**Durum:** Teknik kapsam tamamlandı. Açık veya istekli katılım, kurucu-yönetici-
+moderatör-üye rolleri, üye onayı/rol değişimi, topluluk gönderisi, sabitleme,
+geri açılabilir arşivleme ve yönetim denetim kaydı bağlıdır.
+
 **Kullanıcı sonucu:** Öğrenciler ilgi alanı, kampüs veya ders çevresinde kalıcı
 topluluklar kurar ve yönetir.
 
@@ -195,7 +206,10 @@ topluluklar kurar ve yönetir.
 
 ## Faz 5 — Arama ve kaynaklı Üniyra AI
 
-**Durum:** MVP sonrasına ertelendi. İlk sürümde yalnızca standart arama olacak.
+**Durum:** MVP için standart birleşik arama tamamlandı; öğrenci, ders, gönderi,
+not ve topluluk aynı arama yüzeyinde kaynak bağlantılarıyla bulunur. Yapay zekâ
+yanıt katmanı, değişmez ürün kararı gereği MVP sonrasına ertelidir ve bu sürümün
+çıkış kapsamına dahil değildir.
 
 **Kullanıcı sonucu:** Öğrenci doğal dille ne aradığını anlatır; sistem ilgili
 notları gerekçesi ve kaynağıyla sıralar.
@@ -222,6 +236,12 @@ bir kaynağa ulaşır.
 
 ## Faz 6 — Bildirim, moderasyon ve güven
 
+**Durum:** Teknik kapsam tamamlandı. Etkileşim, ders ve topluluk bildirimleri;
+okundu bilgisi/tercihler; şikâyet, kanıt, karar ve itiraz kaydı; iki yönlü
+engelleme, sessize alma; rol korumalı moderasyon kuyruğu; hız sınırı ve denetim
+kayıtları hazırdır. Üretim moderatör rolü ataması ve gerçek örnek olay tatbikatı
+pilot operasyonuna bağlıdır.
+
 **Kullanıcı sonucu:** Öğrenci önemli gelişmeleri kaçırmaz; taciz, spam ve telif
 ihlalleri için anlaşılır güvenlik araçlarına sahiptir.
 
@@ -244,6 +264,12 @@ ihlalleri için anlaşılır güvenlik araçlarına sahiptir.
 **Çıkış koşulu:** Pilot moderatör ekibi örnek olayları baştan sona çözebilir.
 
 ## Faz 7 — Kapalı üniversite pilotu ve büyüme döngüsü
+
+**Durum:** Ürün altyapısı tamamlandı; sonuç kapısı gerçek zaman ve katılımcı
+gerektirir. Tek kullanımlı/yedi günlük davet kodu, ilk hafta görevleri, gerçek
+ilerleme hesabı, ürün olayları, geri bildirim yüzeyi ve haftalık pilot çalışma
+kitabı hazırdır. İki ardışık haftalık artış ancak gerçek pilot yürütülerek
+kanıtlanabilir.
 
 **Kullanıcı sonucu:** Sınırlı kampüslerde içerik yoğunluğu yüksek, faydası
 ölçülebilir bir Üniyra deneyimi oluşur.
@@ -268,6 +294,13 @@ istikrarlı artar.
 
 ## Faz 8 — Açık beta ve üretim sağlamlaştırma
 
+**Durum:** Teknik ve operasyonel hazırlık tamamlandı; açık erişim kararı kapalı
+bir yayın kapısıdır. Sağlık ucu, performans bütçeleri, sınırlı sorgular, üretim
+olay/geri alma planı, veri saklama-yedekleme-silme politikası, güvenlik
+gözden geçirmesi ile gizlilik/kullanım/topluluk/kaldırma metinleri hazırdır.
+Sitenin erişim politikasını açmak ve açık betayı başlatmak ayrı ürün sahibi
+onayı gerektirir.
+
 **Kullanıcı sonucu:** Üniyra daha geniş öğrenci kitlesine güvenilir, hızlı ve
 izlenebilir biçimde açılır.
 
@@ -289,14 +322,18 @@ izlenebilir biçimde açılır.
 **Çıkış koşulu:** Açık beta kontrollü biçimde başlatılır ve ürün sağlığı günlük
 olarak izlenebilir.
 
-## Yakın dönem çalışma sırası
+## Kalan gerçek dünya çıkış kapıları
 
-1. Faz 2'yi iki gerçek kullanıcıyla gönderi → takip → yorum → kaydetme
-   döngüsünde ve mobil cihazda doğrulama
-2. Faz 3 için R2 dosya alanı ile D1 not metadata şemasını hazırlama
-3. Güvenli PDF yükleme, tür/boyut doğrulama ve yükleme durumlarını bağlama
-4. Not detay, görüntüleme, kontrollü indirme ve ders filtrelerini tamamlama
-5. Pilot not akışını ikinci kullanıcıyla uçtan uca doğrulama
+Kodla tamamlanamayan aşağıdaki maddeler ürünün içinde izlenebilir hâle
+getirilmiştir; bunlar gerçek kullanıcı, süre veya erişim kararı gerektirir:
 
-Bu sıra, sosyal çekirdeği gerçek kullanıcı kanıtıyla kapatıp Üniyra'nın ayırt
-edici not paylaşım deneyimine güvenli biçimde geçer.
+1. İkinci gerçek hesapla canlı profil → takip → yorum → kaydetme ve not yükleme
+   döngüsünü mobil cihazda tamamlamak.
+2. Üretim moderatörlerini kontrollü olarak atayıp örnek şikâyet ve itirazı
+   baştan sona çözmek.
+3. Kritik derslere izinli başlangıç içeriklerini ders elçileriyle eklemek ve iki
+   ardışık hafta geri dönüş/katkı ölçümü toplamak.
+4. Açık beta öncesi hukuki metinleri kurumsal incelemeden geçirmek, dosya zararlı
+   içerik taramasını bağlamak ve veri geri yükleme tatbikatını yapmak.
+5. Ürün sahibi açık beta kararını verdiğinde Sites erişim politikasını kademeli
+   açmak; ölçümlerde gerileme veya güvenlik olayı varsa geri almak.

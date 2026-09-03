@@ -8,6 +8,7 @@ import {
   users,
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { audit, getRuntime } from "../../../lib/server-api";
 
 type CommentPayload = {
   id?: string;
@@ -64,7 +65,7 @@ async function canUseComments(viewerEmail: string, postId: string) {
       .where(and(eq(users.email, viewerEmail), eq(universities.id, "omu")))
       .limit(1),
     db
-      .select({ id: posts.id })
+      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId })
       .from(posts)
       .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
@@ -72,7 +73,25 @@ async function canUseComments(viewerEmail: string, postId: string) {
       .limit(1),
   ]);
 
-  return { db, viewer: Boolean(viewer), post: Boolean(post) };
+  let blocked = false;
+  if (post) {
+    const { DB } = await getRuntime();
+    blocked = Boolean(await DB.prepare(
+      `SELECT 1 AS blocked FROM user_blocks
+       WHERE (blocker_email = ? AND blocked_email = ?) OR (blocker_email = ? AND blocked_email = ?) LIMIT 1`,
+    ).bind(viewerEmail, post.authorEmail, post.authorEmail, viewerEmail).first());
+    if (!blocked && post.communityId) {
+      const communityAccess = await DB.prepare(
+        `SELECT c.id FROM communities c
+         WHERE c.id = ? AND c.status = 'active' AND (c.join_policy = 'open' OR EXISTS (
+           SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
+         )) LIMIT 1`,
+      ).bind(post.communityId, viewerEmail).first();
+      blocked = !communityAccess;
+    }
+  }
+
+  return { db, viewer: Boolean(viewer), post: Boolean(post) && !blocked };
 }
 
 export async function GET(request: Request) {
@@ -106,7 +125,15 @@ export async function GET(request: Request) {
       })
       .from(postComments)
       .innerJoin(users, eq(postComments.authorEmail, users.email))
-      .where(and(eq(postComments.postId, postId), isNull(postComments.deletedAt)))
+      .where(and(
+        eq(postComments.postId, postId),
+        isNull(postComments.deletedAt),
+        sql<boolean>`NOT EXISTS (
+          SELECT 1 FROM user_blocks b
+          WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${postComments.authorEmail})
+             OR (b.blocker_email = ${postComments.authorEmail} AND b.blocked_email = ${identity.email})
+        )`,
+      ))
       .orderBy(desc(postComments.createdAt), desc(postComments.id))
       .limit(COMMENT_PAGE_SIZE + 1);
 
@@ -175,6 +202,9 @@ export async function DELETE(request: Request) {
       .select({ value: count() })
       .from(postComments)
       .where(and(eq(postComments.postId, deleted.postId), isNull(postComments.deletedAt)));
+
+    const { DB } = await getRuntime();
+    await audit(DB, identity.email, "comment.deleted", "comment", deleted.id, { postId: deleted.postId });
 
     return Response.json({ deleted: true, id: deleted.id, count: total.value });
   } catch (error) {

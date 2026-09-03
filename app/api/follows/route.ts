@@ -7,6 +7,7 @@ import {
   users,
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { audit, enforceRateLimit, getRuntime, notify, rateLimitResponse } from "../../../lib/server-api";
 
 type FollowPayload = {
   targetId?: string;
@@ -48,10 +49,13 @@ export async function POST(request: Request) {
   }
 
   try {
+    const { DB } = await getRuntime();
+    const limit = await enforceRateLimit(DB, identity.email, "follow", 120, 3600);
+    if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
     const [[actor], [target]] = await Promise.all([
       db
-        .select({ email: users.email })
+        .select({ email: users.email, displayName: users.displayName })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
         .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
@@ -76,6 +80,10 @@ export async function POST(request: Request) {
     if (actor.email === target.email) {
       return Response.json({ error: "Kendi profilini takip edemezsin." }, { status: 400 });
     }
+    const blocked = await DB.prepare(
+      `SELECT 1 AS blocked FROM user_blocks WHERE (blocker_email = ? AND blocked_email = ?) OR (blocker_email = ? AND blocked_email = ?) LIMIT 1`,
+    ).bind(actor.email, target.email, target.email, actor.email).first();
+    if (blocked) return Response.json({ error: "Bu öğrenciyle takip etkileşimi kullanılamıyor." }, { status: 403 });
 
     const [existing] = await db
       .select({ followerEmail: userFollows.followerEmail })
@@ -108,6 +116,9 @@ export async function POST(request: Request) {
       .select({ value: count() })
       .from(userFollows)
       .where(eq(userFollows.followingEmail, target.email));
+
+    await audit(DB, identity.email, existing ? "user.unfollowed" : "user.followed", "user", targetId);
+    if (!existing) await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} seni takip etmeye başladı`, entityType: "user", entityId: targetId });
 
     return Response.json({
       active: !existing,
