@@ -10,6 +10,7 @@ COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 COPY . .
+RUN chmod +x scripts/*.sh
 RUN npm run build
 
 ENV NODE_ENV=production
