@@ -6,16 +6,17 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kuzey Kıbrıs: 23
 - Kıbrıs Cumhuriyeti: 14
 
-Akademik veri katmanı 233 kurumda 3.167 akademik birim, 16.323 benzersiz program
-ve 943 resmî ders dağılımı/müfredat bağlantısı sunar. Sekiz kurumda güncel ve
-merkezî bir resmî program kaydı bulunamadığı için kullanıcıya açıkça etiketlenmiş
-manuel giriş yedeği gösterilir.
+Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
+ve 943 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
+etiketlenmiş manuel giriş yedeği gösterilir.
 
 ## Resmî kaynaklar
 
 - Kurum listesi: [e-Devlet Üniversite Hizmetleri](https://www.turkiye.gov.tr/universite-hizmet-listesi?theme=default), [YÖDAK Üniversiteler](https://www.yodak.gov.ct.tr/universiteler), [Cyprus Department of Higher Education](https://highereducation.ac.cy/index.php/en/citizens-info-serv-he-institutions-en) ve [CYQAA Accredited Institutions](https://www.dipae.ac.cy/en/?Itemid=643)
 - Türkiye ve YKS ile öğrenci alan KKTC programları: [ÖSYM 2026-YKS program ve kontenjan kılavuzu](https://osym.gov.tr/2026-yuksekogretim-kurumlari-sinavi-yks-yuksekogretim-programlari-ve-kontenjanlari-kilavuzu), Tablo 3 ve Tablo 4
 - Kıbrıs Cumhuriyeti: CYQAA'nın [önlisans](https://www.dipae.ac.cy/en/accreditation-en/accredited-programmes-short-cycle-en), [lisans](https://www.dipae.ac.cy/en/accreditation-en/accredited-programmes-bachelor-en), [yüksek lisans](https://www.dipae.ac.cy/en/accreditation-en/accredited-programmes-master-en), [doktora](https://www.dipae.ac.cy/index.php/en/accreditation-en/accredited-programmes-doctorate-en), [bütünleşik yüksek lisans](https://www.dipae.ac.cy/en/accreditation-en/accredited-programmes-integrated-master-en), [tıp](https://www.dipae.ac.cy/en/accreditation-en/accredited-programmes-med-en), [uzaktan eğitim](https://www.dipae.ac.cy/en/accreditation-en/distance-learning-programmes-en) ve [akredite bölüm](https://www.dipae.ac.cy/en/accreditation-en/accredited-departments-en) tabloları
+- Merkezî tabloda olmayan güncel yapılar: [MSÜ](https://www.msu.edu.tr/), [Altınbaş Kıbrıs](https://wpu.edu.tr/tr/fakulteler/), [ASBÜ Kuzey Kıbrıs](https://kktc.asbu.edu.tr/tr/2026-yeni-kayit-rehberi), [Avrupa Liderlik Üniversitesi](https://elu.edu.tr/programmes.php), [Onbeş Kasım Kıbrıs Üniversitesi](https://onbeskku.edu.tr/) ve [Atina Üniversitesi Kıbrıs Şubesi](https://cy-en.uoa.gr/news_and_events/view_announcement/inauguration_of_the_national_and_kapodistrian_university_of_athens_cyprus_branch_a_landmark_event_for_higher_education_in_greece_and_cyprus) resmî akademik sayfaları
 
 ÖSYM dosyalarının SHA-256 özetleri ve bütün kaynak adresleri üretilen
 `data/academic-catalog-2026.json` dosyasının `meta.sources` alanında tutulur.
@@ -42,6 +43,13 @@ tutulur. Bu yüzden resmî belge bulunmadan ders adı veya kodu üretilmez. Prog
 birim kapsamı resmî merkezî kaynaklardan gelir, dönem dersleri öğrenci tarafından
 doğrulanarak eklenir. Bu ayrım arayüzde ve API yanıtındaki `limitations` alanında
 açıkça belirtilir.
+
+Uluslararası Alasya Üniversitesi için YÖDAK kurum kaydı bulunmasına rağmen
+erişilebilir resmî program kataloğu doğrulanamadı. Cosmos Open University kurum
+olarak CYQAA tarafından akredite olsa da tespit edilen Medical Physics and
+Diagnostic Imaging programı [CYQAA reddedilen programlar](https://www.dipae.ac.cy/en/accreditation-en/rejected-programmes-en)
+tablosunda yer alıyor. Bu iki kurumda güvenilir olmayan veya reddedilmiş programlar
+yayına alınmadı; manuel giriş yedeği korunuyor.
 
 ## Bakım
 

@@ -8,14 +8,14 @@ test("official academic catalog has verified coverage and referential integrity"
   assert.equal(catalog.meta.updatedAt, "2026-09-04");
   assert.deepEqual(catalog.meta.stats, {
     universityCount: 241,
-    coveredUniversityCount: 233,
-    unitCount: 3167,
-    programCount: 16323,
+    coveredUniversityCount: 239,
+    unitCount: 3212,
+    programCount: 16454,
     curriculumLinkCount: 943,
-    catalogOnlyUniversityCount: 8,
+    catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 10);
+  assert.equal(catalog.meta.sources.length, 19);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -28,6 +28,35 @@ test("official academic catalog has verified coverage and referential integrity"
       assert.ok(catalog.meta.sources.some((source) => source.id === program.sourceId), `${universityId}: unknown source ${program.sourceId}`);
     }
   }
+});
+
+test("institution-published catalogs cover the six former registry-only institutions", () => {
+  const expected = {
+    "tr-milli-savunma-universitesi": [15, 47],
+    "kktc-altinbas-kibris-universitesi": [8, 23],
+    "kktc-ankara-sosyal-bilimler-universitesi": [1, 13],
+    "kktc-avrupa-liderlik-universitesi": [7, 13],
+    "kktc-onbes-kasim-kibris-universitesi": [10, 27],
+    "cy-national-and-kapodistrian-university-of-athens-cyprus-branch": [4, 8],
+  };
+
+  for (const [universityId, [unitCount, programCount]] of Object.entries(expected)) {
+    const university = catalog.universities[universityId];
+    assert.equal(university.coverage, "official-programs", universityId);
+    assert.equal(university.units.length, unitCount, `${universityId}: unit count`);
+    assert.equal(university.programs.length, programCount, `${universityId}: program count`);
+  }
+
+  assert.ok(catalog.universities["tr-milli-savunma-universitesi"].programs.some((item) => item.name === "Havacılık ve Uzay Mühendisliği"));
+  assert.ok(catalog.universities["kktc-ankara-sosyal-bilimler-universitesi"].programs.some((item) => item.name === "Yapay Zekâ Operatörlüğü"));
+  assert.ok(catalog.universities["kktc-onbes-kasim-kibris-universitesi"].programs.some((item) => item.name === "Bilgisayar Mühendisliği"));
+  assert.ok(catalog.universities["cy-national-and-kapodistrian-university-of-athens-cyprus-branch"].programs.some((item) => item.name === "Medicine"));
+
+  const catalogOnly = Object.entries(catalog.universities)
+    .filter(([, university]) => university.coverage === "catalog-only")
+    .map(([universityId]) => universityId)
+    .sort();
+  assert.deepEqual(catalogOnly, ["cy-cosmos-open-university", "kktc-uluslararasi-alasya-universitesi"]);
 });
 
 test("academic catalog API returns only the selected university", async () => {

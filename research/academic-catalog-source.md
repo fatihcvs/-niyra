@@ -30,12 +30,24 @@ lisans, yüksek lisans ve doktora programlarını içerir.
 - Dönem dersleri için merkezi ve güncel kaynak yoksa veri üretilmez. Öğrenci girişi
   kullanılır; CYQAA ders dağılımı varsa resmî bağlantı sağlanır.
 
+## Kurum bazlı genişletme — ikinci parça
+
+- MSÜ'nün üç Harp Okulu, dört Astsubay Meslek Yüksekokulu, yedi enstitüsü ve
+  Yabancı Diller Yüksekokulu ile resmî ilk derece programları eklendi.
+- Altınbaş Kıbrıs, ASBÜ Kuzey Kıbrıs, Avrupa Liderlik ve Onbeş Kasım'ın güncel
+  resmî akademik sayfalarındaki birim/programlar aktarıldı.
+- National and Kapodistrian University of Athens Kıbrıs Şubesinin 2026'da öğrenci
+  alan dört okul ve sekiz programı eklendi.
+- Uluslararası Alasya için yalnız kurum kaydı doğrulanabildi. Cosmos'ta kurum
+  akreditasyonu doğrulandı; adı bulunan Medical Physics and Diagnostic Imaging
+  programı CYQAA tarafından reddedildiği için programa dönüştürülmedi.
+
 ## Sonuç ve boşluk matrisi
 
-- 241 kurumun 233'ünde resmî program kapsamı mevcut.
-- 3.167 birim ve 16.323 program referans bütünlüğüyle üretildi.
+- 241 kurumun 239'unda resmî program kapsamı mevcut.
+- 3.212 birim ve 16.454 program referans bütünlüğüyle üretildi.
 - 943 resmî ders dağılımı/müfredat bağlantısı bulundu.
-- Sekiz kurumda 2026 merkezî program kaydı yok; ürün bu kurumlarda manuel giriş
+- İki kurumda doğrulanabilir 2026 program kaydı yok; ürün bu kurumlarda manuel giriş
   yedeğini gösteriyor ve kaydı “resmî katalog” gibi sunmuyor.
 - Tüm üniversitelerin tek tek dönem derslerini kapsayan güncel bir ulusal kaynak
   bulunmadığından, bu alan kurumların Bologna/AKTS sayfalarıyla sonraki veri
