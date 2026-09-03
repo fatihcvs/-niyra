@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
-    const [listingsResult, priceResult, inquiriesResult, placesResult] = await Promise.all([
+    const [listingsResult, imagesResult, priceResult, inquiriesResult, placesResult] = await Promise.all([
       DB.prepare(
         `SELECT ml.id, ml.kind, ml.category, ml.title, ml.description, ml.price_cents, ml.condition,
                 ml.meetup_place, ml.status, ml.owner_email, ml.created_at, ml.updated_at,
@@ -60,6 +60,13 @@ export async function GET(request: Request) {
         id: string; kind: string; category: string; title: string; description: string; price_cents: number | null; condition: string;
         meetup_place: string; status: string; owner_email: string; owner_id: string; owner_name: string; created_at: string; updated_at: string; inquiry_count: number;
       }>(),
+      DB.prepare(
+        `SELECT image.id, image.listing_id
+         FROM marketplace_listing_images image
+         JOIN marketplace_listings listing ON listing.id = image.listing_id
+         WHERE listing.university_id = ? AND listing.status IN ('active', 'reserved')
+         ORDER BY image.listing_id, image.sort_order, image.created_at`,
+      ).bind(profile.university_id).all<{ id: string; listing_id: string }>(),
       DB.prepare(
         `SELECT id, place_name, item_name, category, price_cents, observed_at, source_note, reporter_email
          FROM campus_price_reports
@@ -82,6 +89,12 @@ export async function GET(request: Request) {
       }>(),
       DB.prepare(`SELECT id, name FROM campus_places WHERE university_id = ? AND status = 'active' ORDER BY name LIMIT 100`).bind(profile.university_id).all<{ id: string; name: string }>(),
     ]);
+    const imagesByListing = new Map<string, { id: string; url: string }[]>();
+    for (const image of imagesResult.results) {
+      const images = imagesByListing.get(image.listing_id) ?? [];
+      images.push({ id: image.id, url: `/api/campus-market/images?id=${encodeURIComponent(image.id)}` });
+      imagesByListing.set(image.listing_id, images);
+    }
     const grouped = new Map<string, PriceRow[]>();
     for (const report of priceResult.results) {
       const key = `${report.place_name.toLocaleLowerCase("tr-TR")}::${report.item_name.toLocaleLowerCase("tr-TR")}`;
@@ -102,7 +115,8 @@ export async function GET(request: Request) {
         id: listing.id, kind: listing.kind, category: listing.category, title: listing.title, description: listing.description,
         priceCents: listing.price_cents, condition: listing.condition, meetupPlace: listing.meetup_place, status: listing.status,
         ownerId: listing.owner_id, ownerName: listing.owner_name, own: listing.owner_email === identity.email,
-        inquiryCount: Number(listing.inquiry_count), time: relativeTime(listing.created_at), updatedTime: relativeTime(listing.updated_at),
+        images: imagesByListing.get(listing.id) ?? [], inquiryCount: Number(listing.inquiry_count),
+        time: relativeTime(listing.created_at), updatedTime: relativeTime(listing.updated_at),
       })),
       prices,
       inquiries: inquiriesResult.results.map((item) => ({

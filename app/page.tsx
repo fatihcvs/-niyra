@@ -626,7 +626,7 @@ function FeedPost({
 function Logo() {
   return (
     <a className="brand" href="#top" aria-label="Üniyra ana sayfa">
-      <span className="brand-mark"><span>ü</span></span>
+      <span className="brand-mark" aria-hidden="true" />
       <span className="brand-name">üniyra</span>
     </a>
   );
@@ -687,6 +687,7 @@ function DiscoverView({
       <section className="discover-hero">
         <div className="discover-hero-copy"><span><Icon name="sparkles" size={15}/> AKADEMİK ÇEVREN</span><h2>Derslerini<br/>birlikte büyüt.</h2><p>Aynı üniversitedeki gerçek profilleri bul, ders çevrelerine ve paylaşımlara katıl.</p><button type="button" onClick={() => onNavigate("Topluluklar")}>Toplulukları keşfet <Icon name="arrow" size={17}/></button></div>
         <div className="hero-orbit" aria-hidden="true"><span className="orbit-one">∑</span><span className="orbit-two">Ψ</span><span className="orbit-three">F</span><i/><strong>{profile.universityShortName}</strong><small>üniversite çevresi</small></div>
+        <small className="discover-visual-label">Temsili kampüs illüstrasyonu</small>
       </section>
 
       <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">{profile.universityShortName}</span></div>
@@ -912,7 +913,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   return (
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
-        <div className="auth-brand"><Logo/><span>MVP v1.4</span></div>
+        <div className="auth-brand"><Logo/><span>MVP v1.4.1</span></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
@@ -1123,6 +1124,11 @@ function AcademicOnboarding({
         <div className="onboarding-content">
           {step === 1 && (
             <div className="academic-step university-catalog-step">
+              <div className="university-visual-card">
+                <span>TEMSİLİ KAMPÜS İLLÜSTRASYONU</span>
+                <strong>{selectedUniversity?.name ?? "Kampüsünü seç, çevreni kur"}</strong>
+                <small>Görsel herhangi bir üniversitenin resmî fotoğrafı veya yerleşkesinin birebir temsili değildir.</small>
+              </div>
               <label className="university-search-field">
                 <Icon name="search" size={18}/>
                 <input value={universityQuery} onChange={(event) => setUniversityQuery(event.target.value)} placeholder="Üniversite adı, kısaltma veya bölge ara" autoComplete="off"/>
@@ -1665,7 +1671,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Üniyra v1.4</strong><span>Öğrenci pazarı yayında</span></div>
+          <div><strong>Üniyra v1.4.1</strong><span>Görselli öğrenci pazarı yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>

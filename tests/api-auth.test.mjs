@@ -261,6 +261,26 @@ test("campus market rejects anonymous reads", async () => {
   assert.equal(response.status, 401);
 });
 
+test("campus market image uploads reject anonymous requests", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("listingId", "listing-test");
+  form.append("images", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], "urun.png", { type: "image/png" }));
+  const response = await worker.fetch(new Request("http://localhost/api/campus-market/images", { method: "POST", body: form }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 401);
+});
+
+test("campus market image uploads validate file signatures before database access", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("listingId", "listing-test");
+  form.append("images", new File(["not an image"], "urun.png", { type: "image/png" }));
+  const response = await worker.fetch(new Request("http://localhost/api/campus-market/images", {
+    method: "POST", headers: platformHeaders, body: form,
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 415);
+});
+
 test("campus market validates listing prices before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(new Request("http://localhost/api/campus-market", {

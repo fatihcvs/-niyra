@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import styles from "./legal.module.css";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ const sections = [
       "Anonim dertleşme paylaşımlarında görünen ad ve profil diğer öğrencilere gönderilmez. Kötüye kullanımın incelenebilmesi için hesap sahipliği, paylaşım zamanı ve moderasyon kanıtı sunucuda korunur; anonimlik Üniyra güvenlik ekibine karşı kimlik gizleme anlamına gelmez.",
       "Sosyalleşme özelliğinde seçtiğin ilgi alanları, buluşma niyetleri, kısa tanıtım, müsaitlik ve buluşma istekleri işlenir. Eşleşmeler e-posta veya telefon bilgisi görmez; öneriler yalnız aynı üniversitedeki görünür profiller arasında oluşturulur.",
       "Kampüs rehberine eklenen mekân adı, açıklama, adres, koordinat, erişilebilirlik, çalışma saati, etkinlik ve güncellik onayları aynı üniversitedeki öğrencilere gösterilir. Harita önizlemesi açıldığında OpenStreetMap sunucularına ağ isteği gönderilebilir.",
-      "Öğrenci pazarında ilan, fiyat, ürün durumu, teslim noktası, ilan mesajı ve tarihli fiyat gözlemleri işlenir. Üniyra uygulama içi ödeme, kargo, emanet hesap veya satıcı garantisi sunmaz; ödeme kartı verisi işlemez.",
+      "Öğrenci pazarında ilan, fiyat, ürün durumu, teslim noktası, ilan mesajı, tarihli fiyat gözlemleri ve ilan başına yüklenen en fazla 6 ürün fotoğrafı işlenir. Fotoğraflar yalnız aynı kampüsteki oturum açmış öğrencilere gösterilir. Üniyra uygulama içi ödeme, kargo, emanet hesap veya satıcı garantisi sunmaz; ödeme kartı verisi işlemez.",
     ],
   },
   {
@@ -60,10 +61,10 @@ const sections = [
 
 export default function LegalPage() {
   return <main className={styles.shell}>
-    <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><span>ü</span><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>ÜNİYRA MVP v1.4</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 4 Eylül 2026 · MVP v1.4</small></section>
+    <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><img src="/uniyra-mark.png" width="38" height="38" alt=""/><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
+    <section className={styles.hero}><span>ÜNİYRA MVP v1.4.1</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 4 Eylül 2026 · MVP v1.4.1</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
     <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
-    <footer><p>Bu metin Üniyra MVP v1.4 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
+    <footer><p>Bu metin Üniyra MVP v1.4.1 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
   </main>;
 }

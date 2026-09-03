@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.4.0");
+assert.equal(healthBody.version, "1.4.1");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -230,9 +230,21 @@ const listing = (await json("/api/campus-market", {
   method: "POST",
   body: JSON.stringify({ action: "listing", kind: "sell", category: "electronics", title: `Bilimsel Hesap Makinesi ${runId}`, description: "Tüm tuşları çalışan, temiz ve çiziksiz hesap makinesi.", price: 450.5, condition: "like-new", meetupPlace: "Merkez kütüphane girişi" }),
 })).body.listing;
+const listingImages = new FormData();
+listingImages.set("listingId", listing.id);
+listingImages.append("images", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1])], "hesap-makinesi-on.png", { type: "image/png" }));
+listingImages.append("images", new File([new Uint8Array([0xff, 0xd8, 0xff, 0xdb, 1])], "hesap-makinesi-arka.jpg", { type: "image/jpeg" }));
+const uploadedListingImages = (await json("/api/campus-market/images", { method: "POST", body: listingImages })).body.images;
+assert.equal(uploadedListingImages.length, 2);
 const marketFeed = (await json("/api/campus-market")).body.listings;
-assert.ok(marketFeed.some((item) => item.id === listing.id && item.priceCents === 45050));
+assert.ok(marketFeed.some((item) => item.id === listing.id && item.priceCents === 45050 && item.images.length === 2));
 assert.ok(!marketFeed.some((item) => item.id === otherCampusListing.id));
+const firstListingImage = await fetch(`${baseUrl}${uploadedListingImages[0].url}`, { headers: headers(ownerEmail) });
+assert.equal(firstListingImage.status, 200);
+assert.match(firstListingImage.headers.get("content-type") ?? "", /^image\/png\b/i);
+const secondListingImage = await fetch(`${baseUrl}${uploadedListingImages[1].url}`, { headers: headers(ownerEmail) });
+assert.equal(secondListingImage.status, 200);
+assert.match(secondListingImage.headers.get("content-type") ?? "", /^image\/jpeg\b/i);
 const inquiry = (await json("/api/campus-market", {
   method: "POST",
   body: JSON.stringify({ action: "inquiry", listingId: listing.id, message: "Hesap makinesini yarın kampüste görebilir miyim?" }),
@@ -333,10 +345,12 @@ await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: c
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-event", id: campusEvent.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: campusPlace.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: otherCampusPlace.id }) }, otherCampusEmail);
+await json("/api/campus-market/images", { method: "DELETE", body: JSON.stringify({ id: uploadedListingImages[0].id }) });
+await json("/api/campus-market/images", { method: "DELETE", body: JSON.stringify({ id: uploadedListingImages[1].id }) });
 await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "listing-status", id: listing.id, status: "closed" }) });
 await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "listing-status", id: otherCampusListing.id, status: "closed" }) }, otherCampusEmail);
 await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ action: "archive-price", id: ownerPrice.id }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.4 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, marketplace lifecycle, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.4.1 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");

@@ -216,6 +216,24 @@ export const marketplaceListings = sqliteTable(
   ],
 );
 
+export const marketplaceListingImages = sqliteTable(
+  "marketplace_listing_images",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id").notNull().references(() => marketplaceListings.id, { onDelete: "cascade" }),
+    uploaderEmail: text("uploader_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    objectKey: text("object_key").notNull().unique(),
+    originalFileName: text("original_file_name").notNull(),
+    contentType: text("content_type").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("marketplace_listing_images_listing_sort_idx").on(table.listingId, table.sortOrder, table.createdAt),
+  ],
+);
+
 export const marketplaceInquiries = sqliteTable(
   "marketplace_inquiries",
   {
