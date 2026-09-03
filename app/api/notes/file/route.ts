@@ -3,6 +3,7 @@ import {
   cleanText,
   getRuntime,
   requireIdentity,
+  requireProfile,
   signInResponse,
   unavailableResponse,
 } from "../../../../lib/server-api";
@@ -23,16 +24,20 @@ export async function GET(request: Request) {
   try {
     const { DB, FILES } = await getRuntime();
     if (!FILES) throw new Error("R2 binding FILES is unavailable");
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const note = await DB
       .prepare(
         `SELECT object_key, original_file_name, content_type, byte_size, owner_email, status
          FROM notes
+         JOIN student_profiles owner_profile ON owner_profile.user_email = notes.owner_email
          WHERE id = ? AND deleted_at IS NULL
            AND (status = 'published' OR owner_email = ?)
+           AND owner_profile.university_id = ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = notes.owner_email) OR (b.blocker_email = notes.owner_email AND b.blocked_email = ?))
          LIMIT 1`,
       )
-      .bind(id, identity.email, identity.email, identity.email)
+      .bind(id, identity.email, profile.university_id, identity.email, identity.email)
       .first<{
         object_key: string;
         original_file_name: string;

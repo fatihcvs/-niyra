@@ -17,14 +17,21 @@ import {
   getDepartmentById,
   getFacultyById,
   getUniversityById,
+  type AcademicCourse,
+  type Department,
+  type Faculty,
 } from "../../../lib/academic-data";
+import { makeAcademicShortName } from "../../../lib/university-catalog";
 
 type ProfilePayload = {
   universityId?: string;
   facultyId?: string;
   departmentId?: string;
+  facultyName?: string;
+  departmentName?: string;
   classYear?: number;
   courseIds?: string[];
+  customCourses?: Array<{ code?: string; name?: string }>;
 };
 
 function signInResponse() {
@@ -55,6 +62,17 @@ function createHandle(email: string) {
   const prefix = email.split("@")[0] ?? "ogrenci";
   const handle = prefix.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9._]/g, "");
   return handle || "ogrenci";
+}
+
+function cleanAcademicText(value: unknown, maxLength: number) {
+  if (typeof value !== "string") return "";
+  return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+async function stableCatalogId(kind: "fac" | "dep" | "crs", seed: string) {
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(seed)));
+  const suffix = Array.from(digest.slice(0, 12), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${kind}-${suffix}`;
 }
 
 export async function GET() {
@@ -143,31 +161,69 @@ export async function PUT(request: Request) {
   }
 
   const university = getUniversityById(payload.universityId ?? "");
-  const faculty = getFacultyById(payload.facultyId ?? "");
-  const department = getDepartmentById(payload.departmentId ?? "");
   const classYear = Number(payload.classYear);
-  const uniqueCourseIds = [...new Set(payload.courseIds ?? [])];
-  const selectedCourses = uniqueCourseIds
-    .map((courseId) => getCourseById(courseId))
-    .filter((course) => course !== undefined);
 
   if (!university) {
-    return Response.json({ error: "İlk sürümde yalnızca Ondokuz Mayıs Üniversitesi kullanılabilir." }, { status: 400 });
-  }
-  if (!faculty || faculty.universityId !== university.id) {
-    return Response.json({ error: "Lütfen OMÜ fakültelerinden birini seç." }, { status: 400 });
-  }
-  if (!department || department.facultyId !== faculty.id) {
-    return Response.json({ error: "Lütfen seçtiğin fakülteye bağlı geçerli bir bölüm seç." }, { status: 400 });
+    return Response.json({ error: "Lütfen Türkiye veya Kıbrıs kataloğundan geçerli bir üniversite seç." }, { status: 400 });
   }
   if (!Number.isInteger(classYear) || classYear < 1 || classYear > 6) {
     return Response.json({ error: "Sınıf bilgisi 1 ile 6 arasında olmalı." }, { status: 400 });
   }
-  if (
-    selectedCourses.length !== uniqueCourseIds.length ||
-    selectedCourses.some((course) => course.departmentId !== department.id)
-  ) {
-    return Response.json({ error: "Seçilen derslerden biri bu bölüme ait değil." }, { status: 400 });
+
+  let faculty: Faculty | undefined;
+  let department: Department | undefined;
+  let selectedCourses: AcademicCourse[] = [];
+
+  if (university.id === "omu") {
+    faculty = getFacultyById(payload.facultyId ?? "");
+    department = getDepartmentById(payload.departmentId ?? "");
+    const uniqueCourseIds = [...new Set(payload.courseIds ?? [])];
+    selectedCourses = uniqueCourseIds
+      .map((courseId) => getCourseById(courseId))
+      .filter((course): course is AcademicCourse => course !== undefined);
+
+    if (!faculty || faculty.universityId !== university.id) {
+      return Response.json({ error: "Lütfen seçtiğin üniversiteye bağlı geçerli bir fakülte seç." }, { status: 400 });
+    }
+    if (!department || department.facultyId !== faculty.id) {
+      return Response.json({ error: "Lütfen seçtiğin fakülteye bağlı geçerli bir bölüm seç." }, { status: 400 });
+    }
+    if (selectedCourses.length !== uniqueCourseIds.length || selectedCourses.some((course) => course.departmentId !== department?.id)) {
+      return Response.json({ error: "Seçilen derslerden biri bu bölüme ait değil." }, { status: 400 });
+    }
+  } else {
+    const facultyName = cleanAcademicText(payload.facultyName, 100);
+    const departmentName = cleanAcademicText(payload.departmentName, 100);
+    const rawCourses = Array.isArray(payload.customCourses) ? payload.customCourses : [];
+    const cleanedCourses = rawCourses.map((course) => ({
+      code: cleanAcademicText(course?.code, 20).toLocaleUpperCase("tr-TR"),
+      name: cleanAcademicText(course?.name, 100),
+    }));
+
+    if (facultyName.length < 2 || departmentName.length < 2) {
+      return Response.json({ error: "Fakülte ve bölüm adları en az 2 karakter olmalı." }, { status: 400 });
+    }
+    if (cleanedCourses.some((course) => course.code.length < 2 || course.name.length < 2)) {
+      return Response.json({ error: "Her ders için geçerli bir kod ve ders adı yazmalısın." }, { status: 400 });
+    }
+    if (new Set(cleanedCourses.map((course) => course.code)).size !== cleanedCourses.length) {
+      return Response.json({ error: "Aynı ders kodunu birden fazla kez ekleyemezsin." }, { status: 400 });
+    }
+
+    const facultyId = await stableCatalogId("fac", `${university.id}:${facultyName.toLocaleLowerCase("tr-TR")}`);
+    const departmentId = await stableCatalogId("dep", `${facultyId}:${departmentName.toLocaleLowerCase("tr-TR")}`);
+    faculty = { id: facultyId, universityId: university.id, name: facultyName, shortName: makeAcademicShortName(facultyName) };
+    department = { id: departmentId, facultyId, name: departmentName };
+    selectedCourses = await Promise.all(cleanedCourses.map(async (course) => ({
+      id: await stableCatalogId("crs", `${departmentId}:${course.code}:${course.name.toLocaleLowerCase("tr-TR")}`),
+      departmentId,
+      code: course.code,
+      name: course.name,
+    })));
+  }
+
+  if (!faculty || !department) {
+    return Response.json({ error: "Akademik birim bilgileri doğrulanamadı." }, { status: 400 });
   }
   if (selectedCourses.length < 3 || selectedCourses.length > 8) {
     return Response.json({ error: "En az 3, en fazla 8 ders seçmelisin." }, { status: 400 });
@@ -259,7 +315,7 @@ export async function PUT(request: Request) {
           `INSERT INTO product_events (id, user_email, name, properties_json)
            VALUES (?, ?, 'onboarding.completed', ?)`,
         )
-        .bind(crypto.randomUUID(), identity.email, JSON.stringify({ courseCount: selectedCourses.length, classYear })),
+        .bind(crypto.randomUUID(), identity.email, JSON.stringify({ universityId: university.id, courseCount: selectedCourses.length, classYear })),
     ];
 
     await d1.batch(statements);

@@ -102,22 +102,18 @@ export async function GET(request: Request) {
   try {
     const db = await getDb();
     const [viewer] = await db
-      .select({ email: users.email })
+      .select({ email: users.email, universityId: studentProfiles.universityId })
       .from(users)
       .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .where(
-        and(
-          eq(users.email, identity.email),
-          eq(universities.id, "omu"),
-          eq(studentProfiles.onboardingCompleted, true),
-        ),
+        and(eq(users.email, identity.email), eq(studentProfiles.onboardingCompleted, true)),
       )
       .limit(1);
 
     if (!viewer) {
       return Response.json(
-        { error: "Öğrenci ağını görmeden önce OMÜ akademik profilini tamamlamalısın." },
+        { error: "Öğrenci ağını görmeden önce akademik profilini tamamlamalısın." },
         { status: 409 },
       );
     }
@@ -148,7 +144,7 @@ export async function GET(request: Request) {
       const directoryFilters = [
         ne(users.email, identity.email),
         isNotNull(users.publicId),
-        eq(universities.id, "omu"),
+        eq(universities.id, viewer.universityId),
         eq(studentProfiles.onboardingCompleted, true),
         sql<boolean>`NOT EXISTS (
           SELECT 1 FROM user_blocks b
@@ -191,7 +187,7 @@ export async function GET(request: Request) {
       .innerJoin(faculties, eq(departments.facultyId, faculties.id))
       .where(and(
         eq(users.publicId, publicId),
-        eq(universities.id, "omu"),
+        eq(universities.id, viewer.universityId),
         sql<boolean>`NOT EXISTS (
           SELECT 1 FROM user_blocks b
           WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${users.email})

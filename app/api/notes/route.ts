@@ -116,6 +116,7 @@ export async function GET(request: Request) {
              CASE WHEN n.owner_email = ? THEN 1 ELSE 0 END AS own
       FROM notes n
       JOIN users u ON u.email = n.owner_email
+      JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
       JOIN courses c ON c.id = n.course_id
       LEFT JOIN note_saves ns ON ns.note_id = n.id AND ns.user_email = ?`;
 
@@ -124,9 +125,10 @@ export async function GET(request: Request) {
         .prepare(`${baseSql}
           WHERE n.id = ? AND n.deleted_at IS NULL
             AND (n.status = 'published' OR n.owner_email = ?)
+            AND owner_profile.university_id = ?
             AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
           LIMIT 1`)
-        .bind(identity.email, identity.email, id, identity.email, identity.email, identity.email)
+        .bind(identity.email, identity.email, id, identity.email, profile.university_id, identity.email, identity.email)
         .first<NoteRow>();
       return row
         ? Response.json({ note: serializeNote(row) })
@@ -138,6 +140,7 @@ export async function GET(request: Request) {
       .prepare(`${baseSql}
         WHERE n.deleted_at IS NULL
           AND (n.status = 'published' OR n.owner_email = ?)
+          AND owner_profile.university_id = ?
           AND (? = '' OR n.course_id = ?)
           AND (? = 0 OR n.owner_email = ?)
           AND (? = 0 OR ns.user_email IS NOT NULL)
@@ -149,6 +152,7 @@ export async function GET(request: Request) {
         identity.email,
         identity.email,
         identity.email,
+        profile.university_id,
         courseId,
         courseId,
         mine,

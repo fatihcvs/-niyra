@@ -4,11 +4,12 @@ const baseUrl = process.env.UNIYRA_BASE_URL ?? "http://localhost:5173";
 const runId = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 const ownerEmail = `runtime.owner.${runId}@omu.edu.tr`;
 const peerEmail = `runtime.peer.${runId}@omu.edu.tr`;
+const otherCampusEmail = `runtime.campus.${runId}@bogazici.edu.tr`;
 
 function headers(email, json = false) {
   const value = new Headers({
     "oai-authenticated-user-email": email,
-    "oai-authenticated-user-full-name": encodeURIComponent(email === ownerEmail ? "Runtime Owner" : "Runtime Peer"),
+    "oai-authenticated-user-full-name": encodeURIComponent(email === ownerEmail ? "Runtime Owner" : email === peerEmail ? "Runtime Peer" : "Runtime Campus"),
     "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
   });
   if (json) value.set("content-type", "application/json");
@@ -35,14 +36,66 @@ async function createProfile(email) {
   }, email);
 }
 
+async function createOtherCampusProfile() {
+  return json("/api/profile", {
+    method: "PUT",
+    body: JSON.stringify({
+      universityId: "tr-bogazici-universitesi",
+      facultyName: "Mühendislik Fakültesi",
+      departmentName: "Bilgisayar Mühendisliği",
+      classYear: 2,
+      customCourses: [
+        { code: "CMPE 101", name: "Bilgisayar Mühendisliğine Giriş" },
+        { code: "MATH 101", name: "Analiz I" },
+        { code: "PHYS 101", name: "Fizik I" },
+      ],
+    }),
+  }, otherCampusEmail);
+}
+
 const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 assert.equal((await health.json()).storage, "configured");
 
 const owner = (await createProfile(ownerEmail)).body.profile;
 const peer = (await createProfile(peerEmail)).body.profile;
+const otherCampus = (await createOtherCampusProfile()).body.profile;
 assert.equal(owner.courses.length, 3);
 assert.equal(peer.courses.length, 3);
+assert.equal(otherCampus.universityName, "Boğaziçi Üniversitesi");
+assert.equal(otherCampus.courses.length, 3);
+
+const isolatedPeople = (await json(`/api/people?q=${encodeURIComponent("Runtime")}`)).body.people;
+assert.ok(!isolatedPeople.some((item) => item.publicId === otherCampus.publicId));
+const crossCampusFollow = await fetch(`${baseUrl}/api/follows`, {
+  method: "POST",
+  headers: headers(ownerEmail, true),
+  body: JSON.stringify({ targetId: otherCampus.publicId }),
+});
+assert.equal(crossCampusFollow.status, 403);
+
+const otherCampusPost = (await json("/api/posts", {
+  method: "POST",
+  body: JSON.stringify({ content: `Diğer kampüs gönderisi ${runId}`, courseId: otherCampus.courses[0].id }),
+}, otherCampusEmail)).body.post;
+const ownerCampusFeed = (await json("/api/posts?feed=campus")).body.posts;
+assert.ok(!ownerCampusFeed.some((item) => item.id === otherCampusPost.id));
+
+const otherCampusCommunity = (await json("/api/communities", {
+  method: "POST",
+  body: JSON.stringify({
+    name: `Runtime Kampüs ${runId}`,
+    description: "Farklı üniversite veri izolasyonu doğrulama topluluğu.",
+    category: "teknoloji",
+    joinPolicy: "open",
+    courseId: otherCampus.courses[0].id,
+    rules: "Aynı kampüs içinde güvenli paylaşım yap.",
+  }),
+}, otherCampusEmail)).body.community;
+const isolatedSearch = (await json(`/api/search?q=${encodeURIComponent(runId)}`)).body;
+assert.ok(!isolatedSearch.communities.some((item) => item.id === otherCampusCommunity.id));
+const crossCampusCommunity = await fetch(`${baseUrl}/api/communities?id=${encodeURIComponent(otherCampusCommunity.id)}`, { headers: headers(ownerEmail) });
+assert.equal(crossCampusCommunity.status, 404);
 
 const community = (await json("/api/communities", {
   method: "POST",
@@ -101,5 +154,6 @@ assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
 
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
+await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra local runtime smoke passed: profile, community, note/R2, search, notifications and safety.");
+console.log("Üniyra local runtime smoke passed: multi-campus profile isolation, community, note/R2, search, notifications and safety.");

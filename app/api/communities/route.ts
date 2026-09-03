@@ -77,6 +77,7 @@ function baseSelect() {
                  cm.status AS membership_status, cm.role
           FROM communities c
           JOIN users u ON u.email = c.creator_email
+          JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
           LEFT JOIN courses cr ON cr.id = c.course_id
           LEFT JOIN community_members cm ON cm.community_id = c.id AND cm.user_email = ?`;
 }
@@ -95,8 +96,8 @@ export async function GET(request: Request) {
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     if (id) {
       const community = await DB
-        .prepare(`${baseSelect()} WHERE c.id = ? AND (c.status = 'active' OR c.creator_email = ?) LIMIT 1`)
-        .bind(identity.email, id, identity.email)
+        .prepare(`${baseSelect()} WHERE c.id = ? AND (c.status = 'active' OR c.creator_email = ?) AND creator_profile.university_id = ? LIMIT 1`)
+        .bind(identity.email, id, identity.email, profile.university_id)
         .first<CommunityRow>();
       if (!community) return Response.json({ error: "Topluluk bulunamadı." }, { status: 404 });
       const members = community.role && ["founder", "admin", "moderator"].includes(community.role)
@@ -116,11 +117,12 @@ export async function GET(request: Request) {
     const rows = await DB
       .prepare(`${baseSelect()}
         WHERE c.status = 'active'
+          AND creator_profile.university_id = ?
           AND (? = 0 OR cm.status = 'active')
           AND (? = '' OR LOWER(c.name || ' ' || c.description || ' ' || c.category || ' ' || COALESCE(cr.code, '')) LIKE ?)
         ORDER BY CASE WHEN cm.status = 'active' THEN 0 ELSE 1 END, member_count DESC, c.created_at DESC
         LIMIT 40`)
-      .bind(identity.email, mine, like, like)
+      .bind(identity.email, profile.university_id, mine, like, like)
       .all<CommunityRow>();
     return Response.json({ communities: rows.results.map(serialize) });
   } catch (error) {
@@ -207,11 +209,18 @@ export async function PATCH(request: Request) {
 
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, "community-action", 80, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const community = await DB
-      .prepare(`SELECT id, name, creator_email, join_policy, status FROM communities WHERE id = ? LIMIT 1`)
-      .bind(id)
+      .prepare(
+        `SELECT c.id, c.name, c.creator_email, c.join_policy, c.status
+         FROM communities c
+         JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
+         WHERE c.id = ? AND creator_profile.university_id = ? LIMIT 1`,
+      )
+      .bind(id, profile.university_id)
       .first<{ id: string; name: string; creator_email: string; join_policy: string; status: string }>();
     if (!community) return Response.json({ error: "Topluluk bulunamadı." }, { status: 404 });
     const membership = await DB

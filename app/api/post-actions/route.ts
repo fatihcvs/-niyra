@@ -7,7 +7,6 @@ import {
   postSaves,
   posts,
   studentProfiles,
-  universities,
   users,
 } from "../../../db/schema";
 import { audit, enforceRateLimit, getRuntime, notify, rateLimitResponse } from "../../../lib/server-api";
@@ -76,16 +75,16 @@ export async function POST(request: Request) {
     const db = await getDb();
     const [[post], [actor]] = await Promise.all([
       db
-        .select({ id: posts.id, authorEmail: posts.authorEmail, content: posts.content, communityId: posts.communityId })
+        .select({ id: posts.id, authorEmail: posts.authorEmail, content: posts.content, communityId: posts.communityId, universityId: studentProfiles.universityId })
         .from(posts)
+        .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
         .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
         .limit(1),
       db
-        .select({ email: users.email, publicId: users.publicId, displayName: users.displayName })
+        .select({ email: users.email, publicId: users.publicId, displayName: users.displayName, universityId: studentProfiles.universityId })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-        .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-        .where(and(eq(users.email, identity.email), eq(universities.id, "omu")))
+        .where(eq(users.email, identity.email))
         .limit(1),
     ]);
 
@@ -95,6 +94,9 @@ export async function POST(request: Request) {
         { error: "Etkileşimden önce akademik profilini tamamlamalısın." },
         { status: 409 },
       );
+    }
+    if (post.universityId !== actor.universityId) {
+      return Response.json({ error: "Bu gönderi senin üniversite çevrende değil." }, { status: 403 });
     }
     const blocked = await DB.prepare(
       `SELECT 1 AS blocked FROM user_blocks

@@ -1,13 +1,16 @@
 # Üniyra
 
-Üniyra, OMÜ öğrencileri için ders, not, topluluk ve akademik çevre odaklı sosyal
-öğrenme ürünüdür. Uygulama vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
+Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencileri için ders, not, topluluk
+ve akademik çevre odaklı sosyal öğrenme ürünüdür. 241 kurumluk resmî kaynaklı
+katalog ilk katılımda aranabilir; öğrenci akışı ve sosyal yüzeyler seçilen
+üniversiteye göre ayrılır. Uygulama vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
 yüklenen not dosyaları R2'de tutulur ve kullanıcı kimliği platformun doğrulanmış
 başlıklarından okunur.
 
 ## Ürün yüzeyleri
 
 - Akademik profil ve ders bazlı ilk katılım
+- 204 Türkiye, 23 Kuzey Kıbrıs ve 14 Kıbrıs Cumhuriyeti kurumu
 - Kalıcı gönderi, yorum, beğeni, kaydetme, takip ve öğrenci profilleri
 - Güvenli PDF/DOCX/görsel not kütüphanesi
 - Rol ve üyelik politikası olan topluluklar
@@ -15,7 +18,8 @@ başlıklarından okunur.
 - Bildirim tercihleri, şikâyet, engelleme, sessize alma ve moderasyon kaydı
 - Kapalı pilot görevleri, geri bildirim ve sağlık kontrolü
 
-Faz durumu ve gerçek dünya çıkış kapıları için `docs/PHASE_PLAN.md`; üretim
+Katalog kaynakları ve bakım sözleşmesi için `docs/UNIVERSITY_CATALOG.md`, faz
+durumu ve gerçek dünya çıkış kapıları için `docs/PHASE_PLAN.md`; üretim
 işletimi için `docs/OPERATIONS.md` belgesine bak.
 
 ## Prerequisites

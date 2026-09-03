@@ -1,9 +1,6 @@
-export type University = {
-  id: string;
-  name: string;
-  shortName: string;
-  city: string;
-};
+import { universities } from "./university-catalog";
+
+export { universities, type University } from "./university-catalog";
 
 export type Faculty = {
   id: string;
@@ -24,15 +21,6 @@ export type AcademicCourse = {
   code: string;
   name: string;
 };
-
-export const universities: University[] = [
-  {
-    id: "omu",
-    name: "Ondokuz Mayıs Üniversitesi",
-    shortName: "OMÜ",
-    city: "Samsun",
-  },
-];
 
 export const faculties: Faculty[] = [
   { id: "muhendislik", universityId: "omu", name: "Mühendislik Fakültesi", shortName: "MÜH" },

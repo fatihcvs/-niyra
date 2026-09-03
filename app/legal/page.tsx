@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Gizlilik, Kullanım ve Topluluk İlkeleri · Üniyra",
-  description: "Üniyra OMÜ pilotunun gizlilik, kullanım, topluluk ve içerik kaldırma ilkeleri.",
+  description: "Üniyra üniversite ağının gizlilik, kullanım, topluluk ve içerik kaldırma ilkeleri.",
 };
 
 const sections = [
@@ -20,7 +20,7 @@ const sections = [
     id: "terms",
     title: "Kullanım koşulları",
     paragraphs: [
-      "Üniyra, OMÜ öğrencilerinin öğrenme ve kampüs dayanışması için kullanılan kapalı bir pilot üründür. Kullanıcılar paylaştıkları içeriğin doğruluğundan, paylaşma hakkına sahip olmaktan ve kişisel verileri izinsiz yayımlamamaktan sorumludur.",
+      "Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencilerinin öğrenme ve kampüs dayanışması için kullanılan kapalı bir pilot üründür. Kullanıcılar paylaştıkları içeriğin doğruluğundan, paylaşma hakkına sahip olmaktan ve kişisel verileri izinsiz yayımlamamaktan sorumludur.",
       "Notlar ve gönderiler akademik danışmanlık ya da resmî ders materyali yerine geçmez. Sınav güvenliğini ihlal eden, başkasına ait çalışmayı izinsiz çoğaltan, taciz içeren veya yasa dışı içerik kaldırılabilir; hesap görünürlüğü geçici ya da kalıcı biçimde kısıtlanabilir.",
       "Pilot ürün değişebilir ve zaman zaman kesintiye uğrayabilir. Önemli ders materyalinin tek kopyasını Üniyra'da tutma; kendi yedeğini koru.",
     ],
@@ -55,7 +55,7 @@ const sections = [
 export default function LegalPage() {
   return <main className={styles.shell}>
     <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><span>ü</span><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>OMÜ KAPALI PİLOTU</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · Pilot metni</small></section>
+    <section className={styles.hero}><span>ÜNİYRA KAPALI PİLOTU</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · Pilot metni</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
     <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
     <footer><p>Bu metin kapalı pilotun çalışma kurallarını açıklar. Açık beta öncesinde hukuki ve kurumsal inceleme ile güncellenecektir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>

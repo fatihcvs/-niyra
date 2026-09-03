@@ -4,7 +4,6 @@ import {
   postComments,
   posts,
   studentProfiles,
-  universities,
   users,
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
@@ -58,18 +57,16 @@ async function canUseComments(viewerEmail: string, postId: string) {
   const db = await getDb();
   const [[viewer], [post]] = await Promise.all([
     db
-      .select({ email: users.email })
+      .select({ email: users.email, universityId: studentProfiles.universityId })
       .from(users)
       .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-      .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-      .where(and(eq(users.email, viewerEmail), eq(universities.id, "omu")))
+      .where(eq(users.email, viewerEmail))
       .limit(1),
     db
-      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId })
+      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId, universityId: studentProfiles.universityId })
       .from(posts)
       .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
-      .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-      .where(and(eq(posts.id, postId), isNull(posts.deletedAt), eq(universities.id, "omu")))
+      .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
       .limit(1),
   ]);
 
@@ -91,7 +88,7 @@ async function canUseComments(viewerEmail: string, postId: string) {
     }
   }
 
-  return { db, viewer: Boolean(viewer), post: Boolean(post) && !blocked };
+  return { db, viewer: Boolean(viewer), post: Boolean(post) && viewer?.universityId === post?.universityId && !blocked };
 }
 
 export async function GET(request: Request) {

@@ -29,24 +29,26 @@ export async function GET(request: Request) {
          JOIN student_profiles sp ON sp.user_email = u.email
          JOIN departments d ON d.id = sp.department_id
          JOIN faculties f ON f.id = d.faculty_id
-         WHERE u.email <> ? AND sp.university_id = 'omu'
+         WHERE u.email <> ? AND sp.university_id = ?
            AND LOWER(u.display_name || ' ' || u.handle || ' ' || d.name || ' ' || f.name) LIKE ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = u.email) OR (b.blocker_email = u.email AND b.blocked_email = ?))
          ORDER BY u.display_name LIMIT 6`,
-      ).bind(identity.email, like, identity.email, identity.email).all(),
+      ).bind(identity.email, profile.university_id, like, identity.email, identity.email).all(),
       DB.prepare(
         `SELECT DISTINCT c.id, c.code, c.name, d.name AS department_name
          FROM courses c JOIN departments d ON d.id = c.department_id
          JOIN student_courses sc ON sc.course_id = c.id
          JOIN student_profiles sp ON sp.user_email = sc.user_email
-         WHERE sp.university_id = 'omu' AND LOWER(c.code || ' ' || c.name || ' ' || d.name) LIKE ?
+         WHERE sp.university_id = ? AND LOWER(c.code || ' ' || c.name || ' ' || d.name) LIKE ?
          ORDER BY c.code LIMIT 6`,
-      ).bind(like).all(),
+      ).bind(profile.university_id, like).all(),
       DB.prepare(
         `SELECT p.id, p.content, p.created_at, u.public_id AS author_id, u.display_name AS author_name, COALESCE(c.code, 'GENEL') AS course_code
          FROM posts p JOIN users u ON u.email = p.author_email
+         JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
          LEFT JOIN courses c ON c.id = p.course_id
-         WHERE p.deleted_at IS NULL AND LOWER(p.content || ' ' || COALESCE(c.code, '') || ' ' || u.display_name) LIKE ?
+         WHERE p.deleted_at IS NULL AND author_profile.university_id = ?
+           AND LOWER(p.content || ' ' || COALESCE(c.code, '') || ' ' || u.display_name) LIKE ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = p.author_email) OR (b.blocker_email = p.author_email AND b.blocked_email = ?))
            AND NOT EXISTS (SELECT 1 FROM user_mutes m WHERE m.muter_email = ? AND m.muted_email = p.author_email)
            AND (p.community_id IS NULL OR EXISTS (
@@ -56,24 +58,27 @@ export async function GET(request: Request) {
                ))
            ))
          ORDER BY p.created_at DESC LIMIT 6`,
-      ).bind(like, identity.email, identity.email, identity.email, identity.email).all<{ id: string; content: string; created_at: string; author_id: string; author_name: string; course_code: string }>(),
+      ).bind(profile.university_id, like, identity.email, identity.email, identity.email, identity.email).all<{ id: string; content: string; created_at: string; author_id: string; author_name: string; course_code: string }>(),
       DB.prepare(
         `SELECT n.id, n.title, n.description, n.tags_json, n.created_at, c.code AS course_code,
                 u.display_name AS owner_name,
                 (SELECT COUNT(*) FROM note_views nv WHERE nv.note_id = n.id) AS view_count
          FROM notes n JOIN courses c ON c.id = n.course_id JOIN users u ON u.email = n.owner_email
-         WHERE n.status = 'published' AND n.deleted_at IS NULL
+         JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+         WHERE n.status = 'published' AND n.deleted_at IS NULL AND owner_profile.university_id = ?
            AND LOWER(n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name) LIKE ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
          ORDER BY n.created_at DESC LIMIT 6`,
-      ).bind(like, identity.email, identity.email).all<{ id: string; title: string; description: string; tags_json: string; created_at: string; course_code: string; owner_name: string; view_count: number }>(),
+      ).bind(profile.university_id, like, identity.email, identity.email).all<{ id: string; title: string; description: string; tags_json: string; created_at: string; course_code: string; owner_name: string; view_count: number }>(),
       DB.prepare(
         `SELECT c.id, c.name, c.description, c.category, c.slug,
                 (SELECT COUNT(*) FROM community_members cm WHERE cm.community_id = c.id AND cm.status = 'active') AS member_count
          FROM communities c
-         WHERE c.status = 'active' AND LOWER(c.name || ' ' || c.description || ' ' || c.category) LIKE ?
+         JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
+         WHERE c.status = 'active' AND creator_profile.university_id = ?
+           AND LOWER(c.name || ' ' || c.description || ' ' || c.category) LIKE ?
          ORDER BY member_count DESC, c.created_at DESC LIMIT 6`,
-      ).bind(like).all(),
+      ).bind(profile.university_id, like).all(),
     ]);
 
     await DB.prepare(`INSERT INTO product_events (id, user_email, name, properties_json) VALUES (?, ?, 'search.completed', ?)`)

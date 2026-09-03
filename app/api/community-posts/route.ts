@@ -7,6 +7,7 @@ import {
   rateLimitResponse,
   relativeTime,
   requireIdentity,
+  requireProfile,
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
@@ -28,18 +29,22 @@ export async function GET(request: Request) {
   if (!communityId) return Response.json({ error: "Topluluk zorunludur." }, { status: 400 });
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const rows = await DB.prepare(
       `SELECT p.id, u.public_id AS author_id, u.display_name AS author_name, p.content,
               p.is_pinned, p.created_at, CASE WHEN p.author_email = ? THEN 1 ELSE 0 END AS own
        FROM posts p JOIN users u ON u.email = p.author_email
        JOIN communities c ON c.id = p.community_id
+       JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
        WHERE p.community_id = ? AND p.deleted_at IS NULL AND c.status = 'active'
+         AND creator_profile.university_id = ?
          AND (c.join_policy = 'open' OR EXISTS (
            SELECT 1 FROM community_members cm
            WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
          ))
        ORDER BY p.is_pinned DESC, p.created_at DESC LIMIT 40`,
-    ).bind(identity.email, communityId, identity.email).all<Row>();
+    ).bind(identity.email, communityId, profile.university_id, identity.email).all<Row>();
     return Response.json({ posts: rows.results.map((row) => ({ id: row.id, authorId: row.author_id, authorName: row.author_name, content: row.content, pinned: Boolean(row.is_pinned), own: Boolean(row.own), time: relativeTime(row.created_at) })) });
   } catch (error) {
     return unavailableResponse(error, "Topluluk gönderilerine ulaşılamıyor.");
@@ -57,10 +62,14 @@ export async function POST(request: Request) {
   if (!communityId || !content) return Response.json({ error: "Topluluk ve gönderi metni zorunludur." }, { status: 400 });
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const membership = await DB.prepare(
       `SELECT cm.role, c.name FROM community_members cm JOIN communities c ON c.id = cm.community_id
-       WHERE cm.community_id = ? AND cm.user_email = ? AND cm.status = 'active' AND c.status = 'active' LIMIT 1`,
-    ).bind(communityId, identity.email).first<{ role: string; name: string }>();
+       JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
+       WHERE cm.community_id = ? AND cm.user_email = ? AND cm.status = 'active' AND c.status = 'active'
+         AND creator_profile.university_id = ? LIMIT 1`,
+    ).bind(communityId, identity.email, profile.university_id).first<{ role: string; name: string }>();
     if (!membership) return Response.json({ error: "Gönderi paylaşmak için topluluğa katılmalısın." }, { status: 403 });
     const limit = await enforceRateLimit(DB, identity.email, "community-post", 30, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
@@ -91,9 +100,15 @@ export async function PATCH(request: Request) {
   if (!communityId || !postId) return Response.json({ error: "Topluluk ve gönderi zorunludur." }, { status: 400 });
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const manager = await DB.prepare(
-      `SELECT role FROM community_members WHERE community_id = ? AND user_email = ? AND status = 'active' LIMIT 1`,
-    ).bind(communityId, identity.email).first<{ role: string }>();
+      `SELECT cm.role FROM community_members cm
+       JOIN communities c ON c.id = cm.community_id
+       JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
+       WHERE cm.community_id = ? AND cm.user_email = ? AND cm.status = 'active'
+         AND creator_profile.university_id = ? LIMIT 1`,
+    ).bind(communityId, identity.email, profile.university_id).first<{ role: string }>();
     if (!manager || !['founder', 'admin', 'moderator'].includes(manager.role)) return Response.json({ error: "Gönderiyi sabitlemek için yetkin yok." }, { status: 403 });
     const post = await DB.prepare(`SELECT is_pinned, author_email FROM posts WHERE id = ? AND community_id = ? AND deleted_at IS NULL LIMIT 1`).bind(postId, communityId).first<{ is_pinned: number; author_email: string }>();
     if (!post) return Response.json({ error: "Gönderi bulunamadı." }, { status: 404 });

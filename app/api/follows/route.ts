@@ -2,7 +2,6 @@ import { and, count, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import {
   studentProfiles,
-  universities,
   userFollows,
   users,
 } from "../../../db/schema";
@@ -55,28 +54,29 @@ export async function POST(request: Request) {
     const db = await getDb();
     const [[actor], [target]] = await Promise.all([
       db
-        .select({ email: users.email, displayName: users.displayName })
+        .select({ email: users.email, displayName: users.displayName, universityId: studentProfiles.universityId })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-        .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-        .where(and(eq(users.email, identity.email), eq(universities.id, "omu")))
+        .where(eq(users.email, identity.email))
         .limit(1),
       db
-        .select({ email: users.email })
+        .select({ email: users.email, universityId: studentProfiles.universityId })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-        .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-        .where(and(eq(users.publicId, targetId), eq(universities.id, "omu")))
+        .where(eq(users.publicId, targetId))
         .limit(1),
     ]);
 
     if (!actor) {
       return Response.json(
-        { error: "Takipten önce OMÜ akademik profilini tamamlamalısın." },
+        { error: "Takipten önce akademik profilini tamamlamalısın." },
         { status: 409 },
       );
     }
     if (!target) return Response.json({ error: "Öğrenci profili bulunamadı." }, { status: 404 });
+    if (actor.universityId !== target.universityId) {
+      return Response.json({ error: "Yalnızca kendi üniversite çevrendeki öğrencileri takip edebilirsin." }, { status: 403 });
+    }
     if (actor.email === target.email) {
       return Response.json({ error: "Kendi profilini takip edemezsin." }, { status: 400 });
     }

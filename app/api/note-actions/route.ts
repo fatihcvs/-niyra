@@ -5,6 +5,7 @@ import {
   getRuntime,
   rateLimitResponse,
   requireIdentity,
+  requireProfile,
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
@@ -25,11 +26,18 @@ export async function POST(request: Request) {
 
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, "note-save", 80, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const note = await DB
-      .prepare(`SELECT id FROM notes WHERE id = ? AND status = 'published' AND deleted_at IS NULL LIMIT 1`)
-      .bind(id)
+      .prepare(
+        `SELECT n.id FROM notes n
+         JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+         WHERE n.id = ? AND n.status = 'published' AND n.deleted_at IS NULL
+           AND owner_profile.university_id = ? LIMIT 1`,
+      )
+      .bind(id, profile.university_id)
       .first<{ id: string }>();
     if (!note) return Response.json({ error: "Not bulunamadı." }, { status: 404 });
 

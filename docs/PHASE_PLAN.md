@@ -8,7 +8,7 @@ tekrar kullanım alışkanlığı, ders bazlı içerik yoğunluğu ve güvenilir
 
 ## Ürün hedefi
 
-Üniyra; ilk sürümde yalnızca Ondokuz Mayıs Üniversitesi'ne (OMÜ) açık,
+Üniyra; Türkiye ve Kıbrıs'taki 241 yükseköğretim kurumunu kapsayan,
 fakülte, bölüm ve ders bağlamını merkeze alan bir öğrenci sosyal ağıdır.
 Öğrenciler kendi akademik çevrelerini oluşturur, gönderi ve not
 paylaşır, topluluklara katılır ve ihtiyaç duydukları kaynağa hızlıca ulaşır.
@@ -49,7 +49,7 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 - Mobil ve masaüstü navigasyon
 - Gönderi oluşturma, beğeni, yorum, kaydetme, anket ve topluluk etkileşimleri
 - Not yükleme ve standart not arama akışlarının arayüz prototipleri
-- Beş adımlı OMÜ akademik ilk katılım deneyimi
+- Beş adımlı, aranabilir üniversite kataloglu akademik ilk katılım deneyimi
 
 **Kabul ölçütleri**
 
@@ -65,15 +65,15 @@ topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 **Durum:** Teknik kapsam tamamlandı ve canlı tek kullanıcı profili doğrulandı.
 İkinci gerçek pilot kullanıcının yeniden giriş kanıtı pilot operasyonuna bağlıdır.
 
-**Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; OMÜ fakültesini,
-bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
+**Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; üniversitesini,
+fakültesini, bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
 hatırlanır ve Üniyra deneyimini kişiselleştirir.
 
 **Veri modeli**
 
 - `users`: doğrulanmış kimlik, görünen ad ve hesap zamanları
 - `universities`: üniversite kataloğu
-- `faculties`: OMÜ fakülte kataloğu
+- `faculties`: üniversiteye bağlı akademik birimler
 - `departments`: fakülteye bağlı bölüm kataloğu
 - `courses`: bölümle ilişkili ders kataloğu
 - `student_profiles`: üniversite, bölüm, sınıf ve katılım durumu
@@ -91,7 +91,8 @@ hatırlanır ve Üniyra deneyimini kişiselleştirir.
 **Arayüz kapsamı**
 
 - 5 adımlı ilk katılım akışı
-- Sabit OMÜ pilot kampüsü
+- 204 Türkiye, 23 Kuzey Kıbrıs ve 14 Kıbrıs Cumhuriyeti kurumu arasında arama
+- OMÜ için ayrıntılı hazır fakülte/bölüm/ders kataloğu; diğer kurumlar için doğrulanan serbest akademik birim ve 3–8 ders girişi
 - Fakülte seçimi
 - Fakülteye bağlı bölüm ve sınıf seçimi
 - En az 3 ders seçimi
@@ -114,7 +115,7 @@ yeniden giriş yaptığında kişiselleştirilmiş akışını görebilir.
 
 **Durum:** Teknik kapsam tamamlandı. Gerçek gönderi, beğeni,
 okunabilir/silinebilir yorum ve kaydetme
-altyapısı; herkese açık öğrenci profili, takip sistemi, OMÜ öğrenci araması,
+altyapısı; aynı üniversiteye açık öğrenci profili, takip sistemi, kampüs öğrenci araması,
 profil ve gönderi bağlantısı paylaşımı, gönderi düzenleme/yumuşak silme,
 kişiselleştirilmiş sıralama, gerçek kaydedilenler görünümü ve imleç tabanlı
 akış sayfalaması tamamlandı.
@@ -125,7 +126,7 @@ ait, kalıcı ve ders bağlamına göre sıralanan gerçek içeriklerdir.
 **Kapsam**
 
 - Kullanıcı profilleri ve herkese açık profil sayfaları
-- OMÜ öğrenci araması ve paylaşılabilir profil bağlantıları
+- Üniversiteye ayrılmış öğrenci araması ve paylaşılabilir profil bağlantıları
 - Takip etme/bırakma ilişkisi
 - Metin gönderisi oluşturma, düzenleme ve silme
 - Ders, kampüs ve topluluk bağlamı
@@ -276,7 +277,7 @@ kanıtlanabilir.
 
 **Kapsam**
 
-- Yalnızca OMÜ'de fakülte, bölüm ve ders bazlı pilot
+- İlk operasyonel kohort olarak OMÜ'de fakülte, bölüm ve ders bazlı pilot
 - Davet bağlantıları ve kontrollü kullanıcı kabulü
 - İlk hafta görevleri: 3 ders seç, 1 kişiyi takip et, 1 not kaydet
 - İçerik boşluğunu önleyen ders elçileri ve başlangıç içerikleri

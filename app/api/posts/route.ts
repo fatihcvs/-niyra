@@ -142,6 +142,7 @@ function serializePost(row: PostRow) {
 
 async function readLatestPosts(
   viewerEmail: string,
+  viewerUniversityId: string,
   feed: FeedKind,
   cursor: FeedCursor | null,
 ) {
@@ -190,7 +191,7 @@ async function readLatestPosts(
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(isNull(posts.deletedAt), eq(universities.id, "omu"), feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
+    .where(and(isNull(posts.deletedAt), eq(universities.id, viewerUniversityId), feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
     .orderBy(desc(rank), desc(posts.createdAt), desc(posts.id))
     .limit(PAGE_SIZE + 1);
 
@@ -206,7 +207,7 @@ async function readLatestPosts(
   };
 }
 
-async function readSharedPost(viewerEmail: string, postId: string) {
+async function readSharedPost(viewerEmail: string, viewerUniversityId: string, postId: string) {
   const db = await getDb();
   const rank = sql<number>`0`;
   const [row] = await db
@@ -220,7 +221,7 @@ async function readSharedPost(viewerEmail: string, postId: string) {
     .where(and(
       eq(posts.id, postId),
       isNull(posts.deletedAt),
-      eq(universities.id, "omu"),
+      eq(universities.id, viewerUniversityId),
       sql<boolean>`NOT EXISTS (
         SELECT 1 FROM user_blocks b
         WHERE (b.blocker_email = ${viewerEmail} AND b.blocked_email = ${posts.authorEmail})
@@ -257,7 +258,10 @@ export async function GET(request: Request) {
       return Response.json({ error: "Gönderi bağlantısı geçerli değil." }, { status: 400 });
     }
     try {
-      const post = await readSharedPost(identity.email, sharedPostId);
+      const db = await getDb();
+      const [viewer] = await db.select({ universityId: studentProfiles.universityId }).from(studentProfiles).where(eq(studentProfiles.userEmail, identity.email)).limit(1);
+      if (!viewer) return Response.json({ error: "Akışı görmeden önce akademik profilini tamamlamalısın." }, { status: 409 });
+      const post = await readSharedPost(identity.email, viewer.universityId, sharedPostId);
       return post
         ? Response.json({ post })
         : Response.json({ error: "Paylaşılan gönderi bulunamadı." }, { status: 404 });
@@ -279,7 +283,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    return Response.json(await readLatestPosts(identity.email, feed, cursor));
+    const db = await getDb();
+    const [viewer] = await db.select({ universityId: studentProfiles.universityId }).from(studentProfiles).where(eq(studentProfiles.userEmail, identity.email)).limit(1);
+    if (!viewer) return Response.json({ error: "Akışı görmeden önce akademik profilini tamamlamalısın." }, { status: 409 });
+    return Response.json(await readLatestPosts(identity.email, viewer.universityId, feed, cursor));
   } catch (error) {
     return postError(error);
   }
@@ -323,10 +330,7 @@ export async function POST(request: Request) {
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
       .where(
-        and(
-          eq(studentProfiles.userEmail, identity.email),
-          eq(universities.id, "omu"),
-        ),
+        eq(studentProfiles.userEmail, identity.email),
       )
       .limit(1);
 

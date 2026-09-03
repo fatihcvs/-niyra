@@ -6,6 +6,7 @@ import {
   rateLimitResponse,
   relativeTime,
   requireIdentity,
+  requireProfile,
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
@@ -84,12 +85,18 @@ export async function POST(request: Request) {
   }
   try {
     const { DB } = await getRuntime();
+    const profile = await requireProfile(DB, identity.email);
+    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, `safety-${action}`, action === "report" ? 12 : 80, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 
     if (action === "block" || action === "mute") {
       const targetId = cleanText(payload.targetId, 80);
-      const target = await DB.prepare(`SELECT email FROM users WHERE public_id = ? AND email <> ? LIMIT 1`).bind(targetId, identity.email).first<{ email: string }>();
+      const target = await DB.prepare(
+        `SELECT u.email FROM users u
+         JOIN student_profiles target_profile ON target_profile.user_email = u.email
+         WHERE u.public_id = ? AND u.email <> ? AND target_profile.university_id = ? LIMIT 1`,
+      ).bind(targetId, identity.email, profile.university_id).first<{ email: string }>();
       if (!target) return Response.json({ error: "Öğrenci bulunamadı." }, { status: 404 });
       const table = action === "block" ? "user_blocks" : "user_mutes";
       const firstColumn = action === "block" ? "blocker_email" : "muter_email";
@@ -112,11 +119,32 @@ export async function POST(request: Request) {
       const details = cleanText(payload.details, 800);
 
       let evidence: Record<string, unknown> | null = null;
-      if (entityType === "post") evidence = await DB.prepare(`SELECT id, author_email, content, created_at FROM posts WHERE id = ? LIMIT 1`).bind(entityId).first<Record<string, unknown>>();
-      if (entityType === "comment") evidence = await DB.prepare(`SELECT id, author_email, content, created_at FROM post_comments WHERE id = ? LIMIT 1`).bind(entityId).first<Record<string, unknown>>();
-      if (entityType === "note") evidence = await DB.prepare(`SELECT id, owner_email, title, description, original_file_name, created_at FROM notes WHERE id = ? LIMIT 1`).bind(entityId).first<Record<string, unknown>>();
-      if (entityType === "community") evidence = await DB.prepare(`SELECT id, creator_email, name, description, rules, created_at FROM communities WHERE id = ? LIMIT 1`).bind(entityId).first<Record<string, unknown>>();
-      if (entityType === "user") evidence = await DB.prepare(`SELECT public_id, display_name, handle, created_at FROM users WHERE public_id = ? LIMIT 1`).bind(entityId).first<Record<string, unknown>>();
+      if (entityType === "post") evidence = await DB.prepare(
+        `SELECT p.id, p.author_email, p.content, p.created_at FROM posts p
+         JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
+         WHERE p.id = ? AND author_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "comment") evidence = await DB.prepare(
+        `SELECT pc.id, pc.author_email, pc.content, pc.created_at FROM post_comments pc
+         JOIN posts p ON p.id = pc.post_id
+         JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
+         WHERE pc.id = ? AND author_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "note") evidence = await DB.prepare(
+        `SELECT n.id, n.owner_email, n.title, n.description, n.original_file_name, n.created_at FROM notes n
+         JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+         WHERE n.id = ? AND owner_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "community") evidence = await DB.prepare(
+        `SELECT c.id, c.creator_email, c.name, c.description, c.rules, c.created_at FROM communities c
+         JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
+         WHERE c.id = ? AND creator_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "user") evidence = await DB.prepare(
+        `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
+         JOIN student_profiles target_profile ON target_profile.user_email = u.email
+         WHERE u.public_id = ? AND target_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (!evidence) return Response.json({ error: "Şikâyet edilen içerik bulunamadı." }, { status: 404 });
 
       const duplicate = await DB.prepare(
