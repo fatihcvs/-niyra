@@ -12,6 +12,7 @@ import {
   universities,
   type AcademicCourse,
 } from "../lib/academic-data";
+import { curatedNotes, featuredCuratedNotes, getCuratedSources } from "../lib/curated-notes";
 import {
   CommunitiesWorkspace,
   NotesWorkspace,
@@ -765,12 +766,17 @@ function Logo() {
   );
 }
 
-const libraryNotes = [
-  { code: "FİZ 101", title: "Mekanik — Formül Kağıdı", author: "Bora Akın", meta: "18 sayfa · 1,2 B görüntülenme", tone: "purple", symbol: "F = ma", saved: true },
-  { code: "MAT 201", title: "Diferansiyel Denklemler", author: "İdil Şen", meta: "32 sayfa · 894 görüntülenme", tone: "blue", symbol: "dy/dx", saved: false },
-  { code: "HUK 204", title: "Borçlar Hukuku Özeti", author: "Mert Can", meta: "46 sayfa · 986 görüntülenme", tone: "amber", symbol: "§ 49", saved: false },
-  { code: "PSİ 202", title: "Gelişim Kuramları Tablosu", author: "Selin Aras", meta: "12 sayfa · 741 görüntülenme", tone: "mint", symbol: "Ψ", saved: true },
-];
+const noteTones = ["purple", "blue", "amber", "mint"];
+const noteSymbols: Record<string, string> = { "limit-sureklilik": "lim", "algoritmik-dusunme": "</>", "vektor-kinematik": "v⃗", stp: "STP", "hukuki-kaynak-okuma": "§", "bellek-sistemleri": "Ψ", "turkce-yazim": "Aa", "anatomi-yon-duzlem": "↔" };
+const libraryNotes = featuredCuratedNotes.slice(0, 8).map((note, index) => ({
+  code: note.courseCodes[0],
+  title: note.title,
+  author: "Üniyra Editoryal",
+  meta: `${getCuratedSources(note)[0].publisher} · ${note.readingMinutes} dk`,
+  tone: noteTones[index % noteTones.length],
+  symbol: noteSymbols[note.id] ?? "✓",
+  saved: index < 2,
+}));
 
 function ViewTitle({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description: string; action?: React.ReactNode }) {
   return (
@@ -781,11 +787,11 @@ function ViewTitle({ eyebrow, title, description, action }: { eyebrow?: string; 
   );
 }
 
-function NoteCard({ note }: { note: (typeof libraryNotes)[number] }) {
+function NoteCard({ note, onOpen }: { note: (typeof libraryNotes)[number]; onOpen?: () => void }) {
   const [saved, setSaved] = useState(note.saved);
   return (
     <article className="library-note-card">
-      <button className={`note-cover note-${note.tone}`} type="button" aria-label={`${note.title} notunu aç`}>
+      <button className={`note-cover note-${note.tone}`} type="button" onClick={onOpen} aria-label={`${note.title} notunu aç`}>
         <span className="note-cover-code">{note.code}</span>
         <strong>{note.symbol}</strong>
         <span className="note-cover-lines" />
@@ -879,6 +885,7 @@ function SavedView({
   viewerId,
   universityShortName,
   onSavedChange,
+  onNavigate,
 }: {
   posts: Post[];
   loading: boolean;
@@ -888,6 +895,7 @@ function SavedView({
   viewerId: string;
   universityShortName: string;
   onSavedChange: (post: Post, saved: boolean) => void;
+  onNavigate: (name: string) => void;
 }) {
   if (!demo) {
     return (
@@ -915,7 +923,7 @@ function SavedView({
         <button type="button"><span className="collection-stack stack-mint"><i/><i/><i/></span><strong>Sonra Okurum</strong><small>5 kayıt</small></button>
       </div>
       <div className="section-heading workspace-heading"><div><span className="eyebrow">SON KAYDEDİLENLER</span><h2>Tüm kayıtlar</h2></div><button type="button">Sırala <Icon name="more" size={15}/></button></div>
-      <div className="note-library-grid">{libraryNotes.filter((note) => note.saved).map((note) => <NoteCard note={note} key={note.title}/>)}</div>
+      <div className="note-library-grid">{libraryNotes.filter((note) => note.saved).map((note) => <NoteCard note={note} onOpen={() => onNavigate("Notlar")} key={note.title}/>)}</div>
     </div>
   );
 }
@@ -1026,7 +1034,7 @@ function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery
   if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses} demo={demo}/>;
   if (name === "Bildirimler") return <NotificationsWorkspace demo={demo}/>;
   if (name === "Güvenlik") return <SafetyWorkspace demo={demo}/>;
-  if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} demo={demo} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} universityShortName={profile.universityShortName} onSavedChange={onSavedChange}/>;
+  if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} demo={demo} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} universityShortName={profile.universityShortName} onSavedChange={onSavedChange} onNavigate={onNavigate}/>;
   if (name === "Profil") return <ProfileView profile={profile} posts={posts} shareable={shareableProfile} onEdit={onEditProfile} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted}/>;
   return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
 }
@@ -1885,7 +1893,7 @@ export default function Home() {
           </div>
           <div className="welcome-stat">
             <span><Icon name="sparkles" size={17}/></span>
-            <div><strong>7 yeni not</strong><small>takip ettiğin derslerde</small></div>
+            <div><strong>{curatedNotes.length} doğrulanmış not</strong><small>Üniyra Editoryal&apos;de</small></div>
           </div>
         </div>
         {pilotMessage && <p className="pilot-message" role="status">{pilotMessage}<button type="button" onClick={() => setPilotMessage("")} aria-label="Mesajı kapat">×</button></p>}
@@ -1952,11 +1960,9 @@ export default function Home() {
         <PilotPanel demo={isDemoMode} onNavigate={navigateTo}/>
 
         <section className="side-card">
-          <div className="side-heading"><h2>Gündemdeki notlar</h2><button type="button">Tümü</button></div>
+          <div className="side-heading"><h2>Doğrulanmış notlar</h2><button type="button" onClick={() => navigateTo("Notlar")}>Tümü</button></div>
           <div className="trending-list">
-            <button type="button"><span className="trend-rank">01</span><span><small>FİZ 101</small><strong>Mekanik — Formül Kağıdı</strong><em>1,2 B görüntülenme</em></span><i className="mini-doc mini-doc-purple">F</i></button>
-            <button type="button"><span className="trend-rank">02</span><span><small>HUK 204</small><strong>Borçlar Hukuku Özeti</strong><em>986 görüntülenme</em></span><i className="mini-doc mini-doc-amber">H</i></button>
-            <button type="button"><span className="trend-rank">03</span><span><small>PSİ 202</small><strong>Gelişim Kuramları Tablosu</strong><em>741 görüntülenme</em></span><i className="mini-doc mini-doc-mint">P</i></button>
+            {libraryNotes.slice(0, 3).map((note, index) => <button type="button" onClick={() => navigateTo("Notlar")} key={note.title}><span className="trend-rank">{String(index + 1).padStart(2, "0")}</span><span><small>{note.code}</small><strong>{note.title}</strong><em>{note.meta}</em></span><i className={`mini-doc mini-doc-${note.tone}`}>{note.symbol.slice(0, 1)}</i></button>)}
           </div>
         </section>
 

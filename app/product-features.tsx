@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- authenticated R2 note previews use dynamic same-origin URLs */
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { curatedNotes, getCuratedSources, type CuratedNote } from "@/lib/curated-notes";
 
 export type FeatureCourse = { id: string; code: string; name: string };
 
@@ -87,11 +88,24 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
   const [scope, setScope] = useState<"all" | "mine" | "saved">("all");
   const [showUpload, setShowUpload] = useState(false);
   const [selected, setSelected] = useState<Note | null>(null);
+  const [selectedCurated, setSelectedCurated] = useState<CuratedNote | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Note | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadError, setUploadError] = useState("");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const selectedCourse = useMemo(() => courses.find((course) => course.id === courseId), [courseId, courses]);
+  const visibleCuratedNotes = useMemo(() => {
+    if (scope !== "all") return [];
+    const normalizedQuery = query.trim().toLocaleLowerCase("tr-TR");
+    return curatedNotes.filter((item) => {
+      if (selectedCourse && !item.courseCodes.includes(selectedCourse.code)) return false;
+      if (!normalizedQuery) return true;
+      const sources = getCuratedSources(item);
+      return [item.title, item.summary, item.category, ...item.courseCodes, ...item.tags, ...sources.flatMap((source) => [source.name, source.publisher])]
+        .some((value) => value.toLocaleLowerCase("tr-TR").includes(normalizedQuery));
+    });
+  }, [query, scope, selectedCourse]);
 
   async function loadNotes() {
     if (demo) {
@@ -188,13 +202,29 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
   }
 
   return <div className="workspace-view feature-workspace">
-    <FeatureHeader eyebrow="NOT KÜTÜPHANESİ" title="Ders notlarını bul ve paylaş" description="Üniversitendeki öğrencilerin yüklediği kaynaklar; ders, konu ve başlığa göre aranabilir." action={<button className="feature-primary" type="button" onClick={() => setShowUpload(true)}>＋ Not yükle</button>}/>
+    <FeatureHeader eyebrow="NOT KÜTÜPHANESİ" title="Ders notlarını bul ve paylaş" description="Kaynakları doğrulanmış Üniyra Editoryal notlarını ve kampüsündeki öğrenci paylaşımlarını ders, konu ve başlığa göre ara." action={<button className="feature-primary" type="button" onClick={() => setShowUpload(true)}>＋ Not yükle</button>}/>
     <section className="feature-search" aria-label="Not ara"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ders kodu, konu, başlık veya öğrenci ara"/><button type="button" onClick={() => setQuery("")} disabled={!query}>Temizle</button></section>
     <div className="feature-toolbar">
       <div role="tablist" aria-label="Not görünümü">{([['all','Tüm notlar'],['mine','Notlarım'],['saved','Kaydettiklerim']] as const).map(([value,label]) => <button role="tab" aria-selected={scope === value} className={scope === value ? "active" : ""} type="button" onClick={() => setScope(value)} key={value}>{label}</button>)}</div>
       <label>Ders<select value={courseId} onChange={(event) => setCourseId(event.target.value)}><option value="">Tümü</option>{courses.map((course) => <option value={course.id} key={course.id}>{course.code} · {course.name}</option>)}</select></label>
     </div>
     {error && <p className="feature-error" role="alert">{error} <button type="button" onClick={() => void loadNotes()}>Yeniden dene</button></p>}
+    {scope === "all" && <section className="curated-library" aria-labelledby="curated-library-title">
+      <header className="curated-library-header"><div><span>ÜNİYRA EDİTORYAL · KAYNAKLI</span><h2 id="curated-library-title">Doğrulanmış çalışma notları</h2><p>Resmi kurumlar, üniversite açık dersleri ve açık ders kitaplarından araştırılarak özgün biçimde hazırlandı.</p></div><strong>{visibleCuratedNotes.length}<small>{query || selectedCourse ? "eşleşen not" : "editoryal not"}</small></strong></header>
+      {visibleCuratedNotes.length > 0 ? <div className="curated-note-grid">{visibleCuratedNotes.map((item) => {
+        const sources = getCuratedSources(item);
+        return <article className="curated-note-card" key={item.id}>
+          <button className="curated-note-main" type="button" onClick={() => setSelectedCurated(item)}>
+            <span className="curated-note-badge">✓ KAYNAKLI</span>
+            <small>{item.courseCodes.join(" · ")} · {item.readingMinutes} dk</small>
+            <h3>{item.title}</h3>
+            <p>{item.summary}</p>
+          </button>
+          <footer><span>{sources[0].publisher}</span><button type="button" onClick={() => setSelectedCurated(item)}>Notu aç →</button></footer>
+        </article>;
+      })}</div> : <div className="curated-empty"><strong>Bu filtreyle editoryal not bulunamadı.</strong><p>Arama terimini veya ders filtresini değiştirerek yeniden dene.</p></div>}
+    </section>}
+    <div className="campus-notes-heading"><div><span>KAMPÜS KÜTÜPHANESİ</span><h2>Öğrenci notları</h2></div>{demo && <p>Dosyaları görmek ve paylaşmak için giriş yap.</p>}</div>
     {state === "loading" ? <EmptyState icon="…" title="Notlar getiriliyor" text="Kampüs kütüphanen hazırlanıyor."/> : notes.length === 0 ? <EmptyState icon="▤" title={demo ? "Gerçek notlar girişten sonra açılır" : "Bu görünümde not yok"} text={demo ? "Profilinle giriş yaptığında yüklenen dosyaları güvenli biçimde görebilirsin." : "Aramayı veya filtreleri değiştir; istersen ilk notu sen yükle."}/> : <div className="feature-note-grid">{notes.map((note) => <article className="feature-note-card" key={note.id}>
       <button className="feature-note-cover" type="button" onClick={() => setSelected(note)}><span>{note.courseCode}</span><strong>{note.contentType === "application/pdf" ? "PDF" : note.originalFileName.split('.').at(-1)?.toLocaleUpperCase("tr-TR")}</strong><i>{note.status === "published" ? "YAYINDA" : note.status === "processing" ? "İŞLENİYOR" : "İNCELENDİ"}</i></button>
       <div><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div><button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small></div>
@@ -217,6 +247,14 @@ export function NotesWorkspace({ courses, demo = false }: { courses: FeatureCour
       {selected.tags.length > 0 && <div className="feature-tags">{selected.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}
       {selected.status === "published" ? <div className="feature-preview">{selected.contentType.startsWith("image/") ? <img src={selected.fileUrl} alt={`${selected.title} önizlemesi`}/> : selected.contentType === "application/pdf" ? <iframe src={selected.fileUrl} title={`${selected.title} PDF önizlemesi`}/> : <EmptyState icon="DOCX" title="Belge indirilmeye hazır" text="DOCX dosyaları güvenli indirme bağlantısıyla açılır."/>}</div> : <EmptyState icon="!" title={selected.status === "processing" ? "Dosya işleniyor" : "Dosya yayınlanmadı"} text={selected.rejectionReason ?? "İnceleme tamamlandığında burada görünecek."}/>} 
       <footer><button type="button" onClick={() => void toggleSave(selected)}>{selected.saved ? "Kaydedildi" : "Kaydet"}</button>{selected.own && <button className="feature-danger" type="button" onClick={() => setDeleteConfirm(selected)}>Notu sil</button>}{selected.status === "published" && <><a href={selected.fileUrl} target="_blank" rel="noreferrer">Yeni sekmede aç</a><a className="feature-primary" href={`${selected.fileUrl}&download=1`}>İndir</a></>}</footer>
+    </section></div>}
+
+    {selectedCurated && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedCurated(null); }}><section className="feature-dialog feature-detail curated-detail" role="dialog" aria-modal="true" aria-labelledby="curated-detail-title"><header><div><span>ÜNİYRA EDİTORYAL · {selectedCurated.courseCodes.join(" · ")}</span><h2 id="curated-detail-title">{selectedCurated.title}</h2></div><button type="button" onClick={() => setSelectedCurated(null)} aria-label="Pencereyi kapat">×</button></header>
+      <div className="curated-detail-intro"><span>✓ Kaynakları doğrulandı</span><p>{selectedCurated.summary}</p><small>{selectedCurated.level} · {selectedCurated.readingMinutes} dakika · 3 Eylül 2026 tarihinde doğrulandı</small></div>
+      <div className="curated-detail-columns"><section><h3>Bilmen gerekenler</h3><ul>{selectedCurated.takeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}</ul></section><section><h3>Çalışma kontrolü</h3><ol>{selectedCurated.checklist.map((step) => <li key={step}>{step}</li>)}</ol></section></div>
+      <div className="feature-tags">{selectedCurated.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>
+      <section className="curated-sources"><h3>Kaynaklar</h3><p>Bu kısa not özgün olarak hazırlandı. Konuyu ayrıntılı çalışmak ve güncel metni doğrulamak için birincil kaynağı aç.</p>{getCuratedSources(selectedCurated).map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.key}><span><strong>{source.name}</strong><small>{source.publisher}</small></span><i>↗</i></a>)}</section>
+      <footer><button type="button" onClick={() => setSelectedCurated(null)}>Kapat</button><a className="feature-primary" href={getCuratedSources(selectedCurated)[0].url} target="_blank" rel="noreferrer">Ana kaynağı aç ↗</a></footer>
     </section></div>}
 
     {deleteConfirm && <div className="feature-overlay feature-confirm-layer"><section className="feature-confirm" role="alertdialog" aria-modal="true" aria-labelledby="delete-note-title"><span>!</span><h2 id="delete-note-title">Not kalıcı olarak silinsin mi?</h2><p>“{deleteConfirm.title}” dosyası ve ilişkili kayıtları geri getirilemeyecek.</p><div><button type="button" onClick={() => setDeleteConfirm(null)}>Vazgeç</button><button className="feature-danger" type="button" onClick={() => void removeNote(deleteConfirm)}>Notu sil</button></div></section></div>}
