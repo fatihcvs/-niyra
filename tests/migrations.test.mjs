@@ -26,6 +26,8 @@ test("all database migrations apply cleanly in order", async () => {
     assert.deepEqual(
       [
         "audit_logs",
+        "campus_pulse_posts",
+        "campus_pulse_reactions",
         "communities",
         "community_audit_logs",
         "community_members",

@@ -136,6 +136,58 @@ test("post API rejects anonymous write attempts", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
 
+test("campus pulse rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse", { headers: { accept: "application/json" } }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test("campus pulse rejects unknown feed kinds before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse?kind=secret", { headers: platformHeaders }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("campus pulse validates live expiry before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ kind: "live", category: "food", content: "Yemekhane sırası hızlı ilerliyor.", durationHours: 99 }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("campus pulse requires meaningful confession content", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ kind: "confession", category: "social", content: "kısa" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
 test("post API rejects malformed create payloads before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

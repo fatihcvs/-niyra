@@ -327,7 +327,10 @@ kritik API uçları canlı adreste doğrulanır.
 
 ## Faz 9 — Kampüs Anlık ve güvenli anonim paylaşım (v1.1)
 
-**Durum:** Uygulama aşamasında.
+**Durum:** Tamamlandı. Yerel uçtan uca testte aynı kampüste anlık ve anonim
+paylaşım, kampüsler arası izolasyon, güncellik tepkisi, anonim API yanıtı,
+şikâyet kanıtı ve sahiplik kontrollü silme doğrulandı. Masaüstü ve 390 px mobil
+görünümde hata katmanı olmadan render edildi.
 
 **Kullanıcı sonucu:** Öğrenci kampüsündeki güncel durumu kısa ömürlü
 paylaşımlarla takip eder; isterse kimliği diğer öğrencilere gösterilmeden

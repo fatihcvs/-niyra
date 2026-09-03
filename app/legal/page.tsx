@@ -14,6 +14,7 @@ const sections = [
       "Üniyra'da hesap e-postası, görünen ad, akademik profil seçimleri, gönderiler, yorumlar, takip ilişkileri, kaydedilen içerikler, yüklenen notların bilgileri, topluluk üyelikleri, güvenlik kayıtları ve temel ürün kullanım olayları işlenir.",
       "Dosya baytları nesne depolamada; aranabilir başlık, ders, etiket, sahiplik ve durum bilgileri veritabanında ayrı tutulur. Dosyalar yalnızca izin verilen ürün akışlarından açılır. Gizli anahtarlar ve altyapı kimlikleri kullanıcı arayüzüne gönderilmez.",
       "Parolalar geri döndürülebilir biçimde saklanmaz; tuzlanmış parola özetleri kullanılır ve oturum çerezleri tarayıcı betiklerine kapalıdır. Üniyra bu sürümde reklam profili oluşturmaz, kişisel veriyi satmaz ve ödeme verisi işlemez.",
+      "Anonim dertleşme paylaşımlarında görünen ad ve profil diğer öğrencilere gönderilmez. Kötüye kullanımın incelenebilmesi için hesap sahipliği, paylaşım zamanı ve moderasyon kanıtı sunucuda korunur; anonimlik Üniyra güvenlik ekibine karşı kimlik gizleme anlamına gelmez.",
     ],
   },
   {
@@ -55,9 +56,9 @@ const sections = [
 export default function LegalPage() {
   return <main className={styles.shell}>
     <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><span>ü</span><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>ÜNİYRA MVP v1.0</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · MVP v1.0</small></section>
+    <section className={styles.hero}><span>ÜNİYRA MVP v1.1</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 3 Eylül 2026 · MVP v1.1</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
     <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
-    <footer><p>Bu metin Üniyra MVP v1.0 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
+    <footer><p>Bu metin Üniyra MVP v1.1 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
   </main>;
 }

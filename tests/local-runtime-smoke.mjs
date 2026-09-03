@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.0.0");
+assert.equal(healthBody.version, "1.1.0");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -129,6 +129,40 @@ const otherCampusPost = (await json("/api/posts", {
 }, otherCampusEmail)).body.post;
 const ownerCampusFeed = (await json("/api/posts?feed=campus")).body.posts;
 assert.ok(!ownerCampusFeed.some((item) => item.id === otherCampusPost.id));
+
+const otherCampusPulse = (await json("/api/campus-pulse", {
+  method: "POST",
+  body: JSON.stringify({ kind: "live", category: "transport", content: `Diğer kampüs servis bilgisi ${runId}`, campusZone: "Kuzey durak", durationHours: 3 }),
+}, otherCampusEmail)).body.item;
+const isolatedPulse = (await json("/api/campus-pulse?kind=live")).body.items;
+assert.ok(!isolatedPulse.some((item) => item.id === otherCampusPulse.id));
+
+const livePulse = (await json("/api/campus-pulse", {
+  method: "POST",
+  body: JSON.stringify({ kind: "live", category: "food", content: `Merkez yemekhane sırası hızlı ilerliyor #yemekhane ${runId}`, campusZone: "Merkez yemekhane", durationHours: 3 }),
+})).body.item;
+const confession = (await json("/api/campus-pulse", {
+  method: "POST",
+  body: JSON.stringify({ kind: "confession", category: "social", content: `Bu hafta yetişemediğimi hissediyorum ${runId}` }),
+})).body.item;
+const livePulseFeed = (await json("/api/campus-pulse?kind=live")).body;
+assert.ok(livePulseFeed.items.some((item) => item.id === livePulse.id));
+assert.ok(livePulseFeed.topics.some((item) => item.topic === "#yemekhane"));
+const confessionFeed = (await json("/api/campus-pulse?kind=confession", {}, peerEmail)).body.items;
+const anonymousItem = confessionFeed.find((item) => item.id === confession.id);
+assert.equal(anonymousItem.authorName, "Anonim öğrenci");
+assert.equal(anonymousItem.authorId, null);
+const pulseReaction = (await json("/api/campus-pulse", {
+  method: "PATCH",
+  body: JSON.stringify({ action: "react", id: livePulse.id, reaction: "confirm" }),
+}, peerEmail)).body;
+assert.equal(pulseReaction.confirmCount, 1);
+const pulseReport = await fetch(`${baseUrl}/api/safety`, {
+  method: "POST",
+  headers: headers(peerEmail, true),
+  body: JSON.stringify({ action: "report", entityType: "pulse", entityId: confession.id, reason: "other", details: "Otomatik anonim paylaşım moderasyon kanıtı kontrolü." }),
+});
+assert.equal(pulseReport.status, 201);
 
 const otherCampusCommunity = (await json("/api/communities", {
   method: "POST",
@@ -202,7 +236,9 @@ const blockedSearch = (await json(`/api/people?q=${encodeURIComponent(peer.displ
 assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
 
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
+await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: livePulse.id }) });
+await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: confession.id }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra MVP v1.0 runtime smoke passed: self-service auth, session renewal, spoof protection, multi-campus isolation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.1 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, moderation evidence, community, note/R2, search, notifications and safety.");

@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -139,6 +139,12 @@ export async function POST(request: Request) {
         `SELECT c.id, c.creator_email, c.name, c.description, c.rules, c.created_at FROM communities c
          JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
          WHERE c.id = ? AND creator_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "pulse") evidence = await DB.prepare(
+        `SELECT p.id, p.author_email, p.kind, p.category, p.content, p.campus_zone,
+                p.is_anonymous, p.expires_at, p.created_at
+         FROM campus_pulse_posts p
+         WHERE p.id = ? AND p.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u

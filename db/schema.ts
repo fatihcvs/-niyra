@@ -175,6 +175,53 @@ export const postComments = sqliteTable(
   ],
 );
 
+export const campusPulsePosts = sqliteTable(
+  "campus_pulse_posts",
+  {
+    id: text("id").primaryKey(),
+    authorEmail: text("author_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    universityId: text("university_id")
+      .notNull()
+      .references(() => universities.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    category: text("category").notNull().default("general"),
+    content: text("content").notNull(),
+    campusZone: text("campus_zone").notNull().default(""),
+    isAnonymous: integer("is_anonymous", { mode: "boolean" }).notNull().default(false),
+    status: text("status").notNull().default("active"),
+    expiresAt: text("expires_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    deletedAt: text("deleted_at"),
+  },
+  (table) => [
+    index("campus_pulse_university_kind_created_idx").on(table.universityId, table.kind, table.createdAt),
+    index("campus_pulse_status_expires_idx").on(table.status, table.expiresAt),
+    index("campus_pulse_author_created_idx").on(table.authorEmail, table.createdAt),
+  ],
+);
+
+export const campusPulseReactions = sqliteTable(
+  "campus_pulse_reactions",
+  {
+    postId: text("post_id")
+      .notNull()
+      .references(() => campusPulsePosts.id, { onDelete: "cascade" }),
+    userEmail: text("user_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    reaction: text("reaction").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.postId, table.userEmail] }),
+    index("campus_pulse_reactions_post_idx").on(table.postId, table.reaction),
+  ],
+);
+
 export const userFollows = sqliteTable(
   "user_follows",
   {
