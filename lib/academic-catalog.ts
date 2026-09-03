@@ -26,6 +26,8 @@ export type OfficialAcademicProgram = {
   accreditation?: string | null;
   validThrough?: string | null;
   curriculumUrls?: string[];
+  curriculumAuthority?: string | null;
+  curriculumPeriod?: string | null;
   reportUrls?: string[];
   sourceId: string;
 };

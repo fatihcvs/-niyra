@@ -872,7 +872,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .course-count span { color:#6e7386; font-size:12px; }
 .course-count strong { color:var(--brand); font-size:20px; }
 .course-count small { padding:5px 8px; border-radius:8px; background:#f2f1f7; color:#9396a6; font-size:.8125rem; }
-.catalog-curriculum-link { width:max-content; max-width:100%; min-height:40px; margin:-2px 0 11px; padding:0 12px; display:flex; align-items:center; gap:7px; border:1px solid #d9d4ff; border-radius:11px; background:#f7f6ff; color:var(--brand); font-size:.8125rem; font-weight:740; text-decoration:none; }
+.catalog-curriculum-link { width:max-content; max-width:100%; min-height:44px; margin:-2px 0 11px; padding:7px 12px; display:flex; align-items:center; gap:8px; border:1px solid #d9d4ff; border-radius:11px; background:#f7f6ff; color:var(--brand); font-size:.8125rem; font-weight:740; line-height:1.25; text-decoration:none; }
+.catalog-curriculum-link>span { display:grid; gap:2px; }
+.catalog-curriculum-link small { color:#7771a5; font-size:.6875rem; font-weight:620; }
 .catalog-curriculum-link:hover { border-color:#9b91f8; background:#f1efff; }
 .course-choice-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .course-choice-grid > button {

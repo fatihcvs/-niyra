@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 943 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 984 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -32,8 +32,17 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   üniversitenin birim/programları `/api/academic-catalog` üzerinden yüklenir.
 - Her öğrencinin o dönem aldığı 3–8 ders kullanıcı tarafından girilir. Ders kodları
   tekilleştirilir ve sunucuda uzunluk/ilişki doğrulamasından geçer.
-- CYQAA'nın yayımladığı `Course Distribution` belgeleri ilgili programda doğrudan
-  “onaylı ders dağılımı” bağlantısı olarak gösterilir.
+- CYQAA'nın yayımladığı `Course Distribution` belgeleri ve üniversitelerin kendi
+  resmî ders/müfredat sayfaları ilgili programda doğrudan bağlantı olarak gösterilir.
+  Tarihli kaynaklarda yayın dönemi bağlantının yanında açıkça yazılır.
+
+## Ders planı genişletmesi — üçüncü parça
+
+- Kara Harp Okulunun sekiz lisans programına dönem bazlı resmî ders planı bağlandı.
+- Deniz Harp Okulunun altı lisans programına resmî akademik program/ders listesi bağlandı.
+- Kara, Deniz ve Hava Astsubay Meslek Yüksekokullarındaki 27 programa ders kodu,
+  kredi ve AKTS içeren resmî 2021-2022 belgeleri bağlandı. Eski dönem bilgisi
+  arayüzde görünür tutuldu; belgeler güncel plan gibi etiketlenmedi.
 
 ## Bilinen sınır
 

@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 943,
+    curriculumLinkCount: 984,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 19);
+  assert.equal(catalog.meta.sources.length, 20);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -28,6 +28,20 @@ test("official academic catalog has verified coverage and referential integrity"
       assert.ok(catalog.meta.sources.some((source) => source.id === program.sourceId), `${universityId}: unknown source ${program.sourceId}`);
     }
   }
+});
+
+test("MSU curriculum links identify their official authority and publication period", () => {
+  const msu = catalog.universities["tr-milli-savunma-universitesi"];
+  const curriculumPrograms = msu.programs.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(curriculumPrograms.length, 41);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Millî Savunma Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumPeriod));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => url.startsWith("https://"))));
+
+  const dated = curriculumPrograms.filter((program) => program.curriculumPeriod === "2021-2022");
+  assert.equal(dated.length, 27);
+  assert.ok(dated.every((program) => program.unitId.includes("astsubay-myo")));
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

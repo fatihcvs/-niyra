@@ -46,9 +46,22 @@ lisans, yüksek lisans ve doktora programlarını içerir.
 
 - 241 kurumun 239'unda resmî program kapsamı mevcut.
 - 3.212 birim ve 16.454 program referans bütünlüğüyle üretildi.
-- 943 resmî ders dağılımı/müfredat bağlantısı bulundu.
+- 984 resmî ders dağılımı/müfredat bağlantısı bulundu.
 - İki kurumda doğrulanabilir 2026 program kaydı yok; ürün bu kurumlarda manuel giriş
   yedeğini gösteriyor ve kaydı “resmî katalog” gibi sunmuyor.
 - Tüm üniversitelerin tek tek dönem derslerini kapsayan güncel bir ulusal kaynak
   bulunmadığından, bu alan kurumların Bologna/AKTS sayfalarıyla sonraki veri
   sürümlerinde genişletilecek.
+
+## MSÜ resmî ders planları — üçüncü parça
+
+- Kara Harp Okulu Dekanlığının güncel lisans programı menüsündeki sekiz sayfanın
+  her birinde yarıyıl bazlı ders listesi doğrulandı.
+- Deniz Harp Okulu Dekanlığının altı programındaki akademik program/ders listesi
+  sayfaları doğrudan bölüm menülerinden doğrulandı.
+- MSÜ'nün Kara, Deniz ve Hava Astsubay Meslek Yüksekokulları için yayımladığı
+  2021-2022 resmî PDF'ler program bazında ders kodu, ders saati, kredi ve AKTS
+  içeriyor. Kaynak dönemi veri modelinde `curriculumPeriod` olarak saklandı.
+- Hava Harp Okulu program tanıtım sayfalarında ayrıntılı yarıyıl ders planı,
+  Bando Astsubay MYO için de doğrulanabilir bir resmî ders planı bulunamadığından
+  bu altı programa bağlantı üretilmedi.
