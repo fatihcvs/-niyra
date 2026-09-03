@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.1.0");
+assert.equal(healthBody.version, "1.2.0");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -163,6 +163,39 @@ const pulseReport = await fetch(`${baseUrl}/api/safety`, {
   body: JSON.stringify({ action: "report", entityType: "pulse", entityId: confession.id, reason: "other", details: "Otomatik anonim paylaşım moderasyon kanıtı kontrolü." }),
 });
 assert.equal(pulseReport.status, 201);
+
+await json("/api/social-match", {
+  method: "POST",
+  body: JSON.stringify({ action: "save-profile", interests: ["technology", "gaming", "books"], intents: ["coffee", "project"], bio: "Kampüste teknoloji projeleri ve kahve sohbetleri.", availability: "week", discoverable: true }),
+});
+await json("/api/social-match", {
+  method: "POST",
+  body: JSON.stringify({ action: "save-profile", interests: ["technology", "gaming", "sports"], intents: ["coffee", "gaming"], bio: "Ortak oyun ve teknoloji etkinlikleri arıyorum.", availability: "today", discoverable: true }),
+}, peerEmail);
+await json("/api/social-match", {
+  method: "POST",
+  body: JSON.stringify({ action: "save-profile", interests: ["technology", "gaming"], intents: ["coffee"], bio: "Diğer kampüs eşleşme izolasyonu.", availability: "now", discoverable: true }),
+}, otherCampusEmail);
+const socialMatches = (await json("/api/social-match")).body.matches;
+assert.ok(socialMatches.some((item) => item.publicId === peer.publicId && item.score > 0));
+assert.ok(!socialMatches.some((item) => item.publicId === otherCampus.publicId));
+const meetup = (await json("/api/social-match", {
+  method: "POST",
+  body: JSON.stringify({ action: "request", targetPublicId: peer.publicId, activity: "coffee", message: "Merkez kütüphane önünde bir kahve içelim mi?", campusPlace: "Merkez kütüphane" }),
+})).body.request;
+const incomingMeetups = (await json("/api/social-match", {}, peerEmail)).body.requests;
+assert.ok(incomingMeetups.some((item) => item.id === meetup.id && item.direction === "incoming"));
+const acceptedMeetup = (await json("/api/social-match", {
+  method: "PATCH",
+  body: JSON.stringify({ id: meetup.id, decision: "accepted" }),
+}, peerEmail)).body;
+assert.equal(acceptedMeetup.status, "accepted");
+const meetupReport = await fetch(`${baseUrl}/api/safety`, {
+  method: "POST",
+  headers: headers(peerEmail, true),
+  body: JSON.stringify({ action: "report", entityType: "meetup", entityId: meetup.id, reason: "other", details: "Otomatik buluşma güvenlik kanıtı kontrolü." }),
+});
+assert.equal(meetupReport.status, 201);
 
 const otherCampusCommunity = (await json("/api/communities", {
   method: "POST",
@@ -241,4 +274,4 @@ await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: c
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.1 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, moderation evidence, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.2 runtime smoke passed: auth, campus isolation, Campus Anlık, anonymous privacy, interest matching, safe meetups, moderation evidence, community, note/R2, search, notifications and safety.");

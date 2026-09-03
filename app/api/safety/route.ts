@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -146,6 +146,16 @@ export async function POST(request: Request) {
          FROM campus_pulse_posts p
          WHERE p.id = ? AND p.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "meetup") evidence = await DB.prepare(
+        `SELECT mr.id, mr.sender_email, mr.recipient_email, mr.activity, mr.message,
+                mr.proposed_time, mr.campus_place, mr.status, mr.created_at
+         FROM meetup_requests mr
+         JOIN student_profiles sender_profile ON sender_profile.user_email = mr.sender_email
+         JOIN student_profiles recipient_profile ON recipient_profile.user_email = mr.recipient_email
+         WHERE mr.id = ? AND sender_profile.university_id = ? AND recipient_profile.university_id = ?
+           AND (mr.sender_email = ? OR mr.recipient_email = ?)
+         LIMIT 1`,
+      ).bind(entityId, profile.university_id, profile.university_id, identity.email, identity.email).first<Record<string, unknown>>();
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email

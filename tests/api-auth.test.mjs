@@ -188,6 +188,47 @@ test("campus pulse requires meaningful confession content", async () => {
   assert.equal(response.status, 400);
 });
 
+test("social matching rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/social-match", { headers: { accept: "application/json" } }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test("social matching validates profile preferences before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/social-match", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ action: "save-profile", interests: ["music"], intents: [], availability: "someday" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("social matching rejects invalid meetup dates before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/social-match", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ action: "request", targetPublicId: "student-id", activity: "coffee", message: "Kampüste bir kahve içelim mi?", proposedTime: "not-a-date" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+});
+
 test("post API rejects malformed create payloads before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

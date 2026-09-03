@@ -52,7 +52,7 @@ export function displayName(identity: ChatGPTUser) {
 export async function requireProfile(db: D1Database, email: string) {
   return db
     .prepare(
-      `SELECT sp.user_email, sp.university_id, sp.department_id, u.public_id,
+      `SELECT sp.user_email, sp.university_id, sp.department_id, sp.class_year, u.public_id,
               u.display_name, u.handle
        FROM student_profiles sp
        JOIN users u ON u.email = sp.user_email
@@ -64,6 +64,7 @@ export async function requireProfile(db: D1Database, email: string) {
       user_email: string;
       university_id: string;
       department_id: string;
+      class_year: number;
       public_id: string;
       display_name: string;
       handle: string;

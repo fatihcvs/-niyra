@@ -105,6 +105,38 @@ export const studentCourses = sqliteTable(
   (table) => [primaryKey({ columns: [table.userEmail, table.courseId] })],
 );
 
+export const studentSocialProfiles = sqliteTable("student_social_profiles", {
+  userEmail: text("user_email").primaryKey().references(() => users.email, { onDelete: "cascade" }),
+  interestsJson: text("interests_json").notNull().default("[]"),
+  intentsJson: text("intents_json").notNull().default("[]"),
+  socialBio: text("social_bio").notNull().default(""),
+  availability: text("availability").notNull().default("not-looking"),
+  isDiscoverable: integer("is_discoverable", { mode: "boolean" }).notNull().default(true),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const meetupRequests = sqliteTable(
+  "meetup_requests",
+  {
+    id: text("id").primaryKey(),
+    senderEmail: text("sender_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    recipientEmail: text("recipient_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    activity: text("activity").notNull(),
+    message: text("message").notNull().default(""),
+    proposedTime: text("proposed_time"),
+    campusPlace: text("campus_place").notNull().default(""),
+    status: text("status").notNull().default("pending"),
+    expiresAt: text("expires_at").notNull(),
+    respondedAt: text("responded_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("meetup_requests_recipient_status_idx").on(table.recipientEmail, table.status, table.createdAt),
+    index("meetup_requests_sender_status_idx").on(table.senderEmail, table.status, table.createdAt),
+  ],
+);
+
 export const posts = sqliteTable(
   "posts",
   {
