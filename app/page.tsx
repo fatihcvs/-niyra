@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import {
   faculties,
   getCourseById,
@@ -12,14 +11,15 @@ import {
   getUniversityById,
   type AcademicCourse,
 } from "../lib/academic-data";
-
-const CommunitiesWorkspace = dynamic(() => import("./product-features").then((module) => module.CommunitiesWorkspace));
-const NotesWorkspace = dynamic(() => import("./product-features").then((module) => module.NotesWorkspace));
-const NotificationsWorkspace = dynamic(() => import("./product-features").then((module) => module.NotificationsWorkspace));
-const PilotPanel = dynamic(() => import("./product-features").then((module) => module.PilotPanel));
-const ProfileSafetyMenu = dynamic(() => import("./product-features").then((module) => module.ProfileSafetyMenu));
-const SafetyWorkspace = dynamic(() => import("./product-features").then((module) => module.SafetyWorkspace));
-const UnifiedSearchResults = dynamic(() => import("./product-features").then((module) => module.UnifiedSearchResults));
+import {
+  CommunitiesWorkspace,
+  NotesWorkspace,
+  NotificationsWorkspace,
+  PilotPanel,
+  ProfileSafetyMenu,
+  SafetyWorkspace,
+  UnifiedSearchResults,
+} from "./product-features";
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
