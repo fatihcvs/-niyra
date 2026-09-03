@@ -325,6 +325,121 @@ izlenebilir biçimde açılır.
 **Çıkış koşulu:** `v1.0.0` Railway üzerinde sağlıklı çalışır, kayıt ekranı ve
 kritik API uçları canlı adreste doğrulanır.
 
+## Faz 9 — Kampüs Anlık ve güvenli anonim paylaşım (v1.1)
+
+**Durum:** Uygulama aşamasında.
+
+**Kullanıcı sonucu:** Öğrenci kampüsündeki güncel durumu kısa ömürlü
+paylaşımlarla takip eder; isterse kimliği diğer öğrencilere gösterilmeden
+dertleşir. Anonimlik yalnız kullanıcı arayüzündedir, güvenlik ekibi kötüye
+kullanım durumunda hesabı denetim kayıtları üzerinden belirleyebilir.
+
+**Kapsam**
+
+- Aynı üniversiteye kapalı Kampüs Anlık akışı
+- Ulaşım, yemek, etkinlik, kayıp eşya, güvenlik ve genel kategorileri
+- Süresi dolan anlık paylaşımlar ve güncel/güncelliğini yitirdi geri bildirimi
+- Son saatlerdeki gerçek içerikten üretilen kampüs gündemi
+- Görünen adı gizleyen, sunucuda sahipliği korunan anonim dertleşme modu
+- Destek tepkisi, güvenli şikâyet, hız sınırı ve sahiplik kontrollü silme
+
+**Kabul ölçütleri**
+
+- Anonim içerik API yanıtında yazar kimliğini sızdırmaz.
+- Farklı üniversitedeki kullanıcı içeriği okuyamaz veya etkileyemez.
+- Süresi dolan anlık kayıtlar varsayılan akıştan çıkar.
+- Aynı kullanıcı aynı içeriğe birden çok çelişkili tepki bırakamaz.
+- Moderasyon kanıtı gerçek yazar hesabını yalnız yetkili akışta korur.
+
+## Faz 10 — İlgi alanı eşleşmesi ve güvenli buluşmalar (v1.2)
+
+**Durum:** Planlandı.
+
+**Kullanıcı sonucu:** Öğrenci ilgi alanlarını ve o günkü sosyalleşme niyetini
+seçer; aynı kampüsteki uyumlu öğrencileri bulur ve karşılıklı onayla çalışma,
+kahve, spor veya etkinlik buluşması oluşturur.
+
+**Kapsam**
+
+- Profil ilgi alanları ve sosyalleşme niyetleri
+- Ortak ders, bölüm ve ilgi alanı temelli açıklanabilir eşleşme puanı
+- Yalnız aynı üniversitede çalışan eşleşme keşfi
+- Karşılıklı kabul edilen buluşma isteği, iptal ve süre sonu
+- Engelleme ve şikâyet kurallarının eşleşme akışına uygulanması
+
+**Kabul ölçütleri**
+
+- Kullanıcı eşleşme nedenini ve paylaşılan ilgi alanlarını görür.
+- Reddedilen veya süresi dolan istek yeniden kullanılamaz.
+- Engellenen hesaplar öneri ve buluşma listelerine girmez.
+
+## Faz 11 — Kampüs haritası, mekânlar ve günlük öneriler (v1.3)
+
+**Durum:** Planlandı.
+
+**Kullanıcı sonucu:** Öğrenci kampüsündeki bina, çalışma alanı, yemek, spor ve
+etkinlik noktalarını haritada/listede bulur; her gün kampüsüne ve ilgilerine
+uygun bir etkinlik veya mekân önerisi alır.
+
+**Kapsam**
+
+- Üniversiteye bağlı koordinatlı kampüs noktaları
+- Kategori, erişilebilirlik, çalışma saatleri ve doğrulama zamanı
+- Kullanıcı önerisi ve topluluk tarafından güncellik onayı
+- Üniversiteye özel etkinlik takvimi
+- Tarih, açık olma durumu ve ilgi alanlarına göre açıklanabilir günlük öneri
+- Harita kullanılamadığında tam işlevli liste görünümü
+
+**Kabul ölçütleri**
+
+- Harita ve liste yalnız kullanıcının üniversitesindeki noktaları gösterir.
+- Konumu olmayan veya eski kayıtlar yanıltıcı kesinlikle sunulmaz.
+- Günlük öneri aynı gün içinde kararlı, ertesi gün yenilenebilir olur.
+
+## Faz 12 — Öğrenci pazarı ve kampüs fiyatları (v1.4)
+
+**Durum:** Planlandı.
+
+**Kullanıcı sonucu:** Öğrenciler aynı kampüste eşya ilanı yayınlar; kampüs
+çevresindeki ürün ve hizmetlerin güncel, zaman damgalı fiyatlarını karşılaştırır.
+
+**Kapsam**
+
+- Satılık, aranan ve ücretsiz ilan türleri
+- Kategori, fiyat, durum, teslim noktası ve ilan yaşam döngüsü
+- Kampüs içi teklif/iletişim isteği; ilk sürümde uygulama içi ödeme yok
+- Mekâna bağlı, tarih ve kaynak açıklamalı fiyat gözlemleri
+- Güncel fiyat, son bildirim ve örnek sayısı; eski veriye açık uyarı
+- İlan ve fiyat şikâyeti, spam sınırı ve sahiplik kontrollü kapatma
+
+**Kabul ölçütleri**
+
+- İlanlar üniversiteler arasında sızmaz.
+- Fiyat hiçbir zaman tarih ve bildiren örnek sayısı olmadan “güncel” sayılmaz.
+- Kullanıcı yalnız kendi ilanını düzenler veya kapatır.
+
+## Faz 13 — Kütüphane çalışma alanı doluluğu (v1.5)
+
+**Durum:** Planlandı.
+
+**Kullanıcı sonucu:** Öğrenci kampüs kütüphanelerindeki çalışma bölgelerini,
+bildirilen kapasiteyi ve yakın zamandaki check-in verisine dayanan tahmini boş
+yer bilgisini görür.
+
+**Kapsam**
+
+- Kütüphane, kat/bölge, kapasite ve özellik kataloğu
+- Süreli öğrenci check-in/check-out ve son güncelleme zamanı
+- Aktif check-in sayısından tahmini doluluk; veri yoksa bilinmiyor durumu
+- Aynı kişinin birden çok aktif yer tutmasını engelleme
+- Gelecekte QR ve üniversite sensör entegrasyonuna uygun veri modeli
+
+**Kabul ölçütleri**
+
+- Doluluk “kesin” değil, zaman damgalı tahmin olarak gösterilir.
+- Süresi dolan check-in otomatik olarak aktif sayıdan düşer.
+- Kapasite veya güncel veri yoksa boş masa sayısı uydurulmaz.
+
 ## Kalan gerçek dünya çıkış kapıları
 
 Kodla tamamlanamayan aşağıdaki maddeler ürünün içinde izlenebilir hâle
