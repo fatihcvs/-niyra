@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1183,
+    curriculumLinkCount: 1210,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 26);
+  assert.equal(catalog.meta.sources.length, 27);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -111,6 +111,19 @@ test("METU Ankara and Northern Cyprus programmes link to official curricula", ()
         && /^\d+$/.test(parsed.searchParams.get("fac_prog") ?? "");
     })));
   }
+});
+
+test("Bilkent current programmes all link to official online curricula", () => {
+  const bilkent = catalog.universities["tr-ihsan-dogramaci-bilkent-universitesi"];
+  const curriculumPrograms = bilkent.programs.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(curriculumPrograms.length, 27);
+  assert.equal(curriculumPrograms.length, bilkent.programs.length);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "İhsan Doğramacı Bilkent Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "catalog.bilkent.edu.tr" && /^\/dep\/d\d+\.html$/.test(parsed.pathname);
+  })));
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.183 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.210 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -87,6 +87,15 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Bağlantıya alınan 58 sayfanın her birinde lisans müfredatı başlığı ve AKTS
   ders tablosu bulunduğu otomatik olarak doğrulandı; ODTÜ-SUNY ortak programları
   da yalnızca kendi resmî ortak program sayfalarıyla eşleştirildi.
+
+## Bilkent müfredat genişletmesi — sekizinci parça
+
+- Bilkent'in resmî [Online Academic Catalog](https://catalog.bilkent.edu.tr/dep/index.html)
+  dizinindeki 35 akademik bölüm güncel katalogla karşılaştırıldı.
+- ÖSYM kataloğundaki 27 güncel lisans programının tamamı resmî bölüm müfredatına
+  bağlandı; her hedef sayfada müfredat ve AKTS tablosu bulunduğu doğrulandı.
+- Bilkent kataloğu sayfaları otomatik ürettiği için bağlantılar bölüm kimlikleriyle
+  tutuldu; burs/ücret seçenekleri ayrı programmış gibi çoğaltılmadı.
 
 ## Bilinen sınır
 
