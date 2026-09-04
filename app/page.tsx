@@ -783,7 +783,7 @@ function ProfileView({ profile, posts, shareable, onEdit, onSignOut, onPostUpdat
 
   return (
     <div className="workspace-view profile-view">
-      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}>Profili düzenle</button><button type="button" onClick={onSignOut}>Çıkış yap</button></div></div><p className="profile-bio">{profile.universityShortName} ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
+      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}><Icon name="edit" size={14}/>Profili düzenle</button><button type="button" onClick={onSignOut}>Çıkış yap</button></div></div><p className="profile-bio">{profile.universityShortName} ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
       {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} viewerId={profile.publicId} post={post} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
     </div>
@@ -999,16 +999,21 @@ function AcademicOnboarding({
   identityName,
   initialProfile,
   state,
+  mode = "onboarding",
   onComplete,
+  onCancel,
   onRetry,
 }: {
   identityName: string;
   initialProfile: StudentProfile | null;
   state: Extract<ProfileState, "needs-onboarding" | "unavailable">;
+  mode?: "onboarding" | "edit";
   onComplete: (profile: StudentProfile) => void;
+  onCancel?: () => void;
   onRetry: () => void;
 }) {
   const [step, setStep] = useState(1);
+  const [displayName, setDisplayName] = useState(initialProfile?.displayName ?? identityName);
   const [universityId, setUniversityId] = useState(initialProfile?.universityId ?? "omu");
   const [universityQuery, setUniversityQuery] = useState("");
   const [facultyId, setFacultyId] = useState(initialProfile?.facultyId ?? "");
@@ -1054,7 +1059,8 @@ function AcademicOnboarding({
       return left.name.localeCompare(right.name, "tr-TR");
     });
   }, [universityId, universityQuery]);
-  const firstName = getFirstName(identityName);
+  const isEditing = mode === "edit";
+  const firstName = getFirstName(displayName || identityName);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -1150,6 +1156,7 @@ function AcademicOnboarding({
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          displayName,
           universityId,
           facultyId: usesOfficialCatalog ? facultyId : undefined,
           departmentId: usesOfficialCatalog ? departmentId : undefined,
@@ -1182,13 +1189,14 @@ function AcademicOnboarding({
     (step === 2 && (catalogLoading || (usesOfficialCatalog ? !facultyId : customFacultyName.trim().length < 2))) ||
     (step === 3 && (usesOfficialCatalog ? !departmentId : customDepartmentName.trim().length < 2)) ||
     (step === 4 && validCustomCourses.length < 3) ||
+    (step === 5 && displayName.trim().length < 2) ||
     saving;
 
   return (
     <main className="onboarding-shell">
       <header className="onboarding-topbar">
         <Logo/>
-        <div className="onboarding-progress-copy"><span>{selectedUniversity?.shortName ?? "Üniyra"} profil kurulumu</span><strong>{step} / 5</strong></div>
+        <div className="onboarding-progress-copy"><span>{selectedUniversity?.shortName ?? "Üniyra"} {isEditing ? "profil düzenleme" : "profil kurulumu"}</span><strong>{step} / 5</strong></div>
       </header>
 
       <section className="onboarding-panel" aria-labelledby="onboarding-title">
@@ -1202,21 +1210,21 @@ function AcademicOnboarding({
             {step === 2 && "FAKÜLTEN"}
             {step === 3 && "AKADEMİK YOLUN"}
             {step === 4 && "DERS ÇEVRELERİN"}
-            {step === 5 && "HER ŞEY HAZIR"}
+            {step === 5 && (isEditing ? "DEĞİŞİKLİKLERİN" : "HER ŞEY HAZIR")}
           </span>
           <h1 id="onboarding-title">
-            {step === 1 && `Merhaba ${firstName}, kampüsünü bulalım.`}
+            {step === 1 && (isEditing ? `${firstName}, kampüs bilgilerini güncelle.` : `Merhaba ${firstName}, kampüsünü bulalım.`)}
             {step === 2 && "Hangi fakültedesin?"}
             {step === 3 && "Bölümünü ve sınıfını seç."}
             {step === 4 && "Bu dönem hangi derslerdesin?"}
-            {step === 5 && "Sana özel kampüsü kuralım."}
+            {step === 5 && (isEditing ? "Profilini son kez kontrol et." : "Sana özel kampüsü kuralım.")}
           </h1>
           <p>
             {step === 1 && "Türkiye ve Kıbrıs’taki üniversiteler arasından okulunu ara ve seç."}
             {step === 2 && "Fakülten, sana gösterilecek bölüm çevrelerini ve kampüs önerilerini belirler."}
             {step === 3 && `Akışını ${selectedUniversity?.shortName ?? "kampüsündeki"} öğrencileriyle eşleştireceğiz.`}
             {step === 4 && "Bu dönem aldığın en az 3 dersi kodu ve adıyla ekle; not ve ders çevrelerin bunlarla kurulacak."}
-            {step === 5 && "Seçimlerini kontrol et. Profilin sonraki ziyaretlerinde de seni bekleyecek."}
+            {step === 5 && (isEditing ? "Görünen adını ve akademik seçimlerini kontrol edip değişikliklerini kaydet." : "Seçimlerini kontrol et. Profilin sonraki ziyaretlerinde de seni bekleyecek.")}
           </p>
         </div>
 
@@ -1306,8 +1314,8 @@ function AcademicOnboarding({
           {step === 5 && (
             <div className="onboarding-summary">
               <div className="summary-identity">
-                <span className="summary-avatar">{getInitials(identityName)}</span>
-                <div><span>Üniyra profilin</span><h2>{identityName}</h2><p>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} · {usesOfficialCatalog ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</p></div>
+                <span className="summary-avatar">{getInitials(displayName || identityName)}</span>
+                <label className="summary-name-field"><span>Görünen adın</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setError(""); }} maxLength={60} autoComplete="name" aria-label="Görünen ad"/><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} · {usesOfficialCatalog ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</small></label>
                 <span className="summary-ready"><Icon name="check" size={15}/> Hazır</span>
               </div>
               <div className="summary-campus">
@@ -1323,10 +1331,11 @@ function AcademicOnboarding({
         {error && <p className="onboarding-error" role="alert">{error}</p>}
 
         <footer className="onboarding-actions">
+          {isEditing && <button className="onboarding-cancel" type="button" onClick={onCancel} disabled={saving}>İptal</button>}
           <div>
             {step > 1 && <button className="onboarding-back" type="button" onClick={() => { setStep((current) => current - 1); setError(""); }} disabled={saving}>Geri</button>}
             <button className="onboarding-next" type="button" disabled={nextDisabled} onClick={() => { if (step < 5) { setStep((current) => current + 1); setError(""); } else { void saveProfile(); } }}>
-              {saving ? "Kaydediliyor…" : step === 5 ? "Üniyra’ya gir" : "Devam et"}
+              {saving ? "Kaydediliyor…" : step === 5 ? isEditing ? "Değişiklikleri kaydet" : "Üniyra’ya gir" : "Devam et"}
               {!saving && <Icon name="arrow" size={17}/>}
             </button>
           </div>
@@ -1349,6 +1358,9 @@ export default function Home() {
   const [profileState, setProfileState] = useState<ProfileState>("loading");
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [identityName, setIdentityName] = useState("Öğrenci");
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileNotice, setProfileNotice] = useState("");
+  const [profileRevision, setProfileRevision] = useState(0);
   const [profileReloadToken, setProfileReloadToken] = useState(0);
   const [publishing, setPublishing] = useState(false);
   const [composerError, setComposerError] = useState("");
@@ -1478,7 +1490,7 @@ export default function Home() {
 
     void loadPosts();
     return () => { active = false; };
-  }, [profileState, feedTab]);
+  }, [profileState, feedTab, profileRevision]);
 
   useEffect(() => {
     if (profileState !== "ready" || activeNav !== "Kaydedilenler") return;
@@ -1537,7 +1549,7 @@ export default function Home() {
 
     const timer = window.setTimeout(() => void loadPeople(), peopleQuery ? 240 : 0);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [profileState, peopleQuery]);
+  }, [profileState, peopleQuery, profileRevision]);
 
   useEffect(() => {
     function handleHistoryChange() {
@@ -1570,6 +1582,34 @@ export default function Home() {
         state={profileState === "unavailable" ? "unavailable" : "needs-onboarding"}
         onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setNextCursor(null); setSavedPosts([]); setSavedPostsError(""); setPeopleQuery(""); setPeopleStatus("loading"); setProfileState("ready"); }}
         onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
+      />
+    );
+  }
+
+  if (editingProfile) {
+    return (
+      <AcademicOnboarding
+        identityName={studentProfile.displayName}
+        initialProfile={studentProfile}
+        state="needs-onboarding"
+        mode="edit"
+        onComplete={(profile) => {
+          setStudentProfile(profile);
+          setIdentityName(profile.displayName);
+          setPosts([]);
+          setPostsLoading(true);
+          setNextCursor(null);
+          setSavedPosts([]);
+          setSavedPostsError("");
+          setPeopleQuery("");
+          setPeopleStatus("loading");
+          setProfileRevision((current) => current + 1);
+          setActiveNav("Profil");
+          setEditingProfile(false);
+          setProfileNotice("Profil bilgilerin güncellendi.");
+        }}
+        onCancel={() => setEditingProfile(false)}
+        onRetry={() => setEditingProfile(false)}
       />
     );
   }
@@ -1853,7 +1893,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => setProfileState("needs-onboarding")} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile(true); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 

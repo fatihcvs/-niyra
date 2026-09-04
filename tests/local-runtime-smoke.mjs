@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.6.22");
+assert.equal(healthBody.version, "1.6.23");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -107,6 +107,24 @@ assert.equal(owner.courses.length, 3);
 assert.equal(peer.courses.length, 3);
 assert.equal(otherCampus.universityName, "Boğaziçi Üniversitesi");
 assert.equal(otherCampus.courses.length, 3);
+
+const updatedOwner = (await json("/api/profile", {
+  method: "PUT",
+  body: JSON.stringify({
+    displayName: "Runtime Owner Updated",
+    universityId: "omu",
+    facultyId: "muhendislik",
+    departmentId: "bilgisayar",
+    classYear: 4,
+    courseIds: ["bilgisayar-bil101", "bilgisayar-mat101", "bilgisayar-fiz101"],
+  }),
+})).body.profile;
+assert.equal(updatedOwner.publicId, owner.publicId);
+assert.equal(updatedOwner.displayName, "Runtime Owner Updated");
+assert.equal(updatedOwner.classYear, 4);
+const refreshedOwner = (await json("/api/profile")).body.profile;
+assert.equal(refreshedOwner.displayName, "Runtime Owner Updated");
+assert.equal(refreshedOwner.classYear, 4);
 
 const logout = await fetch(`${baseUrl}/api/auth/session`, { method: "DELETE", headers: headers(otherCampusEmail) });
 assert.equal(logout.status, 200);
@@ -413,4 +431,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.6.22 runtime smoke passed: auth, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.6.23 runtime smoke passed: auth, editable profiles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");

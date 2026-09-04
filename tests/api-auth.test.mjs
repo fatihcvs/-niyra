@@ -53,6 +53,41 @@ test("Railway-style requests cannot spoof platform identity headers", async () =
   assert.equal(response.status, 401);
 });
 
+test("academic profile updates reject cross-origin browser requests", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json", origin: "https://attacker.example", ...platformHeaders },
+      body: JSON.stringify({ displayName: "Runtime Student" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 403);
+});
+
+test("academic profile updates validate the editable display name before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({
+        displayName: "A",
+        universityId: "omu",
+        classYear: 3,
+      }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /görünen ad/i);
+});
+
 test("self-service registration validates account fields before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

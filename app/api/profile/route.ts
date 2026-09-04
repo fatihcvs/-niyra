@@ -22,9 +22,11 @@ import {
   type Faculty,
 } from "../../../lib/academic-data";
 import { getOfficialAcademicProgram, getOfficialAcademicUnit } from "../../../lib/academic-catalog";
+import { cleanDisplayName, sameOriginRequest } from "../../../lib/app-auth";
 import { makeAcademicShortName } from "../../../lib/university-catalog";
 
 type ProfilePayload = {
+  displayName?: unknown;
   universityId?: string;
   facultyId?: string;
   departmentId?: string;
@@ -151,6 +153,10 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  if (!sameOriginRequest(request)) {
+    return Response.json({ error: "Güvenli olmayan profil isteği reddedildi." }, { status: 403 });
+  }
+
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
@@ -161,9 +167,13 @@ export async function PUT(request: Request) {
     return Response.json({ error: "Geçerli bir profil bilgisi gönderilmedi." }, { status: 400 });
   }
 
+  const displayName = cleanDisplayName(payload.displayName ?? identity.fullName ?? identity.displayName);
   const university = getUniversityById(payload.universityId ?? "");
   const classYear = Number(payload.classYear);
 
+  if (displayName.length < 2) {
+    return Response.json({ error: "Görünen adın en az 2 karakter olmalı." }, { status: 400 });
+  }
   if (!university) {
     return Response.json({ error: "Lütfen Türkiye veya Kıbrıs kataloğundan geçerli bir üniversite seç." }, { status: 400 });
   }
@@ -253,9 +263,13 @@ export async function PUT(request: Request) {
   try {
     const { env } = await import("cloudflare:workers");
     const d1 = env.DB;
-    const displayName = identity.fullName ?? identity.displayName;
     const handle = createHandle(identity.email);
     const publicIdCandidate = crypto.randomUUID();
+    const existingProfile = await d1
+      .prepare("SELECT 1 AS found FROM student_profiles WHERE user_email = ? LIMIT 1")
+      .bind(identity.email)
+      .first<{ found: number }>();
+    const eventName = existingProfile ? "profile.updated" : "onboarding.completed";
     const statements = [
       d1
         .prepare(
@@ -334,9 +348,9 @@ export async function PUT(request: Request) {
       d1
         .prepare(
           `INSERT INTO product_events (id, user_email, name, properties_json)
-           VALUES (?, ?, 'onboarding.completed', ?)`,
+           VALUES (?, ?, ?, ?)`,
         )
-        .bind(crypto.randomUUID(), identity.email, JSON.stringify({ universityId: university.id, courseCount: selectedCourses.length, classYear })),
+        .bind(crypto.randomUUID(), identity.email, eventName, JSON.stringify({ universityId: university.id, courseCount: selectedCourses.length, classYear })),
     ];
 
     await d1.batch(statements);
