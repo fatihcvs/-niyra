@@ -147,6 +147,17 @@ test("campus pulse rejects anonymous reads", async () => {
   assert.equal(response.status, 401);
 });
 
+test("campus pulse images reject anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse/image?id=post-id"),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 401);
+});
+
 test("campus pulse rejects unknown feed kinds before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(
@@ -186,6 +197,41 @@ test("campus pulse requires meaningful confession content", async () => {
   );
 
   assert.equal(response.status, 400);
+});
+
+test("campus pulse does not accept images on anonymous confessions", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("kind", "confession");
+  form.set("category", "social");
+  form.set("content", "Bu hafta kendimi biraz yalnız hissediyorum.");
+  form.set("image", new File([Uint8Array.from([0x89, 0x50, 0x4e, 0x47])], "campus.png", { type: "image/png" }));
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse", { method: "POST", headers: platformHeaders, body: form }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /yalnızca Kampüs Anlık/i);
+});
+
+test("campus pulse verifies image signatures before storage access", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("kind", "live");
+  form.set("category", "event");
+  form.set("content", "Kampüs meydanındaki etkinlik şu anda başladı.");
+  form.set("durationHours", "3");
+  form.set("image", new File(["not-a-real-png"], "campus.png", { type: "image/png" }));
+  const response = await worker.fetch(
+    new Request("http://localhost/api/campus-pulse", { method: "POST", headers: platformHeaders, body: form }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 415);
+  assert.match((await response.json()).error, /dosya türüyle eşleşmiyor/i);
 });
 
 test("social matching rejects anonymous reads", async () => {

@@ -15,6 +15,24 @@ const kinds = new Set(["live", "confession"]);
 const categories = new Set(["general", "transport", "food", "event", "lost-found", "study", "safety", "social"]);
 const liveDurations = new Set([1, 3, 6, 12, 24]);
 const reactionLabels = new Set(["support", "confirm", "outdated"]);
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const allowedImages: Record<string, { extensions: string[]; storedExtension: string; magic: (bytes: Uint8Array) => boolean }> = {
+  "image/png": {
+    extensions: ["png"],
+    storedExtension: "png",
+    magic: (bytes) => bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47,
+  },
+  "image/jpeg": {
+    extensions: ["jpg", "jpeg"],
+    storedExtension: "jpg",
+    magic: (bytes) => bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff,
+  },
+  "image/webp": {
+    extensions: ["webp"],
+    storedExtension: "webp",
+    magic: (bytes) => String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP",
+  },
+};
 
 type PulseRow = {
   id: string;
@@ -22,6 +40,7 @@ type PulseRow = {
   category: string;
   content: string;
   campus_zone: string;
+  image_object_key: string | null;
   is_anonymous: number;
   author_email: string;
   expires_at: string | null;
@@ -42,6 +61,7 @@ function serialize(row: PulseRow, viewerEmail: string) {
     category: row.category,
     content: row.content,
     campusZone: row.campus_zone,
+    imageUrl: row.image_object_key ? `/api/campus-pulse/image?id=${encodeURIComponent(row.id)}` : null,
     anonymous,
     authorName: anonymous ? "Anonim öğrenci" : row.display_name,
     authorId: anonymous ? null : row.public_id,
@@ -97,7 +117,7 @@ export async function GET(request: Request) {
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const rows = await DB.prepare(
-      `SELECT p.id, p.kind, p.category, p.content, p.campus_zone, p.is_anonymous,
+      `SELECT p.id, p.kind, p.category, p.content, p.campus_zone, p.image_object_key, p.is_anonymous,
               p.author_email, p.expires_at, p.created_at, u.display_name, u.public_id,
               (SELECT COUNT(*) FROM campus_pulse_reactions r WHERE r.post_id = p.id AND r.reaction = 'support') AS support_count,
               (SELECT COUNT(*) FROM campus_pulse_reactions r WHERE r.post_id = p.id AND r.reaction = 'confirm') AS confirm_count,
@@ -132,8 +152,26 @@ export async function POST(request: Request) {
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Kampüste paylaşım yapmak için giriş yapmalısın.");
   let payload: Record<string, unknown>;
-  try { payload = (await request.json()) as Record<string, unknown>; }
-  catch { return Response.json({ error: "Paylaşım bilgisi geçerli değil." }, { status: 400 }); }
+  let image: File | null = null;
+  try {
+    if (request.headers.get("content-type")?.toLocaleLowerCase("en-US").startsWith("multipart/form-data")) {
+      const form = await request.formData();
+      payload = {
+        kind: form.get("kind"),
+        category: form.get("category"),
+        content: form.get("content"),
+        campusZone: form.get("campusZone"),
+        durationHours: form.get("durationHours"),
+      };
+      const imageEntry = form.get("image");
+      if (imageEntry instanceof File && imageEntry.size > 0) image = imageEntry;
+      else if (imageEntry !== null && imageEntry !== "") return Response.json({ error: "Paylaşım görseli geçerli değil." }, { status: 400 });
+    } else {
+      payload = (await request.json()) as Record<string, unknown>;
+    }
+  } catch {
+    return Response.json({ error: "Paylaşım bilgisi geçerli değil." }, { status: 400 });
+  }
 
   const kind = cleanText(payload.kind, 20);
   const category = cleanText(payload.category, 24) || "general";
@@ -142,13 +180,29 @@ export async function POST(request: Request) {
   if (!kinds.has(kind)) return Response.json({ error: "Paylaşım türü geçerli değil." }, { status: 400 });
   if (!categories.has(category)) return Response.json({ error: "Kampüs kategorisi geçerli değil." }, { status: 400 });
   if (content.length < 12) return Response.json({ error: "Paylaşım en az 12 karakter olmalı." }, { status: 400 });
+  if (image && kind !== "live") return Response.json({ error: "Görsel yalnızca Kampüs Anlık paylaşımlarına eklenebilir." }, { status: 400 });
   const durationHours = Number(payload.durationHours ?? 6);
   if (kind === "live" && !liveDurations.has(durationHours)) {
     return Response.json({ error: "Anlık paylaşım süresi geçerli değil." }, { status: 400 });
   }
 
+  let preparedImage: { bytes: Uint8Array; extension: string } | null = null;
+  if (image) {
+    if (!image.size || image.size > MAX_IMAGE_SIZE) return Response.json({ error: "Paylaşım görseli en fazla 5 MB olabilir." }, { status: 413 });
+    if (image.name.length > 140 || /[\\/\0]/.test(image.name)) return Response.json({ error: "Görsel dosya adı geçerli değil." }, { status: 400 });
+    const allowed = allowedImages[image.type];
+    const extension = image.name.split(".").at(-1)?.toLocaleLowerCase("tr-TR") ?? "";
+    if (!allowed || !allowed.extensions.includes(extension)) return Response.json({ error: "Yalnızca PNG, JPG veya WEBP paylaşım görselleri yükleyebilirsin." }, { status: 415 });
+    const bytes = new Uint8Array(await image.arrayBuffer());
+    if (!allowed.magic(bytes)) return Response.json({ error: "Görsel içeriği bildirilen dosya türüyle eşleşmiyor." }, { status: 415 });
+    preparedImage = { bytes, extension: allowed.storedExtension };
+  }
+
+  let uploadedObject: { bucket: R2Bucket; key: string } | null = null;
+  let postCreated = false;
   try {
-    const { DB } = await getRuntime();
+    const { DB, FILES } = await getRuntime();
+    if (preparedImage && !FILES) throw new Error("R2 binding FILES is unavailable");
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, `campus-pulse-${kind}`, kind === "confession" ? 4 : 12, 3600);
@@ -156,14 +210,43 @@ export async function POST(request: Request) {
     const id = crypto.randomUUID();
     const anonymous = kind === "confession";
     const expiresAt = kind === "live" ? new Date(Date.now() + durationHours * 60 * 60 * 1000).toISOString() : null;
+    const safeOwner = identity.email.toLocaleLowerCase("en-US").replace(/[^a-z0-9@._-]/g, "_");
+    const objectKey = preparedImage ? `pulse/${profile.university_id}/${safeOwner}/${id}.${preparedImage.extension}` : null;
+    if (preparedImage && image && FILES && objectKey) {
+      await FILES.put(objectKey, preparedImage.bytes, {
+        httpMetadata: { contentType: image.type },
+        customMetadata: { postId: id, universityId: profile.university_id, owner: identity.email },
+      });
+      uploadedObject = { bucket: FILES, key: objectKey };
+    }
     await DB.prepare(
       `INSERT INTO campus_pulse_posts
-       (id, author_email, university_id, kind, category, content, campus_zone, is_anonymous, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).bind(id, identity.email, profile.university_id, kind, category, content, campusZone, anonymous ? 1 : 0, expiresAt).run();
-    await audit(DB, identity.email, "campus-pulse.created", "pulse", id, { kind, category, anonymous });
-    return Response.json({ item: { id, kind, category, content, campusZone, anonymous, expiresAt } }, { status: 201 });
+       (id, author_email, university_id, kind, category, content, campus_zone, image_object_key,
+        image_original_file_name, image_content_type, image_byte_size, is_anonymous, expires_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(
+      id,
+      identity.email,
+      profile.university_id,
+      kind,
+      category,
+      content,
+      campusZone,
+      objectKey,
+      image?.name ?? null,
+      image?.type ?? null,
+      image?.size ?? null,
+      anonymous ? 1 : 0,
+      expiresAt,
+    ).run();
+    postCreated = true;
+    await audit(DB, identity.email, "campus-pulse.created", "pulse", id, { kind, category, anonymous, hasImage: Boolean(objectKey) });
+    return Response.json({ item: { id, kind, category, content, campusZone, anonymous, expiresAt, imageUrl: objectKey ? `/api/campus-pulse/image?id=${encodeURIComponent(id)}` : null } }, { status: 201 });
   } catch (error) {
+    if (uploadedObject && !postCreated) {
+      try { await uploadedObject.bucket.delete(uploadedObject.key); }
+      catch { /* The inaccessible orphan can be cleaned by storage maintenance. */ }
+    }
     return unavailableResponse(error, "Kampüs paylaşımı şu anda yayınlanamadı.");
   }
 }
@@ -222,7 +305,7 @@ export async function DELETE(request: Request) {
   const id = cleanText(payload.id, 80);
   if (!id) return Response.json({ error: "Kampüs paylaşımı seçilmedi." }, { status: 400 });
   try {
-    const { DB } = await getRuntime();
+    const { DB, FILES } = await getRuntime();
     const moderator = await DB.prepare(
       `SELECT 1 AS allowed FROM platform_roles WHERE user_email = ? AND role IN ('moderator', 'admin') LIMIT 1`,
     ).bind(identity.email).first();
@@ -230,10 +313,14 @@ export async function DELETE(request: Request) {
       `UPDATE campus_pulse_posts
        SET status = 'removed', deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
        WHERE id = ? AND deleted_at IS NULL AND (author_email = ? OR ? = 1)
-       RETURNING id, author_email`,
-    ).bind(id, identity.email, moderator ? 1 : 0).first<{ id: string; author_email: string }>();
+       RETURNING id, author_email, image_object_key`,
+    ).bind(id, identity.email, moderator ? 1 : 0).first<{ id: string; author_email: string; image_object_key: string | null }>();
     if (!removed) return Response.json({ error: "Silinebilecek paylaşım bulunamadı." }, { status: 404 });
     await audit(DB, identity.email, "campus-pulse.removed", "pulse", id, { moderator: Boolean(moderator) });
+    if (removed.image_object_key && FILES) {
+      try { await FILES.delete(removed.image_object_key); }
+      catch { /* The removed post no longer exposes the object; cleanup can retry later. */ }
+    }
     return Response.json({ deleted: true });
   } catch (error) {
     return unavailableResponse(error, "Kampüs paylaşımı şu anda silinemedi.");

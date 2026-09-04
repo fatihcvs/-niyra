@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.6.20");
+assert.equal(healthBody.version, "1.6.21");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -141,13 +141,31 @@ const livePulse = (await json("/api/campus-pulse", {
   method: "POST",
   body: JSON.stringify({ kind: "live", category: "food", content: `Merkez yemekhane sırası hızlı ilerliyor #yemekhane ${runId}`, campusZone: "Merkez yemekhane", durationHours: 3 }),
 })).body.item;
+const pulseImageForm = new FormData();
+pulseImageForm.set("kind", "live");
+pulseImageForm.set("category", "event");
+pulseImageForm.set("content", `Kampüs meydanındaki etkinlik görselle paylaşıldı ${runId}`);
+pulseImageForm.set("campusZone", "Merkez kampüs meydanı");
+pulseImageForm.set("durationHours", "3");
+pulseImageForm.set("image", new File([
+  Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64"),
+], `campus-${runId}.png`, { type: "image/png" }));
+const visualPulse = (await json("/api/campus-pulse", { method: "POST", body: pulseImageForm })).body.item;
+assert.equal(visualPulse.imageUrl, `/api/campus-pulse/image?id=${visualPulse.id}`);
 const confession = (await json("/api/campus-pulse", {
   method: "POST",
   body: JSON.stringify({ kind: "confession", category: "social", content: `Bu hafta yetişemediğimi hissediyorum ${runId}` }),
 })).body.item;
 const livePulseFeed = (await json("/api/campus-pulse?kind=live")).body;
 assert.ok(livePulseFeed.items.some((item) => item.id === livePulse.id));
+assert.equal(livePulseFeed.items.find((item) => item.id === visualPulse.id)?.imageUrl, visualPulse.imageUrl);
 assert.ok(livePulseFeed.topics.some((item) => item.topic === "#yemekhane"));
+const visualPulseImage = await fetch(`${baseUrl}${visualPulse.imageUrl}`, { headers: headers(ownerEmail) });
+assert.equal(visualPulseImage.status, 200);
+assert.equal(visualPulseImage.headers.get("content-type"), "image/png");
+assert.ok((await visualPulseImage.arrayBuffer()).byteLength > 0);
+const isolatedPulseImage = await fetch(`${baseUrl}${visualPulse.imageUrl}`, { headers: headers(otherCampusEmail) });
+assert.equal(isolatedPulseImage.status, 404);
 const confessionFeed = (await json("/api/campus-pulse?kind=confession", {}, peerEmail)).body.items;
 const anonymousItem = confessionFeed.find((item) => item.id === confession.id);
 assert.equal(anonymousItem.authorName, "Anonim öğrenci");
@@ -378,6 +396,8 @@ assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
 
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: livePulse.id }) });
+await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: visualPulse.id }) });
+assert.equal((await fetch(`${baseUrl}${visualPulse.imageUrl}`, { headers: headers(ownerEmail) })).status, 404);
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: confession.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-event", id: campusEvent.id }) });
 await json("/api/campus-guide", { method: "PATCH", body: JSON.stringify({ action: "archive-place", id: campusPlace.id }) });
@@ -393,4 +413,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.6.20 runtime smoke passed: auth, campus isolation, Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.6.21 runtime smoke passed: auth, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
