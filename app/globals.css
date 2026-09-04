@@ -55,21 +55,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   width: fit-content;
   color: var(--ink);
   text-decoration: none;
   margin-left: 9px;
 }
 .brand-mark {
-  width: 38px; height: 38px;
+  width: 44px; height: 44px;
   display: block;
   background: url('/uniyra-mark.png') center/contain no-repeat;
   filter: drop-shadow(0 7px 9px rgba(72, 60, 202, .2));
   border-radius: 12px;
   animation: brand-float 5s ease-in-out infinite;
 }
-.brand-name { font-size: 25px; font-weight: 760; letter-spacing: -.9px; }
+.brand-name { font-size: 28px; font-weight: 760; letter-spacing: -1px; }
 @keyframes brand-float { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-2px) rotate(1deg)} }
 
 .main-nav { display: flex; flex-direction: column; gap: 5px; margin-top: 44px; }
@@ -428,7 +428,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .left-sidebar { display:none; }
   .feed-column { padding:0 14px 92px; }
   .mobile-header { position:sticky;top:0;z-index:20;margin:0 -14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:rgba(246,247,251,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(228,229,237,.8) }
-  .mobile-header .brand{margin-left:0}.mobile-header .brand-mark{width:29px;height:29px;border-radius:9px}.mobile-header .brand-mark span{font-size:20px}.mobile-header .brand-name{font-size:21px}.mobile-header>div{display:flex;align-items:center}.notification-button{position:relative}.notification-button i{border-color:var(--canvas)}
+  .mobile-header .brand{margin-left:0}.mobile-header .brand-mark{width:33px;height:33px;border-radius:10px}.mobile-header .brand-mark span{font-size:20px}.mobile-header .brand-name{font-size:23px}.mobile-header>div{display:flex;align-items:center}.notification-button{position:relative}.notification-button i{border-color:var(--canvas)}
   .mobile-search { display:flex;align-items:center;gap:8px;margin:10px 0 -2px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#878b9c }.mobile-search input{min-width:0;width:100%;border:0;outline:0;font-size:.875rem}.mobile-search button{border:0;background:transparent;color:#8d91a1;padding:0;display:grid;place-items:center}
   .feed-welcome { padding:22px 2px 18px; }
   .feed-welcome h1{font-size:22px}.feed-welcome p{font-size:.875rem}.welcome-stat{display:none}
