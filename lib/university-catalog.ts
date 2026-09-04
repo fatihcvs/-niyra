@@ -1,9 +1,15 @@
+import universityLogoCatalog from "../data/university-logos-2026.json" with { type: "json" };
+
 export type UniversityRegion = "Türkiye" | "Kuzey Kıbrıs" | "Kıbrıs Cumhuriyeti";
+
+type UniversityLogoRecord = { assetPath: string };
+const universityLogoPaths = universityLogoCatalog.logos as Record<string, UniversityLogoRecord>;
 
 export type University = {
   id: string;
   name: string;
   shortName: string;
+  logoPath: string | null;
   city: string;
   region: UniversityRegion;
 };
@@ -311,10 +317,12 @@ export function makeAcademicShortName(value: string) {
 function makeUniversity(name: string, region: UniversityRegion): University {
   const isOmu = name === "Ondokuz Mayıs Üniversitesi" && region === "Türkiye";
   const prefix = region === "Türkiye" ? "tr" : region === "Kuzey Kıbrıs" ? "kktc" : "cy";
+  const id = isOmu ? "omu" : `${prefix}-${catalogSlug(name)}`;
   return {
-    id: isOmu ? "omu" : `${prefix}-${catalogSlug(name)}`,
+    id,
     name,
     shortName: makeAcademicShortName(name),
+    logoPath: universityLogoPaths[id]?.assetPath ?? null,
     city: isOmu ? "Samsun" : region,
     region,
   };

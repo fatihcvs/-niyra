@@ -761,7 +761,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   box-shadow:0 24px 48px rgba(43,39,102,.2); isolation:isolate;
 }
 .single-campus-card::before { content:""; position:absolute; width:290px; height:290px; right:-105px; top:-150px; border:1px solid rgba(255,255,255,.15); border-radius:50%; box-shadow:0 0 0 38px rgba(255,255,255,.035),0 0 0 76px rgba(255,255,255,.022); z-index:-1; }
-.single-campus-mark { width:92px; height:92px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.25); border-radius:28px; background:rgba(255,255,255,.13); font-size:20px; font-weight:850; letter-spacing:-.8px; box-shadow:inset 0 0 26px rgba(255,255,255,.06); }
+.single-campus-mark { position:relative; width:92px; height:92px; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(255,255,255,.25); border-radius:28px; background:rgba(255,255,255,.13); font-size:20px; font-weight:850; letter-spacing:-.8px; box-shadow:inset 0 0 26px rgba(255,255,255,.06); isolation:isolate; }
+.single-campus-mark>b { font:inherit; }
+.single-campus-mark>img { position:absolute; inset:7px; width:calc(100% - 14px); height:calc(100% - 14px); object-fit:contain; border-radius:20px; background:#fff; }
 .single-campus-card>div small { color:#beb9ff; font-size:.8125rem; font-weight:800; letter-spacing:.14em; }
 .single-campus-card h2 { margin:8px 0 5px; font-size:26px; letter-spacing:-.8px; }
 .single-campus-card p { margin:0; color:rgba(255,255,255,.64); font-size:.875rem; }
@@ -791,14 +793,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .university-grid > button:hover { border-color:#c8c3ff; transform:translateY(-2px); box-shadow:0 10px 24px rgba(53,49,110,.07); }
 .university-grid > button.selected { border-color:#8e84fa; background:linear-gradient(135deg,#fbfaff,#f1efff); box-shadow:0 10px 24px rgba(80,67,202,.1); }
-.university-grid > button > span {
-  width:47px; height:47px; display:grid; place-items:center; border-radius:14px;
+.university-mark {
+  position:relative; width:47px; height:47px; display:grid; place-items:center; overflow:hidden; border-radius:14px;
   background:linear-gradient(145deg,#282d53,#5549d8); color:#fff; font-size:.875rem; font-weight:800; letter-spacing:-.2px;
-  box-shadow:0 8px 17px rgba(42,45,87,.16);
+  box-shadow:0 8px 17px rgba(42,45,87,.16); isolation:isolate;
 }
-.university-grid > button:nth-child(2n) > span { background:linear-gradient(145deg,#6758e9,#493bd1); }
-.university-grid > button:nth-child(3n) > span { background:linear-gradient(145deg,#ff8875,#e75863); }
-.university-grid > button:nth-child(4n) > span { background:linear-gradient(145deg,#4bc4a5,#258d83); }
+.university-mark>b { font:inherit; }
+.university-mark>img { position:absolute; inset:3px; width:calc(100% - 6px); height:calc(100% - 6px); padding:3px; object-fit:contain; border-radius:11px; background:#fff; }
+.university-grid > button:nth-child(2n) > .university-mark { background:linear-gradient(145deg,#6758e9,#493bd1); }
+.university-grid > button:nth-child(3n) > .university-mark { background:linear-gradient(145deg,#ff8875,#e75863); }
+.university-grid > button:nth-child(4n) > .university-mark { background:linear-gradient(145deg,#4bc4a5,#258d83); }
 .university-grid > button div { min-width:0; }
 .university-grid strong,.university-grid small { display:block; }
 .university-grid strong { font-size:.9375rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -1295,7 +1299,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .onboarding-copy p { font-size:.875rem; }
   .university-grid,.faculty-grid,.course-choice-grid { grid-template-columns:1fr; }
   .university-grid>button { min-height:67px; padding:9px 10px; }
-  .university-grid>button>span { width:43px; height:43px; }
+  .university-grid>button>.university-mark { width:43px; height:43px; }
   .university-grid strong { font-size:.9375rem; }
   .single-campus-card { min-height:270px; padding:25px 20px; grid-template-columns:1fr; align-content:center; justify-items:start; gap:17px; }
   .single-campus-mark { width:70px; height:70px; border-radius:22px; font-size:16px; }

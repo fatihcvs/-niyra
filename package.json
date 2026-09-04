@@ -1,6 +1,6 @@
 {
   "name": "uniyra",
-  "version": "1.6.19",
+  "version": "1.6.20",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -21,6 +21,7 @@
     "catalog:deu": "node scripts/academic-catalog/augment-dokuz-eylul-curricula-2026.mjs",
     "catalog:akdeniz": "node scripts/academic-catalog/augment-akdeniz-curricula-2026.mjs",
     "catalog:cukurova": "node scripts/academic-catalog/augment-cukurova-curricula-2026.mjs",
+    "catalog:logos": "node scripts/university-logos/sync-university-logos.mjs",
     "install:ci": "bash scripts/install-ci.sh",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
     "build": "bash scripts/build-verified.sh",

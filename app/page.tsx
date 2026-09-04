@@ -1,10 +1,12 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import {
   getUniversityById,
   universities,
   type AcademicCourse,
+  type University,
 } from "../lib/academic-data";
 import { curatedNotes, featuredCuratedNotes, getCuratedSources } from "../lib/curated-notes";
 import {
@@ -197,6 +199,27 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   };
 
   return <svg {...common}>{paths[name]}</svg>;
+}
+
+function UniversityMark({ university, variant = "catalog" }: { university: University; variant?: "catalog" | "campus" }) {
+  const className = variant === "campus" ? "single-campus-mark" : "university-mark";
+  return (
+    <span className={`${className} ${university.logoPath ? "has-logo" : "has-initials"}`} aria-hidden="true">
+      <b>{university.shortName}</b>
+      {university.logoPath && (
+        <Image
+          src={university.logoPath}
+          alt=""
+          width={160}
+          height={160}
+          loading="lazy"
+          decoding="async"
+          unoptimized
+          onError={(event) => { event.currentTarget.hidden = true; }}
+        />
+      )}
+    </span>
+  );
 }
 
 function Avatar({ initials, className, small = false }: { initials: string; className: string; small?: boolean }) {
@@ -1214,7 +1237,7 @@ function AcademicOnboarding({
               <div className="university-grid university-catalog-grid">
                 {visibleUniversities.slice(0, 80).map((university) => (
                   <button className={universityId === university.id ? "selected" : ""} type="button" onClick={() => chooseUniversity(university.id)} key={university.id}>
-                    <span>{university.shortName}</span><div><strong>{university.name}</strong><small>{university.city}</small></div><i>{universityId === university.id && <Icon name="check" size={14}/>}</i>
+                    <UniversityMark university={university}/><div><strong>{university.name}</strong><small>{university.city}</small></div><i>{universityId === university.id && <Icon name="check" size={14}/>}</i>
                   </button>
                 ))}
               </div>
@@ -1288,7 +1311,7 @@ function AcademicOnboarding({
                 <span className="summary-ready"><Icon name="check" size={15}/> Hazır</span>
               </div>
               <div className="summary-campus">
-                <span>{selectedUniversity?.shortName}</span>
+                {selectedUniversity && <UniversityMark university={selectedUniversity} variant="campus"/>}
                 <div><small>KAMPÜSÜN</small><strong>{selectedUniversity?.name}</strong><p>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} çevresindeki öğrencilerle buluş.</p></div>
               </div>
               <div className="summary-courses"><span>Ders çevrelerin</span><div>{validCustomCourses.map((course) => <strong key={`${course.code}-${course.name}`}>{course.code}</strong>)}</div></div>
