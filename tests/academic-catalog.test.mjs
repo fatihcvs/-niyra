@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1779,
+    curriculumLinkCount: 1859,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 34);
+  assert.equal(catalog.meta.sources.length, 35);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -319,6 +319,34 @@ test("Marmara programmes link only to populated official MEOBS curricula", () =>
       "İşletme (İngilizce)",
       "Turizm ve Gastronomi Yönetimi Programları (İngilizce)",
     ].includes(name)));
+});
+
+test("Ege programmes link only to populated official EBP course plans", () => {
+  const ege = catalog.universities["tr-ege-universitesi"];
+  const bachelorPrograms = ege.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 74);
+  assert.equal(curriculumPrograms.length, 71);
+  assert.equal(curriculumPrograms.reduce((total, program) => total + program.curriculumUrls.length, 0), 80);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Ege Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "ebp.ege.edu.tr"
+      && /^\/DereceProgramlari\/Detay\/1\/\d+\/\d+\/93200[14]$/.test(parsed.pathname);
+  })));
+
+  assert.equal(curriculumPrograms.find((program) => program.name === "Biyoloji").curriculumUrls.length, 5);
+  assert.equal(curriculumPrograms.find((program) => program.name === "Biyokimya").curriculumUrls.length, 2);
+  assert.equal(curriculumPrograms.find((program) => program.name === "Matematik").curriculumUrls.length, 3);
+  assert.equal(curriculumPrograms.find((program) => program.name === "Su Ürünleri Mühendisliği").curriculumUrls.length, 3);
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, [
+    "Bilgisayar Mühendisliği (İngilizce)",
+    "Yapay Zeka ve Veri Mühendisliği (İngilizce)",
+    "İlahiyat (M.T.O.K.)",
+  ].sort());
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.779 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.859 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -197,6 +197,25 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   bulunan üç İşletme seçeneği, temel planı bulunmayan Film Tasarımı ve Yönetimi
   ve tablosu boş yeni Turizm-Gastronomi programı benzer programa tahminen
   bağlanmadı; toplam 21 program doğrulanmış kaynak çıkana kadar bağlantısız kaldı.
+
+## Ege Üniversitesi müfredat genişletmesi — on altıncı parça
+
+- Ege Üniversitesi'nin resmî [Bilgi Paketi / Ders Kataloğu](https://ebp.ege.edu.tr/DereceProgramlari/1)
+  JSON dizinindeki 121 yayımlanmış lisans planı, ÖSYM kataloğundaki 74 güncel
+  lisans programıyla akademik birim, program adı ve eğitim dili korunarak
+  karşılaştırıldı.
+- 71 güncel programdaki toplam 80 resmî plan canlı olarak doğrulandı. Her hedefte
+  AKTS alanı, en az iki dönem ve beş farklı ders kodu bulundu; kurum sunucusunun
+  büyük sayfalarda verdiği geçici hatalar düşük eşzamanlılık ve sınırlı yeniden
+  denemeyle ayrıştırıldı.
+- Biyoloji için beş, Matematik ve Su Ürünleri Mühendisliği için üçer, Biyokimya
+  için iki ayrı ağırlıklı plan tek bir genel programa indirgenmeden çoklu bağlantı
+  olarak korundu. Eski `(a)/(b)` etiketleri ve kurum dizinindeki dil/isim yazım
+  farklılıkları açık eşlemelerle düzeltildi.
+- Yeni Bilgisayar Mühendisliği ile Yapay Zeka ve Veri Mühendisliği sayfaları
+  tekrarlı denemelerde resmî sunucudan 500 veritabanı hatası döndürdüğü, İlahiyat
+  M.T.O.K. için de ayrı plan yayımlanmadığı için bu üç programa tahmini bağlantı
+  verilmedi.
 
 ## Bilinen sınır
 
