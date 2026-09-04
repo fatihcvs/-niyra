@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1629,
+    curriculumLinkCount: 1685,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 32);
+  assert.equal(catalog.meta.sources.length, 33);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -263,6 +263,28 @@ test("Gazi University programmes link only to populated official Bologna curricu
     "Otomotiv Mühendisliği (M.T.O.K.)",
     "İnşaat Mühendisliği (M.T.O.K.)",
   ].sort());
+});
+
+test("Yildiz Technical current bachelor programmes all link to official Bologna course plans", () => {
+  const yildiz = catalog.universities["tr-yildiz-teknik-universitesi"];
+  const bachelorPrograms = yildiz.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 56);
+  assert.equal(curriculumPrograms.length, bachelorPrograms.length);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Yıldız Teknik Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "www.bologna.yildiz.edu.tr"
+      && parsed.pathname === "/index.php"
+      && parsed.searchParams.get("r") === "program/view"
+      && /^\d+$/.test(parsed.searchParams.get("id") ?? "")
+      && /^\d+$/.test(parsed.searchParams.get("aid") ?? "");
+  })));
+
+  const computerEngineering = curriculumPrograms.find((program) => program.name === "Bilgisayar Mühendisliği");
+  assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("id"), "550");
+  assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("aid"), "3");
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

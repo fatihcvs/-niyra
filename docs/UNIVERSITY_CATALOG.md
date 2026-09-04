@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.321 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.685 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -163,6 +163,22 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   kendi resmî program kimliğine bağlandı.
 - Teknoloji Fakültesindeki yedi M.T.O.K. seçeneği için Bologna sisteminde ayrı
   plan yayımlanmadığından temel mühendislik programına tahmini bağlantı verilmedi.
+
+## Yıldız Teknik Üniversitesi müfredat genişletmesi — on dördüncü parça
+
+- Yıldız Teknik Üniversitesi'nin resmî [Bologna Bilgi Sistemi](https://www.bologna.yildiz.edu.tr/index.php?r=program%2Fbachelor)
+  dizinindeki 64 yayımlanmış lisans kaydı, ÖSYM kataloğundaki 56 güncel lisans
+  programıyla eğitim dili korunarak karşılaştırıldı.
+- Güncel katalogdaki 56 programın tamamı ders kodu, yerel kredi ve AKTS tabloları
+  dolu olan kendi resmî program sayfasına bağlandı. Her hedefte en az beş ders
+  kimliği, beş farklı ders kodu ve AKTS alanı canlı olarak doğrulandı.
+- Kurumun `%30 İngilizce` olarak sunduğu programlar katalogdaki temel programa,
+  `%100 İngilizce` planlar ise yalnızca İngilizce program seçeneğine bağlandı.
+  Bilimsel hazırlık ile ÖSYM'nin güncel lisans kataloğunda bulunmayan eski sanat
+  ve havacılık kayıtları yeni program gibi eklenmedi.
+- Resmî Bologna sunucusunun eksik TLS sertifika zinciri nedeniyle katalog
+  üreticisi sertifika istisnasını yalnızca sabit `www.bologna.yildiz.edu.tr`
+  alan adıyla sınırlar; alan dışı yönlendirmeleri reddeder.
 
 ## Bilinen sınır
 
