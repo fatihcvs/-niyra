@@ -4,6 +4,7 @@ import test from "node:test";
 
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const cssSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const marketSource = await readFile(new URL("../app/campus-market.tsx", import.meta.url), "utf8");
 
 test("mobile shell keeps five stable primary actions", () => {
   const nav = pageSource.match(/<nav className="mobile-nav"[\s\S]*?<\/nav>/)?.[0] ?? "";
@@ -40,6 +41,14 @@ test("mobile home exposes the real campus-live social surface", () => {
   assert.match(pageSource, /Canlı veri yok/);
   assert.match(cssSource, /\.campus-live-home/);
   assert.match(cssSource, /\.feed-tabs>button:nth-child\(3\) \{ display:block; \}/);
+});
+
+test("cafeteria shortcut opens campus prices instead of the student store", () => {
+  assert.match(pageSource, /title: "Yemekhane", route: "Pazar"[^\n]+marketTab: "prices"/);
+  assert.match(pageSource, /onNavigate\(route, marketTab\)/);
+  assert.match(pageSource, /if \(name === "Pazar"\) setMarketTab\(targetMarketTab \?\? "store"\)/);
+  assert.match(pageSource, /key=\{marketTab\}[^>]+initialTab=\{marketTab\}/);
+  assert.match(marketSource, /useState<CampusMarketTab>\(initialTab\)/);
 });
 
 test("mobile layout protects touch, safe-area and reduced-motion behavior", () => {

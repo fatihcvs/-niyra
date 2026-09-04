@@ -33,7 +33,7 @@ import {
 import { CampusPulseWorkspace } from "./campus-pulse";
 import { SocialMatchWorkspace } from "./social-match";
 import { CampusGuideWorkspace } from "./campus-guide";
-import { CampusMarketWorkspace } from "./campus-market";
+import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
 
 type IconName =
@@ -1105,13 +1105,13 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
   );
 }
 
-function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Kampüs") return <CampusGuideWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Kütüphane") return <LibraryOccupancyWorkspace universityShortName={profile.universityShortName}/>;
-  if (name === "Pazar") return <CampusMarketWorkspace universityShortName={profile.universityShortName}/>;
+  if (name === "Pazar") return <CampusMarketWorkspace key={marketTab} universityShortName={profile.universityShortName} initialTab={marketTab}/>;
   if (name === "Notlar") return <NotesWorkspace courses={profile.courses} initialCourseId={notesCourseId}/>;
   if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses}/>;
   if (name === "Bildirimler") return <NotificationsWorkspace/>;
@@ -1834,14 +1834,14 @@ function CampusLiveHome({
   status: "loading" | "ready" | "error";
   universityShortName: string;
   reactionPendingId: string | null;
-  onNavigate: (name: string) => void;
+  onNavigate: (name: string, marketTab?: CampusMarketTab) => void;
   onReact: (item: CampusLivePreview, reaction: "confirm" | "outdated") => void;
 }) {
-  const railItems = [
+  const railItems = ([
     { category: "study", title: "Kütüphane", route: "Kütüphane", image: "/social-live/library-study.webp", icon: BookOpen, fallback: "Alanları gör" },
-    { category: "food", title: "Yemekhane", route: "Pazar", image: "/social-live/cafeteria.webp", icon: ForkKnife, fallback: "Fiyatları gör" },
+    { category: "food", title: "Yemekhane", route: "Pazar", image: "/social-live/cafeteria.webp", icon: ForkKnife, fallback: "Fiyatları gör", marketTab: "prices" },
     { category: "event", title: "Etkinlik", route: "Kampüs", image: "/social-live/campus-event.webp", icon: CalendarDots, fallback: "Etkinlikleri gör" },
-  ].map((entry) => ({ ...entry, live: items.find((item) => item.category === entry.category) ?? null }));
+  ] satisfies Array<{ category: string; title: string; route: string; image: string; icon: typeof BookOpen; fallback: string; marketTab?: CampusMarketTab }>).map((entry) => ({ ...entry, live: items.find((item) => item.category === entry.category) ?? null }));
   const featured = items[0] ?? null;
   const featuredImage = featured?.imageUrl ?? "/social-live/library-study.webp";
 
@@ -1855,8 +1855,8 @@ function CampusLiveHome({
       </header>
 
       <div className="campus-live-rail" aria-label="Kampüs hızlı alanları">
-        {railItems.map(({ category, title, route, image, icon: RailIcon, fallback, live }) => (
-          <button type="button" onClick={() => onNavigate(route)} key={category} aria-label={`${title}: ${live?.time ?? fallback}`}>
+        {railItems.map(({ category, title, route, image, icon: RailIcon, fallback, marketTab, live }) => (
+          <button type="button" onClick={() => onNavigate(route, marketTab)} key={category} aria-label={`${title}: ${live?.time ?? fallback}`}>
             <span className={live ? "has-live" : ""}>
               <Image src={image} alt="" fill unoptimized sizes="88px"/>
               <i><RailIcon size={16} weight="fill"/></i>
@@ -1911,6 +1911,7 @@ function CampusLiveHome({
 
 export default function Home() {
   const [activeNav, setActiveNav] = useState("Akış");
+  const [marketTab, setMarketTab] = useState<CampusMarketTab>("store");
   const [themePreference, setThemePreference] = useState<ThemePreference>(() => {
     if (typeof document === "undefined") return "system";
     const saved = document.documentElement.dataset.themePreference;
@@ -2432,7 +2433,7 @@ export default function Home() {
     setProfileState("auth-required");
   }
 
-  function navigateTo(name: string) {
+  function navigateTo(name: string, targetMarketTab?: CampusMarketTab) {
     const currentUrl = new URL(window.location.href);
     if (currentUrl.searchParams.has("profile") || currentUrl.searchParams.has("post")) {
       currentUrl.searchParams.delete("profile");
@@ -2444,6 +2445,7 @@ export default function Home() {
       setSavedPostsLoading(true);
       setSavedPostsError("");
     }
+    if (name === "Pazar") setMarketTab(targetMarketTab ?? "store");
     setPublicProfile(null);
     setPublicProfileLoading(false);
     setFollowError("");
@@ -2603,7 +2605,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
