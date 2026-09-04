@@ -1,6 +1,6 @@
 "use client";
 
-import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Bell } from "@phosphor-icons/react/dist/csr/Bell";
@@ -12,6 +12,8 @@ import { Compass } from "@phosphor-icons/react/dist/csr/Compass";
 import { ForkKnife } from "@phosphor-icons/react/dist/csr/ForkKnife";
 import { House } from "@phosphor-icons/react/dist/csr/House";
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { GlobeHemisphereWest } from "@phosphor-icons/react/dist/csr/GlobeHemisphereWest";
+import { FEED_SCOPES, feedScopeFromSearch, audienceLabel, type FeedScope, type PostAudience } from "../lib/feed-scope";
 import { MapPin } from "@phosphor-icons/react/dist/csr/MapPin";
 import { Plus } from "@phosphor-icons/react/dist/csr/Plus";
 import { SealCheck } from "@phosphor-icons/react/dist/csr/SealCheck";
@@ -55,6 +57,7 @@ type IconName =
 type ThemePreference = "light" | "dark" | "system";
 
 type Post = {
+  audience?: PostAudience;
   id: number | string;
   authorId?: string;
   name: string;
@@ -143,6 +146,7 @@ type CourseSubject = {
 };
 
 type CampusPerson = {
+  sameCampus?: boolean;
   publicId: string;
   displayName: string;
   handle: string;
@@ -641,16 +645,16 @@ function FeedPost({
         <Avatar initials={post.initials} className={post.avatarClass} imageUrl={post.avatarUrl}/>
         <div className="post-person">
           <div className="post-name-line">
-            <strong>{post.name}</strong>
+            <strong>{post.authorId ? <a href={`/?profile=${encodeURIComponent(post.authorId)}`}>{post.name}</a> : post.name}</strong>
           </div>
           <span>{post.school} · {post.department}</span>
-          <span className="post-time">{post.time === "şimdi" ? post.time : `${post.time} önce`}</span>
+          <span className="post-audience" title={post.audience === "platform" ? "Tüm üniversitelerde görünür" : "Yalnızca yazarın kampüsünde görünür"}>{post.audience === "platform" ? <GlobeHemisphereWest size={12}/> : <MapPin size={12}/>} {audienceLabel(post.audience)}</span><span className="post-time">{post.time === "şimdi" ? post.time : `${post.time} önce`}</span>
         </div>
         {isPersistentPost && <div className="post-menu-wrap"><button className="icon-button post-menu" type="button" onClick={() => setMenuOpen((current) => !current)} aria-label="Gönderi seçenekleri" aria-expanded={menuOpen}><Icon name="more"/></button>{menuOpen && <div className="post-owner-menu" role="menu">{isOwnPost ? <><button type="button" role="menuitem" onClick={() => { setEditText(currentText); setEditing(true); setMenuOpen(false); }}><Icon name="edit" size={15}/> Düzenle</button><button className="danger" type="button" role="menuitem" onClick={() => void deletePost()} disabled={busyMutation === "delete"}><Icon name="trash" size={15}/> {busyMutation === "delete" ? "Siliniyor…" : "Sil"}</button></> : <button className="danger" type="button" role="menuitem" onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Icon name="more" size={15}/> Şikâyet et</button>}</div>}</div>}
       </header>
 
       <div className="post-body">
-        <button className="course-tag" type="button">{post.course}</button>
+        <span className="course-tag">{post.course}</span>
         {editing ? <div className="post-edit-box"><textarea aria-label="Gönderi metnini düzenle" autoFocus maxLength={1200} value={editText} onChange={(event) => setEditText(event.target.value)} rows={4}/><div><span>{editText.trim().length}/1200</span><button type="button" onClick={() => { setEditing(false); setEditText(currentText); }}>Vazgeç</button><button type="button" onClick={() => void saveEdit()} disabled={(!editText.trim() && !post.media?.length) || busyMutation === "edit"}>{busyMutation === "edit" ? "Kaydediliyor…" : "Değişiklikleri kaydet"}</button></div></div> : <p>{currentText}{edited && <small className="post-edited"> · düzenlendi</small>}</p>}
         {post.attachment && <AttachmentCard attachment={post.attachment} />}
         {post.media?.map((media) => <div className={`post-media post-media-${media.kind}`} key={media.id}>{media.kind === "image" ? <Image src={media.url} alt={currentText || `${post.name} tarafından paylaşılan fotoğraf`} width={900} height={900} sizes="(max-width: 780px) 100vw, 650px" unoptimized/> : <video src={media.url} controls playsInline preload="metadata" aria-label={currentText || `${post.name} tarafından paylaşılan video`}/>}</div>)}
@@ -740,7 +744,7 @@ const libraryNotes = featuredCuratedNotes.slice(0, 8).map((note, index) => ({
 }));
 
 function DiscoverView({
-  profile,
+  scope, onScopeChange,  profile,
   people,
   peopleStatus,
   query,
@@ -750,6 +754,8 @@ function DiscoverView({
   onToggleFollow,
   onNavigate,
 }: {
+  scope: "platform" | "campus";
+  onScopeChange: (scope: "platform" | "campus") => void;
   profile: StudentProfile;
   people: CampusPerson[];
   peopleStatus: "loading" | "ready" | "empty" | "error";
@@ -761,29 +767,30 @@ function DiscoverView({
   onNavigate: (name: string) => void;
 }) {
   const [category, setCategory] = useState("Sana özel");
-  const visiblePeople = people.filter((person) => category === "Bölümüm" ? person.departmentName === profile.departmentName : category === "Sınıfım" ? person.classYear === profile.classYear : category === "Takip ettiklerim" ? person.isFollowing : true);
+  const visiblePeople = people.filter((person) => category === "Bölümüm" ? person.sameCampus !== false && person.departmentName === profile.departmentName : category === "Sınıfım" ? person.sameCampus !== false && person.classYear === profile.classYear : category === "Takip ettiklerim" ? person.isFollowing : true);
   return (
     <div className="workspace-view">
-      <WorkspaceHeader section="Keşfet" eyebrow={profile.universityShortName} title="Kampüsünde yeni bağlantılar" description="İnsanları, dersleri ve toplulukları bul. Akademik çevreni ortak ilgi alanlarıyla genişlet."/>
+      <WorkspaceHeader section="Keşfet" eyebrow={profile.universityShortName} title="Kampüslerin ötesinde yeni bağlantılar" description="Tüm üniversitelerde paylaşım yapan öğrencileri keşfet veya kendi kampüs çevrene dön."/>
+      <div className="workspace-filter-pills" role="group" aria-label="Keşif alanı">{([['platform','Tüm üniversiteler'],['campus','Kampüsüm']] as const).map(([value,label]) => <button key={value} type="button" aria-pressed={scope === value} className={scope === value ? "active" : ""} onClick={() => { setCategory("Sana özel"); onScopeChange(value); }}>{label}</button>)}</div>
       <WorkspaceSearch value={query} onChange={onQueryChange} placeholder="Ad, kullanıcı adı, fakülte veya bölüm ara" resultCount={peopleStatus === "loading" ? undefined : visiblePeople.length} onReset={query || category !== "Sana özel" ? () => { onQueryChange(""); setCategory("Sana özel"); } : undefined}/>
 
-      <UnifiedSearchResults query={query} onNavigate={onNavigate}/>
+      <UnifiedSearchResults scope={scope} query={query} onNavigate={onNavigate}/>
       <div className="workspace-filter-pills" role="group" aria-label="Öğrenci çevresi">
         {["Sana özel", "Bölümüm", "Sınıfım", "Takip ettiklerim"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} aria-pressed={category === item} type="button" key={item}>{item}</button>)}
       </div>
 
       <div className="workspace-context-links"><button type="button" onClick={() => onNavigate("Topluluklar")}><strong>Topluluklar ↗</strong><small>Birlikte üreteceğin çevreyi bul</small></button><button type="button" onClick={() => onNavigate("Notlar")}><strong>Ders notları ↗</strong><small>Çalışmanı kolaylaştıran kaynaklar</small></button><button type="button" onClick={() => onNavigate("Kampüs")}><strong>Kampüs rehberi ↗</strong><small>Mekânlar ve yaklaşan etkinlikler</small></button></div>
-      <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">{profile.universityShortName}</span></div>
+      <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">{scope === "platform" ? "Tüm üniversiteler" : profile.universityShortName}</span></div>
       <div className="campus-people-grid">
-        {peopleStatus === "loading" && <p className="campus-people-state">Bölümüne yakın öğrenciler getiriliyor…</p>}
-        {peopleStatus === "empty" && <p className="campus-people-state">{query ? "Bu aramayla eşleşen bir kampüs öğrencisi bulunamadı." : "Henüz aynı üniversiteden başka bir profil yok. İlk gönderinle öğrenci ağını başlatabilirsin."}</p>}
+        {peopleStatus === "loading" && <p className="campus-people-state">Öğrenci ağı getiriliyor…</p>}
+        {peopleStatus === "empty" && <p className="campus-people-state">{query ? "Bu aramayla eşleşen öğrenci bulunamadı." : "Bu alanda henüz başka bir profil yok. Genel Akış’ta paylaşım yapan farklı kampüslerden öğrenciler burada görünecek."}</p>}
         {peopleStatus === "error" && <WorkspaceEmpty error title="Öğrenciler getirilemedi" description="Bağlantını kontrol edip tekrar deneyebilirsin." action={<RefreshButton onClick={() => onQueryChange(query)}/>}/>}
         {peopleStatus === "ready" && visiblePeople.length === 0 && <WorkspaceEmpty title="Bu çevrede henüz sonuç yok" action={<button type="button" onClick={() => setCategory("Sana özel")}>Tüm öğrencileri göster</button>}/>}
         {peopleStatus === "ready" && visiblePeople.map((person) => (
           <article className="campus-person-card" key={person.publicId}>
             <button className="campus-person-main" type="button" onClick={() => onOpenPerson(person)}>
               <Avatar initials={person.initials} className={person.avatarClass} imageUrl={person.avatarUrl}/>
-              <span><strong>{person.displayName}</strong><small>{person.facultyShortName} · {person.departmentName}</small><em>{person.classYear}. sınıf · {formatCount(person.followerCount)} takipçi</em></span>
+              <span><strong>{person.displayName}</strong><small>{person.universityShortName} · {person.departmentName}</small><em>{person.classYear}. sınıf · {formatCount(person.followerCount)} takipçi</em></span>
               <Icon name="arrow" size={15}/>
             </button>
             <button className={person.isFollowing ? "following" : ""} type="button" disabled={followPendingId === person.publicId} onClick={() => onToggleFollow(person.publicId)}>{followPendingId === person.publicId ? "Bekle…" : person.isFollowing ? "Takiptesin" : "Takip et"}</button>
@@ -1038,7 +1045,7 @@ function PublicProfileView({
 
   return (
     <div className="workspace-view profile-view">
-      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div><button className="public-profile-message" type="button" onClick={() => onMessage(profile)}><Icon name="message" size={15}/> Mesaj gönder</button>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
+      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div>{profile.sameCampus !== false && <button className="public-profile-message" type="button" onClick={() => onMessage(profile)}><Icon name="message" size={15}/> Mesaj gönder</button>}{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
       <section className="profile-hero">
         <ProfileCover imageUrl={profile.bannerUrl}/>
         <div className="profile-main">
@@ -1090,8 +1097,8 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
   );
 }
 
-function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
-  if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
+function SecondaryView({ name, profile, peopleScope, onPeopleScopeChange, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; peopleScope: "platform" | "campus"; onPeopleScopeChange: (scope: "platform" | "campus") => void; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+  if (name === "Keşfet") return <DiscoverView scope={peopleScope} onScopeChange={onPeopleScopeChange} profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Mesajlar") return <DirectMessagesWorkspace initialRecipient={messageRecipient} onNavigate={onNavigate} onUnreadChange={onMessagesUnreadChange}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
@@ -1105,7 +1112,7 @@ function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, share
   if (name === "Ayarlar") return <ThemeSettings preference={themePreference} onChange={onThemeChange}/>;
   if (name === "Kaydedilenler") return <SavedWorkspace onNavigate={onNavigate} renderPost={(post, onSaved, onUpdated, onDeleted) => <FeedPost post={post} onPostUpdated={(id, text) => { onUpdated(text); onPostUpdated(id, text); }} onPostDeleted={(id) => { onDeleted(); onPostDeleted(id); }} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} onSavedChange={(item, saved) => { onSaved(saved); onSavedChange(item, saved); }}/>} />;
   if (name === "Profil") return <ProfileView profile={profile} shareable={shareableProfile} onEdit={onEditProfile} onSignOut={onSignOut} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} onNavigate={onNavigate}/>;
-  return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
+  return <DiscoverView scope={peopleScope} onScopeChange={onPeopleScopeChange} profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
 }
 
 function ProfileBoot() {
@@ -1903,7 +1910,11 @@ export default function Home() {
     const saved = document.documentElement.dataset.themePreference;
     return saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
   });
-  const [feedTab, setFeedTab] = useState("Senin için");
+  const [feedTab, setFeedTab] = useState<FeedScope>("all");
+  const feedGeneration = useRef(0);
+  const [linkedPost, setLinkedPost] = useState<Post | null>(null);
+  const [peopleScope, setPeopleScope] = useState<"platform" | "campus">("platform");
+  const [draftAudience, setDraftAudience] = useState<PostAudience>("platform");
   const [feedMediaFilter, setFeedMediaFilter] = useState("all");
   const [showFeedFilters, setShowFeedFilters] = useState(false);
   const [draft, setDraft] = useState("");
@@ -1966,6 +1977,28 @@ export default function Home() {
     window.addEventListener("popstate", restoreLocation);
     return () => window.removeEventListener("popstate", restoreLocation);
   }, []);
+
+  const restoreFeed = useEffectEvent(() => {
+    const next = feedScopeFromSearch(window.location.search);
+    feedGeneration.current++; setFeedTab(next); setPosts([]); setLinkedPost(null); setNextCursor(null); setLoadingMore(false); setPostsLoading(true);
+    if (!draft.trim() && !draftMedia && !composerCourseId) setDraftAudience(next === "campus" ? "campus" : "platform");
+  });
+
+  useEffect(() => {
+    const restore = () => restoreFeed();
+    restore(); window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+
+  function changeFeed(next: FeedScope) {
+    if (next === feedTab) return;
+    const url = new URL(window.location.href);
+    if (next === "all") url.searchParams.delete("feed"); else url.searchParams.set("feed", next);
+    url.searchParams.delete("post");
+    window.history.pushState({}, "", `${url.pathname}${url.search}`);
+    feedGeneration.current++; setLinkedPost(null); setFeedTab(next); setNextCursor(null); setLoadingMore(false); setFeedError(""); setPosts([]); setPostsLoading(true);
+    if (!draft.trim() && !draftMedia && !composerCourseId) setDraftAudience(next === "campus" ? "campus" : "platform");
+  }
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
@@ -2087,32 +2120,36 @@ export default function Home() {
     if (profileState !== "ready") return;
     let active = true;
 
+    const controller = new AbortController();
+    feedGeneration.current++;
     async function loadPosts() {
       try {
-        const feedQuery = feedTab === "Takip ettiklerin" ? "following" : feedTab === "Kampüsüm" ? "campus" : "all";
+        const feedQuery = feedTab === "following" ? "following" : feedTab === "campus" ? "campus" : "all";
         const sharedPostId = new URLSearchParams(window.location.search).get("post")?.trim() ?? "";
         const sharedPostRequest = sharedPostId
-          ? fetch(`/api/posts?id=${encodeURIComponent(sharedPostId)}`, { headers: { accept: "application/json" } })
+          ? fetch(`/api/posts?id=${encodeURIComponent(sharedPostId)}`, { signal: controller.signal, headers: { accept: "application/json" } }).catch(() => null)
           : null;
-        const response = await fetch(`/api/posts?feed=${feedQuery}`, { headers: { accept: "application/json" } });
+        const response = await fetch(`/api/posts?feed=${feedQuery}`, { signal: controller.signal, headers: { accept: "application/json" } });
         const data = (await response.json()) as { posts?: Post[]; nextCursor?: string | null; error?: string };
         if (!active) return;
         if (!response.ok || !data.posts) {
           setFeedError(data.error ?? "Akış şu anda yenilenemedi.");
           return;
         }
-        let nextPosts = data.posts;
+        const nextPosts = data.posts;
+        setLinkedPost(null);
         if (sharedPostRequest) {
           try {
             const sharedResponse = await sharedPostRequest;
-            const sharedData = (await sharedResponse.json()) as { post?: Post };
-            if (active && sharedResponse.ok && sharedData.post && !nextPosts.some((post) => String(post.id) === String(sharedData.post!.id))) {
-              nextPosts = [sharedData.post, ...nextPosts];
+            const sharedData = sharedResponse ? (await sharedResponse.json()) as { post?: Post } : {};
+            if (active && sharedResponse?.ok && sharedData.post && !nextPosts.some((post) => String(post.id) === String(sharedData.post!.id))) {
+              setLinkedPost(sharedData.post);
             }
           } catch {
             // The regular feed remains usable when an old or malformed shared link cannot be resolved.
           }
         }
+        if (!active) return;
         setPosts(nextPosts);
         setNextCursor(data.nextCursor ?? null);
         setFeedError("");
@@ -2120,12 +2157,12 @@ export default function Home() {
         // A clear empty state remains available while a transient request is retried on reload.
         if (active) setFeedError("Akış şu anda yenilenemedi.");
       } finally {
-        if (active) setPostsLoading(false);
+        if (active) { setPostsLoading(false); setLoadingMore(false); }
       }
     }
 
     void loadPosts();
-    return () => { active = false; };
+    return () => { active = false; controller.abort(); };
   }, [profileState, feedTab, profileRevision]);
 
   useEffect(() => {
@@ -2159,7 +2196,7 @@ export default function Home() {
     target.classList.add("shared-post-focus");
     window.setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
     window.setTimeout(() => target.classList.remove("shared-post-focus"), 2400);
-  }, [posts, postsLoading]);
+  }, [posts, linkedPost, postsLoading]);
 
   useEffect(() => {
     if (profileState !== "ready") return;
@@ -2167,7 +2204,7 @@ export default function Home() {
 
     async function loadPeople() {
       try {
-        const queryString = peopleQuery ? `?q=${encodeURIComponent(peopleQuery)}` : "";
+        const queryString = `?scope=${peopleScope}&q=${encodeURIComponent(peopleQuery)}`;
         const response = await fetch(`/api/people${queryString}`, { headers: { accept: "application/json" } });
         const data = (await response.json()) as { people?: CampusPerson[] };
         if (!active) return;
@@ -2184,7 +2221,7 @@ export default function Home() {
 
     const timer = window.setTimeout(() => void loadPeople(), peopleQuery ? 240 : 0);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [profileState, peopleQuery, profileRevision]);
+  }, [profileState, peopleQuery, peopleScope, profileRevision]);
 
   useEffect(() => {
     if (profileState !== "ready") return;
@@ -2272,13 +2309,14 @@ export default function Home() {
 
   const visibleFeedPosts = posts.filter((post) => feedMediaFilter === "all" || post.media?.some((media) => media.kind === feedMediaFilter));
   const activeProfile = studentProfile;
+  const activeFeed = FEED_SCOPES.find((scope) => scope.key === feedTab)!;
   const initials = getInitials(activeProfile.displayName);
   const composerCourse = activeProfile.courses.find((course) => course.id === composerCourseId) ?? null;
-  const emptyFeedCopy = feedTab === "Takip ettiklerin"
+  const emptyFeedCopy = feedTab === "following"
     ? { title: "Takip akışın henüz boş", description: "Öğrenci ağından ilgini çeken kişileri takip ettiğinde paylaşımları burada görünecek." }
-    : feedTab === "Kampüsüm"
+    : feedTab === "campus"
       ? { title: "Kampüsünde henüz paylaşım yok", description: `${activeProfile.universityShortName} akışındaki ilk gönderiyi paylaşarak kampüs sohbetini başlatabilirsin.` }
-      : { title: `${activeProfile.universityShortName} akışın henüz sakin`, description: "İlk gönderiyi paylaşabilir veya öğrenci ağından bağlantılar kurabilirsin." };
+      : { title: "Genel Akış yeni paylaşımları bekliyor", description: "İlk paylaşımını tüm öğrencilerle buluştur. Kampüs içindeki paylaşımlarını Kampüsüm bölümünde bulabilirsin." };
 
   async function reactToCampusLive(item: CampusLivePreview, reaction: "confirm" | "outdated") {
     if (campusReactionPendingId) return;
@@ -2311,16 +2349,20 @@ export default function Home() {
 
     setPublishing(true);
     try {
-      const payload = { content: clean, courseId: composerCourseId ?? activeProfile.courses[0]?.id ?? null };
+      const audience = composerCourseId ? "campus" : draftAudience;
+      const payload = { content: clean, courseId: composerCourseId, audience };
       const form = new FormData();
       form.set("content", clean);
+      form.set("audience", audience);
       if (payload.courseId) form.set("courseId", payload.courseId);
       if (draftMedia) form.set("media", draftMedia);
       const response = await fetch("/api/posts", draftMedia ? { method: "POST", body: form } : { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
       const data = (await response.json()) as { post?: Post; error?: string };
       if (!response.ok || !data.post) throw new Error(data.error ?? "Gönderin paylaşılamadı.");
 
-      setPosts((current) => [data.post as Post, ...current]);
+      const destination = audience === "campus" ? "campus" : "all";
+      if (feedTab !== destination) changeFeed(destination);
+      else setPosts((current) => [data.post as Post, ...current]);
       setStudentProfile((current) => current ? { ...current, postCount: current.postCount + 1 } : current);
       setDraft("");
       setDraftMedia(null);
@@ -2336,13 +2378,15 @@ export default function Home() {
 
   async function loadMorePosts() {
     if (!nextCursor || loadingMore) return;
+    const generation = feedGeneration.current;
     setLoadingMore(true);
     setFeedError("");
 
     try {
-      const feedQuery = feedTab === "Takip ettiklerin" ? "following" : feedTab === "Kampüsüm" ? "campus" : "all";
+      const feedQuery = feedTab === "following" ? "following" : feedTab === "campus" ? "campus" : "all";
       const response = await fetch(`/api/posts?feed=${feedQuery}&cursor=${encodeURIComponent(nextCursor)}`, { headers: { accept: "application/json" } });
       const data = (await response.json()) as { posts?: Post[]; nextCursor?: string | null; error?: string };
+      if (generation !== feedGeneration.current) return;
       if (!response.ok || !data.posts) throw new Error(data.error ?? "Akışın devamı getirilemedi.");
 
       setPosts((current) => {
@@ -2351,18 +2395,20 @@ export default function Home() {
       });
       setNextCursor(data.nextCursor ?? null);
     } catch (loadError) {
-      setFeedError(loadError instanceof Error ? loadError.message : "Akışın devamı getirilemedi.");
+      if (generation === feedGeneration.current) setFeedError(loadError instanceof Error ? loadError.message : "Akışın devamı getirilemedi.");
     } finally {
-      setLoadingMore(false);
+      if (generation === feedGeneration.current) setLoadingMore(false);
     }
   }
 
   function updatePost(id: number | string, text: string) {
+    setLinkedPost((current) => current?.id === id ? { ...current, text, edited: true } : current);
     setPosts((current) => current.map((post) => post.id === id ? { ...post, text, edited: true } : post));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.map((post) => post.id === id ? { ...post, text, edited: true } : post) } : current);
   }
 
   function deletePost(id: number | string) {
+    setLinkedPost((current) => current?.id === id ? null : current);
     const removedPost = posts.find((post) => post.id === id);
     setPosts((current) => current.filter((post) => post.id !== id));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.filter((post) => post.id !== id), postCount: Math.max(0, current.postCount - (current.posts.some((post) => post.id === id) ? 1 : 0)) } : current);
@@ -2558,20 +2604,25 @@ export default function Home() {
         )}
 
         {activeNav === "Akış" ? <>
-        <div className="workspace-mobile-title"><div><h1>Kampüs akışın</h1><p>{activeProfile.universityShortName} · Dersler, insanlar ve yeni paylaşımlar</p></div></div>
-        <CampusLiveHome items={campusLiveItems} status={campusLiveStatus} universityShortName={activeProfile.universityShortName} reactionPendingId={campusReactionPendingId} onNavigate={navigateTo} onReact={(item, reaction) => void reactToCampusLive(item, reaction)}/>
+        <div className="workspace-mobile-title"><div><h1>{activeFeed.label}</h1><p>{feedTab === "campus" ? activeProfile.universityShortName : "Tüm üniversiteler · Tek öğrenci ağı"}</p></div></div>
         <div className="feed-welcome">
           <div>
             <span>{dateLabel}</span>
-            <h1>Günaydın, {getFirstName(studentProfile.displayName)} <span>👋</span></h1>
-            <p>{studentProfile.universityShortName} çevrende bugün neler oluyor?</p>
+            <h1>Merhaba, {getFirstName(studentProfile.displayName)} <span>👋</span></h1>
+            <p>{activeFeed.description}</p>
           </div>
           <div className="welcome-stat">
             <span><Icon name="sparkles" size={17}/></span>
             <div><strong>{curatedNotes.length} doğrulanmış not</strong><small>Kampira Editoryal&apos;de</small></div>
           </div>
         </div>
-        <section className="subject-section" aria-labelledby="subjects-title">
+        <div className="feed-tabs" role="tablist" aria-label="Akış türü">
+          {FEED_SCOPES.map((scope) => <button key={scope.key} id={`feed-tab-${scope.key}`} aria-controls="feed-posts" disabled={publishing} className={feedTab === scope.key ? "active" : ""} onClick={() => changeFeed(scope.key)} type="button" role="tab" aria-selected={feedTab === scope.key}>{scope.label}</button>)}
+          <button className="feed-filter" type="button" aria-label="Akış seçenekleri" aria-expanded={showFeedFilters} onClick={() => setShowFeedFilters((value) => !value)}><Icon name="settings" size={18}/></button>
+        </div>
+        <div className="feed-scope-context">{feedTab === "campus" ? <MapPin size={18}/> : <GlobeHemisphereWest size={18}/>}<div><strong>{activeFeed.title}</strong><p>{feedTab === "campus" ? `${activeProfile.universityShortName} · ${activeFeed.description}` : activeFeed.description}</p></div></div>
+        {feedTab === "campus" && <CampusLiveHome items={campusLiveItems} status={campusLiveStatus} universityShortName={activeProfile.universityShortName} reactionPendingId={campusReactionPendingId} onNavigate={navigateTo} onReact={(item, reaction) => void reactToCampusLive(item, reaction)}/>}
+        {feedTab === "campus" && <section className="subject-section" aria-labelledby="subjects-title">
           <div className="section-heading">
             <div><span className="eyebrow">Ders çevrelerin</span><h2 id="subjects-title">Bugün ne çalışıyorsun?</h2></div>
             <button type="button" onClick={() => setShowAllSubjects(true)}>Tümünü gör <Icon name="arrow" size={15}/></button>
@@ -2584,15 +2635,16 @@ export default function Home() {
               </button>
             ))}
           </div>
-        </section>
+        </section>}
 
         <section className={`composer-card${composerExpanded ? " is-expanded" : ""}`} aria-label="Gönderi oluştur">
           {composerExpanded && <button className="composer-mobile-close" type="button" onClick={() => setComposerExpanded(false)} aria-label="Gönderi alanını kapat"><Icon name="close" size={17}/></button>}
           <div className="composer-main">
             <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
-            <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
+            <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder={draftAudience === "platform" && !composerCourse ? "Kampira’da ne paylaşmak istersin?" : "Kampüsünle ne paylaşmak istersin?"} rows={1}/>
           </div>
+          <div className="composer-audience"><label htmlFor="post-audience">{composerCourse || draftAudience === "campus" ? <MapPin size={16}/> : <GlobeHemisphereWest size={16}/>} Kimler görebilir?</label><select id="post-audience" disabled={publishing || Boolean(composerCourse)} value={composerCourse ? "campus" : draftAudience} onChange={(event) => { setDraftAudience(event.target.value as PostAudience); setComposerError(""); }}><option value="platform">Tüm öğrenciler</option><option value="campus">Yalnızca kampüsüm</option></select><p>{composerCourse ? "Ders çevresi paylaşımları kampüs içinde kalır." : draftAudience === "platform" ? "Tüm üniversitelerde görünür. Öğrenciler paylaşımını ve temel profil bilgilerini görebilir." : `${activeProfile.universityShortName} öğrencilerine görünür.`}</p></div>
           {composerCourse && <div className="composer-course-chip"><span><Icon name="notes" size={15}/><strong>{composerCourse.code}</strong> ders çevresinde paylaşıyorsun</span><button type="button" onClick={() => setComposerCourseId(null)} aria-label="Ders seçimini kaldır"><Icon name="close" size={14}/></button></div>}
           {draftMedia && <div className="composer-media-preview">{draftMediaUrl && (draftMedia.type.startsWith("image/") ? <Image src={draftMediaUrl} alt="Seçilen fotoğraf" width={600} height={400} unoptimized/> : <video src={draftMediaUrl} controls playsInline preload="metadata"/>)}<div><span>{draftMedia.name}</span><button type="button" disabled={publishing} onClick={() => { setDraftMedia(null); setDraftMediaUrl(""); }} aria-label="Seçilen medyayı kaldır"><Icon name="close" size={17}/></button></div></div>}
           <input ref={imageInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(event) => choosePostMedia(event, "image")}/>
@@ -2608,20 +2660,13 @@ export default function Home() {
           {composerError && <p className="composer-feedback" role="alert">{composerError}</p>}
         </section>
 
-        <div className="feed-tabs" role="tablist" aria-label="Akış türü">
-          {["Senin için", "Takip ettiklerin", "Kampüsüm"].map((tab) => {
-            const label = tab === "Senin için" ? "Sana özel" : tab === "Takip ettiklerin" ? "Takip" : tab;
-            return <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { if (feedTab !== tab) { setFeedTab(tab); setNextCursor(null); setFeedError(""); setPostsLoading(true); } }} type="button" role="tab" aria-selected={feedTab === tab}>{label}</button>;
-          })}
-          <button className="feed-filter" type="button" aria-label="Akış seçenekleri" aria-expanded={showFeedFilters} onClick={() => setShowFeedFilters((value) => !value)}><Icon name="settings" size={18}/></button>
-        </div>
-
         {showFeedFilters && <div className="workspace-filter-pills" role="group" aria-label="Paylaşım türü">{([['all','Tüm paylaşımlar'],['image','Fotoğraflar'],['video','Videolar']] as const).map(([value,label]) => <button type="button" key={value} aria-pressed={feedMediaFilter === value} className={feedMediaFilter === value ? "active" : ""} onClick={() => setFeedMediaFilter(value)}>{label}</button>)}<RefreshButton onClick={() => { setPostsLoading(true); setProfileRevision((value) => value + 1); }} busy={postsLoading}/></div>}
-        {feedMediaFilter !== "all" && !postsLoading && visibleFeedPosts.length === 0 && posts.length > 0 && <WorkspaceEmpty title="Yüklenen paylaşımlarda bu türde içerik yok" description={nextCursor ? "Daha fazla gönderi yükleyebilir veya tüm paylaşımlara dönebilirsin." : "Tüm paylaşım türlerine dönerek kampüs akışını görebilirsin."} action={<button type="button" onClick={() => setFeedMediaFilter("all")}>Tümünü göster</button>}/>}
-        <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? visibleFeedPosts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
+        {feedMediaFilter !== "all" && !postsLoading && visibleFeedPosts.length === 0 && posts.length > 0 && <WorkspaceEmpty title="Yüklenen paylaşımlarda bu türde içerik yok" description={nextCursor ? "Daha fazla gönderi yükleyebilir veya tüm paylaşımlara dönebilirsin." : "Tüm paylaşım türlerine dönerek akışı görebilirsin."} action={<button type="button" onClick={() => setFeedMediaFilter("all")}>Tümünü göster</button>}/>}
+        {!postsLoading && linkedPost && <section className="linked-post-preview" aria-label="Bağlantıyla açılan paylaşım"><p>Bağlantıyla açtığın paylaşım · {audienceLabel(linkedPost.audience)}</p><FeedPost post={linkedPost} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost}/></section>}
+        <div className="feed-list" id="feed-posts" role="tabpanel" aria-labelledby={`feed-tab-${feedTab}`}>{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeFeed.label} hazırlanıyor…</strong></div> : posts.length > 0 ? visibleFeedPosts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)} onMessage={openMessages}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} messageRecipient={messageRecipient} onMessagesUnreadChange={setMessageUnreadCount} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)} onMessage={openMessages}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView peopleScope={peopleScope} onPeopleScopeChange={(scope) => { setPeopleScope(scope); setPeopleStatus("loading"); }} name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} messageRecipient={messageRecipient} onMessagesUnreadChange={setMessageUnreadCount} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
@@ -2647,10 +2692,10 @@ export default function Home() {
         </section>
 
         <section className="side-card">
-          <div className="side-heading"><h2>Tanıyor olabilirsin</h2><span>{activeProfile.universityShortName}</span></div>
+          <div className="side-heading"><h2>Öğrenci ağı</h2><span>{peopleScope === "platform" ? "Kampira" : activeProfile.universityShortName}</span></div>
           <div className="people-list">
             {peopleStatus === "loading" && <p className="people-state">Öğrenci çevren hazırlanıyor…</p>}
-            {peopleStatus === "empty" && <p className="people-state">Henüz aynı üniversiteden başka bir profil yok. İlk paylaşımınla ağı başlatabilirsin.</p>}
+            {peopleStatus === "empty" && <p className="people-state">Henüz bu alanda başka bir profil yok. Genel Akış’ta paylaşım yaparak ağı başlatabilirsin.</p>}
             {peopleStatus === "error" && <p className="people-state">Öğrenci önerileri şu anda getirilemedi.</p>}
             {peopleStatus === "ready" && people.slice(0, 3).map((person) => (
               <div key={person.publicId}>
@@ -2696,7 +2741,7 @@ export default function Home() {
           <span className="mobile-sheet-handle" aria-hidden="true"/>
           <header><div><span>Hızlı oluştur</span><h2 id="mobile-create-title">Ne paylaşmak istersin?</h2></div><button type="button" onClick={() => setShowMobileCreate(false)} aria-label="Oluştur panelini kapat"><Icon name="close" size={20}/></button></header>
           <div className="mobile-create-grid">
-            <button type="button" onClick={openFeedComposer}><span className="mobile-sheet-icon violet"><Icon name="edit" size={22}/></span><strong>Gönderi paylaş</strong><small>Kampüs akışına yaz</small></button>
+            <button type="button" onClick={openFeedComposer}><span className="mobile-sheet-icon violet"><Icon name="edit" size={22}/></span><strong>Gönderi paylaş</strong><small>Öğrencilerle buluş</small></button>
             <button type="button" onClick={() => navigateTo("Kampüs Anlık")}><span className="mobile-sheet-icon coral"><Icon name="sparkles" size={22}/></span><strong>Kampüs Anlık</strong><small>Şu an olanı paylaş</small></button>
             <button type="button" onClick={() => navigateTo("Notlar")}><span className="mobile-sheet-icon blue"><Icon name="file" size={22}/></span><strong>Not yükle</strong><small>Ders kaynağı ekle</small></button>
             <button type="button" onClick={() => navigateTo("Pazar")}><span className="mobile-sheet-icon mint"><Icon name="bookmark" size={22}/></span><strong>İlan ver</strong><small>Öğrenci pazarına ekle</small></button>
@@ -2752,7 +2797,7 @@ export default function Home() {
               <div className="course-detail-stats"><span><strong>{selectedSubject.noteCount}</strong><small>Doğrulanmış not</small></span><span><strong>{selectedSubject.postCount}</strong><small>Akış paylaşımı</small></span></div>
               <div className="course-detail-actions">
                 <button className="feature-primary" type="button" onClick={() => { setNotesCourseId(selectedSubject.id); setSelectedSubject(null); navigateTo("Notlar"); }}><Icon name="notes" size={17}/> Notları gör</button>
-                <button type="button" onClick={() => { setComposerCourseId(selectedSubject.id); setSelectedSubject(null); openFeedComposer(); }}><Icon name="edit" size={17}/> Akışta paylaş</button>
+                <button type="button" onClick={() => { setDraftAudience("campus"); changeFeed("campus"); setComposerCourseId(selectedSubject.id); setSelectedSubject(null); openFeedComposer(); }}><Icon name="edit" size={17}/> Akışta paylaş</button>
               </div>
             </div>
           </section>

@@ -404,6 +404,7 @@ export const posts = sqliteTable(
     courseId: text("course_id").references(() => courses.id),
     communityId: text("community_id"),
     content: text("content").notNull(),
+    audience: text("audience", { enum: ["campus", "platform"] }).notNull().default("campus"),
     isPinned: integer("is_pinned", { mode: "boolean" }).notNull().default(false),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
@@ -411,6 +412,7 @@ export const posts = sqliteTable(
   },
   (table) => [
     index("posts_created_at_idx").on(table.createdAt),
+    index("posts_audience_created_idx").on(table.audience, table.createdAt, table.id),
     index("posts_author_created_idx").on(table.authorEmail, table.createdAt),
   ],
 );

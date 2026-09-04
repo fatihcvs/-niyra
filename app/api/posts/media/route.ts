@@ -14,10 +14,11 @@ async function readMedia(request: Request, headOnly = false) {
       `SELECT pm.object_key, pm.original_file_name, pm.content_type, pm.byte_size
        FROM post_media pm
        JOIN posts p ON p.id = pm.post_id
+       JOIN users u ON u.email = p.author_email AND u.status = 'active'
        JOIN student_profiles author ON author.user_email = p.author_email
        JOIN student_profiles viewer ON viewer.user_email = ? AND viewer.onboarding_completed = 1
        WHERE pm.id = ? AND p.deleted_at IS NULL
-         AND author.university_id = viewer.university_id
+         AND (author.university_id = viewer.university_id OR (p.audience = 'platform' AND p.community_id IS NULL AND p.course_id IS NULL))
          AND NOT EXISTS (
            SELECT 1 FROM user_blocks b
            WHERE (b.blocker_email = ? AND b.blocked_email = p.author_email)

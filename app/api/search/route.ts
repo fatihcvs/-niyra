@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Arama yapmak için giriş yapmalısın.");
   const url = new URL(request.url);
+  const scope = url.searchParams.get("scope") === "platform" ? "platform" : "campus";
   const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
   if (query.length < 2) return Response.json({ query, people: [], courses: [], posts: [], notes: [], communities: [] });
   const like = `%${query}%`;
@@ -29,11 +30,15 @@ export async function GET(request: Request) {
          JOIN student_profiles sp ON sp.user_email = u.email
          JOIN departments d ON d.id = sp.department_id
          JOIN faculties f ON f.id = d.faculty_id
-         WHERE u.email <> ? AND sp.university_id = ?
+         WHERE u.email <> ? AND u.status = 'active' AND sp.onboarding_completed = 1
+           AND (sp.university_id = ? OR (? = 'platform' AND EXISTS (
+             SELECT 1 FROM posts public_post WHERE public_post.author_email = u.email AND public_post.deleted_at IS NULL
+               AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL
+           )))
            AND LOWER(u.display_name || ' ' || u.handle || ' ' || d.name || ' ' || f.name) LIKE ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = u.email) OR (b.blocker_email = u.email AND b.blocked_email = ?))
          ORDER BY u.display_name LIMIT 6`,
-      ).bind(identity.email, profile.university_id, like, identity.email, identity.email).all(),
+      ).bind(identity.email, profile.university_id, scope, like, identity.email, identity.email).all(),
       DB.prepare(
         `SELECT DISTINCT c.id, c.code, c.name, d.name AS department_name
          FROM courses c JOIN departments d ON d.id = c.department_id
@@ -47,18 +52,22 @@ export async function GET(request: Request) {
          FROM posts p JOIN users u ON u.email = p.author_email
          JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
          LEFT JOIN courses c ON c.id = p.course_id
-         WHERE p.deleted_at IS NULL AND author_profile.university_id = ?
+         WHERE p.deleted_at IS NULL AND u.status = 'active'
+           AND ((? = 'campus' AND author_profile.university_id = ?)
+             OR (? = 'platform' AND p.audience = 'platform' AND p.community_id IS NULL AND p.course_id IS NULL))
            AND LOWER(p.content || ' ' || COALESCE(c.code, '') || ' ' || u.display_name) LIKE ?
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = p.author_email) OR (b.blocker_email = p.author_email AND b.blocked_email = ?))
            AND NOT EXISTS (SELECT 1 FROM user_mutes m WHERE m.muter_email = ? AND m.muted_email = p.author_email)
            AND (p.community_id IS NULL OR EXISTS (
-             SELECT 1 FROM communities cx WHERE cx.id = p.community_id AND cx.status = 'active'
+             SELECT 1 FROM communities cx WHERE cx.id = p.community_id AND cx.status = 'active' AND cx.moderation_status = 'active'
+               AND (cx.university_id IS NULL OR cx.university_id = ?)
+               AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = cx.id AND cb.user_email = ?)
                AND (cx.join_policy = 'open' OR EXISTS (
                  SELECT 1 FROM community_members cm WHERE cm.community_id = cx.id AND cm.user_email = ? AND cm.status = 'active'
                ))
            ))
          ORDER BY p.created_at DESC LIMIT 6`,
-      ).bind(profile.university_id, like, identity.email, identity.email, identity.email, identity.email).all<{ id: string; content: string; created_at: string; author_id: string; author_name: string; course_code: string }>(),
+      ).bind(scope, profile.university_id, scope, like, identity.email, identity.email, identity.email, profile.university_id, identity.email, identity.email).all<{ id: string; content: string; created_at: string; author_id: string; author_name: string; course_code: string }>(),
       DB.prepare(
         `SELECT n.id, n.title, n.description, n.tags_json, n.created_at, c.code AS course_code,
                 u.display_name AS owner_name,
@@ -85,7 +94,7 @@ export async function GET(request: Request) {
       .bind(crypto.randomUUID(), identity.email, JSON.stringify({ queryLength: query.length, resultCount: people.results.length + courses.results.length + posts.results.length + notes.results.length + communities.results.length }))
       .run();
     return Response.json({
-      query,
+      query, scope,
       people: people.results,
       courses: courses.results,
       posts: posts.results.map((post) => ({ ...post, time: relativeTime(post.created_at) })),

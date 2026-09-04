@@ -2278,3 +2278,30 @@ html[data-theme="dark"] .modal-success>span { background:var(--success-surface);
 @media (prefers-reduced-motion:reduce) {
   .profile-media-tile>img,.profile-media-caption { transition:none; }
 }
+
+/* Shared feed scopes and explicit publishing audience. */
+.feed-scope-context { display:flex; align-items:flex-start; gap:10px; margin:0 2px 18px; padding:13px 15px; border:1px solid var(--line); border-radius:14px; background:var(--card); color:var(--brand); }
+.feed-scope-context>svg { flex-shrink:0; margin-top:2px; }
+.feed-scope-context strong { color:var(--ink); font-size:.875rem; }
+.feed-scope-context p { margin:4px 0 0; color:var(--muted); font-size:.8125rem; line-height:1.5; }
+.composer-audience { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px 12px; margin:12px 0; padding:12px 0 0; border-top:1px solid var(--line); }
+.composer-audience label { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:.8125rem; font-weight:600; }
+.composer-audience select { min-width:0; max-width:100%; min-height:44px; padding:8px 30px 8px 12px; border:1px solid var(--line); border-radius:11px; background:var(--card); color:var(--ink); font:inherit; font-size:.875rem; }
+.composer-audience p { grid-column:1 / -1; margin:0; color:var(--muted); font-size:.75rem; line-height:1.5; }
+.post-person .post-audience { display:inline-flex; align-items:center; gap:4px; color:var(--muted); font-size:.6875rem; vertical-align:middle; }
+.post-person .post-time { display:inline; margin-left:8px; font-size:.6875rem; }
+.post-name-line a { color:inherit; text-decoration:none; }
+.post-name-line a:hover { color:var(--brand); text-decoration:underline; }
+.linked-post-preview { margin:16px 0 22px; padding:10px; border:1px solid var(--brand); border-radius:20px; }
+.linked-post-preview>p { margin:2px 5px 12px; color:var(--muted); font-size:.8125rem; }
+.linked-post-preview .post-card { margin-bottom:0; }
+.feed-tabs>button:disabled { cursor:wait; opacity:.6; }
+@media (max-width:767px) {
+  .feed-tabs { grid-template-columns:repeat(3,minmax(0,1fr)) 36px; }
+  .feed-tabs>button { min-height:44px; padding:0 4px; }
+  .feed-tabs .feed-filter { display:grid; place-items:center; margin:0; padding:0; }
+  .feed-scope-context { margin-bottom:14px; padding:12px; }
+  .composer-audience { grid-template-columns:1fr; }
+  .composer-audience select { width:100%; font-size:16px; }
+  .composer-audience p { font-size:.8125rem; }
+}

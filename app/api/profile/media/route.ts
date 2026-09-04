@@ -59,7 +59,7 @@ export async function GET(request: Request) {
        JOIN student_profiles viewer_profile ON viewer_profile.user_email = ?
        WHERE target.public_id = ? AND pm.kind = ?
          AND target_profile.onboarding_completed = 1
-         AND target_profile.university_id = viewer_profile.university_id
+         AND (target_profile.university_id = viewer_profile.university_id OR (pm.kind = 'avatar' AND EXISTS (SELECT 1 FROM posts public_post WHERE public_post.author_email = target.email AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL AND public_post.deleted_at IS NULL)))
          AND NOT EXISTS (
            SELECT 1 FROM user_blocks b
            WHERE (b.blocker_email = ? AND b.blocked_email = target.email)
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
     headers.set("content-type", media.content_type);
     headers.set("content-length", String(object.size || media.byte_size));
     headers.set("content-disposition", `inline; filename="${safeInlineName(media.original_file_name)}"`);
-    headers.set("cache-control", "private, max-age=600");
+    headers.set("cache-control", "private, no-store");
     headers.set("x-content-type-options", "nosniff");
     return new Response(object.body, { headers });
   } catch (error) {

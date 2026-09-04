@@ -3,6 +3,7 @@ import type { PostMedia } from "./post-media";
 export type ProfileContentTab = "posts" | "images" | "videos" | "notes" | "communities";
 
 export type ProfilePost = {
+  audience?: "campus" | "platform";
   id: string;
   authorId?: string;
   name: string;

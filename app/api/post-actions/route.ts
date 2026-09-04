@@ -78,8 +78,9 @@ export async function POST(request: Request) {
     const db = await getDb();
     const [[post], [actor]] = await Promise.all([
       db
-        .select({ id: posts.id, authorEmail: posts.authorEmail, content: posts.content, communityId: posts.communityId, universityId: studentProfiles.universityId })
+        .select({ id: posts.id, authorEmail: posts.authorEmail, content: posts.content, communityId: posts.communityId, audience: posts.audience, courseId: posts.courseId, universityId: studentProfiles.universityId })
         .from(posts)
+        .innerJoin(users, and(eq(users.email, posts.authorEmail), eq(users.status, "active")))
         .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
         .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
         .limit(1),
@@ -104,8 +105,8 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
-    if (post.universityId !== actor.universityId) {
-      return Response.json({ error: "Bu gönderi senin üniversite çevrende değil." }, { status: 403 });
+    if (post.universityId !== actor.universityId && !(post.audience === "platform" && !post.communityId && !post.courseId)) {
+      return Response.json({ error: "Bu gönderi yalnızca kendi kampüsüne açık." }, { status: 403 });
     }
     const blocked = await DB.prepare(
       `SELECT 1 AS blocked FROM user_blocks
@@ -115,10 +116,10 @@ export async function POST(request: Request) {
     if (post.communityId) {
       const communityAccess = await DB.prepare(
         `SELECT c.id FROM communities c
-         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND (c.join_policy = 'open' OR EXISTS (
+         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?) AND (c.join_policy = 'open' OR EXISTS (
            SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
          )) LIMIT 1`,
-      ).bind(post.communityId, actor.universityId, identity.email).first();
+      ).bind(post.communityId, actor.universityId, identity.email, identity.email).first();
       if (!communityAccess) return Response.json({ error: "Bu topluluk gönderisine erişim iznin yok." }, { status: 403 });
     }
 

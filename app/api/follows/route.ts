@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         .select({ email: users.email, universityId: studentProfiles.universityId })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-        .where(eq(users.publicId, targetId))
+        .where(and(eq(users.publicId, targetId), eq(users.status, "active"), eq(studentProfiles.onboardingCompleted, true)))
         .limit(1),
     ]);
 
@@ -74,9 +74,6 @@ export async function POST(request: Request) {
       );
     }
     if (!target) return Response.json({ error: "Öğrenci profili bulunamadı." }, { status: 404 });
-    if (actor.universityId !== target.universityId) {
-      return Response.json({ error: "Yalnızca kendi üniversite çevrendeki öğrencileri takip edebilirsin." }, { status: 403 });
-    }
     if (actor.email === target.email) {
       return Response.json({ error: "Kendi profilini takip edemezsin." }, { status: 400 });
     }

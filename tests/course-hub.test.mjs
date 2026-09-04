@@ -12,7 +12,8 @@ test("dashboard course cards open real course interactions", async () => {
   assert.match(source, /Akışta paylaş/);
   assert.match(source, /setNotesCourseId\(selectedSubject\.id\)/);
   assert.match(source, /setComposerCourseId\(selectedSubject\.id\)/);
-  assert.match(source, /courseId: composerCourseId \?\? activeProfile\.courses\[0\]\?\.id \?\? null/);
+  assert.match(source, /courseId: composerCourseId, audience/);
+  assert.match(source, /const audience = composerCourseId \? "campus" : draftAudience/);
 });
 
 test("course cards use representative covers and disclose them as representative", async () => {

@@ -20,6 +20,7 @@ type PostRow = PageRow & {
   university_name: string;
   department_name: string;
   content: string;
+  audience: "campus" | "platform";
   updated_at: string;
   course_code: string | null;
   avatar_updated_at: string | null;
@@ -68,7 +69,7 @@ async function readPosts(
 ): Promise<Pick<ProfileContentResponse, "posts" | "nextCursor">> {
   const mediaKind = tab === "images" ? "image" : tab === "videos" ? "video" : "";
   const result = await DB.prepare(`
-    SELECT p.id, p.content, p.created_at, p.updated_at,
+    SELECT p.id, p.audience, p.content, p.created_at, p.updated_at,
       u.public_id AS author_id, u.display_name,
       un.name AS university_name, d.name AS department_name, cr.code AS course_code,
       (SELECT pm.updated_at FROM profile_media pm WHERE pm.user_email = u.email AND pm.kind = 'avatar' LIMIT 1) AS avatar_updated_at,
@@ -82,7 +83,7 @@ async function readPosts(
     JOIN universities un ON un.id = sp.university_id
     JOIN departments d ON d.id = sp.department_id
     LEFT JOIN courses cr ON cr.id = p.course_id
-    WHERE p.author_email = ? AND p.deleted_at IS NULL AND sp.university_id = ?
+    WHERE p.author_email = ? AND p.deleted_at IS NULL AND (sp.university_id = ? OR (p.audience = 'platform' AND p.community_id IS NULL AND p.course_id IS NULL))
       AND (? = '' OR EXISTS (SELECT 1 FROM post_media pm WHERE pm.post_id = p.id AND pm.kind = ?))
       AND (p.community_id IS NULL OR EXISTS (
         SELECT 1 FROM communities c WHERE c.id = p.community_id
@@ -103,6 +104,7 @@ async function readPosts(
   const media = await hydratePostMedia(DB, items.map((row) => row.id));
   const posts: ProfilePost[] = items.map((row) => ({
     id: row.id,
+    audience: row.audience,
     authorId: row.author_id ?? undefined,
     name: row.display_name,
     initials: row.display_name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toLocaleUpperCase("tr-TR") ?? "").join("") || "Ü",
@@ -218,18 +220,19 @@ export async function GET(request: Request) {
     const viewer = await requireProfile(DB, identity.email);
     if (!viewer) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const author = await DB.prepare(`
-      SELECT u.email FROM users u JOIN student_profiles sp ON sp.user_email = u.email
-      WHERE u.public_id = ? AND sp.university_id = ? AND sp.onboarding_completed = 1
+      SELECT u.email, sp.university_id FROM users u JOIN student_profiles sp ON sp.user_email = u.email
+      WHERE u.public_id = ? AND (sp.university_id = ? OR EXISTS (SELECT 1 FROM posts public_post WHERE public_post.author_email = u.email AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL AND public_post.deleted_at IS NULL)) AND sp.onboarding_completed = 1 AND u.status = 'active'
         AND NOT EXISTS (
           SELECT 1 FROM user_blocks b
           WHERE (b.blocker_email = ? AND b.blocked_email = u.email)
              OR (b.blocker_email = u.email AND b.blocked_email = ?)
         ) LIMIT 1
-    `).bind(publicId || viewer.public_id, viewer.university_id, identity.email, identity.email).first<{ email: string }>();
+    `).bind(publicId || viewer.public_id, viewer.university_id, identity.email, identity.email).first<{ email: string; university_id: string }>();
     if (!author) return Response.json({ error: "Öğrenci profili bulunamadı." }, { status: 404 });
 
     const content: ProfileContentResponse = { posts: [], notes: [], communities: [], nextCursor: null };
-    if (tab === "notes") Object.assign(content, await readNotes(DB, identity.email, author.email, cursor));
+    if (tab === "notes" && author.university_id === viewer.university_id) Object.assign(content, await readNotes(DB, identity.email, author.email, cursor));
+    else if (tab === "notes") return Response.json(content, { headers: { "Cache-Control": "private, no-store" } });
     else if (tab === "communities") Object.assign(content, await readCommunities(DB, identity.email, author.email, viewer.university_id, cursor));
     else Object.assign(content, await readPosts(DB, identity.email, author.email, viewer.university_id, tab as ProfileContentTab, cursor));
     return Response.json(content, { headers: { "Cache-Control": "private, no-store" } });

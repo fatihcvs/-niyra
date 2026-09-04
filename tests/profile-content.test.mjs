@@ -152,3 +152,24 @@ test("profile communities and their posts honor membership, moderation, archive 
   const joinedPosts = await (await f.request("user=author&tab=posts")).json();
   assert.ok(joinedPosts.posts.some((post) => post.id === "post-private"));
 });
+
+test("cross-campus profile galleries contain only public standalone posts and preserve private tabs", async (t) => {
+  const f = fixture(t);
+  f.insertPost('legacy'); f.insertPost('global-photo'); f.insertPost('global-video');
+  f.database.exec(`
+    UPDATE posts SET audience = 'platform' WHERE id IN ('global-photo', 'global-video');
+    INSERT INTO post_media (id, post_id, kind, object_key, original_file_name, content_type, byte_size) VALUES
+      ('photo', 'global-photo', 'image', 'photo', 'photo.png', 'image/png', 100),
+      ('clip', 'global-video', 'video', 'clip', 'clip.mp4', 'video/mp4', 100);
+  `);
+  f.signIn('outside');
+  const profile = await f.request('user=author&tab=posts');
+  assert.equal(profile.status, 200);
+  assert.deepEqual(new Set((await profile.json()).posts.map(p => p.id)), new Set(['global-photo', 'global-video']));
+  assert.deepEqual((await (await f.request('user=author&tab=images')).json()).posts.map(p => p.id), ['global-photo']);
+  assert.deepEqual((await (await f.request('user=author&tab=videos')).json()).posts.map(p => p.id), ['global-video']);
+  assert.equal((await (await f.request('user=author&tab=notes')).json()).notes.length, 0);
+  assert.equal((await (await f.request('user=author&tab=communities')).json()).communities.length, 0);
+  f.database.exec("UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE audience = 'platform'");
+  assert.equal((await f.request('user=author&tab=posts')).status, 404);
+});

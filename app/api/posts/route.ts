@@ -20,6 +20,7 @@ import { sameOriginRequest } from "../../../lib/app-auth";
 import { hydratePostMedia, POST_VIDEO_MAX_BYTES, PostMediaValidationError, postMediaUrl, validatePostMedia } from "../../../lib/post-media";
 
 type PostPayload = {
+  audience?: "campus" | "platform";
   id?: string;
   content?: string;
   courseId?: string | null;
@@ -29,6 +30,7 @@ type FeedKind = "all" | "following" | "campus" | "saved";
 type FeedCursor = { rank: number; createdAt: string; id: string };
 
 type PostRow = {
+  audience: "campus" | "platform";
   id: string;
   authorId: string | null;
   content: string;
@@ -86,28 +88,14 @@ function relativeTime(createdAt: string) {
   return `${Math.floor(hours / 24)} gün`;
 }
 
-function feedRank(viewerEmail: string, feed: FeedKind) {
-  const recency = sql<number>`CAST(STRFTIME('%s', ${posts.createdAt}) AS INTEGER)`;
-  if (feed !== "all") return recency;
-
-  return sql<number>`(
-    ${recency}
-    + CASE WHEN EXISTS (
-      SELECT 1 FROM ${studentCourses}
-      WHERE ${studentCourses.userEmail} = ${viewerEmail}
-        AND ${studentCourses.courseId} = ${posts.courseId}
-    ) THEN 172800 ELSE 0 END
-    + CASE WHEN EXISTS (
-      SELECT 1 FROM ${userFollows}
-      WHERE ${userFollows.followerEmail} = ${viewerEmail}
-        AND ${userFollows.followingEmail} = ${posts.authorEmail}
-    ) THEN 86400 ELSE 0 END
-  )`;
+function feedRank() {
+  return sql<number>`CAST(STRFTIME('%s', ${posts.createdAt}) AS INTEGER)`;
 }
 
 function postFields(viewerEmail: string, rank: ReturnType<typeof feedRank>) {
   return {
     id: posts.id,
+    audience: posts.audience,
     authorId: users.publicId,
     content: posts.content,
     createdAt: posts.createdAt,
@@ -128,6 +116,7 @@ function postFields(viewerEmail: string, rank: ReturnType<typeof feedRank>) {
 function serializePost(row: PostRow) {
   return {
     id: row.id,
+    audience: row.audience,
     authorId: row.authorId ?? undefined,
     name: row.displayName,
     initials: initials(row.displayName),
@@ -136,7 +125,7 @@ function serializePost(row: PostRow) {
     school: row.universityName,
     department: row.departmentName,
     time: relativeTime(row.createdAt),
-    course: row.courseCode ?? "KAMPÜS",
+    course: row.courseCode ?? (row.audience === "platform" ? "GENEL" : "KAMPÜS"),
     text: row.content,
     edited: row.updatedAt !== row.createdAt,
     likes: Number(row.likeCount),
@@ -153,6 +142,9 @@ async function readLatestPosts(
   cursor: FeedCursor | null,
 ) {
   const db = await getDb();
+  const audienceVisibility = sql<boolean>`(${universities.id} = ${viewerUniversityId} OR (${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL))`;
+  const scopeVisibility = feed === "all" ? sql<boolean>`${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL`
+    : feed === "campus" ? eq(universities.id, viewerUniversityId) : sql<boolean>`1 = 1`;
   const feedVisibility = feed === "following"
     ? sql<boolean>`EXISTS (SELECT 1 FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${viewerEmail} AND ${userFollows.followingEmail} = ${posts.authorEmail})`
     : feed === "saved"
@@ -183,7 +175,7 @@ async function readLatestPosts(
           )
         )
     ))`;
-  const rank = feedRank(viewerEmail, feed);
+  const rank = feedRank();
   const cursorVisibility = cursor
     ? sql<boolean>`(
         ${rank} < ${cursor.rank}
@@ -199,7 +191,7 @@ async function readLatestPosts(
     .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
     .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(isNull(posts.deletedAt), eq(universities.id, viewerUniversityId), feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
+    .where(and(isNull(posts.deletedAt), eq(users.status, "active"), audienceVisibility, scopeVisibility, feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
     .orderBy(desc(rank), desc(posts.createdAt), desc(posts.id))
     .limit(PAGE_SIZE + 1);
 
@@ -231,7 +223,8 @@ async function readSharedPost(viewerEmail: string, viewerUniversityId: string, p
     .where(and(
       eq(posts.id, postId),
       isNull(posts.deletedAt),
-      eq(universities.id, viewerUniversityId),
+      eq(users.status, "active"),
+      sql<boolean>`(${universities.id} = ${viewerUniversityId} OR (${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL))`,
       sql<boolean>`NOT EXISTS (
         SELECT 1 FROM user_blocks b
         WHERE (b.blocker_email = ${viewerEmail} AND b.blocked_email = ${posts.authorEmail})
@@ -326,7 +319,7 @@ export async function POST(request: Request) {
         return Response.json({ error: "Her gönderiye bir görsel veya video ekleyebilirsin." }, { status: 400 });
       }
       mediaFile = files[0] instanceof File ? files[0] : null;
-      payload = { content: formData.get("content") as string | undefined, courseId: formData.get("courseId") as string | null };
+      payload = { audience: (formData.get("audience") ?? undefined) as PostPayload["audience"], content: formData.get("content") as string | undefined, courseId: formData.get("courseId") as string | null };
     } else {
       payload = (await request.json()) as PostPayload;
     }
@@ -344,6 +337,14 @@ export async function POST(request: Request) {
   }
   if (payload.courseId !== null && payload.courseId !== undefined && typeof payload.courseId !== "string") {
     return Response.json({ error: "Ders çevresi bilgisi geçerli değil." }, { status: 400 });
+  }
+
+  if (payload.audience !== undefined && payload.audience !== "campus" && payload.audience !== "platform") {
+    return Response.json({ error: "Paylaşım kitlesi geçerli değil." }, { status: 400 });
+  }
+  const audience = payload.audience ?? "campus";
+  if (audience === "platform" && payload.courseId?.trim()) {
+    return Response.json({ error: "Ders çevresi paylaşımları kampüs içinde kalır. Genel Akış için ders seçimini kaldır." }, { status: 400 });
   }
 
   let uploadedKey = "";
@@ -407,8 +408,8 @@ export async function POST(request: Request) {
     const mediaId = attachment ? crypto.randomUUID() : "";
     const createdAt = new Date().toISOString().replace("T", " ").replace("Z", "");
     const statements = [DB.prepare(
-      "INSERT INTO posts (id, author_email, course_id, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-    ).bind(id, identity.email, selectedCourse?.id ?? null, content, createdAt, createdAt)];
+      "INSERT INTO posts (id, author_email, course_id, audience, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    ).bind(id, identity.email, selectedCourse?.id ?? null, audience, content, createdAt, createdAt)];
     if (attachment && FILES) {
       uploadedKey = `posts/${id}/${mediaId}.${attachment.storedExtension}`;
       await FILES.put(uploadedKey, attachment.bytes, { httpMetadata: { contentType: attachment.contentType } });
@@ -419,7 +420,7 @@ export async function POST(request: Request) {
     }
     statements.push(DB.prepare(
       "INSERT INTO audit_logs (id, actor_email, action, entity_type, entity_id, detail) VALUES (?, ?, ?, ?, ?, ?)",
-    ).bind(crypto.randomUUID(), identity.email, "post.created", "post", id, JSON.stringify({ courseId: selectedCourse?.id ?? null, mediaKind: attachment?.kind ?? null })));
+    ).bind(crypto.randomUUID(), identity.email, "post.created", "post", id, JSON.stringify({ audience, courseId: selectedCourse?.id ?? null, mediaKind: attachment?.kind ?? null })));
     // D1 batch is transactional: publish post, attachment and audit together.
     await DB.batch(statements);
     committed = true;
@@ -429,6 +430,7 @@ export async function POST(request: Request) {
       {
         post: {
           id,
+          audience,
           authorId: profile.authorId ?? undefined,
           name: displayName,
           initials: initials(displayName),

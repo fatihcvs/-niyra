@@ -96,8 +96,8 @@ export async function POST(request: Request) {
       const target = await DB.prepare(
         `SELECT u.email FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email
-         WHERE u.public_id = ? AND u.email <> ? AND (target_profile.university_id = ? OR ? = 1) LIMIT 1`,
-      ).bind(targetId, identity.email, profile.university_id, payload.active === false ? 1 : 0).first<{ email: string }>();
+         WHERE u.public_id = ? AND u.email <> ? AND (target_profile.onboarding_completed = 1 OR ? = 1) LIMIT 1`,
+      ).bind(targetId, identity.email, payload.active === false ? 1 : 0).first<{ email: string }>();
       if (!target) return Response.json({ error: "Öğrenci bulunamadı." }, { status: 404 });
       const table = action === "block" ? "user_blocks" : "user_mutes";
       const firstColumn = action === "block" ? "blocker_email" : "muter_email";
@@ -121,17 +121,28 @@ export async function POST(request: Request) {
       const details = cleanText(payload.details, 800);
 
       let evidence: Record<string, unknown> | null = null;
+      // Both report types inherit the parent post's audience and community access.
+      const postVisibility = `p.deleted_at IS NULL
+        AND (author_profile.university_id = ? OR (p.audience = 'platform' AND p.community_id IS NULL AND p.course_id IS NULL))
+        AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = p.author_email) OR (b.blocker_email = p.author_email AND b.blocked_email = ?))
+        AND (p.community_id IS NULL OR EXISTS (
+          SELECT 1 FROM communities c WHERE c.id = p.community_id AND c.status = 'active' AND c.moderation_status = 'active'
+            AND (c.university_id IS NULL OR c.university_id = ?)
+            AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
+            AND (c.join_policy = 'open' OR EXISTS (SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'))
+        ))`;
+      const postAccessValues = [profile.university_id, identity.email, identity.email, profile.university_id, identity.email, identity.email];
       if (entityType === "post") evidence = await DB.prepare(
         `SELECT p.id, p.author_email, p.content, p.created_at FROM posts p
          JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
-         WHERE p.id = ? AND author_profile.university_id = ? LIMIT 1`,
-      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+         WHERE p.id = ? AND ${postVisibility} LIMIT 1`,
+      ).bind(entityId, ...postAccessValues).first<Record<string, unknown>>();
       if (entityType === "comment") evidence = await DB.prepare(
         `SELECT pc.id, pc.author_email, pc.content, pc.created_at FROM post_comments pc
          JOIN posts p ON p.id = pc.post_id
          JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
-         WHERE pc.id = ? AND author_profile.university_id = ? LIMIT 1`,
-      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+         WHERE pc.id = ? AND pc.deleted_at IS NULL AND ${postVisibility} LIMIT 1`,
+      ).bind(entityId, ...postAccessValues).first<Record<string, unknown>>();
       if (entityType === "note") evidence = await DB.prepare(
         `SELECT n.id, n.owner_email, n.title, n.description, n.original_file_name, n.created_at FROM notes n
          JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
@@ -207,7 +218,10 @@ export async function POST(request: Request) {
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email
-         WHERE u.public_id = ? AND target_profile.university_id = ? LIMIT 1`,
+         WHERE u.public_id = ? AND (target_profile.university_id = ? OR EXISTS (
+           SELECT 1 FROM posts public_post WHERE public_post.author_email = u.email AND public_post.deleted_at IS NULL
+             AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL
+         )) LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (!evidence) return Response.json({ error: "Şikâyet edilen içerik bulunamadı." }, { status: 404 });
 

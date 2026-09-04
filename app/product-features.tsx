@@ -635,32 +635,33 @@ type SearchData = {
   communities: Array<{ id: string; name: string; description: string; member_count: number }>;
 };
 
-export function UnifiedSearchResults({ query, onNavigate }: { query: string; onNavigate?: (name: string) => void }) {
+export function UnifiedSearchResults({ query, scope = "campus", onNavigate }: { query: string; scope?: "platform" | "campus"; onNavigate?: (name: string) => void }) {
   const [data, setData] = useState<SearchData | null>(null);
+  const [resolvedQuery, setResolvedQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
     if (query.trim().length < 2) return;
     const controller = new AbortController(); const timer = setTimeout(async () => {
       setLoading(true); setError("");
-      try { const response = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal }); const body = await response.json() as SearchData & { error?: string }; if (!response.ok) throw new Error(body.error ?? "Arama tamamlanamadı."); setData(body); }
+      try { const response = await fetch(`/api/search?scope=${scope}&q=${encodeURIComponent(query.trim())}`, { signal: controller.signal }); const body = await response.json() as SearchData & { error?: string }; if (!response.ok) throw new Error(body.error ?? "Arama tamamlanamadı."); if (!controller.signal.aborted) setData(body); }
       catch (searchError) { if (!(searchError instanceof DOMException && searchError.name === "AbortError")) setError(searchError instanceof Error ? searchError.message : "Arama tamamlanamadı."); }
-      finally { setLoading(false); }
+      finally { if (!controller.signal.aborted) { setLoading(false); setResolvedQuery(`${scope}:${query}`); } }
     }, 260);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [query]);
+  }, [query, scope]);
   if (query.trim().length < 2) return null;
-  if (loading) return <div className="unified-results"><EmptyState icon="…" title="Kampira’da aranıyor" text="Öğrenciler, dersler, gönderiler, notlar ve topluluklar taranıyor."/></div>;
+  if (loading || resolvedQuery !== `${scope}:${query}`) return <div className="unified-results"><EmptyState icon="…" title="Kampira’da aranıyor" text="Öğrenciler, dersler, gönderiler, notlar ve topluluklar taranıyor."/></div>;
   if (error) return <p className="feature-error" role="alert">{error}</p>;
   if (!data) return null;
   const total = data.people.length + data.courses.length + data.posts.length + data.notes.length + data.communities.length;
   if (!total) return <div className="unified-results"><EmptyState icon="⌕" title="Sonuç bulunamadı" text="Ders kodunu, konu adını veya öğrenci adını farklı yazmayı dene."/></div>;
   return <section className="unified-results" aria-label="Tüm arama sonuçları">
     {data.people.length > 0 && <SearchGroup title="Öğrenciler">{data.people.map((person) => <a href={`/?profile=${encodeURIComponent(person.public_id)}`} key={person.public_id}><span className="feature-avatar">{initials(person.display_name)}</span><div><strong>{person.display_name}</strong><small>@{person.handle} · {person.department_name}</small></div><i>→</i></a>)}</SearchGroup>}
-    {data.courses.length > 0 && <SearchGroup title="Dersler">{data.courses.map((course) => <button type="button" onClick={() => onNavigate?.("Notlar")} key={course.id}><span className="feature-avatar">{course.code.slice(0, 2)}</span><div><strong>{course.code} · {course.name}</strong><small>{course.department_name}</small></div><i>→</i></button>)}</SearchGroup>}
-    {data.notes.length > 0 && <SearchGroup title="Notlar">{data.notes.map((note) => <a href={`/api/notes/file?id=${encodeURIComponent(note.id)}`} target="_blank" rel="noreferrer" key={note.id}><span className="feature-avatar">PDF</span><div><strong>{note.title}</strong><small>{note.course_code} · {note.owner_name} · {note.view_count} görüntülenme</small></div><i>↗</i></a>)}</SearchGroup>}
+    {data.courses.length > 0 && <SearchGroup title="Kampüsündeki dersler">{data.courses.map((course) => <button type="button" onClick={() => onNavigate?.("Notlar")} key={course.id}><span className="feature-avatar">{course.code.slice(0, 2)}</span><div><strong>{course.code} · {course.name}</strong><small>{course.department_name}</small></div><i>→</i></button>)}</SearchGroup>}
+    {data.notes.length > 0 && <SearchGroup title="Kampüsündeki notlar">{data.notes.map((note) => <a href={`/api/notes/file?id=${encodeURIComponent(note.id)}`} target="_blank" rel="noreferrer" key={note.id}><span className="feature-avatar">PDF</span><div><strong>{note.title}</strong><small>{note.course_code} · {note.owner_name} · {note.view_count} görüntülenme</small></div><i>↗</i></a>)}</SearchGroup>}
     {data.posts.length > 0 && <SearchGroup title="Gönderiler">{data.posts.map((post) => <a href={`/?post=${encodeURIComponent(post.id)}`} key={post.id}><span className="feature-avatar">{initials(post.author_name)}</span><div><strong>{post.author_name} · {post.course_code}</strong><small>{post.content.slice(0, 110)} · {post.time} önce</small></div><i>→</i></a>)}</SearchGroup>}
-    {data.communities.length > 0 && <SearchGroup title="Topluluklar">{data.communities.map((community) => <button type="button" onClick={() => onNavigate?.("Topluluklar")} key={community.id}><span className="feature-avatar">◎</span><div><strong>{community.name}</strong><small>{community.member_count} üye · {community.description.slice(0, 90)}</small></div><i>→</i></button>)}</SearchGroup>}
+    {data.communities.length > 0 && <SearchGroup title="Kampüsündeki topluluklar">{data.communities.map((community) => <button type="button" onClick={() => onNavigate?.("Topluluklar")} key={community.id}><span className="feature-avatar">◎</span><div><strong>{community.name}</strong><small>{community.member_count} üye · {community.description.slice(0, 90)}</small></div><i>→</i></button>)}</SearchGroup>}
   </section>;
 }
 

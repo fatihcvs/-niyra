@@ -6,7 +6,7 @@ Bu belge, mobil web ile gelecekteki Android ve iOS uygulamalarının aynı bilgi
 
 Telefonda her zaman görünen alt çubuk yalnızca beş hedef taşır:
 
-1. **Akış** — kişiselleştirilmiş öğrenci akışı.
+1. **Akış** — Genel Akış (tüm üniversitelerin ortak alanı), Takip ve Kampüsüm.
 2. **Keşfet** — öğrenci, ders, not ve topluluk araması.
 3. **Oluştur** — gönderi, Kampüs Anlık, not ve pazar ilanı için ortak başlangıç.
 4. **Anlık** — kampüste şu an olanlar.

@@ -1,5 +1,46 @@
 [
   {
+    "id": "global-shared-feed",
+    "releasedAt": "2026-09-04T22:58:22+00:00",
+    "category": "Yeni özellik",
+    "area": "Akış",
+    "title": "Genel Akış ile tüm üniversiteler bir arada",
+    "summary": "Genel Akış, tüm öğrencilerin ortak paylaşım alanı oldu. Takip ve Kampüsüm sekmeleriyle çevreni daraltabilirsin.",
+    "highlights": [
+      "Genel Akış tüm üniversitelerin ortak paylaşımlarını en yeniden başlayarak gösterir.",
+      "Takip bölümünde farklı okullardaki arkadaşlarının sana açık paylaşımlarını görebilirsin.",
+      "Kampüsüm bölümünde kendi üniversitendeki paylaşımlar, ders çevreleri ve kampüs hareketleri bir aradadır.",
+      "Seçtiğin akış, sayfayı yenilediğinde ve geri döndüğünde korunur."
+    ]
+  },
+  {
+    "id": "post-audience-choice",
+    "releasedAt": "2026-09-04T22:58:22+00:00",
+    "category": "Yeni özellik",
+    "area": "Paylaşımlar",
+    "title": "Paylaşımını kimlerin görebileceğini seç",
+    "summary": "Gönderi hazırlarken Tüm öğrenciler veya Yalnızca kampüsüm seçeneklerinden birini kullanabilirsin.",
+    "highlights": [
+      "Daha önce yapılan paylaşımlar kampüs içinde kalır; ders ve topluluk paylaşımları da mevcut erişimlerini korur.",
+      "Her gönderide görünürlük bilgisi yer alır; görseller ve videolar aynı seçime uyar.",
+      "Bir bağlantıyla açtığın paylaşım, seçili akışın dışında kalıyorsa ayrı gösterilir."
+    ]
+  },
+  {
+    "id": "cross-university-discovery",
+    "releasedAt": "2026-09-04T22:58:22+00:00",
+    "category": "Yeni özellik",
+    "area": "Keşfet",
+    "title": "Farklı üniversitelerden öğrencileri keşfet",
+    "summary": "Keşfet bölümünde Tüm üniversiteler ve Kampüsüm arasında geçiş yaparak öğrenci ağını genişletebilirsin.",
+    "highlights": [
+      "Ortak alanda paylaşım yapan diğer okullardaki öğrencileri arayabilir, temel profillerini açabilir ve takip edebilirsin.",
+      "Genel paylaşımlarda beğeni, yorum, kaydetme ve şikâyet işlemleri üniversiteler arasında çalışır.",
+      "Kampüse özel gönderiler, notlar, dersler ve kapak görselleri başka okuldan ziyaretçilere açılmaz.",
+      "Engelleme ve sessize alma tercihlerin genel alanda da geçerlidir."
+    ]
+  },
+  {
     "id": "staff-console-navigation",
     "releasedAt": "2026-09-05T01:25:00+03:00",
     "category": "İyileştirme",

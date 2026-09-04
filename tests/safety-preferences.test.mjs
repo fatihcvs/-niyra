@@ -44,18 +44,19 @@ for (const action of ["block", "mute"]) test(`${action} removal is idempotent, i
   }
   await f.request({ action, targetId: "peer", active: true });
   f.database.exec("UPDATE student_profiles SET university_id='outside' WHERE user_email='peer@test.local'");
-  assert.equal((await f.request({ action, targetId: "peer", active: true })).status, 404);
-  assert.equal((await f.request({ action, targetId: "peer" })).status, 404);
+  assert.equal((await f.request({ action, targetId: "peer", active: true })).status, 200);
+  assert.equal((await f.request({ action, targetId: "peer" })).status, 200);
   for (let i = 0; i < 2; i++) assert.equal((await f.request({ action, targetId: "peer", active: false })).status, 200);
   assert.equal(f.database.prepare(`SELECT COUNT(*) AS count FROM ${action === "block" ? "user_blocks" : "user_mutes"}`).get().count, 0);
 });
 
-test("visibility controls preserve authentication, campus boundaries and legacy toggles", async (t) => {
+test("visibility controls work across universities and preserve authentication and legacy toggles", async (t) => {
   const f = fixture(t);
-  assert.equal((await f.request({ action: "block", targetId: "outside", active: true })).status, 404);
+  assert.equal((await f.request({ action: "block", targetId: "outside", active: true })).status, 200);
   assert.equal((await f.request({ action: "block", targetId: "viewer", active: false })).status, 404);
   assert.equal((await f.request({ action: "mute", targetId: "peer", active: "false" })).status, 400);
   for (const expected of [true, false]) assert.equal((await (await f.request({ action: "block", targetId: "peer" })).json()).active, expected);
+  assert.equal((await f.request({ action: "block", targetId: "missing", active: true })).status, 404);
   f.signOut();
   assert.equal((await f.request({ action: "block", targetId: "peer", active: false })).status, 401);
 });

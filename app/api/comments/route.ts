@@ -65,8 +65,9 @@ async function canUseComments(viewerEmail: string, postId: string) {
       .where(eq(users.email, viewerEmail))
       .limit(1),
     db
-      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId, universityId: studentProfiles.universityId })
+      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId, audience: posts.audience, courseId: posts.courseId, universityId: studentProfiles.universityId })
       .from(posts)
+      .innerJoin(users, and(eq(users.email, posts.authorEmail), eq(users.status, "active")))
       .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
       .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
       .limit(1),
@@ -82,15 +83,15 @@ async function canUseComments(viewerEmail: string, postId: string) {
     if (!blocked && post.communityId) {
       const communityAccess = await DB.prepare(
         `SELECT c.id FROM communities c
-         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND (c.join_policy = 'open' OR EXISTS (
+         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?) AND (c.join_policy = 'open' OR EXISTS (
            SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
          )) LIMIT 1`,
-      ).bind(post.communityId, viewer?.universityId ?? "", viewerEmail).first();
+      ).bind(post.communityId, viewer?.universityId ?? "", viewerEmail, viewerEmail).first();
       blocked = !communityAccess;
     }
   }
 
-  return { db, viewer: Boolean(viewer), post: Boolean(post) && viewer?.universityId === post?.universityId && !blocked };
+  return { db, viewer: Boolean(viewer), post: Boolean(post) && (viewer?.universityId === post?.universityId || (post?.audience === "platform" && !post.communityId && !post.courseId)) && !blocked };
 }
 
 export async function GET(request: Request) {

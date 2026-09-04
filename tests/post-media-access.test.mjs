@@ -176,3 +176,79 @@ test("public community visibility preserves shared-post IDs and feed campus, del
   assert.equal((await (await f.postRequest("feed=campus")).json()).posts.length, 0);
   assert.equal((await f.postRequest("id=visible-community")).status, 404);
 });
+
+test("general feed spans universities while legacy posts retain the campus audience", async (t) => {
+  const f = fixture(t);
+  assert.equal(f.database.prepare("SELECT audience FROM posts WHERE id = 'post'").get().audience, "campus");
+  f.database.exec(`INSERT INTO posts (id, author_email, content, audience) VALUES
+    ('local-public', 'author@test.local', 'Shared locally', 'platform'),
+    ('outside-public', 'outsider@test.local', 'Shared globally', 'platform'),
+    ('outside-private', 'outsider@test.local', 'Campus only', 'campus');`);
+  const ids = async (query) => new Set((await (await f.postRequest(query)).json()).posts.map((p) => p.id));
+  assert.deepEqual(await ids('feed=all'), new Set(['local-public', 'outside-public']));
+  assert.deepEqual(await ids('feed=campus'), new Set(['post', 'local-public']));
+  assert.equal((await f.postRequest('id=outside-public')).status, 200);
+  assert.equal((await f.postRequest('id=outside-private')).status, 404);
+  f.database.exec("INSERT INTO user_follows (follower_email, following_email) VALUES ('viewer@test.local', 'outsider@test.local')");
+  assert.deepEqual(await ids('feed=following'), new Set(['outside-public']));
+  f.database.exec("INSERT INTO post_saves (post_id, user_email) VALUES ('outside-public', 'viewer@test.local'), ('outside-private', 'viewer@test.local')");
+  assert.deepEqual(await ids('feed=saved'), new Set(['outside-public']));
+  f.database.exec("INSERT INTO user_mutes (muter_email, muted_email) VALUES ('viewer@test.local', 'outsider@test.local')");
+  assert.deepEqual(await ids('feed=all'), new Set(['local-public']));
+  f.database.exec("DELETE FROM user_mutes; INSERT INTO user_blocks (blocker_email, blocked_email) VALUES ('outsider@test.local', 'viewer@test.local')");
+  assert.equal((await f.postRequest('id=outside-public')).status, 404);
+  assert.deepEqual(await ids('feed=following'), new Set());
+});
+
+test("a platform label cannot expose a course or community post across universities", async (t) => {
+  const f = fixture(t);
+  f.database.exec(`
+    INSERT INTO courses (id, department_id, code, name) VALUES ('course', 'department', 'CS', 'Course');
+    INSERT INTO communities (id, creator_email, university_id, name, slug, join_policy) VALUES ('club', 'author@test.local', 'campus', 'Club', 'club', 'open');
+    UPDATE posts SET audience = 'platform', community_id = 'club' WHERE id = 'post';
+  `);
+  f.signIn('outsider');
+  assert.equal((await f.request()).status, 404);
+  assert.equal((await f.postRequest('id=post')).status, 404);
+  assert.equal((await (await f.postRequest('feed=all')).json()).posts.length, 0);
+  f.database.exec("UPDATE posts SET community_id = NULL, course_id = 'course' WHERE id = 'post'");
+  assert.equal((await f.request()).status, 404);
+  assert.equal((await f.postRequest('id=post')).status, 404);
+  f.database.exec("UPDATE posts SET course_id = NULL WHERE id = 'post'");
+  assert.equal((await f.request()).status, 200);
+  assert.equal((await f.postRequest('id=post')).status, 200);
+});
+
+test("platform video streams cross-campus and access is revoked for deletion, blocks and inactive authors", async (t) => {
+  const f = fixture(t);
+  f.database.exec("UPDATE posts SET audience = 'platform' WHERE id = 'post'");
+  f.signIn('outsider');
+  const response = await f.request({ range: 'bytes=2-5' });
+  assert.equal(response.status, 206);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [2, 3, 4, 5]);
+  f.database.exec("INSERT INTO user_blocks (blocker_email, blocked_email) VALUES ('author@test.local', 'outsider@test.local')");
+  assert.equal((await f.request()).status, 404);
+  f.database.exec("DELETE FROM user_blocks; UPDATE users SET status = 'suspended' WHERE public_id = 'author'");
+  assert.equal((await f.request()).status, 404);
+  assert.equal((await f.postRequest('id=post')).status, 404);
+  f.database.exec("UPDATE users SET status = 'active'; UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = 'post'");
+  assert.equal((await f.request()).status, 404);
+});
+
+test("mixed-university general pagination is chronological and contains no campus-only posts or duplicates", async (t) => {
+  const f = fixture(t);
+  for (let i = 0; i < 31; i++) {
+    f.database.prepare("INSERT INTO posts (id, author_email, content, audience, created_at) VALUES (?, ?, 'Pagination', ?, ?)")
+      .run(`page-${String(i).padStart(2, '0')}`, i % 2 ? 'author@test.local' : 'outsider@test.local', i % 3 ? 'platform' : 'campus', `2026-09-04 10:00:${String(i).padStart(2, '0')}`);
+  }
+  f.database.exec("INSERT INTO user_follows (follower_email, following_email) VALUES ('viewer@test.local', 'outsider@test.local')");
+  const all = [];
+  let cursor = '';
+  do {
+    const page = await (await f.postRequest(`feed=all${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`)).json();
+    all.push(...page.posts.map((p) => p.id)); cursor = page.nextCursor;
+  } while (cursor);
+  const expected = Array.from({ length:31 }, (_, i) => i).filter(i => i % 3).reverse().map(i => `page-${String(i).padStart(2, '0')}`);
+  assert.deepEqual(all, expected);
+});

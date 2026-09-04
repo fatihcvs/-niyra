@@ -60,6 +60,7 @@ function relativeTime(createdAt: string) {
 }
 
 function publicPerson(row: {
+  sameCampus: number;
   publicId: string | null;
   displayName: string;
   handle: string;
@@ -80,6 +81,7 @@ function publicPerson(row: {
 }) {
   return {
     publicId: row.publicId ?? "",
+    sameCampus: Boolean(row.sameCampus),
     displayName: row.displayName,
     handle: row.handle,
     bio: row.bio,
@@ -87,7 +89,7 @@ function publicPerson(row: {
     initials: initials(row.displayName),
     avatarClass: "avatar-blue",
     avatarUrl: profileMediaUrl(row.publicId, "avatar", row.avatarUpdatedAt),
-    bannerUrl: profileMediaUrl(row.publicId, "banner", row.bannerUpdatedAt),
+    bannerUrl: row.sameCampus ? profileMediaUrl(row.publicId, "banner", row.bannerUpdatedAt) : null,
     universityName: row.universityName,
     universityShortName: row.universityShortName,
     facultyName: row.facultyName,
@@ -107,6 +109,7 @@ export async function GET(request: Request) {
 
   const requestUrl = new URL(request.url);
   const publicId = requestUrl.searchParams.get("id")?.trim() ?? "";
+  const directoryScope = requestUrl.searchParams.get("scope") === "platform" ? "platform" : "campus";
   const rawQuery = requestUrl.searchParams.get("q")?.trim() ?? "";
   const searchQuery = rawQuery.replace(/[%_]/g, "").slice(0, 60);
 
@@ -129,6 +132,11 @@ export async function GET(request: Request) {
       );
     }
 
+    const profileVisibility = sql<boolean>`(${universities.id} = ${viewer.universityId} OR EXISTS (
+      SELECT 1 FROM posts public_post WHERE public_post.author_email = ${users.email}
+        AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL AND public_post.deleted_at IS NULL
+    ))`;
+    const audienceVisibility = sql<boolean>`(${universities.id} = ${viewer.universityId} OR (${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL))`;
     const followerCount = sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followingEmail} = ${users.email})`;
     const followingCount = sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${users.email})`;
     const communityVisibility = sql<boolean>`(
@@ -143,16 +151,17 @@ export async function GET(request: Request) {
           ))
       )
     )`;
-    const postCount = sql<number>`(SELECT COUNT(*) FROM ${posts} WHERE ${posts.authorEmail} = ${users.email} AND ${posts.deletedAt} IS NULL AND ${communityVisibility})`;
+    const postCount = sql<number>`(SELECT COUNT(*) FROM ${posts} WHERE ${posts.authorEmail} = ${users.email} AND ${posts.deletedAt} IS NULL AND ${audienceVisibility} AND ${communityVisibility})`;
     const isFollowing = sql<number>`EXISTS (SELECT 1 FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${identity.email} AND ${userFollows.followingEmail} = ${users.email})`;
     const sameDepartment = sql<number>`CASE WHEN ${studentProfiles.departmentId} = (SELECT department_id FROM student_profiles WHERE user_email = ${identity.email}) THEN 1 ELSE 0 END`;
     const selection = {
+      sameCampus: sql<number>`CASE WHEN ${universities.id} = ${viewer.universityId} THEN 1 ELSE 0 END`,
       email: users.email,
       publicId: users.publicId,
       displayName: users.displayName,
       handle: users.handle,
-      bio: studentProfiles.bio,
-      linksJson: studentProfiles.linksJson,
+      bio: sql<string>`CASE WHEN ${universities.id} = ${viewer.universityId} THEN ${studentProfiles.bio} ELSE '' END`,
+      linksJson: sql<string>`CASE WHEN ${universities.id} = ${viewer.universityId} THEN ${studentProfiles.linksJson} ELSE '[]' END`,
       universityName: universities.name,
       universityShortName: universities.shortName,
       facultyName: faculties.name,
@@ -171,7 +180,8 @@ export async function GET(request: Request) {
       const directoryFilters = [
         ne(users.email, identity.email),
         isNotNull(users.publicId),
-        eq(universities.id, viewer.universityId),
+        directoryScope === "platform" ? profileVisibility : eq(universities.id, viewer.universityId),
+        eq(users.status, "active"),
         eq(studentProfiles.onboardingCompleted, true),
         sql<boolean>`NOT EXISTS (
           SELECT 1 FROM user_blocks b
@@ -191,6 +201,11 @@ export async function GET(request: Request) {
         );
       }
 
+      const discoveryPriority = directoryScope === "platform"
+        ? sql<string>`COALESCE((SELECT MAX(public_post.created_at) FROM posts public_post
+            WHERE public_post.author_email = ${users.email} AND public_post.deleted_at IS NULL
+              AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL), '')`
+        : sameDepartment;
       const rows = await db
         .select(selection)
         .from(users)
@@ -199,7 +214,7 @@ export async function GET(request: Request) {
         .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
         .innerJoin(faculties, eq(departments.facultyId, faculties.id))
         .where(and(...directoryFilters))
-        .orderBy(desc(sameDepartment), desc(followerCount), asc(users.displayName))
+        .orderBy(desc(discoveryPriority), desc(followerCount), asc(users.displayName))
         .limit(12);
 
       return Response.json({ people: rows.map(publicPerson), query: searchQuery });
@@ -214,7 +229,9 @@ export async function GET(request: Request) {
       .innerJoin(faculties, eq(departments.facultyId, faculties.id))
       .where(and(
         eq(users.publicId, publicId),
-        eq(universities.id, viewer.universityId),
+        profileVisibility,
+        eq(users.status, "active"),
+        eq(studentProfiles.onboardingCompleted, true),
         sql<boolean>`NOT EXISTS (
           SELECT 1 FROM user_blocks b
           WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${users.email})
@@ -240,6 +257,7 @@ export async function GET(request: Request) {
       db
         .select({
           id: posts.id,
+          audience: posts.audience,
           content: posts.content,
           createdAt: posts.createdAt,
           updatedAt: posts.updatedAt,
@@ -251,7 +269,8 @@ export async function GET(request: Request) {
         })
         .from(posts)
         .leftJoin(courses, eq(posts.courseId, courses.id))
-        .where(and(eq(posts.authorEmail, row.email), isNull(posts.deletedAt), communityVisibility))
+        .where(and(eq(posts.authorEmail, row.email), isNull(posts.deletedAt),
+          sql<boolean>`(${row.sameCampus} = 1 OR (${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL))`, communityVisibility))
         .orderBy(desc(posts.createdAt), desc(posts.id))
         .limit(20),
     ]);
@@ -262,9 +281,10 @@ export async function GET(request: Request) {
     return Response.json({
       person: {
         ...person,
-        courses: selectedCourses,
+        courses: row.sameCampus ? selectedCourses : [],
         posts: recentPosts.map((post) => ({
           id: post.id,
+          audience: post.audience,
           authorId: person.publicId,
           name: person.displayName,
           initials: person.initials,

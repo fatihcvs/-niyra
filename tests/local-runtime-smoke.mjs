@@ -169,7 +169,8 @@ const crossCampusFollow = await fetch(`${baseUrl}/api/follows`, {
   headers: headers(ownerEmail, true),
   body: JSON.stringify({ targetId: otherCampus.publicId }),
 });
-assert.equal(crossCampusFollow.status, 403);
+assert.equal(crossCampusFollow.status, 200);
+assert.equal((await crossCampusFollow.json()).active, true);
 
 const otherCampusPost = (await json("/api/posts", {
   method: "POST",
