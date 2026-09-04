@@ -2,6 +2,19 @@
 
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { Bell } from "@phosphor-icons/react/dist/csr/Bell";
+import { BookOpen } from "@phosphor-icons/react/dist/csr/BookOpen";
+import { CalendarDots } from "@phosphor-icons/react/dist/csr/CalendarDots";
+import { ChatCircleDots } from "@phosphor-icons/react/dist/csr/ChatCircleDots";
+import { Clock } from "@phosphor-icons/react/dist/csr/Clock";
+import { Compass } from "@phosphor-icons/react/dist/csr/Compass";
+import { ForkKnife } from "@phosphor-icons/react/dist/csr/ForkKnife";
+import { House } from "@phosphor-icons/react/dist/csr/House";
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { MapPin } from "@phosphor-icons/react/dist/csr/MapPin";
+import { Plus } from "@phosphor-icons/react/dist/csr/Plus";
+import { SealCheck } from "@phosphor-icons/react/dist/csr/SealCheck";
+import { SquaresFour } from "@phosphor-icons/react/dist/csr/SquaresFour";
 import {
   getUniversityById,
   universities,
@@ -67,6 +80,20 @@ type PostComment = {
   edited?: boolean;
   own?: boolean;
   pending?: boolean;
+};
+
+type CampusLivePreview = {
+  id: string;
+  category: string;
+  content: string;
+  campusZone: string;
+  imageUrl: string | null;
+  authorName: string;
+  expiresAt: string | null;
+  time: string;
+  confirmCount: number;
+  outdatedCount: number;
+  viewerReaction: "support" | "confirm" | "outdated" | null;
 };
 
 type StudentProfile = {
@@ -1788,6 +1815,100 @@ function AcademicOnboarding({
   );
 }
 
+function campusLiveRemaining(expiresAt: string | null) {
+  if (!expiresAt) return "Kalıcı";
+  const remainingMinutes = Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 60_000));
+  if (remainingMinutes < 60) return `${remainingMinutes} dk kaldı`;
+  return `${Math.ceil(remainingMinutes / 60)} sa kaldı`;
+}
+
+function CampusLiveHome({
+  items,
+  status,
+  universityShortName,
+  reactionPendingId,
+  onNavigate,
+  onReact,
+}: {
+  items: CampusLivePreview[];
+  status: "loading" | "ready" | "error";
+  universityShortName: string;
+  reactionPendingId: string | null;
+  onNavigate: (name: string) => void;
+  onReact: (item: CampusLivePreview, reaction: "confirm" | "outdated") => void;
+}) {
+  const railItems = [
+    { category: "study", title: "Kütüphane", route: "Kütüphane", image: "/social-live/library-study.webp", icon: BookOpen, fallback: "Alanları gör" },
+    { category: "food", title: "Yemekhane", route: "Pazar", image: "/social-live/cafeteria.webp", icon: ForkKnife, fallback: "Fiyatları gör" },
+    { category: "event", title: "Etkinlik", route: "Kampüs", image: "/social-live/campus-event.webp", icon: CalendarDots, fallback: "Etkinlikleri gör" },
+  ].map((entry) => ({ ...entry, live: items.find((item) => item.category === entry.category) ?? null }));
+  const featured = items[0] ?? null;
+  const featuredImage = featured?.imageUrl ?? "/social-live/library-study.webp";
+
+  return (
+    <section className="campus-live-home" aria-labelledby="campus-live-home-title">
+      <header className="campus-live-heading">
+        <div><span>KAMPÜS CANLI</span><h1 id="campus-live-home-title">Kampüsünde şimdi</h1></div>
+        <button type="button" onClick={() => onNavigate("Kampüs Anlık")}>
+          <i className={items.length > 0 ? "is-live" : ""}/>{status === "loading" ? "Yükleniyor" : items.length > 0 ? "Canlı" : "Kampüs"}
+        </button>
+      </header>
+
+      <div className="campus-live-rail" aria-label="Kampüs hızlı alanları">
+        {railItems.map(({ category, title, route, image, icon: RailIcon, fallback, live }) => (
+          <button type="button" onClick={() => onNavigate(route)} key={category} aria-label={`${title}: ${live?.time ?? fallback}`}>
+            <span className={live ? "has-live" : ""}>
+              <Image src={image} alt="" fill unoptimized sizes="88px"/>
+              <i><RailIcon size={16} weight="fill"/></i>
+            </span>
+            <strong>{title}</strong>
+            <small>{live?.time ?? fallback}</small>
+          </button>
+        ))}
+        <button className="campus-live-more" type="button" onClick={() => onNavigate("Kampüs Anlık")} aria-label="Tüm kampüs anlık paylaşımlarını aç">
+          <span><Plus size={24} weight="bold"/></span><strong>Tümünü gör</strong><small>Anlık akış</small>
+        </button>
+      </div>
+
+      {featured ? (
+        <article className="campus-feature-card">
+          <header>
+            <div className="campus-feature-avatar"><MapPin size={18} weight="fill"/></div>
+            <div><span><strong>{featured.authorName}</strong><SealCheck size={15} weight="fill" aria-hidden="true"/></span><small>{featured.campusZone} · {featured.time}</small></div>
+            <b><Clock size={13}/>{campusLiveRemaining(featured.expiresAt)}</b>
+          </header>
+          <button className="campus-feature-image" type="button" onClick={() => onNavigate("Kampüs Anlık")} aria-label="Kampüs Anlık paylaşımını aç">
+            <Image src={featuredImage} alt={`${featured.campusZone} bölgesinden kampüs paylaşımı`} fill unoptimized sizes="(max-width: 780px) 100vw, 680px" priority/>
+            <span>Öğrenci paylaşımı</span>
+          </button>
+          <div className="campus-feature-copy"><p>{featured.content}</p></div>
+          <footer>
+            <span>Bu bilgi hâlâ güncel mi?</span>
+            <div>
+              <button className={featured.viewerReaction === "confirm" ? "active" : ""} type="button" disabled={reactionPendingId === featured.id} onClick={() => onReact(featured, "confirm")}>Evet <b>{featured.confirmCount}</b></button>
+              <button className={featured.viewerReaction === "outdated" ? "active warning" : ""} type="button" disabled={reactionPendingId === featured.id} onClick={() => onReact(featured, "outdated")}>Hayır <b>{featured.outdatedCount}</b></button>
+            </div>
+          </footer>
+        </article>
+      ) : (
+        <article className="campus-feature-card campus-feature-empty">
+          <div className="campus-feature-image" aria-hidden="true">
+            <Image src="/social-live/library-study.webp" alt="" fill unoptimized sizes="(max-width: 780px) 100vw, 680px" priority/>
+            <span>Canlı veri yok</span>
+          </div>
+          <div className="campus-feature-empty-copy">
+            <span><SealCheck size={16} weight="fill"/>{universityShortName} kampüs rehberi</span>
+            <h2>Kampüsünün canlı rehberini birlikte kur</h2>
+            <p>Kütüphane, yemekhane ve etkinlik bilgileri öğrenciler güncelledikçe burada görünür.</p>
+            {status === "error" && <small role="status">Canlı akış şu anda getirilemedi; diğer kampüs alanları kullanılabilir.</small>}
+            <div><button type="button" onClick={() => onNavigate("Kampüs Anlık")}>İlk güncel bilgiyi paylaş</button><button type="button" onClick={() => onNavigate("Kütüphane")}>Kütüphaneyi aç</button></div>
+          </div>
+        </article>
+      )}
+    </section>
+  );
+}
+
 export default function Home() {
   const [activeNav, setActiveNav] = useState("Akış");
   const [themePreference, setThemePreference] = useState<ThemePreference>(() => {
@@ -1797,6 +1918,7 @@ export default function Home() {
   });
   const [feedTab, setFeedTab] = useState("Senin için");
   const [draft, setDraft] = useState("");
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -1828,6 +1950,9 @@ export default function Home() {
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const [notesCourseId, setNotesCourseId] = useState("");
   const [composerCourseId, setComposerCourseId] = useState<string | null>(null);
+  const [campusLiveItems, setCampusLiveItems] = useState<CampusLivePreview[]>([]);
+  const [campusLiveStatus, setCampusLiveStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [campusReactionPendingId, setCampusReactionPendingId] = useState<string | null>(null);
   const sharedPostFocused = useRef(false);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
@@ -1987,6 +2112,27 @@ export default function Home() {
   }, [profileState, feedTab, profileRevision]);
 
   useEffect(() => {
+    if (profileState !== "ready") return;
+    let active = true;
+
+    async function loadCampusLive() {
+      try {
+        const response = await fetch("/api/campus-pulse?kind=live", { headers: { accept: "application/json" } });
+        const data = (await response.json()) as { items?: CampusLivePreview[] };
+        if (!active) return;
+        if (!response.ok || !data.items) throw new Error("Kampüs canlı akışı getirilemedi.");
+        setCampusLiveItems(data.items);
+        setCampusLiveStatus("ready");
+      } catch {
+        if (active) setCampusLiveStatus("error");
+      }
+    }
+
+    void loadCampusLive();
+    return () => { active = false; };
+  }, [profileState, profileRevision]);
+
+  useEffect(() => {
     if (profileState !== "ready" || activeNav !== "Kaydedilenler") return;
     let active = true;
 
@@ -2141,6 +2287,30 @@ export default function Home() {
       ? { title: "Kampüsünde henüz paylaşım yok", description: `${activeProfile.universityShortName} akışındaki ilk gönderiyi paylaşarak kampüs sohbetini başlatabilirsin.` }
       : { title: `${activeProfile.universityShortName} akışın henüz sakin`, description: "İlk gönderiyi paylaşabilir veya öğrenci ağından bağlantılar kurabilirsin." };
 
+  async function reactToCampusLive(item: CampusLivePreview, reaction: "confirm" | "outdated") {
+    if (campusReactionPendingId) return;
+    setCampusReactionPendingId(item.id);
+    try {
+      const response = await fetch("/api/campus-pulse", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "react", id: item.id, reaction }),
+      });
+      const data = (await response.json()) as { active?: boolean; confirmCount?: number; outdatedCount?: number };
+      if (!response.ok || typeof data.active !== "boolean") throw new Error("Tepki kaydedilemedi.");
+      setCampusLiveItems((current) => current.map((entry) => entry.id === item.id ? {
+        ...entry,
+        viewerReaction: data.active ? reaction : null,
+        confirmCount: Number(data.confirmCount ?? entry.confirmCount),
+        outdatedCount: Number(data.outdatedCount ?? entry.outdatedCount),
+      } : entry));
+    } catch {
+      setCampusLiveStatus("error");
+    } finally {
+      setCampusReactionPendingId(null);
+    }
+  }
+
   async function publishPost() {
     const clean = draft.trim();
     if (!clean || publishing) return;
@@ -2163,6 +2333,7 @@ export default function Home() {
       setStudentProfile((current) => current ? { ...current, postCount: current.postCount + 1 } : current);
       setDraft("");
       setComposerCourseId(null);
+      setComposerExpanded(false);
     } catch (publishError) {
       setComposerError(publishError instanceof Error ? publishError.message : "Gönderin paylaşılamadı.");
     } finally {
@@ -2284,6 +2455,7 @@ export default function Home() {
   }
 
   function openFeedComposer() {
+    setComposerExpanded(true);
     navigateTo("Akış");
     window.requestAnimationFrame(() => {
       const composer = document.querySelector<HTMLTextAreaElement>("#post-draft");
@@ -2343,7 +2515,7 @@ export default function Home() {
             </button>
           ))}
         </nav>
-        <button className="primary-create" type="button" onClick={() => document.querySelector<HTMLTextAreaElement>("#post-draft")?.focus()}>
+        <button className="primary-create" type="button" onClick={openFeedComposer}>
           <Icon name="plus" size={19}/> Oluştur
         </button>
         <div className="semester-card">
@@ -2361,9 +2533,10 @@ export default function Home() {
       <section className="feed-column">
         <header className="mobile-header">
           <Logo />
-          <div>
-            <button className="icon-button" type="button" onClick={() => setShowSearch(!showSearch)} aria-label="Ara"><Icon name="search"/></button>
-            <button className="icon-button notification-button" type="button" onClick={() => navigateTo("Bildirimler")} aria-label="Bildirimler"><Icon name="bell"/><i /></button>
+          <div className="mobile-header-actions">
+            <button className="mobile-campus-selector" type="button" onClick={() => setEditingProfile("academic")} aria-label={`Üniversiteyi değiştir: ${activeProfile.universityShortName}`}><MapPin size={14} weight="fill"/><span>{activeProfile.universityShortName}</span></button>
+            <button className="icon-button" type="button" onClick={() => setShowSearch(!showSearch)} aria-label="Ara"><MagnifyingGlass size={22}/></button>
+            <button className="icon-button notification-button" type="button" onClick={() => navigateTo("Bildirimler")} aria-label="Bildirimler"><Bell size={22}/><i /></button>
           </div>
         </header>
 
@@ -2374,6 +2547,7 @@ export default function Home() {
         )}
 
         {activeNav === "Akış" ? <>
+        <CampusLiveHome items={campusLiveItems} status={campusLiveStatus} universityShortName={activeProfile.universityShortName} reactionPendingId={campusReactionPendingId} onNavigate={navigateTo} onReact={(item, reaction) => void reactToCampusLive(item, reaction)}/>
         <div className="feed-welcome">
           <div>
             <span>{dateLabel}</span>
@@ -2400,7 +2574,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="composer-card" aria-label="Gönderi oluştur">
+        <section className={`composer-card${composerExpanded ? " is-expanded" : ""}`} aria-label="Gönderi oluştur">
+          {composerExpanded && <button className="composer-mobile-close" type="button" onClick={() => setComposerExpanded(false)} aria-label="Gönderi alanını kapat"><Icon name="close" size={17}/></button>}
           <div className="composer-main">
             <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
@@ -2418,9 +2593,10 @@ export default function Home() {
         </section>
 
         <div className="feed-tabs" role="tablist" aria-label="Akış türü">
-          {["Senin için", "Takip ettiklerin", "Kampüsüm"].map((tab) => (
-            <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { setFeedTab(tab); setNextCursor(null); setFeedError(""); setPostsLoading(true); }} type="button" role="tab" aria-selected={feedTab === tab}>{tab}</button>
-          ))}
+          {["Senin için", "Takip ettiklerin", "Kampüsüm"].map((tab) => {
+            const label = tab === "Senin için" ? "Sana özel" : tab === "Takip ettiklerin" ? "Takip" : tab;
+            return <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { setFeedTab(tab); setNextCursor(null); setFeedError(""); setPostsLoading(true); }} type="button" role="tab" aria-selected={feedTab === tab}>{label}</button>;
+          })}
           <button className="feed-filter" type="button" aria-label="Akış seçenekleri"><Icon name="more"/></button>
         </div>
 
@@ -2477,19 +2653,19 @@ export default function Home() {
 
       <nav className="mobile-nav" aria-label="Mobil ana menü">
         <button className={activeNav === "Akış" ? "active" : ""} onClick={() => navigateTo("Akış")} type="button" aria-label="Akış" aria-current={activeNav === "Akış" ? "page" : undefined}>
-          <Icon name="home" size={22}/><small>Akış</small>
+          <House size={23} weight={activeNav === "Akış" ? "fill" : "regular"}/><small>Akış</small>
         </button>
         <button className={activeNav === "Keşfet" || activeNav === "Öğrenci" ? "active" : ""} onClick={() => navigateTo("Keşfet")} type="button" aria-label="Keşfet" aria-current={activeNav === "Keşfet" || activeNav === "Öğrenci" ? "page" : undefined}>
-          <Icon name="search" size={22}/><small>Keşfet</small>
+          <Compass size={23} weight={activeNav === "Keşfet" || activeNav === "Öğrenci" ? "fill" : "regular"}/><small>Keşfet</small>
         </button>
         <button className="mobile-create-action" onClick={() => { setShowMobileMenu(false); setShowMobileCreate(true); }} type="button" aria-label="Oluştur" aria-expanded={showMobileCreate} aria-controls="mobile-create-sheet">
-          <span className="mobile-create"><Icon name="plus" size={24}/></span><small>Oluştur</small>
+          <span className="mobile-create"><Plus size={25} weight="bold"/></span><small>Oluştur</small>
         </button>
         <button className={activeNav === "Kampüs Anlık" ? "active" : ""} onClick={() => navigateTo("Kampüs Anlık")} type="button" aria-label="Kampüs Anlık" aria-current={activeNav === "Kampüs Anlık" ? "page" : undefined}>
-          <Icon name="sparkles" size={22}/><small>Anlık</small>
+          <ChatCircleDots size={23} weight={activeNav === "Kampüs Anlık" ? "fill" : "regular"}/><small>Anlık</small>
         </button>
         <button className={!['Akış', 'Keşfet', 'Öğrenci', 'Kampüs Anlık'].includes(activeNav) ? "active" : ""} onClick={() => { setShowMobileCreate(false); setShowMobileMenu(true); }} type="button" aria-label="Tüm alanlar" aria-expanded={showMobileMenu} aria-controls="mobile-menu-sheet">
-          <Icon name="more" size={23}/><small>Menü</small>
+          <SquaresFour size={23} weight={!['Akış', 'Keşfet', 'Öğrenci', 'Kampüs Anlık'].includes(activeNav) ? "fill" : "regular"}/><small>Menü</small>
         </button>
       </nav>
 

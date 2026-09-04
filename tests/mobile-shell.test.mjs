@@ -31,6 +31,17 @@ test("mobile create sheet routes to real product flows", () => {
   assert.match(pageSource, /role="dialog" aria-modal="true"/);
 });
 
+test("mobile home exposes the real campus-live social surface", () => {
+  for (const label of ["Kampüsünde şimdi", "Kütüphane", "Yemekhane", "Etkinlik", "Bu bilgi hâlâ güncel mi?"]) {
+    assert.match(pageSource, new RegExp(label));
+  }
+  assert.match(pageSource, /fetch\("\/api\/campus-pulse\?kind=live"/);
+  assert.match(pageSource, /action: "react", id: item\.id, reaction/);
+  assert.match(pageSource, /Canlı veri yok/);
+  assert.match(cssSource, /\.campus-live-home/);
+  assert.match(cssSource, /\.feed-tabs>button:nth-child\(3\) \{ display:block; \}/);
+});
+
 test("mobile layout protects touch, safe-area and reduced-motion behavior", () => {
   assert.match(cssSource, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
   assert.match(cssSource, /min-height:56px/);
@@ -38,4 +49,3 @@ test("mobile layout protects touch, safe-area and reduced-motion behavior", () =
   assert.match(cssSource, /prefers-reduced-motion:reduce/);
   assert.doesNotMatch(cssSource.match(/\.mobile-nav \{[^}]+\}/)?.[0] ?? "", /overflow-x:auto/);
 });
-

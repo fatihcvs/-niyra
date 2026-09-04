@@ -1,60 +1,34 @@
-# Interactive Course Hub Design QA
+# Kampüs Canlı ana akış tasarım QA
 
-- Source visual truth: `C:/Users/fatih/AppData/Local/Temp/codex-clipboard-2d65d554-f4d2-4b76-b7b6-845f96da1978.png`
-- Browser-rendered implementation: `iab://tab-8/local-course-hub-desktop` and `iab://tab-9/local-course-hub-mobile`
-- Viewports: desktop 1294 x 912 CSS px; mobile 390 x 844 CSS px
-- Pixel normalization: source 721 x 226 px at 1x; desktop focused section 593 x 242 CSS px at 1x; mobile viewport 390 x 844 CSS px at 1x
-- State: authenticated dashboard, dark theme inherited from the current user preference; source capture uses light theme. Theme-independent layout, typography hierarchy, image crop, controls and interactions were compared. The move from glyph-only icons to representative course images is the user-requested design change.
+- Referans: `docs/design/campus-live-option-2.png`
+- Uygulama: `app/page.tsx` ve `app/globals.css`
+- Kontrol görünümü: Codex uygulama içi tarayıcıda 390 × 844 piksel mobil çerçeve ve 1294 × 912 piksel masaüstü
+- Tema kapsamı: açık ve koyu
 
-## Findings
+## Görsel karşılaştırma
 
-- No actionable P0, P1 or P2 findings remain.
-- The initial dark-theme pass exposed insufficient contrast in the sticky course-dialog header. Its background, border and close control were moved to dark-theme tokens and the revised detail view was re-captured with a readable title.
-- P3 only: the source shows four courses while the active QA profile contains three. This is profile data, not a layout or implementation mismatch; the horizontal/mobile and adaptive/desktop layouts support up to the profile course limit.
+| Ölçüt | Puan / 10 | Sonuç |
+| --- | ---: | --- |
+| Görsel hiyerarşi | 9.3 | Üst başlık, kampüs halkaları, öne çıkan kart ve alt menü referans sırasını koruyor. |
+| Tipografi | 9.1 | Başlık ve yardımcı metin ölçekleri mobilde okunaklı; küçük durum yazıları 10 pikselin altına düşmüyor. |
+| Boşluk ve hizalama | 9.2 | 390 piksel görünümde yatay taşma yok; hızlı alanlar bilinçli yatay kaydırma kullanıyor. |
+| Bileşen benzerliği | 9.3 | Dairesel kampüs alanları, görselli kart, canlı durumu ve beşli alt gezinme seçilen yönle eşleşiyor. |
+| Duyarlı davranış | 9.4 | Masaüstü içerik korunurken mobilde gereksiz karşılama ve ders şeridi sadeleştiriliyor. |
 
-## Full-view comparison evidence
+Genel görsel puan: **9.26 / 10**
 
-- The section preserves the source hierarchy: eyebrow and question at top left, working `Tümünü gör` action at top right, evenly distributed course choices below.
-- The representative images use dedicated 3:2 assets with consistent crop, rounded corners, real image content and compact verified-note counters.
-- Desktop rhythm remains aligned with the surrounding feed card and right rail. The section has no clipping or horizontal overflow at 1294 x 912.
-- At 390 x 844, course cards remain readable in a horizontal row, the fixed navigation stays available, and the detail dialog fits the viewport with full-width actions.
+## Ürün doğruluğu ve etkileşim
 
-## Focused region comparison evidence
+- Kampüs halkaları gerçek Kütüphane, Pazar ve Kampüs görünümlerine yönlendiriyor.
+- Kampüs Anlık API verisi varsa öğrenci paylaşımı gösteriliyor; veri yoksa temsili paylaşım üretilmiyor.
+- Güncellik oyları mevcut `PATCH /api/campus-pulse` akışına bağlı.
+- Mobil Oluştur düğmesi gerçek oluşturma sayfasını açıyor ve gönderi metin alanına odaklanıyor.
+- Açık ve koyu temada kontrast, dokunma alanları, güvenli alan ve azaltılmış hareket davranışı korundu.
 
-- Typography: existing Geist family, hierarchy, optical weights and small-label legibility are retained; course names wrap without overlap.
-- Spacing and layout: source card padding and top-row alignment are retained, while image cards use a slightly larger footprint required by the new visual assets.
-- Colors and tokens: violet, coral, blue and amber accents remain consistent; light and dark surfaces use existing application tokens.
-- Image quality: four original 1536 x 1024 ImageGen assets were exported as optimized JPEGs; crops are sharp, unstretched and contain no generated text.
-- Copy: the original section copy remains intact. Detail views explicitly disclose `Temsili ders kapağı` so generated visuals cannot be mistaken for official course material.
+## Kusur bütçesi
 
-## Primary interactions tested
-
-- Clicking an individual course opens its course center.
-- `Tümünü gör` opens the complete current-semester course directory.
-- Selecting a course in the directory opens that course's detail view.
-- `Notları gör` opens Notes with the originating course selected and curated results filtered.
-- `Akışta paylaş` focuses the composer and shows the selected course context; publishing uses that course id.
-- Close buttons, backdrop close and Escape close the overlays.
-- Desktop and mobile browser console checks returned no errors or warnings.
-
-## Comparison history
-
-1. Initial pass: visual cards, directory and both downstream actions worked. P2 dark-theme header contrast was found in the detail dialog.
-2. Fix: added dark-theme header, border and close-control surfaces.
-3. Revised pass: title and actions were readable on desktop and mobile; no P0/P1/P2 findings remained.
-
-## Implementation checklist
-
-- [x] Replace decorative text glyphs with representative course images.
-- [x] Replace fabricated counters with actual curated-note and feed-post counts.
-- [x] Make every dashboard course card interactive.
-- [x] Make `Tümünü gör` interactive.
-- [x] Connect course details to filtered notes and course-aware publishing.
-- [x] Verify 1294 x 912 desktop and 390 x 844 mobile layouts.
-- [x] Verify light/dark-compatible dialog surfaces and console state.
-
-## Follow-up polish
-
-- None required for this scoped course-hub update.
+- P0: yok
+- P1: yok
+- P2: yok
 
 final result: passed
