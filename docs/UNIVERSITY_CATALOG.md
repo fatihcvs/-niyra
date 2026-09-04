@@ -150,6 +150,20 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Üç M.T.O.K. ve altı UOLP programı için ayrı EBS sayfası bulunmadığı veya sayfa
   ders tablosu yayımlamadığı için temel programa tahmini bağlantı verilmedi.
 
+## Gazi Üniversitesi müfredat genişletmesi — on üçüncü parça
+
+- Gazi Üniversitesi'nin resmî [Bologna Bilgi Sistemi](https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr)
+  dizinindeki 78 lisans kaydı, ÖSYM kataloğundaki 69 güncel lisans programıyla
+  program adı ve akademik birim birlikte değerlendirilerek karşılaştırıldı.
+- 62 program ders kodu, kredi ve AKTS tabloları dolu olan tekil resmî ders planına
+  bağlandı. Her hedef en az 100 KB içerik, beş farklı ders kodu ve AKTS alanıyla
+  canlı olarak doğrulandı.
+- Eski dizindeki “4 yıllık”, “5 yıllık” ve hatalı “İngiliz” etiketleri açık ad
+  eşlemeleriyle düzeltildi; Azerbaycan Teknik Üniversitesi UOLP kaydı yalnızca
+  kendi resmî program kimliğine bağlandı.
+- Teknoloji Fakültesindeki yedi M.T.O.K. seçeneği için Bologna sisteminde ayrı
+  plan yayımlanmadığından temel mühendislik programına tahmini bağlantı verilmedi.
+
 ## Bilinen sınır
 
 YÖK, bütün üniversitelerin dönem-ders listelerini tek bir ulusal veri kümesinde
