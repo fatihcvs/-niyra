@@ -32,7 +32,7 @@
 - P1: none.
 - P2: none.
 - P3: none.
-- Local-only Vinext font URLs continue to return 404 in the development runtime; this is an existing tooling path issue and does not affect the logo sizing change or production assets.
+- Vinext-generated font URLs continue to return 404 in both development and Railway; the existing system-sans fallback remains active. This is a pre-existing font-pipeline issue and does not affect the logo sizing or logo PNG asset.
 - The unauthenticated `/api/profile` request returns the expected 401 response on the sign-in screen.
 
 final result: passed
