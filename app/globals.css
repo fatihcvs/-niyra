@@ -1169,6 +1169,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .campus-place-list article { padding:15px; border:1px solid #e4e2ec; border-radius:15px; background:#fff; cursor:pointer; }
 .campus-place-list article.active { border-color:#bfb8ff; box-shadow:0 0 0 3px rgba(91,77,240,.07); }
 .campus-place-list header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.campus-place-list header>div { min-width:0; }
 .campus-place-list header span { color:#6860d0; font-size:.625rem; font-weight:820; letter-spacing:.06em; }
 .campus-place-list h2 { margin:4px 0 0; color:#292d45; font-size:.875rem; }
 .campus-place-list header>b { padding:5px 7px; border-radius:999px; background:#f2f1f6; color:#7a7d8e; font-size:.5625rem; white-space:nowrap; }
@@ -1187,6 +1188,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .campus-map-panel>header>b { max-width:125px; color:#74788b; font-size:.625rem; font-weight:620; text-align:right; }
 .campus-map-panel iframe { width:100%; height:255px; display:block; border:0; background:#e8e7ef; }
 .campus-map-panel>a { padding:8px 13px; display:block; border-bottom:1px solid #ebe9f0; color:#5b51cc; font-size:.6875rem; text-align:right; text-decoration:none; }
+.campus-map-attribution { margin:0; padding:8px 13px; border-bottom:1px solid #ebe9f0; color:#8b8e9e; background:#fbfbfd; font-size:.625rem; line-height:1.4; }
 .campus-map-unknown { min-height:245px; padding:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(145deg,#eeedf3,#f9f9fb); text-align:center; }
 .campus-map-unknown>span { width:45px; height:45px; display:grid; place-items:center; border-radius:14px; background:#fff; color:var(--brand); font-size:1.25rem; }
 .campus-map-unknown strong { margin-top:10px; color:#4d5165; font-size:.8125rem; }
@@ -1198,6 +1200,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .campus-map-panel>section>div button { min-height:32px; flex:1; border:1px solid #dfdce9; border-radius:8px; background:#fafafd; color:#6c7082; font:inherit; font-size:.625rem; font-weight:680; cursor:pointer; }
 .campus-map-panel>section>div button.active { border-color:#bfb8ff; background:#eeecff; color:#5147c8; }
 .campus-map-panel>section>div button.warning { border-color:#f0d1b9; background:#fff7ef; color:#a96531; }
+.campus-source-panel { border-top:1px solid #efedf4; background:linear-gradient(145deg,#fbfffd,#f7f6ff); }
+.campus-source-panel>div { margin:8px 0; flex-wrap:wrap; }
+.campus-source-panel>div>a { min-height:32px; padding:0 10px; display:inline-flex; align-items:center; border:1px solid #d9d5f2; border-radius:8px; background:#fff; color:#5147c8; font-size:.625rem; font-weight:720; text-decoration:none; }
+.campus-source-panel>small { display:block; color:#74788b; font-size:.625rem; line-height:1.5; }
 .campus-archive { margin-top:9px; border:0; background:transparent; color:#a36b70; font:inherit; font-size:.625rem; cursor:pointer; }
 .campus-event-list { margin-top:16px; display:grid; gap:10px; }
 .campus-event-list article { padding:15px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:start; gap:13px; border:1px solid #e3e1eb; border-radius:16px; background:#fff; }
@@ -1222,6 +1228,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .campus-guide-dialog fieldset { margin:0; padding:10px; border:1px solid #e3e1ea; border-radius:11px; }.campus-guide-dialog legend { padding:0 4px; color:#555a70; font-size:.75rem; font-weight:720; }
 .campus-accessibility { display:flex; flex-wrap:wrap; gap:6px; }.campus-accessibility button { min-height:31px; padding:0 9px; border:1px solid #dfdce8; border-radius:999px; background:#fafafd; color:#6c7081; font:inherit; font-size:.625rem; cursor:pointer; }.campus-accessibility button.active { border-color:#c5bfff; background:#eeecff; color:#5147c9; }
 .campus-guide-disclaimer { margin:0; padding:11px; border:1px solid #eee0bd; border-radius:10px; background:#fffaf0; color:#7f6b47; font-size:.6875rem; line-height:1.5; }.campus-guide-dialog form>footer { display:flex; justify-content:flex-end; gap:8px; }
+.campus-form-hint { margin:-5px 0 0; color:#858899; font-size:.6875rem; line-height:1.45; }
 
 /* Student marketplace and timestamped campus prices */
 .market-workspace{padding-bottom:44px}.market-header{margin-bottom:19px;display:flex;align-items:flex-start;justify-content:space-between;gap:22px}.market-header>div:first-child>span{color:var(--brand);font-size:.75rem;font-weight:820;letter-spacing:.12em}.market-header h1{margin:8px 0 7px;color:#151933;font-size:30px;line-height:1.12;letter-spacing:-1px}.market-header p{max-width:610px;margin:0;color:#777c91;font-size:.9rem;line-height:1.6}.market-header>div:last-child{display:flex;gap:8px}.market-header>div:last-child>button:not(.feature-primary){min-height:43px;padding:0 13px;border:1px solid #dedbe9;border-radius:11px;background:#fff;color:#666a7e;font:inherit;font-size:.75rem;font-weight:720;cursor:pointer}
@@ -1263,7 +1270,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .campus-guide-tabs button { min-height:53px; }
   .campus-guide-filters { grid-template-columns:1fr; }
   .campus-guide-layout { grid-template-columns:1fr; }
-  .campus-map-panel { position:static; }
+  .campus-map-panel { position:static; order:-1; }
   .campus-event-list article { grid-template-columns:auto minmax(0,1fr); }
   .campus-event-list article>button { grid-column:2; justify-self:start; }
   .campus-form-row { grid-template-columns:1fr; }

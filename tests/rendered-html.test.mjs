@@ -4,6 +4,7 @@ import "./api-auth.test.mjs";
 import "./academic-catalog.test.mjs";
 import "./migrations.test.mjs";
 import "./university-catalog.test.mjs";
+import "./campus-place-catalog.test.mjs";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;

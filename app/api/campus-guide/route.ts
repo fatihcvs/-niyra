@@ -11,6 +11,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { getCuratedCampusPlaces } from "../../../lib/campus-place-catalog";
 
 const placeCategories = new Set(["building", "library", "food", "study", "sports", "social", "transport", "health", "other"]);
 const eventCategories = new Set(["academic", "social", "sports", "culture", "career", "volunteering", "other"]);
@@ -89,14 +90,17 @@ export async function GET(request: Request) {
       ).bind(profile.university_id).all<EventRow>(),
       DB.prepare(`SELECT interests_json FROM student_social_profiles WHERE user_email = ? LIMIT 1`).bind(identity.email).first<{ interests_json: string }>(),
     ]);
-    const places = placesResult.results.map((place) => ({
+    const communityPlaces = placesResult.results.map((place) => ({
       id: place.id, name: place.name, category: place.category, description: place.description, address: place.address,
       latitude: place.latitude, longitude: place.longitude, coordinatesKnown: place.latitude !== null && place.longitude !== null,
       accessibility: parseJsonArray(place.accessibility_json), openingHours: place.opening_hours,
       currentCount: Number(place.current_count), needsUpdateCount: Number(place.needs_update_count), viewerState: place.viewer_state,
       verification: place.verified_at ? { label: "Toplulukça güncel", time: relativeTime(place.verified_at) } : { label: "Henüz doğrulanmadı", time: null },
       own: place.creator_email === identity.email, updatedTime: relativeTime(place.updated_at),
+      curated: false, campusName: "", distanceMeters: null, source: null,
     }));
+    const curatedPlaces = getCuratedCampusPlaces(profile.university_id, { category, query });
+    const places = [...communityPlaces, ...curatedPlaces];
     const events = eventsResult.results.map((event) => ({
       id: event.id, title: event.title, description: event.description, category: event.category,
       startsAt: event.starts_at, endsAt: event.ends_at, placeId: event.place_id, placeName: event.place_name,
@@ -108,7 +112,17 @@ export async function GET(request: Request) {
       ? eventCandidates.map((event) => ({ type: "event", ...event, reason: "İlgi alanlarınla eşleşen yaklaşan kampüs etkinliği" }))
       : events.length
         ? events.map((event) => ({ type: "event", ...event, reason: "Kampüsündeki yaklaşan etkinliklerden bugünün seçimi" }))
-        : places.map((place) => ({ type: "place", ...place, reason: place.verification.label === "Toplulukça güncel" ? "Öğrencilerin güncel olduğunu doğruladığı kampüs noktası" : "Kampüsünü keşfetmek için bugünün önerisi" }));
+        : places.map((place) => ({
+          type: "place",
+          ...place,
+          reason: place.verification.label === "Toplulukça güncel"
+            ? "Öğrencilerin güncel olduğunu doğruladığı kampüs noktası"
+            : place.source?.type === "official-university"
+              ? "Resmî kurum kaynağında yayımlanan kampüs noktası"
+              : place.source?.type === "openstreetmap"
+                ? "Kampüs çevresindeki açık harita kayıtlarından bugünün seçimi"
+                : "Kampüsünü keşfetmek için bugünün önerisi",
+        }));
     const suggestion = suggestionPool.length ? suggestionPool[stableIndex(`${profile.university_id}:${identity.email}:${dayKey()}`, suggestionPool.length)] : null;
     return Response.json({ places, events, suggestion: suggestion ? { day: dayKey(), ...suggestion } : null });
   } catch (error) {

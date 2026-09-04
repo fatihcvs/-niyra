@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.6.21");
+assert.equal(healthBody.version, "1.6.22");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -413,4 +413,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.6.21 runtime smoke passed: auth, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
+console.log("Üniyra v1.6.22 runtime smoke passed: auth, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, note/R2, search, notifications and safety.");
