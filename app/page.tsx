@@ -706,7 +706,6 @@ function DiscoverView({
       <section className="discover-hero">
         <div className="discover-hero-copy"><span><Icon name="sparkles" size={15}/> AKADEMİK ÇEVREN</span><h2>Derslerini<br/>birlikte büyüt.</h2><p>Aynı üniversitedeki gerçek profilleri bul, ders çevrelerine ve paylaşımlara katıl.</p><button type="button" onClick={() => onNavigate("Topluluklar")}>Toplulukları keşfet <Icon name="arrow" size={17}/></button></div>
         <div className="hero-orbit" aria-hidden="true"><span className="orbit-one">∑</span><span className="orbit-two">Ψ</span><span className="orbit-three">F</span><i/><strong>{profile.universityShortName}</strong><small>üniversite çevresi</small></div>
-        <small className="discover-visual-label">Temsili kampüs illüstrasyonu</small>
       </section>
 
       <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">{profile.universityShortName}</span></div>
