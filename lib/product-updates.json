@@ -1,5 +1,18 @@
 [
   {
+    "id": "private-campus-messages",
+    "releasedAt": "2026-09-04T22:45:00+03:00",
+    "category": "Yeni özellik",
+    "area": "Mesajlar",
+    "title": "Öğrenciler artık özel mesajlaşabiliyor",
+    "summary": "Aynı kampüsteki öğrenciler birbirine doğrudan mesaj gönderebilir ve daha önce ekledikleri faydalı içerikleri sohbet içinde paylaşabilir.",
+    "highlights": [
+      "Öğrenci profilinden veya Mesajlar alanından yeni sohbet başlatılabilir.",
+      "Kendi notların, kütüphane alanların, etkinliklerin, mekânların ve ilanların mesaja eklenebilir.",
+      "Okunmamış mesaj sayısı görünür; istenmeyen tek bir mesaj güvenli biçimde şikâyet edilebilir."
+    ]
+  },
+  {
     "id": "admin-update-center",
     "releasedAt": "2026-09-04T22:20:00+03:00",
     "category": "Yeni özellik",

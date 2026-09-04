@@ -15,8 +15,10 @@ export const ADMIN_FEATURE_REGISTRY = [
   { key: "prices", label: "Kampüs fiyatları", table: "campus_price_reports", moderation: true },
   { key: "matches", label: "Sosyal eşleşmeler", table: "meetup_requests", moderation: true },
   { key: "library", label: "Kütüphane kullanımı", table: "library_checkins", moderation: false },
+  { key: "directConversations", label: "Özel konuşmalar", table: "direct_conversations", moderation: false },
+  { key: "directMessages", label: "Özel mesajlar (yalnızca şikâyetle incelenir)", table: "direct_messages", moderation: true, visibility: "reported-only" },
   { key: "reports", label: "Şikâyetler", table: "content_reports", moderation: true },
 ] as const;
 
-export const MODERATABLE_ENTITY_TYPES = ["post", "comment", "note", "note-comment", "community", "pulse", "listing", "place", "housing-message", "event", "price", "user"] as const;
+export const MODERATABLE_ENTITY_TYPES = ["post", "comment", "note", "note-comment", "community", "pulse", "listing", "place", "housing-message", "event", "price", "direct-message", "user"] as const;
 export type ModeratableEntityType = typeof MODERATABLE_ENTITY_TYPES[number];

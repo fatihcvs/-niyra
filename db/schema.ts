@@ -331,6 +331,46 @@ export const marketplaceInquiries = sqliteTable(
   (table) => [index("marketplace_inquiries_listing_status_idx").on(table.listingId, table.status, table.createdAt)],
 );
 
+export const directConversations = sqliteTable(
+  "direct_conversations",
+  {
+    id: text("id").primaryKey(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    memberOneEmail: text("member_one_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    memberTwoEmail: text("member_two_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    lastMessageAt: text("last_message_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    uniqueIndex("direct_conversations_pair_unique").on(table.memberOneEmail, table.memberTwoEmail),
+    index("direct_conversations_member_one_updated_idx").on(table.memberOneEmail, table.updatedAt),
+    index("direct_conversations_member_two_updated_idx").on(table.memberTwoEmail, table.updatedAt),
+  ],
+);
+
+export const directMessages = sqliteTable(
+  "direct_messages",
+  {
+    id: text("id").primaryKey(),
+    conversationId: text("conversation_id").notNull().references(() => directConversations.id, { onDelete: "cascade" }),
+    senderEmail: text("sender_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    body: text("body").notNull().default(""),
+    attachmentType: text("attachment_type"),
+    attachmentId: text("attachment_id"),
+    attachmentSnapshot: text("attachment_snapshot").notNull().default("{}"),
+    readAt: text("read_at"),
+    deletedAt: text("deleted_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("direct_messages_conversation_created_idx").on(table.conversationId, table.createdAt),
+    index("direct_messages_conversation_read_idx").on(table.conversationId, table.readAt, table.createdAt),
+    index("direct_messages_sender_created_idx").on(table.senderEmail, table.createdAt),
+  ],
+);
+
 export const campusPriceReports = sqliteTable(
   "campus_price_reports",
   {

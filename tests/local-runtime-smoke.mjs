@@ -433,6 +433,43 @@ const search = (await json(`/api/search?q=${encodeURIComponent(runId)}`)).body;
 assert.ok(search.notes.some((item) => item.id === note.id));
 assert.ok(search.communities.some((item) => item.id === community.id));
 
+const crossCampusMessage = await fetch(`${baseUrl}/api/messages`, {
+  method: "POST",
+  headers: headers(ownerEmail, true),
+  body: JSON.stringify({ recipientId: otherCampus.publicId, body: "Bu mesaj kampüs sınırını aşmamalı." }),
+});
+assert.equal(crossCampusMessage.status, 404);
+const firstDirectMessage = (await json("/api/messages", {
+  method: "POST",
+  body: JSON.stringify({ recipientId: peer.publicId, body: "Matematik notunu seninle paylaşıyorum.", attachment: { type: "note", id: note.id } }),
+})).body;
+assert.ok(firstDirectMessage.conversationId);
+for (const attachment of [
+  { type: "library", id: libraryArea.id },
+  { type: "event", id: campusEvent.id },
+  { type: "place", id: campusPlace.id },
+  { type: "listing", id: listing.id },
+]) {
+  await json("/api/messages", {
+    method: "POST",
+    body: JSON.stringify({ conversationId: firstDirectMessage.conversationId, attachment }),
+  });
+}
+const peerUnreadMessages = (await json("/api/messages?summary=1", {}, peerEmail)).body;
+assert.equal(peerUnreadMessages.unreadCount, 5);
+const peerConversation = (await json(`/api/messages?conversationId=${encodeURIComponent(firstDirectMessage.conversationId)}`, {}, peerEmail)).body;
+assert.equal(peerConversation.messages.length, 5);
+assert.deepEqual(new Set(peerConversation.messages.map((message) => message.attachmentType)), new Set(["note", "library", "event", "place", "listing"]));
+assert.ok(peerConversation.conversations.some((conversation) => conversation.id === firstDirectMessage.conversationId && conversation.unreadCount === 5));
+await json("/api/messages", { method: "PATCH", body: JSON.stringify({ action: "read", conversationId: firstDirectMessage.conversationId }) }, peerEmail);
+assert.equal((await json("/api/messages?summary=1", {}, peerEmail)).body.unreadCount, 0);
+const directMessageReport = await fetch(`${baseUrl}/api/safety`, {
+  method: "POST",
+  headers: headers(peerEmail, true),
+  body: JSON.stringify({ action: "report", entityType: "direct-message", entityId: firstDirectMessage.message.id, reason: "other", details: "Özel mesaj katılımcısı kanıt erişimi kontrolü." }),
+});
+assert.equal(directMessageReport.status, 201);
+
 const follow = (await json("/api/follows", { method: "POST", body: JSON.stringify({ targetId: peer.publicId }) })).body;
 assert.equal(follow.active, true);
 const peerNotices = (await json("/api/notifications", {}, peerEmail)).body.notifications;
@@ -441,6 +478,12 @@ const block = (await json("/api/safety", { method: "POST", body: JSON.stringify(
 assert.equal(block.active, true);
 const blockedSearch = (await json(`/api/people?q=${encodeURIComponent(peer.displayName)}`)).body.people;
 assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
+const blockedDirectMessage = await fetch(`${baseUrl}/api/messages`, {
+  method: "POST",
+  headers: headers(ownerEmail, true),
+  body: JSON.stringify({ conversationId: firstDirectMessage.conversationId, body: "Engel sonrası gönderilmemeli." }),
+});
+assert.equal(blockedDirectMessage.status, 403);
 
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
 await json("/api/profile/media", { method: "DELETE", body: JSON.stringify({ kind: "avatar" }) });
@@ -462,4 +505,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Kampira v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");
+console.log("Kampira v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, private messaging with verified content attachments, moderation, community, expanded verified note library/R2, search, notifications and safety.");

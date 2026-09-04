@@ -767,11 +767,26 @@ test("follow system rejects anonymous writes", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^application\/json\b/i);
 });
 
+test("direct messages reject cross-origin writes before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "https://attacker.example", ...platformHeaders },
+      body: JSON.stringify({ recipientId: "example", body: "unsafe" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 403);
+});
+
 for (const [label, path] of [
   ["note library", "/api/notes"],
   ["note comments", "/api/note-comments?noteId=example"],
   ["community directory", "/api/communities"],
   ["notification center", "/api/notifications"],
+  ["direct messages", "/api/messages"],
   ["unified search", "/api/search?q=mat"],
   ["safety center", "/api/safety"],
 ]) {

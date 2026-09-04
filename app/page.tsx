@@ -35,12 +35,13 @@ import { SocialMatchWorkspace } from "./social-match";
 import { CampusGuideWorkspace } from "./campus-guide";
 import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
+import { DirectMessagesWorkspace, type DirectMessageRecipient } from "./direct-messages";
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
   | "search" | "plus" | "image" | "file" | "sparkles" | "more"
   | "heart" | "comment" | "share" | "check" | "calendar" | "arrow"
-  | "close" | "send" | "edit" | "trash" | "settings" | "sun" | "moon" | "monitor";
+  | "close" | "send" | "message" | "edit" | "trash" | "settings" | "sun" | "moon" | "monitor";
 
 type ThemePreference = "light" | "dark" | "system";
 
@@ -188,6 +189,7 @@ function formatCount(value: number) {
 const navItems: { label: string; icon: IconName }[] = [
   { label: "Akış", icon: "home" },
   { label: "Keşfet", icon: "compass" },
+  { label: "Mesajlar", icon: "message" },
   { label: "Kampüs Anlık", icon: "sparkles" },
   { label: "Eşleş", icon: "users" },
   { label: "Kampüs", icon: "compass" },
@@ -237,6 +239,7 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     arrow: <><path d="M5 12h14M13 6l6 6-6 6"/></>,
     close: <><path d="m6 6 12 12M18 6 6 18"/></>,
     send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
+    message: <><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.4 9.4 0 0 1-4-.9l-5 1.5 1.6-4.3A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8 10h8M8 14h5"/></>,
     edit: <><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></>,
     trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></>,
     settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.3.37.52.7.6 1 .1.35.13.72.1 1.1v1.8c.03.38 0 .75-.1 1.1-.08.3-.3.63-.6 1Z"/></>,
@@ -1009,6 +1012,7 @@ function PublicProfileView({
   followPending,
   onBack,
   onToggleFollow,
+  onMessage,
 }: {
   profile: PublicProfile | null;
   loading: boolean;
@@ -1018,6 +1022,7 @@ function PublicProfileView({
   followPending: boolean;
   onBack: () => void;
   onToggleFollow: (publicId: string) => void;
+  onMessage: (person: DirectMessageRecipient) => void;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -1056,7 +1061,7 @@ function PublicProfileView({
 
   return (
     <div className="workspace-view profile-view">
-      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
+      <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div><button className="public-profile-message" type="button" onClick={() => onMessage(profile)}><Icon name="message" size={15}/> Mesaj gönder</button>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
       <section className="profile-hero">
         <ProfileCover imageUrl={profile.bannerUrl}/>
         <div className="profile-main">
@@ -1105,8 +1110,9 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
   );
 }
 
-function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
+  if (name === "Mesajlar") return <DirectMessagesWorkspace initialRecipient={messageRecipient} onNavigate={onNavigate} onUnreadChange={onMessagesUnreadChange}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Kampüs") return <CampusGuideWorkspace universityShortName={profile.universityShortName}/>;
@@ -1942,6 +1948,8 @@ export default function Home() {
   const [peopleQuery, setPeopleQuery] = useState("");
   const [followPendingId, setFollowPendingId] = useState<string | null>(null);
   const [followError, setFollowError] = useState("");
+  const [messageRecipient, setMessageRecipient] = useState<DirectMessageRecipient | null>(null);
+  const [messageUnreadCount, setMessageUnreadCount] = useState(0);
   const [publicProfile, setPublicProfile] = useState<PublicProfile | null>(null);
   const [publicProfileLoading, setPublicProfileLoading] = useState(false);
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
@@ -2191,6 +2199,23 @@ export default function Home() {
     const timer = window.setTimeout(() => void loadPeople(), peopleQuery ? 240 : 0);
     return () => { active = false; window.clearTimeout(timer); };
   }, [profileState, peopleQuery, profileRevision]);
+
+  useEffect(() => {
+    if (profileState !== "ready") return;
+    let active = true;
+    async function loadUnreadMessages() {
+      try {
+        const response = await fetch("/api/messages?summary=1", { cache: "no-store" });
+        const data = await response.json() as { unreadCount?: number };
+        if (active && response.ok) setMessageUnreadCount(Number(data.unreadCount ?? 0));
+      } catch {
+        // Mesaj ekranı kullanılabilir kalır; sayaç bir sonraki yenilemede tekrar denenir.
+      }
+    }
+    void loadUnreadMessages();
+    const interval = window.setInterval(() => void loadUnreadMessages(), 25000);
+    return () => { active = false; window.clearInterval(interval); };
+  }, [profileState]);
 
   useEffect(() => {
     function handleHistoryChange() {
@@ -2456,6 +2481,11 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function openMessages(person: DirectMessageRecipient) {
+    setMessageRecipient(person);
+    navigateTo("Mesajlar");
+  }
+
   function openFeedComposer() {
     setComposerExpanded(true);
     navigateTo("Akış");
@@ -2514,6 +2544,7 @@ export default function Home() {
             <button className={activeNav === item.label ? "active" : ""} key={item.label} onClick={() => navigateTo(item.label)} type="button">
               <span className="nav-icon"><Icon name={item.icon}/>{item.label === "Bildirimler" && <i />}</span>
               <span>{item.label}</span>
+              {item.label === "Mesajlar" && messageUnreadCount > 0 && <b className="nav-count">{messageUnreadCount > 99 ? "99+" : messageUnreadCount}</b>}
             </button>
           ))}
         </nav>
@@ -2538,6 +2569,7 @@ export default function Home() {
           <div className="mobile-header-actions">
             <button className="mobile-campus-selector" type="button" onClick={() => setEditingProfile("academic")} aria-label={`Üniversiteyi değiştir: ${activeProfile.universityShortName}`}><MapPin size={14} weight="fill"/><span>{activeProfile.universityShortName}</span></button>
             <button className="icon-button" type="button" onClick={() => setShowSearch(!showSearch)} aria-label="Ara"><MagnifyingGlass size={22}/></button>
+            <button className="icon-button message-button" type="button" onClick={() => navigateTo("Mesajlar")} aria-label={`Mesajlar${messageUnreadCount ? `, ${messageUnreadCount} okunmamış` : ""}`}><ChatCircleDots size={22}/>{messageUnreadCount > 0 && <b>{messageUnreadCount > 9 ? "9+" : messageUnreadCount}</b>}</button>
             <button className="icon-button notification-button" type="button" onClick={() => navigateTo("Bildirimler")} aria-label="Bildirimler"><Bell size={22}/><i /></button>
           </div>
         </header>
@@ -2605,7 +2637,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)} onMessage={openMessages}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} messageRecipient={messageRecipient} onMessagesUnreadChange={setMessageUnreadCount} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
@@ -2700,7 +2732,7 @@ export default function Home() {
           <div className="mobile-menu-grid">
             {mobileMenuItems.map((item) => (
               <button className={activeNav === item.label ? "active" : ""} type="button" onClick={() => navigateTo(item.label)} key={item.label} aria-current={activeNav === item.label ? "page" : undefined}>
-                <span><Icon name={item.icon} size={20}/>{item.label === "Bildirimler" && <i/>}</span>
+                <span><Icon name={item.icon} size={20}/>{item.label === "Bildirimler" && <i/>}{item.label === "Mesajlar" && messageUnreadCount > 0 && <b>{messageUnreadCount > 99 ? "99+" : messageUnreadCount}</b>}</span>
                 <strong>{item.label === "Topluluklar" ? "Topluluklar" : item.label}</strong>
               </button>
             ))}

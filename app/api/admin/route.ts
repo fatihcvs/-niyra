@@ -19,7 +19,8 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM campus_places WHERE status = 'hidden') AS places_hidden,
           (SELECT COUNT(*) FROM housing_discussions WHERE status = 'hidden') AS housing_hidden,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'hidden') AS listings_hidden,
-          (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'hidden' AND deleted_at IS NULL) AS pulse_hidden`,
+          (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'hidden' AND deleted_at IS NULL) AS pulse_hidden,
+          (SELECT COUNT(*) FROM direct_messages WHERE deleted_at IS NOT NULL) AS direct_messages_hidden`,
       ).first<Record<string, number>>(),
       DB.prepare(
         `SELECT r.id, r.entity_type, r.entity_id, r.reason, r.details, r.evidence_json, r.status,
@@ -200,6 +201,7 @@ async function applyModerationState(db: D1Database, entityType: ModeratableEntit
     "housing-message": db.prepare(`UPDATE housing_discussions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status <> 'deleted'`).bind(hidden ? "hidden" : "active", id),
     event: db.prepare(`UPDATE campus_events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     price: db.prepare(`UPDATE campus_price_reports SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
+    "direct-message": db.prepare(`UPDATE direct_messages SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
     user: db.prepare(`UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ?`).bind(hidden ? "suspended" : "active", hidden ? new Date().toISOString() : null, hidden ? reason : null, id),
   };
   const result = await statements[entityType].run();

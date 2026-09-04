@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'note-comment', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'note-comment', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'direct-message', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -187,6 +187,16 @@ export async function POST(request: Request) {
                 observed_at, source_note, created_at
          FROM campus_price_reports WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "direct-message") evidence = await DB.prepare(
+        `SELECT m.id, m.conversation_id, m.sender_email, m.body, m.attachment_type,
+                m.attachment_id, m.attachment_snapshot, m.created_at
+         FROM direct_messages m
+         JOIN direct_conversations c ON c.id = m.conversation_id
+         WHERE m.id = ? AND c.university_id = ?
+           AND (c.member_one_email = ? OR c.member_two_email = ?)
+           AND m.sender_email <> ?
+         LIMIT 1`,
+      ).bind(entityId, profile.university_id, identity.email, identity.email, identity.email).first<Record<string, unknown>>();
       if (entityType === "user") evidence = await DB.prepare(
         `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email
