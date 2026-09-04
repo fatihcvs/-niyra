@@ -120,6 +120,22 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   kayıtları mevcut olsa da ders planı satırları henüz yayımlanmadığı için bağlantı
   eklenmedi. Eski/yenilenen aynı adlı program kimlikleri güncel programa karıştırılmadı.
 
+## Ankara Üniversitesi müfredat genişletmesi — on birinci parça
+
+- Ankara Üniversitesi'nin resmî [Bologna Bilgi Sistemi](https://bologna.ankara.edu.tr/)
+  API'sindeki 171 aktif lisans kaydı, ÖSYM kataloğundaki 139 güncel lisans
+  programıyla ad, eğitim dili ve program kimliği korunarak karşılaştırıldı.
+- Katalogdaki 137 lisans programı ders kodu, yarıyıl, kredi ve AKTS satırları
+  bulunan tekil resmî müfredat ekranına bağlandı. Her plan son üç akademik yıl
+  içinde en az sekiz ders kodu, dört yarıyıl ve sekiz dolu AKTS satırıyla canlı
+  olarak doğrulandı; bağlantı altında doğrulanan son yayın dönemi gösterilir.
+- 106 plan 2026-2027, 30 plan 2025-2026, İngilizce Diş Hekimliği planı ise
+  2024-2025 dönemiyle yayımlanıyor. Aynı adlı iki Hemşirelik kaydından kısa adında
+  2018-2023 yazan arşiv kayıt dışlandı ve güncel program kimliği kullanıldı.
+- Resmî sistemde ayrı müfredat kaydı bulunmayan Biyomedikal Mühendisliği
+  UOLP-SUNY Buffalo ile Gayrimenkul Geliştirme ve Yönetimi UOLP-Azerbaycan
+  programları benzer adlı temel programa yanlış bağlanmadı.
+
 ## Bilinen sınır
 
 YÖK, bütün üniversitelerin dönem-ders listelerini tek bir ulusal veri kümesinde

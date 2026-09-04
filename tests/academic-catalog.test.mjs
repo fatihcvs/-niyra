@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1321,
+    curriculumLinkCount: 1458,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 29);
+  assert.equal(catalog.meta.sources.length, 30);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -168,6 +168,33 @@ test("Hacettepe programmes link only to populated official Bologna course plans"
 
   const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
   assert.deepEqual(unlinked, ["Paramedik", "Yapay Zeka ve Veri Mühendisliği (İngilizce)"].sort());
+});
+
+test("Ankara University programmes link only to verified official Bologna curricula", () => {
+  const ankara = catalog.universities["tr-ankara-universitesi"];
+  const bachelorPrograms = ankara.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 139);
+  assert.equal(curriculumPrograms.length, 137);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Ankara Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => ["2026 - 2027", "2025 - 2026", "2024 - 2025"].includes(program.curriculumPeriod)));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "bologna.ankara.edu.tr"
+      && /^\/program\/[0-9a-f-]{36}\/dersler$/.test(parsed.pathname);
+  })));
+
+  assert.equal(curriculumPrograms.filter((program) => program.curriculumPeriod === "2026 - 2027").length, 106);
+  assert.equal(curriculumPrograms.filter((program) => program.curriculumPeriod === "2025 - 2026").length, 30);
+  assert.equal(curriculumPrograms.filter((program) => program.curriculumPeriod === "2024 - 2025").length, 1);
+  assert.ok(bachelorPrograms.find((program) => program.name === "Hemşirelik")?.curriculumUrls?.[0].includes("b963513c-6c25-4453-95f7-fcbe26d7cb7c"));
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, [
+    "Biyomedikal Mühendisliği (İngilizce) (UOLP-SUNY Buffalo)",
+    "Gayrimenkul Geliştirme ve Yönetimi (UOLP-Azerbaycan Mimarlık ve İnşaat Üniversitesi)",
+  ].sort());
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {
