@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1685,
+    curriculumLinkCount: 1779,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 33);
+  assert.equal(catalog.meta.sources.length, 34);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -285,6 +285,40 @@ test("Yildiz Technical current bachelor programmes all link to official Bologna 
   const computerEngineering = curriculumPrograms.find((program) => program.name === "Bilgisayar Mühendisliği");
   assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("id"), "550");
   assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("aid"), "3");
+});
+
+test("Marmara programmes link only to populated official MEOBS curricula", () => {
+  const marmara = catalog.universities["tr-marmara-universitesi"];
+  const bachelorPrograms = marmara.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 115);
+  assert.equal(curriculumPrograms.length, 94);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Marmara Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "meobs.marmara.edu.tr"
+      && parsed.pathname.startsWith("/ProgramTanitim/")
+      && /-\d+-\d+-\d+$/.test(parsed.pathname);
+  })));
+
+  const computerEngineering = curriculumPrograms.find((program) => (
+    program.name === "Bilgisayar Mühendisliği (İngilizce)"
+    && marmara.units.find((unit) => unit.id === program.unitId)?.name === "Mühendislik Fakültesi"
+  ));
+  assert.ok(computerEngineering.curriculumUrls[0].includes("bilgisayar-muhendisligi-ingilizce"));
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name);
+  assert.equal(unlinked.length, 21);
+  assert.ok(unlinked.every((name) => name.includes("M.T.O.K.")
+    || name.includes("UOLP-")
+    || [
+      "Film Tasarımı ve Yönetimi",
+      "İşletme",
+      "İşletme (Almanca)",
+      "İşletme (İngilizce)",
+      "Turizm ve Gastronomi Yönetimi Programları (İngilizce)",
+    ].includes(name)));
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

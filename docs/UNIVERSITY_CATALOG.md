@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.685 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.779 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -179,6 +179,24 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Resmî Bologna sunucusunun eksik TLS sertifika zinciri nedeniyle katalog
   üreticisi sertifika istisnasını yalnızca sabit `www.bologna.yildiz.edu.tr`
   alan adıyla sınırlar; alan dışı yönlendirmeleri reddeder.
+
+## Marmara Üniversitesi müfredat genişletmesi — on beşinci parça
+
+- Marmara Üniversitesi'nin resmî [Eğitim-Öğretim Bilgi Sistemi](https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/lisans-900002)
+  dizinindeki 217 yayımlanmış lisans kaydı, ÖSYM kataloğundaki 115 güncel lisans
+  programıyla fakülte, program adı, eğitim dili ve öğrenim süresi birlikte
+  değerlendirilerek karşılaştırıldı.
+- 94 programın resmî sayfasındaki güncel müfredat parametresi ayrıca çağrıldı;
+  her ders tablosunda AKTS alanı, en az beş ders hedefi ve beş farklı ders kodu
+  bulunduğu canlı olarak doğrulandı.
+- Aynı adlı 4 ve 5 yıllık öğretmenlik planları öğrenim süresiyle ayrıldı; Hukuk
+  ile İngilizce Mimarlıkta yinelenen eski kayıtlar yerine yeni program/müfredat
+  kimliği kullanıldı. `%30 İngilizce` planlar Türkçe temel programlara veya
+  `%100 İngilizce` programlara karıştırılmadı.
+- Ayrı müfredat yayımlanmayan 16 M.T.O.K./UOLP seçeneği, yalnız uzmanlık planı
+  bulunan üç İşletme seçeneği, temel planı bulunmayan Film Tasarımı ve Yönetimi
+  ve tablosu boş yeni Turizm-Gastronomi programı benzer programa tahminen
+  bağlanmadı; toplam 21 program doğrulanmış kaynak çıkana kadar bağlantısız kaldı.
 
 ## Bilinen sınır
 
