@@ -540,6 +540,38 @@ export const noteSaves = sqliteTable(
   (table) => [primaryKey({ columns: [table.noteId, table.userEmail] })],
 );
 
+export const noteFeedback = sqliteTable(
+  "note_feedback",
+  {
+    noteId: text("note_id").notNull().references(() => notes.id, { onDelete: "cascade" }),
+    userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    value: text("value").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.noteId, table.userEmail] }),
+    index("note_feedback_note_value_idx").on(table.noteId, table.value),
+  ],
+);
+
+export const noteComments = sqliteTable(
+  "note_comments",
+  {
+    id: text("id").primaryKey(),
+    noteId: text("note_id").notNull().references(() => notes.id, { onDelete: "cascade" }),
+    authorEmail: text("author_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    deletedAt: text("deleted_at"),
+  },
+  (table) => [
+    index("note_comments_note_created_idx").on(table.noteId, table.createdAt),
+    index("note_comments_author_idx").on(table.authorEmail),
+  ],
+);
+
 export const noteViews = sqliteTable(
   "note_views",
   {

@@ -64,6 +64,10 @@ type NoteRow = {
   saved: number;
   save_count: number;
   view_count: number;
+  feedback: string | null;
+  helpful_count: number;
+  unhelpful_count: number;
+  comment_count: number;
   own: number;
 };
 
@@ -93,6 +97,10 @@ function serializeNote(row: NoteRow) {
     saved: Boolean(row.saved),
     saveCount: Number(row.save_count),
     viewCount: Number(row.view_count),
+    feedback: row.feedback === "helpful" || row.feedback === "unhelpful" ? row.feedback : null,
+    helpfulCount: Number(row.helpful_count),
+    unhelpfulCount: Number(row.unhelpful_count),
+    commentCount: Number(row.comment_count),
     own: Boolean(row.own),
     fileUrl: `/api/notes/file?id=${encodeURIComponent(row.id)}`,
   };
@@ -130,12 +138,17 @@ export async function GET(request: Request) {
              CASE WHEN ns.user_email IS NULL THEN 0 ELSE 1 END AS saved,
              (SELECT COUNT(*) FROM note_saves x WHERE x.note_id = n.id) AS save_count,
              (SELECT COUNT(*) FROM note_views x WHERE x.note_id = n.id) AS view_count,
+             nf.value AS feedback,
+             (SELECT COUNT(*) FROM note_feedback x WHERE x.note_id = n.id AND x.value = 'helpful') AS helpful_count,
+             (SELECT COUNT(*) FROM note_feedback x WHERE x.note_id = n.id AND x.value = 'unhelpful') AS unhelpful_count,
+             (SELECT COUNT(*) FROM note_comments x WHERE x.note_id = n.id AND x.deleted_at IS NULL) AS comment_count,
              CASE WHEN n.owner_email = ? THEN 1 ELSE 0 END AS own
       FROM notes n
       JOIN users u ON u.email = n.owner_email
       JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
       JOIN courses c ON c.id = n.course_id
-      LEFT JOIN note_saves ns ON ns.note_id = n.id AND ns.user_email = ?`;
+      LEFT JOIN note_saves ns ON ns.note_id = n.id AND ns.user_email = ?
+      LEFT JOIN note_feedback nf ON nf.note_id = n.id AND nf.user_email = ?`;
 
     if (id) {
       const row = await DB
@@ -145,7 +158,7 @@ export async function GET(request: Request) {
             AND owner_profile.university_id = ?
             AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
           LIMIT 1`)
-        .bind(identity.email, identity.email, id, identity.email, profile.university_id, identity.email, identity.email)
+        .bind(identity.email, identity.email, identity.email, id, identity.email, profile.university_id, identity.email, identity.email)
         .first<NoteRow>();
       return row
         ? Response.json({ note: serializeNote(row) })
@@ -169,6 +182,7 @@ export async function GET(request: Request) {
         ORDER BY CASE WHEN n.status = 'published' THEN 0 ELSE 1 END, n.created_at DESC, n.id DESC
         LIMIT 40`)
       .bind(
+        identity.email,
         identity.email,
         identity.email,
         identity.email,

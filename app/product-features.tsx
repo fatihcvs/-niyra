@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- authenticated R2 note previews use dynamic same-origin URLs */
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChatCircle, PaperPlaneTilt, ThumbsDown, ThumbsUp, Trash } from "@phosphor-icons/react";
 import { curatedNotes, getCuratedSources, type CuratedNote } from "@/lib/curated-notes";
 
 export type FeatureCourse = { id: string; code: string; name: string };
@@ -30,8 +31,24 @@ type Note = {
   saved: boolean;
   saveCount: number;
   viewCount: number;
+  feedback: "helpful" | "unhelpful" | null;
+  helpfulCount: number;
+  unhelpfulCount: number;
+  commentCount: number;
   own: boolean;
   fileUrl: string;
+};
+
+type NoteComment = {
+  id: string;
+  authorId?: string;
+  authorName: string;
+  initials: string;
+  avatarUrl: string | null;
+  content: string;
+  time: string;
+  edited: boolean;
+  own: boolean;
 };
 
 type Community = {
@@ -74,6 +91,16 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} MB`;
 }
 
+function withFeedbackVote(note: Note, vote: Note["feedback"]) {
+  let helpfulCount = note.helpfulCount;
+  let unhelpfulCount = note.unhelpfulCount;
+  if (note.feedback === "helpful") helpfulCount = Math.max(0, helpfulCount - 1);
+  if (note.feedback === "unhelpful") unhelpfulCount = Math.max(0, unhelpfulCount - 1);
+  if (vote === "helpful") helpfulCount += 1;
+  if (vote === "unhelpful") unhelpfulCount += 1;
+  return { ...note, feedback: vote, helpfulCount, unhelpfulCount };
+}
+
 function formatVerifiedDate(value: string) {
   return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
     .format(new Date(`${value}T00:00:00Z`));
@@ -104,6 +131,14 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadError, setUploadError] = useState("");
+  const [feedbackBusyId, setFeedbackBusyId] = useState("");
+  const [noteComments, setNoteComments] = useState<NoteComment[]>([]);
+  const [commentsState, setCommentsState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [commentsReloadKey, setCommentsReloadKey] = useState(0);
+  const [commentsError, setCommentsError] = useState("");
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentBusy, setCommentBusy] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState("");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedCourse = useMemo(() => courses.find((course) => course.id === courseId), [courseId, courses]);
   const visibleCuratedNotes = useMemo(() => {
@@ -148,6 +183,116 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
   // loadNotes is intentionally scoped to the selected filters.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, courseId, scope, examYear, examKind]);
+
+  const selectedNoteId = selected?.id ?? "";
+  const selectedNoteStatus = selected?.status ?? "";
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.resolve().then(async () => {
+      if (cancelled) return;
+      if (!selectedNoteId || selectedNoteStatus !== "published") {
+        setNoteComments([]);
+        setCommentsState("idle");
+        setCommentsError("");
+        setCommentDraft("");
+        return;
+      }
+      setNoteComments([]);
+      setCommentsState("loading");
+      setCommentsError("");
+      const response = await fetch(`/api/note-comments?noteId=${encodeURIComponent(selectedNoteId)}`, { headers: { accept: "application/json" } });
+      const data = await response.json() as { comments?: NoteComment[]; error?: string };
+      if (!response.ok || !data.comments) throw new Error(data.error ?? "Yorumlar getirilemedi.");
+      if (!cancelled) { setNoteComments(data.comments); setCommentsState("ready"); }
+    }).catch((commentError) => {
+      if (!cancelled) {
+        setCommentsError(commentError instanceof Error ? commentError.message : "Yorumlar getirilemedi.");
+        setCommentsState("error");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [selectedNoteId, selectedNoteStatus, commentsReloadKey]);
+
+  function updateNote(noteId: string, updater: (note: Note) => Note) {
+    setNotes((current) => current.map((item) => item.id === noteId ? updater(item) : item));
+    setSelected((current) => current?.id === noteId ? updater(current) : current);
+  }
+
+  async function toggleFeedback(note: Note, vote: Exclude<Note["feedback"], null>) {
+    if (feedbackBusyId || note.status !== "published") return;
+    const previous = note;
+    const nextVote = note.feedback === vote ? null : vote;
+    setFeedbackBusyId(note.id);
+    updateNote(note.id, (current) => withFeedbackVote(current, nextVote));
+    setError("");
+    try {
+      const response = await fetch("/api/note-actions", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: note.id, type: vote }),
+      });
+      const data = await response.json() as { vote?: Note["feedback"]; helpfulCount?: number; unhelpfulCount?: number; error?: string };
+      if (!response.ok || !(data.vote === null || data.vote === "helpful" || data.vote === "unhelpful")) throw new Error(data.error ?? "Geri bildirim kaydedilemedi.");
+      updateNote(note.id, (current) => ({
+        ...current,
+        feedback: data.vote ?? null,
+        helpfulCount: Number(data.helpfulCount ?? current.helpfulCount),
+        unhelpfulCount: Number(data.unhelpfulCount ?? current.unhelpfulCount),
+      }));
+    } catch (feedbackError) {
+      updateNote(note.id, (current) => ({ ...current, feedback: previous.feedback, helpfulCount: previous.helpfulCount, unhelpfulCount: previous.unhelpfulCount }));
+      setError(feedbackError instanceof Error ? feedbackError.message : "Geri bildirim kaydedilemedi.");
+    } finally {
+      setFeedbackBusyId("");
+    }
+  }
+
+  async function sendNoteComment() {
+    const note = selected;
+    const content = commentDraft.trim();
+    if (!note || note.status !== "published" || content.length < 2 || commentBusy) return;
+    setCommentBusy(true);
+    setCommentsError("");
+    try {
+      const response = await fetch("/api/note-comments", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ noteId: note.id, content }),
+      });
+      const data = await response.json() as { comment?: NoteComment; count?: number; error?: string };
+      if (!response.ok || !data.comment) throw new Error(data.error ?? "Yorum paylaşılamadı.");
+      setNoteComments((current) => [...current, data.comment!]);
+      updateNote(note.id, (current) => ({ ...current, commentCount: Number(data.count ?? current.commentCount + 1) }));
+      setCommentDraft("");
+      setCommentsState("ready");
+    } catch (commentError) {
+      setCommentsError(commentError instanceof Error ? commentError.message : "Yorum paylaşılamadı.");
+    } finally {
+      setCommentBusy(false);
+    }
+  }
+
+  async function deleteNoteComment(comment: NoteComment) {
+    if (!selected || !comment.own || deletingCommentId) return;
+    const noteId = selected.id;
+    setDeletingCommentId(comment.id);
+    setCommentsError("");
+    try {
+      const response = await fetch("/api/note-comments", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: comment.id }),
+      });
+      const data = await response.json() as { deleted?: boolean; count?: number; error?: string };
+      if (!response.ok || !data.deleted) throw new Error(data.error ?? "Yorum silinemedi.");
+      setNoteComments((current) => current.filter((item) => item.id !== comment.id));
+      updateNote(noteId, (current) => ({ ...current, commentCount: Number(data.count ?? Math.max(0, current.commentCount - 1)) }));
+    } catch (commentError) {
+      setCommentsError(commentError instanceof Error ? commentError.message : "Yorum silinemedi.");
+    } finally {
+      setDeletingCommentId("");
+    }
+  }
 
   async function toggleSave(note: Note) {
     const previous = note.saved;
@@ -237,7 +382,13 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
     <div className="campus-notes-heading"><div><span>{scope === "exams" ? "SINAV ARŞİVİ" : "KAMPÜS KÜTÜPHANESİ"}</span><h2>{scope === "exams" ? "Öğrencilerin yüklediği sorular" : "Öğrenci notları"}</h2></div></div>
     {state === "loading" ? <EmptyState icon="…" title="Notlar getiriliyor" text="Kampüs kütüphanen hazırlanıyor."/> : notes.length === 0 ? <EmptyState icon="▤" title="Bu görünümde not yok" text="Aramayı veya filtreleri değiştir; istersen ilk notu sen yükle."/> : <div className="feature-note-grid">{notes.map((note) => <article className="feature-note-card" key={note.id}>
       <button className="feature-note-cover" type="button" onClick={() => setSelected(note)}><span>{note.courseCode}</span><strong>{note.contentType === "application/pdf" ? "PDF" : note.originalFileName.split('.').at(-1)?.toLocaleUpperCase("tr-TR")}</strong><i>{note.status === "published" ? "YAYINDA" : note.status === "processing" ? "İŞLENİYOR" : "İNCELENDİ"}</i></button>
-      <div><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div>{note.noteType === "cikmis-soru" && <div className="exam-note-meta"><span>{note.examYear}</span><span>{({ vize: "Vize", final: "Final", butunleme: "Bütünleme", quiz: "Quiz" } as Record<string, string>)[note.examKind ?? ""] ?? note.examKind}</span><span>{note.examTerm === "guz" ? "Güz" : note.examTerm === "bahar" ? "Bahar" : "Yaz"}</span></div>}<button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small></div>
+      <div className="feature-note-body"><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div>{note.noteType === "cikmis-soru" && <div className="exam-note-meta"><span>{note.examYear}</span><span>{({ vize: "Vize", final: "Final", butunleme: "Bütünleme", quiz: "Quiz" } as Record<string, string>)[note.examKind ?? ""] ?? note.examKind}</span><span>{note.examTerm === "guz" ? "Güz" : note.examTerm === "bahar" ? "Bahar" : "Yaz"}</span></div>}<button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small>
+        {note.status === "published" && <div className="note-feedback-row" aria-label={`${note.title} geri bildirimleri`}>
+          <button className={note.feedback === "helpful" ? "active helpful" : ""} type="button" onClick={() => void toggleFeedback(note, "helpful")} disabled={feedbackBusyId === note.id} aria-pressed={note.feedback === "helpful"}><ThumbsUp size={15} weight={note.feedback === "helpful" ? "fill" : "regular"}/><span>Yararlı</span><b>{note.helpfulCount}</b></button>
+          <button className={note.feedback === "unhelpful" ? "active unhelpful" : ""} type="button" onClick={() => void toggleFeedback(note, "unhelpful")} disabled={feedbackBusyId === note.id} aria-pressed={note.feedback === "unhelpful"}><ThumbsDown size={15} weight={note.feedback === "unhelpful" ? "fill" : "regular"}/><span>Yararlı değil</span><b>{note.unhelpfulCount}</b></button>
+          <button type="button" onClick={() => setSelected(note)} aria-label={`${note.commentCount} yorumu aç`}><ChatCircle size={15}/><span>Yorum</span><b>{note.commentCount}</b></button>
+        </div>}
+      </div>
     </article>)}</div>}
 
     {showUpload && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) setShowUpload(false); }}><section className="feature-dialog" role="dialog" aria-modal="true" aria-labelledby="upload-title"><header><div><span>GÜVENLİ YÜKLEME</span><h2 id="upload-title">{uploadType === "cikmis-soru" ? "Çıkmış soru ekle" : "Yeni ders notu"}</h2></div><button type="button" onClick={() => setShowUpload(false)} disabled={uploading} aria-label="Pencereyi kapat">×</button></header><form onSubmit={uploadNote}>
@@ -258,7 +409,30 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
       {selected.description && <p className="feature-detail-description">{selected.description}</p>}
       {selected.noteType === "cikmis-soru" && <div className="exam-note-meta detail"><span>{selected.examYear}</span><span>{selected.examTerm === "guz" ? "Güz" : selected.examTerm === "bahar" ? "Bahar" : "Yaz"}</span><span>{({ vize: "Vize", final: "Final", butunleme: "Bütünleme", quiz: "Quiz" } as Record<string, string>)[selected.examKind ?? ""] ?? selected.examKind}</span></div>}
       {selected.tags.length > 0 && <div className="feature-tags">{selected.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}
+      {selected.status === "published" && <section className="note-feedback-summary" aria-labelledby="note-feedback-title">
+        <div><span>TOPLULUK GERİ BİLDİRİMİ</span><strong id="note-feedback-title">Bu not işine yaradı mı?</strong></div>
+        <div>
+          <button className={selected.feedback === "helpful" ? "active helpful" : ""} type="button" onClick={() => void toggleFeedback(selected, "helpful")} disabled={feedbackBusyId === selected.id} aria-pressed={selected.feedback === "helpful"}><ThumbsUp size={18} weight={selected.feedback === "helpful" ? "fill" : "regular"}/><span>Yararlı</span><b>{selected.helpfulCount}</b></button>
+          <button className={selected.feedback === "unhelpful" ? "active unhelpful" : ""} type="button" onClick={() => void toggleFeedback(selected, "unhelpful")} disabled={feedbackBusyId === selected.id} aria-pressed={selected.feedback === "unhelpful"}><ThumbsDown size={18} weight={selected.feedback === "unhelpful" ? "fill" : "regular"}/><span>Yararlı değil</span><b>{selected.unhelpfulCount}</b></button>
+        </div>
+      </section>}
       {selected.status === "published" ? <div className="feature-preview">{selected.contentType.startsWith("image/") ? <img src={selected.fileUrl} alt={`${selected.title} önizlemesi`}/> : selected.contentType === "application/pdf" ? <iframe src={selected.fileUrl} title={`${selected.title} PDF önizlemesi`}/> : <EmptyState icon="DOCX" title="Belge indirilmeye hazır" text="DOCX dosyaları güvenli indirme bağlantısıyla açılır."/>}</div> : <EmptyState icon="!" title={selected.status === "processing" ? "Dosya işleniyor" : "Dosya yayınlanmadı"} text={selected.rejectionReason ?? "İnceleme tamamlandığında burada görünecek."}/>} 
+      {selected.status === "published" && <section className="note-comments-panel" aria-labelledby="note-comments-title">
+        <header><div><span>ÖĞRENCİ YORUMLARI</span><h3 id="note-comments-title">Not hakkında konuş</h3></div><strong><ChatCircle size={16} weight="fill"/>{selected.commentCount}</strong></header>
+        <form onSubmit={(event) => { event.preventDefault(); void sendNoteComment(); }}>
+          <label className="sr-only" htmlFor={`note-comment-${selected.id}`}>Yorum yaz</label>
+          <textarea id={`note-comment-${selected.id}`} value={commentDraft} onChange={(event) => { setCommentDraft(event.target.value); setCommentsError(""); }} minLength={2} maxLength={500} rows={2} placeholder="Notla ilgili sorunu, düzeltmeni veya teşekkürünü yaz…"/>
+          <footer><small>{commentDraft.length}/500</small><button className="feature-primary" type="submit" disabled={commentDraft.trim().length < 2 || commentBusy}><PaperPlaneTilt size={16}/>{commentBusy ? "Gönderiliyor…" : "Yorum yap"}</button></footer>
+        </form>
+        {commentsError && <p className="note-comments-error" role="alert">{commentsError}{commentsState === "error" && <button type="button" onClick={() => setCommentsReloadKey((value) => value + 1)}>Yeniden dene</button>}</p>}
+        {commentsState === "loading" && <p className="note-comments-state" aria-live="polite">Yorumlar getiriliyor…</p>}
+        {commentsState === "ready" && noteComments.length === 0 && <p className="note-comments-state">İlk yorumu sen bırak.</p>}
+        {noteComments.length > 0 && <div className="note-comment-list">{noteComments.map((comment) => <article key={comment.id}>
+          {comment.avatarUrl ? <img src={comment.avatarUrl} alt=""/> : <span>{comment.initials}</span>}
+          <div><header><strong>{comment.authorName}</strong><small>{comment.time === "şimdi" ? comment.time : `${comment.time} önce`}</small></header><p>{comment.content}{comment.edited && <small> · düzenlendi</small>}</p></div>
+          {comment.own && <button type="button" onClick={() => void deleteNoteComment(comment)} disabled={deletingCommentId === comment.id} aria-label="Yorumu sil"><Trash size={15}/></button>}
+        </article>)}</div>}
+      </section>}
       <footer><button type="button" onClick={() => void toggleSave(selected)}>{selected.saved ? "Kaydedildi" : "Kaydet"}</button>{selected.own && <button className="feature-danger" type="button" onClick={() => setDeleteConfirm(selected)}>Notu sil</button>}{selected.status === "published" && <><a href={selected.fileUrl} target="_blank" rel="noreferrer">Yeni sekmede aç</a><a className="feature-primary" href={`${selected.fileUrl}&download=1`}>İndir</a></>}</footer>
     </section></div>}
 

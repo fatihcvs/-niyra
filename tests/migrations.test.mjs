@@ -47,6 +47,8 @@ test("all database migrations apply cleanly in order", async () => {
         "marketplace_listings",
         "meetup_requests",
         "note_saves",
+        "note_feedback",
+        "note_comments",
         "note_views",
         "notes",
         "notification_preferences",

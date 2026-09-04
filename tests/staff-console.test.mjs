@@ -48,7 +48,7 @@ test("owner snapshot exposes verified course catalog coverage", async () => {
 
 test("management registry covers every current product moderation surface", async () => {
   const registry = await source("../lib/admin-registry.ts");
-  for (const key of ["users", "posts", "comments", "notes", "communities", "pulse", "market", "places", "housingDiscussions", "events", "prices", "matches", "library", "reports"]) {
+  for (const key of ["users", "posts", "comments", "notes", "noteComments", "communities", "pulse", "market", "places", "housingDiscussions", "events", "prices", "matches", "library", "reports"]) {
     assert.match(registry, new RegExp(`key: "${key}"`));
   }
 });

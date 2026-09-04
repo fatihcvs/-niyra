@@ -30,7 +30,8 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM student_profiles WHERE onboarding_completed = 1) AS profiles_complete,
           (SELECT COUNT(*) FROM user_sessions WHERE datetime(expires_at) > CURRENT_TIMESTAMP) AS student_sessions,
           (SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL) AS posts_active,
-          (SELECT COUNT(*) FROM post_comments WHERE deleted_at IS NULL) AS comments_active,
+          ((SELECT COUNT(*) FROM post_comments WHERE deleted_at IS NULL) +
+           (SELECT COUNT(*) FROM note_comments WHERE deleted_at IS NULL)) AS comments_active,
           (SELECT COUNT(*) FROM notes WHERE deleted_at IS NULL AND status = 'published') AS notes_published,
           (SELECT COUNT(*) FROM communities WHERE status = 'active') AS communities_active,
           (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'active' AND deleted_at IS NULL) AS pulse_active,

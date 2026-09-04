@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'note-comment', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -134,6 +134,12 @@ export async function POST(request: Request) {
         `SELECT n.id, n.owner_email, n.title, n.description, n.original_file_name, n.created_at FROM notes n
          JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
          WHERE n.id = ? AND owner_profile.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "note-comment") evidence = await DB.prepare(
+        `SELECT nc.id, nc.author_email, nc.note_id, nc.content, nc.created_at FROM note_comments nc
+         JOIN notes n ON n.id = nc.note_id
+         JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+         WHERE nc.id = ? AND nc.deleted_at IS NULL AND owner_profile.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "community") evidence = await DB.prepare(
         `SELECT c.id, c.creator_email, c.name, c.description, c.rules, c.created_at FROM communities c

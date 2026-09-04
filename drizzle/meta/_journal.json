@@ -120,6 +120,13 @@
       "when": 1788537386091,
       "tag": "0016_flaky_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1788540664340,
+      "tag": "0017_typical_killraven",
+      "breakpoints": true
     }
   ]
 }

@@ -769,6 +769,7 @@ test("follow system rejects anonymous writes", async () => {
 
 for (const [label, path] of [
   ["note library", "/api/notes"],
+  ["note comments", "/api/note-comments?noteId=example"],
   ["community directory", "/api/communities"],
   ["notification center", "/api/notifications"],
   ["unified search", "/api/search?q=mat"],

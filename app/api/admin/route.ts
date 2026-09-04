@@ -15,6 +15,7 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM content_reports WHERE status = 'resolved' AND datetime(decided_at) >= datetime('now', '-7 days')) AS reports_resolved_week,
           (SELECT COUNT(*) FROM users WHERE status = 'suspended') AS users_suspended,
           (SELECT COUNT(*) FROM notes WHERE status IN ('processing', 'rejected') AND deleted_at IS NULL) AS notes_attention,
+          (SELECT COUNT(*) FROM note_comments WHERE deleted_at IS NOT NULL) AS note_comments_hidden,
           (SELECT COUNT(*) FROM campus_places WHERE status = 'hidden') AS places_hidden,
           (SELECT COUNT(*) FROM housing_discussions WHERE status = 'hidden') AS housing_hidden,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'hidden') AS listings_hidden,
@@ -39,6 +40,11 @@ export async function GET(request: Request) {
           `SELECT 'comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, u.display_name AS owner_name,
                   CASE WHEN c.deleted_at IS NULL THEN 'active' ELSE 'hidden' END AS status, c.created_at
            FROM post_comments c JOIN users u ON u.email = c.author_email ORDER BY c.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'note-comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, u.display_name AS owner_name,
+                  CASE WHEN c.deleted_at IS NULL THEN 'active' ELSE 'hidden' END AS status, c.created_at
+           FROM note_comments c JOIN users u ON u.email = c.author_email ORDER BY c.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
           `SELECT 'note' AS entity_type, n.id, n.title, u.display_name AS owner_name, n.status, n.created_at
@@ -186,6 +192,7 @@ async function applyModerationState(db: D1Database, entityType: ModeratableEntit
     post: db.prepare(`UPDATE posts SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
     comment: db.prepare(`UPDATE post_comments SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
     note: db.prepare(`UPDATE notes SET status = ?, rejection_reason = ?, published_at = CASE WHEN ? = 'published' THEN CURRENT_TIMESTAMP ELSE published_at END, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL`).bind(hidden ? "rejected" : "published", hidden ? reason : null, hidden ? "rejected" : "published", id),
+    "note-comment": db.prepare(`UPDATE note_comments SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
     community: db.prepare(`UPDATE communities SET status = ?, archived_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "archived" : "active", hidden ? new Date().toISOString() : null, id),
     pulse: db.prepare(`UPDATE campus_pulse_posts SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL`).bind(hidden ? "hidden" : "active", id),
     listing: db.prepare(`UPDATE marketplace_listings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),

@@ -46,6 +46,7 @@ const adminMetricLabels: Record<string, [string, string]> = {
   reports_resolved_week: ["Çözülen", "Son 7 gün"],
   users_suspended: ["Askıdaki hesap", "Erişim kapalı"],
   notes_attention: ["Not incelemesi", "İşlem bekliyor"],
+  note_comments_hidden: ["Gizli not yorumu", "Moderasyon"],
   places_hidden: ["Gizli mekân", "Moderasyon"],
   housing_hidden: ["Gizli yurt deneyimi", "Moderasyon"],
   listings_hidden: ["Gizli ilan", "Moderasyon"],
@@ -322,5 +323,5 @@ async function signOut(setStaff: (staff: Staff | null) => void) { await fetch("/
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "İşlem tamamlanamadı."; }
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr-TR"); }
 function formatDate(value: unknown) { const parsed = new Date(String(value ?? "")); return Number.isNaN(parsed.getTime()) ? "-" : dateTime.format(parsed); }
-function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
+function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", "note-comment": "Not yorumu", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
 function evidenceSummary(evidence: JsonRecord) { return String(evidence.content ?? evidence.title ?? evidence.name ?? evidence.description ?? evidence.item_name ?? evidence.display_name ?? "Kanıt anlık görüntüsü kaydedildi.").slice(0, 280); }
