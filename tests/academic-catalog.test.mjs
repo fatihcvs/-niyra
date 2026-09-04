@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1125,
+    curriculumLinkCount: 1183,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 25);
+  assert.equal(catalog.meta.sources.length, 26);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -90,6 +90,27 @@ test("ITU standard bachelor programmes link to official OBS course-plan lists", 
       && parsed.searchParams.get("programKodu")?.endsWith("_LS");
   })));
   assert.ok(itu.programs.filter((program) => program.name.includes("UOLP")).every((program) => !program.curriculumUrls?.length));
+});
+
+test("METU Ankara and Northern Cyprus programmes link to official curricula", () => {
+  const expected = {
+    "tr-orta-dogu-teknik-universitesi": [42, "Orta Doğu Teknik Üniversitesi"],
+    "kktc-odtu-kuzey-kibris-kampusu": [16, "Orta Doğu Teknik Üniversitesi — Kuzey Kıbrıs Kampüsü"],
+  };
+
+  for (const [universityId, [expectedCount, authority]] of Object.entries(expected)) {
+    const university = catalog.universities[universityId];
+    const curriculumPrograms = university.programs.filter((program) => program.curriculumUrls?.length);
+    assert.equal(curriculumPrograms.length, expectedCount, universityId);
+    assert.equal(curriculumPrograms.length, university.programs.length, `${universityId}: uncovered current programme`);
+    assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === authority));
+    assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+      const parsed = new URL(url);
+      return parsed.hostname === "catalog.metu.edu.tr"
+        && parsed.pathname === "/program.php"
+        && /^\d+$/.test(parsed.searchParams.get("fac_prog") ?? "");
+    })));
+  }
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {
