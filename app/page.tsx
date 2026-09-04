@@ -151,6 +151,8 @@ const navItems: { label: string; icon: IconName }[] = [
   { label: "Güvenlik", icon: "check" },
 ];
 
+const mobileMenuItems = navItems.filter((item) => !["Akış", "Keşfet", "Kampüs Anlık"].includes(item.label));
+
 const subjects = [
   { code: "MAT", label: "Matematik", tone: "coral", icon: "∑" },
   { code: "FİZ", label: "Fizik", tone: "violet", icon: "φ" },
@@ -932,7 +934,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   return (
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
-        <div className="auth-brand"><Logo/><span>MVP v1.6</span></div>
+        <div className="auth-brand"><Logo/><span>MVP v1.7</span></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
@@ -1354,6 +1356,8 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [feedError, setFeedError] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showMobileCreate, setShowMobileCreate] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [profileState, setProfileState] = useState<ProfileState>("loading");
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [identityName, setIdentityName] = useState("Öğrenci");
@@ -1388,6 +1392,24 @@ export default function Home() {
       icon: symbols[index % symbols.length],
     }));
   }, [studentProfile]);
+
+  useEffect(() => {
+    if (!showMobileCreate && !showMobileMenu) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowMobileCreate(false);
+        setShowMobileMenu(false);
+      }
+    }
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [showMobileCreate, showMobileMenu]);
 
   useEffect(() => {
     let active = true;
@@ -1756,6 +1778,19 @@ export default function Home() {
     setPublicProfileLoading(false);
     setFollowError("");
     setActiveNav(name);
+    setShowMobileCreate(false);
+    setShowMobileMenu(false);
+    setShowSearch(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openFeedComposer() {
+    navigateTo("Akış");
+    window.requestAnimationFrame(() => {
+      const composer = document.querySelector<HTMLTextAreaElement>("#post-draft");
+      composer?.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.setTimeout(() => composer?.focus(), 260);
+    });
   }
 
   async function toggleFollow(publicId: string) {
@@ -1814,7 +1849,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Üniyra v1.6</strong><span>Akademik katalog yayında</span></div>
+          <div><strong>Üniyra v1.7</strong><span>Akademik katalog yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>
@@ -1940,13 +1975,60 @@ export default function Home() {
         </footer>
       </aside>
 
-      <nav className="mobile-nav" aria-label="Mobil menü">
-        {navItems.map((item) => (
-          <button className={activeNav === item.label ? "active" : ""} onClick={() => navigateTo(item.label)} type="button" key={item.label} aria-label={item.label}>
-            {item.label === "Notlar" ? <span className="mobile-create"><Icon name="plus" size={23}/></span> : <><Icon name={item.icon} size={21}/><small>{item.label === "Topluluklar" ? "Gruplar" : item.label}</small></>}
-          </button>
-        ))}
+      <nav className="mobile-nav" aria-label="Mobil ana menü">
+        <button className={activeNav === "Akış" ? "active" : ""} onClick={() => navigateTo("Akış")} type="button" aria-label="Akış" aria-current={activeNav === "Akış" ? "page" : undefined}>
+          <Icon name="home" size={22}/><small>Akış</small>
+        </button>
+        <button className={activeNav === "Keşfet" || activeNav === "Öğrenci" ? "active" : ""} onClick={() => navigateTo("Keşfet")} type="button" aria-label="Keşfet" aria-current={activeNav === "Keşfet" || activeNav === "Öğrenci" ? "page" : undefined}>
+          <Icon name="search" size={22}/><small>Keşfet</small>
+        </button>
+        <button className="mobile-create-action" onClick={() => { setShowMobileMenu(false); setShowMobileCreate(true); }} type="button" aria-label="Oluştur" aria-expanded={showMobileCreate} aria-controls="mobile-create-sheet">
+          <span className="mobile-create"><Icon name="plus" size={24}/></span><small>Oluştur</small>
+        </button>
+        <button className={activeNav === "Kampüs Anlık" ? "active" : ""} onClick={() => navigateTo("Kampüs Anlık")} type="button" aria-label="Kampüs Anlık" aria-current={activeNav === "Kampüs Anlık" ? "page" : undefined}>
+          <Icon name="sparkles" size={22}/><small>Anlık</small>
+        </button>
+        <button className={!['Akış', 'Keşfet', 'Öğrenci', 'Kampüs Anlık'].includes(activeNav) ? "active" : ""} onClick={() => { setShowMobileCreate(false); setShowMobileMenu(true); }} type="button" aria-label="Tüm alanlar" aria-expanded={showMobileMenu} aria-controls="mobile-menu-sheet">
+          <Icon name="more" size={23}/><small>Menü</small>
+        </button>
       </nav>
+
+      {(showMobileCreate || showMobileMenu) && (
+        <button className="mobile-sheet-backdrop" type="button" aria-label="Paneli kapat" onClick={() => { setShowMobileCreate(false); setShowMobileMenu(false); }}/>
+      )}
+
+      {showMobileCreate && (
+        <section className="mobile-sheet mobile-create-sheet" id="mobile-create-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-create-title">
+          <span className="mobile-sheet-handle" aria-hidden="true"/>
+          <header><div><span>Hızlı oluştur</span><h2 id="mobile-create-title">Ne paylaşmak istersin?</h2></div><button type="button" onClick={() => setShowMobileCreate(false)} aria-label="Oluştur panelini kapat"><Icon name="close" size={20}/></button></header>
+          <div className="mobile-create-grid">
+            <button type="button" onClick={openFeedComposer}><span className="mobile-sheet-icon violet"><Icon name="edit" size={22}/></span><strong>Gönderi paylaş</strong><small>Kampüs akışına yaz</small></button>
+            <button type="button" onClick={() => navigateTo("Kampüs Anlık")}><span className="mobile-sheet-icon coral"><Icon name="sparkles" size={22}/></span><strong>Kampüs Anlık</strong><small>Şu an olanı paylaş</small></button>
+            <button type="button" onClick={() => navigateTo("Notlar")}><span className="mobile-sheet-icon blue"><Icon name="file" size={22}/></span><strong>Not yükle</strong><small>Ders kaynağı ekle</small></button>
+            <button type="button" onClick={() => navigateTo("Pazar")}><span className="mobile-sheet-icon mint"><Icon name="bookmark" size={22}/></span><strong>İlan ver</strong><small>Öğrenci pazarına ekle</small></button>
+          </div>
+        </section>
+      )}
+
+      {showMobileMenu && (
+        <section className="mobile-sheet mobile-menu-sheet" id="mobile-menu-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+          <span className="mobile-sheet-handle" aria-hidden="true"/>
+          <header><div><span>Üniyra</span><h2 id="mobile-menu-title">Tüm alanlar</h2></div><button type="button" onClick={() => setShowMobileMenu(false)} aria-label="Menüyü kapat"><Icon name="close" size={20}/></button></header>
+          <button className="mobile-profile-link" type="button" onClick={() => navigateTo("Profil")}>
+            <Avatar initials={initials} className="avatar-violet"/>
+            <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle} · Profilini görüntüle</small></span>
+            <Icon name="arrow" size={18}/>
+          </button>
+          <div className="mobile-menu-grid">
+            {mobileMenuItems.map((item) => (
+              <button className={activeNav === item.label ? "active" : ""} type="button" onClick={() => navigateTo(item.label)} key={item.label} aria-current={activeNav === item.label ? "page" : undefined}>
+                <span><Icon name={item.icon} size={20}/>{item.label === "Bildirimler" && <i/>}</span>
+                <strong>{item.label === "Topluluklar" ? "Topluluklar" : item.label}</strong>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

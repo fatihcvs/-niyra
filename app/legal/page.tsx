@@ -64,9 +64,9 @@ const sections = [
 export default function LegalPage() {
   return <main className={styles.shell}>
     <header className={styles.header}><Link href="/" aria-label="Üniyra ana sayfa"><img src="/uniyra-mark.png" width="38" height="38" alt=""/><strong>üniyra</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>ÜNİYRA MVP v1.6</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 4 Eylül 2026 · MVP v1.6</small></section>
+    <section className={styles.hero}><span>ÜNİYRA MVP v1.7</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Üniyra’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 4 Eylül 2026 · MVP v1.7</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
     <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
-    <footer><p>Bu metin Üniyra MVP v1.6 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
+    <footer><p>Bu metin Üniyra MVP v1.7 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Üniyra&apos;ya dön</Link></footer>
   </main>;
 }

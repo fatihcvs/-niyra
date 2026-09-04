@@ -1,0 +1,41 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+const cssSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+test("mobile shell keeps five stable primary actions", () => {
+  const nav = pageSource.match(/<nav className="mobile-nav"[\s\S]*?<\/nav>/)?.[0] ?? "";
+  assert.ok(nav, "mobile navigation must exist");
+  assert.equal((nav.match(/<button/g) ?? []).length, 5);
+  for (const label of ["Akış", "Keşfet", "Oluştur", "Kampüs Anlık", "Tüm alanlar"]) {
+    assert.match(nav, new RegExp(`aria-label="${label}"`));
+  }
+  assert.doesNotMatch(nav, /navItems\.map/);
+});
+
+test("mobile menu exposes the complete secondary product surface", () => {
+  for (const label of ["Eşleş", "Kampüs", "Kütüphane", "Pazar", "Notlar", "Topluluklar", "Bildirimler", "Kaydedilenler", "Güvenlik"]) {
+    assert.match(pageSource, new RegExp(`label: "${label}"`));
+  }
+  assert.match(pageSource, /mobileMenuItems\.map/);
+  assert.match(pageSource, /onClick=\{\(\) => navigateTo\("Profil"\)\}/);
+});
+
+test("mobile create sheet routes to real product flows", () => {
+  for (const label of ["Gönderi paylaş", "Kampüs Anlık", "Not yükle", "İlan ver"]) {
+    assert.match(pageSource, new RegExp(label));
+  }
+  assert.match(pageSource, /function openFeedComposer\(\)/);
+  assert.match(pageSource, /role="dialog" aria-modal="true"/);
+});
+
+test("mobile layout protects touch, safe-area and reduced-motion behavior", () => {
+  assert.match(cssSource, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+  assert.match(cssSource, /min-height:56px/);
+  assert.match(cssSource, /env\(safe-area-inset-bottom\)/);
+  assert.match(cssSource, /prefers-reduced-motion:reduce/);
+  assert.doesNotMatch(cssSource.match(/\.mobile-nav \{[^}]+\}/)?.[0] ?? "", /overflow-x:auto/);
+});
+
