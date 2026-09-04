@@ -1,5 +1,18 @@
 [
   {
+    "id": "verified-notes-sidebar-spacing",
+    "releasedAt": "2026-09-04T23:11:14+00:00",
+    "category": "İyileştirme",
+    "area": "Akış",
+    "title": "Doğrulanmış notları daha rahat incele",
+    "summary": "Akışın yanındaki doğrulanmış notlar, daha geniş aralıklı ve kolay okunur kartlarla yenilendi.",
+    "highlights": [
+      "Not başlıkları kesilmeden birden fazla satırda görünür; ders kodu, okuma süresi ve kaynak bilgisi ayrı alanlarda yer alır.",
+      "Sıra numaraları ve küçük kapak simgeleri kaldırılarak metinlere daha fazla alan açıldı.",
+      "Kartların üzerine geldiğinde veya klavyeyle seçtiğinde açılabilir oldukları belirginleşir."
+    ]
+  },
+  {
     "id": "global-shared-feed",
     "releasedAt": "2026-09-04T22:58:22+00:00",
     "category": "Yeni özellik",

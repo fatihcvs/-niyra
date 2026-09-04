@@ -731,16 +731,12 @@ function Logo() {
   );
 }
 
-const noteTones = ["purple", "blue", "amber", "mint"];
-const noteSymbols: Record<string, string> = { "limit-sureklilik": "lim", "algoritmik-dusunme": "</>", "vektor-kinematik": "v⃗", stp: "STP", "hukuki-kaynak-okuma": "§", "bellek-sistemleri": "Ψ", "turkce-yazim": "Aa", "anatomi-yon-duzlem": "↔" };
-const libraryNotes = featuredCuratedNotes.slice(0, 8).map((note, index) => ({
+const sidebarNotes = featuredCuratedNotes.slice(0, 3).map((note) => ({
+  id: note.id,
   code: note.courseCodes[0],
   title: note.title,
-  author: "Kampira Editoryal",
-  meta: `${getCuratedSources(note)[0].publisher} · ${note.readingMinutes} dk`,
-  tone: noteTones[index % noteTones.length],
-  symbol: noteSymbols[note.id] ?? "✓",
-  saved: index < 2,
+  publisher: getCuratedSources(note)[0].publisher,
+  readingMinutes: note.readingMinutes,
 }));
 
 function DiscoverView({
@@ -2684,11 +2680,25 @@ export default function Home() {
           <span className="campus-glow campus-glow-one"/><span className="campus-glow campus-glow-two"/>
         </section>
 
-        <section className="side-card">
-          <div className="side-heading"><h2>Doğrulanmış notlar</h2><button type="button" onClick={() => navigateTo("Notlar")}>Tümü</button></div>
-          <div className="trending-list">
-            {libraryNotes.slice(0, 3).map((note, index) => <button type="button" onClick={() => navigateTo("Notlar")} key={note.title}><span className="trend-rank">{String(index + 1).padStart(2, "0")}</span><span><small>{note.code}</small><strong>{note.title}</strong><em>{note.meta}</em></span><i className={`mini-doc mini-doc-${note.tone}`}>{note.symbol.slice(0, 1)}</i></button>)}
+        <section className="side-card verified-notes" aria-labelledby="verified-notes-title">
+          <div className="side-heading">
+            <h2 id="verified-notes-title">Doğrulanmış notlar</h2>
+            <button type="button" onClick={() => navigateTo("Notlar")} aria-label="Tüm doğrulanmış notları gör">Tümü <Icon name="arrow" size={14}/></button>
           </div>
+          <ul className="verified-notes-list">
+            {sidebarNotes.map((note) => (
+              <li key={note.id}>
+                <button className="verified-note" type="button" onClick={() => navigateTo("Notlar")}>
+                  <span className="verified-note-topline">
+                    <span className="verified-note-course">{note.code}</span>
+                    <span className="verified-note-duration"><Clock size={13} aria-hidden="true"/>{note.readingMinutes} dk</span>
+                  </span>
+                  <strong className="verified-note-title">{note.title}</strong>
+                  <span className="verified-note-source"><span>{note.publisher}</span><Icon name="arrow" size={15}/></span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="side-card">
