@@ -136,6 +136,20 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   UOLP-SUNY Buffalo ile Gayrimenkul Geliştirme ve Yönetimi UOLP-Azerbaycan
   programları benzer adlı temel programa yanlış bağlanmadı.
 
+## İstanbul Üniversitesi müfredat genişletmesi — on ikinci parça
+
+- İstanbul Üniversitesi'nin resmî [Eğitim Bilgi Sistemi](https://ebs.istanbul.edu.tr/home/lisans)
+  içindeki 20 akademik birim ve 207 lisans kaydı, 2026 ÖSYM kataloğundaki 118
+  güncel lisans programıyla program adı, öğretim türü ve fakülte birlikte
+  değerlendirilerek karşılaştırıldı.
+- Katalogdaki 109 program ders, yerel kredi, AKTS ve yarıyıl tabloları dolu olan
+  tekil resmî müfredat ekranına bağlandı. 107 plan 2026, Eczacılık ile Yapay Zeka
+  ve Veri Mühendisliği planları ise son dolu yayın olan 2025 dönemiyle sunuluyor.
+- Aynı adlı İşletme ve Siyaset Bilimi programları fakülte kimliğiyle ayrıldı;
+  yinelenen eski Fizik kaydında boş plan dışlanıp güncel dolu program kullanıldı.
+- Üç M.T.O.K. ve altı UOLP programı için ayrı EBS sayfası bulunmadığı veya sayfa
+  ders tablosu yayımlamadığı için temel programa tahmini bağlantı verilmedi.
+
 ## Bilinen sınır
 
 YÖK, bütün üniversitelerin dönem-ders listelerini tek bir ulusal veri kümesinde

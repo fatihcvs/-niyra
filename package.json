@@ -1,6 +1,6 @@
 {
   "name": "uniyra",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -13,6 +13,7 @@
     "catalog:bogazici": "node scripts/academic-catalog/augment-bogazici-curricula-2026.mjs",
     "catalog:hacettepe": "node scripts/academic-catalog/augment-hacettepe-curricula-2026.mjs",
     "catalog:ankara": "node scripts/academic-catalog/augment-ankara-curricula-2026.mjs",
+    "catalog:istanbul": "node scripts/academic-catalog/augment-istanbul-curricula-2026.mjs",
     "install:ci": "bash scripts/install-ci.sh",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
     "build": "bash scripts/build-verified.sh",

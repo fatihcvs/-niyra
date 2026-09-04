@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1458,
+    curriculumLinkCount: 1567,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 30);
+  assert.equal(catalog.meta.sources.length, 31);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -194,6 +194,43 @@ test("Ankara University programmes link only to verified official Bologna curric
   assert.deepEqual(unlinked, [
     "Biyomedikal Mühendisliği (İngilizce) (UOLP-SUNY Buffalo)",
     "Gayrimenkul Geliştirme ve Yönetimi (UOLP-Azerbaycan Mimarlık ve İnşaat Üniversitesi)",
+  ].sort());
+});
+
+test("Istanbul University programmes link only to populated official EBS curricula", () => {
+  const istanbul = catalog.universities["tr-istanbul-universitesi"];
+  const bachelorPrograms = istanbul.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 118);
+  assert.equal(curriculumPrograms.length, 109);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "İstanbul Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => ["2026", "2025"].includes(program.curriculumPeriod)));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "ebs.istanbul.edu.tr"
+      && parsed.pathname === "/home/dersprogram/"
+      && /^\d+$/.test(parsed.searchParams.get("id") ?? "")
+      && ["2026", "2025"].includes(parsed.searchParams.get("yil"));
+  })));
+
+  assert.equal(curriculumPrograms.filter((program) => program.curriculumPeriod === "2026").length, 107);
+  assert.deepEqual(
+    curriculumPrograms.filter((program) => program.curriculumPeriod === "2025").map((program) => program.name).sort(),
+    ["Eczacılık", "Yapay Zeka ve Veri Mühendisliği (İngilizce)"].sort(),
+  );
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, [
+    "İlahiyat (Arapça) (M.T.O.K.)",
+    "İlahiyat (M.T.O.K.)",
+    "İlahiyat (İngilizce) (M.T.O.K.)",
+    "İngiliz Dili ve Edebiyatı (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
+    "İktisat (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
+    "Bilgisayar Mühendisliği (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
+    "Siyaset Bilimi ve Uluslararası İlişkiler (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
+    "İşletme (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
+    "Yapay Zeka ve Veri Mühendisliği (İngilizce) (UOLP-Uluslararası Saraybosna Üniversitesi)",
   ].sort());
 });
 
