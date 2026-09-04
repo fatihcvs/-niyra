@@ -317,7 +317,6 @@ export function DirectMessagesWorkspace({
           <header className={styles.threadHeader}>
             <button className={styles.mobileBack} type="button" onClick={() => { setSelectedId(null); setDraftRecipient(null); }} aria-label="Konuşmalara dön"><ArrowLeft size={21}/></button>
             <PersonAvatar person={activePerson} size={40}/><div><strong>{activePerson.displayName}</strong><small>@{activePerson.handle} · {activePerson.departmentName}</small></div>
-            <span>Yalnızca ikiniz görebilirsiniz</span>
           </header>
           <div className={styles.messages} aria-live="polite">
             <div className={styles.conversationIntro}><PersonAvatar person={activePerson} size={58}/><strong>{activePerson.displayName}</strong><p>{activePerson.universityShortName} · {activePerson.departmentName}</p><small>Bu konuşmadaki mesajlar özeldir. Şikâyet edilen tek bir mesaj gerektiğinde moderasyona gönderilir.</small></div>

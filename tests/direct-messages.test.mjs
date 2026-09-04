@@ -37,7 +37,6 @@ test("message workspace provides responsive threads and content sharing", async 
   assert.match(workspace, /Eklediklerim/);
   for (const label of ["Not", "Kütüphane", "Etkinlik", "Mekân", "İlan"]) assert.match(workspace, new RegExp(label));
   assert.match(workspace, /entityType: "direct-message"/);
-  assert.match(workspace, /Yalnızca ikiniz görebilirsiniz/);
   assert.match(styles, /@media\(max-width:780px\)/);
   assert.match(styles, /safe-area-inset-bottom/);
   assert.match(styles, /data-theme="dark"/);

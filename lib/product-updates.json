@@ -1,5 +1,17 @@
 [
   {
+    "id": "message-header-privacy-badge-removed",
+    "releasedAt": "2026-09-04T23:17:53+00:00",
+    "category": "İyileştirme",
+    "area": "Mesajlar",
+    "title": "Konuşma başlığı daha sade görünüyor",
+    "summary": "Mesaj ekranının üst kısmındaki Yalnızca ikiniz görebilirsiniz etiketi kaldırıldı.",
+    "highlights": [
+      "Konuşma başlığında kişinin adı ve profil bilgileri öne çıkıyor.",
+      "Kişi bilgilerine ayrılan alan genişletildi."
+    ]
+  },
+  {
     "id": "feed-welcome-note-count-removed",
     "releasedAt": "2026-09-04T23:15:19+00:00",
     "category": "İyileştirme",
