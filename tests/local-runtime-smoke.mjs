@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.6.7");
+assert.equal(healthBody.version, "1.6.8");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {

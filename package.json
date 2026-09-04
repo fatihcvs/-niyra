@@ -1,6 +1,6 @@
 {
   "name": "uniyra",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -10,6 +10,7 @@
     "catalog:itu": "node scripts/academic-catalog/augment-itu-curricula-2026.mjs",
     "catalog:metu": "node scripts/academic-catalog/augment-metu-curricula-2026.mjs",
     "catalog:bilkent": "node scripts/academic-catalog/augment-bilkent-curricula-2026.mjs",
+    "catalog:bogazici": "node scripts/academic-catalog/augment-bogazici-curricula-2026.mjs",
     "install:ci": "bash scripts/install-ci.sh",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
     "build": "bash scripts/build-verified.sh",

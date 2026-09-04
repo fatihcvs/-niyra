@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1210,
+    curriculumLinkCount: 1244,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 27);
+  assert.equal(catalog.meta.sources.length, 28);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -124,6 +124,30 @@ test("Bilkent current programmes all link to official online curricula", () => {
     const parsed = new URL(url);
     return parsed.hostname === "catalog.bilkent.edu.tr" && /^\/dep\/d\d+\.html$/.test(parsed.pathname);
   })));
+});
+
+test("Bogazici current programmes all link to official course and ECTS tables", () => {
+  const bogazici = catalog.universities["tr-bogazici-universitesi"];
+  const curriculumPrograms = bogazici.programs.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(curriculumPrograms.length, 34);
+  assert.equal(curriculumPrograms.length, bogazici.programs.length);
+  assert.ok(curriculumPrograms.every((program) => program.degreeLevel === "bachelor"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Boğaziçi Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "bogazici.edu.tr" && /^\/tr\/pages\/lisans-programlari\/\d+$/.test(parsed.pathname);
+  })));
+
+  const scienceEducation = bogazici.programs.filter((program) => [
+    "Fen Bilgisi Öğretmenliği (İngilizce)",
+    "Fizik Öğretmenliği (İngilizce)",
+    "Kimya Öğretmenliği (İngilizce)",
+    "Matematik Öğretmenliği (İngilizce)",
+    "İlköğretim Matematik Öğretmenliği (İngilizce)",
+  ].includes(program.name));
+  assert.equal(scienceEducation.length, 5);
+  assert.ok(scienceEducation.every((program) => program.curriculumUrls[0].endsWith("/36")));
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.210 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.244 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -96,6 +96,17 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   bağlandı; her hedef sayfada müfredat ve AKTS tablosu bulunduğu doğrulandı.
 - Bilkent kataloğu sayfaları otomatik ürettiği için bağlantılar bölüm kimlikleriyle
   tutuldu; burs/ücret seçenekleri ayrı programmış gibi çoğaltılmadı.
+
+## Boğaziçi müfredat genişletmesi — dokuzuncu parça
+
+- Boğaziçi'nin resmî [Lisans Programları](https://bogazici.edu.tr/tr/pages/lisans-programlari/301)
+  dizinindeki 30 akademik bölüm/program sayfası canlı olarak tarandı.
+- ÖSYM kataloğundaki 34 güncel lisans programının tamamı ders kodu, kredi ve AKTS
+  tablolarını içeren resmî sayfalara bağlandı; bütün hedeflerde en az 10 farklı ders
+  kodu ve AKTS alanı bulunduğu otomatik olarak doğrulandı.
+- Matematik ve Fen Bilimleri Eğitimi Bölümündeki beş öğretmenlik programı, kurumun
+  bunları aynı resmî bölüm sayfasında ayrı ders planları halinde yayımlaması nedeniyle
+  aynı doğrulanmış kaynağı paylaşır; program adları katalogda ayrı kalır.
 
 ## Bilinen sınır
 
