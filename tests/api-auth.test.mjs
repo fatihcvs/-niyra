@@ -155,6 +155,51 @@ test("login returns a generic error for malformed credentials", async () => {
   assert.equal((await response.json()).error, "E-posta veya parola hatalı.");
 });
 
+test("staff login returns a generic error for malformed credentials", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/staff/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ username: "", password: "" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 401);
+  assert.equal((await response.json()).error, "Kullanıcı adı veya parola hatalı.");
+});
+
+test("staff login rejects cross-origin browser requests", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/staff/session", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "https://attacker.example" },
+      body: JSON.stringify({ username: "admin", password: "admin123" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 403);
+});
+
+for (const route of ["owner", "admin"]) {
+  test(`${route} mutations reject cross-origin browser requests`, async () => {
+    const worker = await builtWorker();
+    const response = await worker.fetch(
+      new Request(`http://localhost/api/${route}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: "https://attacker.example" },
+        body: JSON.stringify({ action: "noop" }),
+      }),
+      runtimeEnv,
+      runtimeContext,
+    );
+    assert.equal(response.status, 403);
+  });
+}
+
 test("post API rejects anonymous write attempts", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

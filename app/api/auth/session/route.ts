@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       `SELECT u.email, u.display_name, c.password_hash, c.password_salt, c.password_iterations
        FROM user_credentials c
        JOIN users u ON u.email = c.user_email
-       WHERE c.user_email = ? LIMIT 1`,
+       WHERE c.user_email = ? AND u.status = 'active' LIMIT 1`,
     ).bind(email).first<{
       email: string;
       display_name: string;

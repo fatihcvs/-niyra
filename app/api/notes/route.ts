@@ -11,6 +11,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
 const allowedFiles: Record<string, { extensions: string[]; magic: (bytes: Uint8Array) => boolean }> = {
@@ -215,6 +216,9 @@ export async function POST(request: Request) {
 
   try {
     const { DB, FILES } = await getRuntime();
+    if (!(await getBooleanPlatformSetting(DB, "noteUploadsOpen"))) {
+      return Response.json({ error: "Not yükleme owner tarafından geçici olarak durduruldu." }, { status: 503 });
+    }
     if (!FILES) throw new Error("R2 binding FILES is unavailable");
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Not yüklemeden önce akademik profilini tamamlamalısın." }, { status: 409 });

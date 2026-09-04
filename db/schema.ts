@@ -8,6 +8,9 @@ export const users = sqliteTable(
     publicId: text("public_id"),
     displayName: text("display_name").notNull(),
     handle: text("handle").notNull(),
+    status: text("status").notNull().default("active"),
+    suspendedAt: text("suspended_at"),
+    suspendedReason: text("suspended_reason"),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
@@ -697,4 +700,66 @@ export const productFeedback = sqliteTable(
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [index("product_feedback_status_created_idx").on(table.status, table.createdAt)],
+);
+
+export const staffAccounts = sqliteTable(
+  "staff_accounts",
+  {
+    id: text("id").primaryKey(),
+    username: text("username").notNull(),
+    displayName: text("display_name").notNull(),
+    role: text("role").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    passwordSalt: text("password_salt").notNull(),
+    passwordIterations: integer("password_iterations").notNull(),
+    status: text("status").notNull().default("active"),
+    mustChangePassword: integer("must_change_password", { mode: "boolean" }).notNull().default(true),
+    createdByStaffId: text("created_by_staff_id"),
+    lastLoginAt: text("last_login_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    uniqueIndex("staff_accounts_username_unique").on(table.username),
+    index("staff_accounts_role_status_idx").on(table.role, table.status),
+  ],
+);
+
+export const staffSessions = sqliteTable(
+  "staff_sessions",
+  {
+    tokenHash: text("token_hash").primaryKey(),
+    staffId: text("staff_id").notNull().references(() => staffAccounts.id, { onDelete: "cascade" }),
+    expiresAt: text("expires_at").notNull(),
+    lastSeenAt: text("last_seen_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("staff_sessions_staff_expiry_idx").on(table.staffId, table.expiresAt),
+    index("staff_sessions_expiry_idx").on(table.expiresAt),
+  ],
+);
+
+export const platformSettings = sqliteTable("platform_settings", {
+  key: text("key").primaryKey(),
+  valueJson: text("value_json").notNull(),
+  updatedByStaffId: text("updated_by_staff_id").references(() => staffAccounts.id, { onDelete: "set null" }),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const staffAuditLogs = sqliteTable(
+  "staff_audit_logs",
+  {
+    id: text("id").primaryKey(),
+    staffId: text("staff_id").references(() => staffAccounts.id, { onDelete: "set null" }),
+    action: text("action").notNull(),
+    entityType: text("entity_type"),
+    entityId: text("entity_id"),
+    detail: text("detail").notNull().default("{}"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("staff_audit_staff_created_idx").on(table.staffId, table.createdAt),
+    index("staff_audit_action_created_idx").on(table.action, table.createdAt),
+  ],
 );

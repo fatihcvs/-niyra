@@ -11,6 +11,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
 type CommunityRow = {
   id: string;
@@ -152,6 +153,9 @@ export async function POST(request: Request) {
 
   try {
     const { DB } = await getRuntime();
+    if (!(await getBooleanPlatformSetting(DB, "communityCreationOpen"))) {
+      return Response.json({ error: "Yeni topluluk oluşturma owner tarafından geçici olarak durduruldu." }, { status: 503 });
+    }
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Topluluk kurmadan önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, "community-create", 3, 86400);

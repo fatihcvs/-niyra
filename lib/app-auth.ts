@@ -101,7 +101,7 @@ export async function getSessionIdentity(db: D1Database, headers: HeaderReader):
       `SELECT u.email, u.display_name
        FROM user_sessions s
        JOIN users u ON u.email = s.user_email
-       WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP
+       WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active'
        LIMIT 1`,
     )
     .bind(await sha256(token))

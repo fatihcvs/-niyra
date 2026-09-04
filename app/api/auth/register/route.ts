@@ -10,6 +10,7 @@ import {
   sameOriginRequest,
 } from "../../../../lib/app-auth";
 import { audit, enforceRateLimit, getRuntime, rateLimitResponse, unavailableResponse } from "../../../../lib/server-api";
+import { getBooleanPlatformSetting } from "../../../../lib/platform-settings";
 
 type RegisterPayload = {
   displayName?: unknown;
@@ -36,6 +37,9 @@ export async function POST(request: Request) {
 
   try {
     const { DB } = await getRuntime();
+    if (!(await getBooleanPlatformSetting(DB, "registrationOpen"))) {
+      return Response.json({ error: "Yeni kayıtlar owner tarafından geçici olarak durduruldu." }, { status: 503 });
+    }
     const limit = await enforceRateLimit(DB, await authRateLimitKey(request, email), "auth-register", 5, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 

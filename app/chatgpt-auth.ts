@@ -22,6 +22,15 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
   const email = requestHeaders.get(USER_EMAIL_HEADER);
   if (email && requestHeaders.get(USER_ID_HEADER) && isTrustedPlatformHost(requestHeaders)) {
+    try {
+      const { env } = await import("cloudflare:workers");
+      if (env.DB) {
+        const account = await env.DB.prepare(`SELECT status FROM users WHERE email = ? LIMIT 1`).bind(email).first<{ status: string }>();
+        if (account?.status === "suspended") return null;
+      }
+    } catch {
+      // Platform identity remains available if the optional local account lookup is unavailable.
+    }
     const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
     const fullName =
       encodedFullName &&
