@@ -27,7 +27,9 @@ type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
   | "search" | "plus" | "image" | "file" | "sparkles" | "more"
   | "heart" | "comment" | "share" | "check" | "calendar" | "arrow"
-  | "close" | "send" | "edit" | "trash";
+  | "close" | "send" | "edit" | "trash" | "settings" | "sun" | "moon" | "monitor";
+
+type ThemePreference = "light" | "dark" | "system";
 
 type Post = {
   id: number | string;
@@ -159,6 +161,7 @@ const navItems: { label: string; icon: IconName }[] = [
   { label: "Bildirimler", icon: "bell" },
   { label: "Kaydedilenler", icon: "bookmark" },
   { label: "Güvenlik", icon: "check" },
+  { label: "Ayarlar", icon: "settings" },
 ];
 
 const mobileMenuItems = navItems.filter((item) => !["Akış", "Keşfet", "Kampüs Anlık"].includes(item.label));
@@ -208,6 +211,10 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
     edit: <><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></>,
     trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.3.37.52.7.6 1 .1.35.13.72.1 1.1v1.8c.03.38 0 .75-.1 1.1-.08.3-.3.63-.6 1Z"/></>,
+    sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></>,
+    moon: <path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/>,
+    monitor: <><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></>,
   };
 
   return <svg {...common}>{paths[name]}</svg>;
@@ -1039,7 +1046,38 @@ function PublicProfileView({
   );
 }
 
-function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function ThemeSettings({ preference, onChange }: { preference: ThemePreference; onChange: (preference: ThemePreference) => void }) {
+  const options: Array<{ value: ThemePreference; icon: IconName; title: string; detail: string }> = [
+    { value: "light", icon: "sun", title: "Açık", detail: "Aydınlık ve temiz görünüm" },
+    { value: "dark", icon: "moon", title: "Koyu", detail: "Gece kullanımında daha rahat" },
+    { value: "system", icon: "monitor", title: "Sistem", detail: "Cihazının görünümünü otomatik izle" },
+  ];
+
+  return (
+    <div className="workspace-view settings-view">
+      <header className="settings-header">
+        <span>GÖRÜNÜM AYARLARI</span>
+        <h1>Üniyra’yı sana göre göster.</h1>
+        <p>Tema seçimin bu cihazda saklanır. Sistem seçeneği, telefonunun veya bilgisayarının açık ya da koyu görünümünü otomatik takip eder.</p>
+      </header>
+      <section className="settings-card" aria-labelledby="theme-setting-title">
+        <div className="settings-card-heading"><span className="settings-card-icon"><Icon name="settings" size={20}/></span><div><h2 id="theme-setting-title">Tema</h2><p>Uygulamanın renk görünümünü seç.</p></div></div>
+        <div className="theme-choice-grid" role="radiogroup" aria-label="Tema seçimi">
+          {options.map((option) => (
+            <button className={preference === option.value ? "selected" : ""} key={option.value} type="button" role="radio" aria-checked={preference === option.value} onClick={() => onChange(option.value)}>
+              <span className={`theme-preview theme-preview-${option.value}`} aria-hidden="true"><i/><b/><em/></span>
+              <span className="theme-choice-copy"><i><Icon name={option.icon} size={18}/></i><span><strong>{option.title}</strong><small>{option.detail}</small></span></span>
+              <span className="theme-choice-check">{preference === option.value && <Icon name="check" size={15}/>}</span>
+            </button>
+          ))}
+        </div>
+        <p className="settings-saved-note" role="status"><Icon name="check" size={15}/> Seçimin otomatik kaydedilir.</p>
+      </section>
+    </div>
+  );
+}
+
+function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
@@ -1050,6 +1088,7 @@ function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery
   if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses}/>;
   if (name === "Bildirimler") return <NotificationsWorkspace/>;
   if (name === "Güvenlik") return <SafetyWorkspace/>;
+  if (name === "Ayarlar") return <ThemeSettings preference={themePreference} onChange={onThemeChange}/>;
   if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} universityShortName={profile.universityShortName} onSavedChange={onSavedChange}/>;
   if (name === "Profil") return <ProfileView profile={profile} posts={posts} shareable={shareableProfile} onEdit={onEditProfile} onSignOut={onSignOut} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted}/>;
   return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
@@ -1523,6 +1562,11 @@ function AcademicOnboarding({
 
 export default function Home() {
   const [activeNav, setActiveNav] = useState("Akış");
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => {
+    if (typeof document === "undefined") return "system";
+    const saved = document.documentElement.dataset.themePreference;
+    return saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
+  });
   const [feedTab, setFeedTab] = useState("Senin için");
   const [draft, setDraft] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
@@ -1567,6 +1611,21 @@ export default function Home() {
       icon: symbols[index % symbols.length],
     }));
   }, [studentProfile]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyTheme = () => {
+      const resolved = themePreference === "system" ? (media.matches ? "dark" : "light") : themePreference;
+      document.documentElement.dataset.theme = resolved;
+      document.documentElement.dataset.themePreference = themePreference;
+      document.documentElement.style.colorScheme = resolved;
+      window.localStorage.setItem("uniyra-theme", themePreference);
+    };
+    applyTheme();
+    if (themePreference !== "system") return;
+    media.addEventListener("change", applyTheme);
+    return () => media.removeEventListener("change", applyTheme);
+  }, [themePreference]);
 
   useEffect(() => {
     if (!showMobileCreate && !showMobileMenu) return;
@@ -2126,7 +2185,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 

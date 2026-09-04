@@ -6,6 +6,7 @@ import "./migrations.test.mjs";
 import "./university-catalog.test.mjs";
 import "./campus-place-catalog.test.mjs";
 import "./staff-console.test.mjs";
+import "./theme.test.mjs";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
