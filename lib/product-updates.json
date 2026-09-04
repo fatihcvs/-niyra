@@ -1,5 +1,92 @@
 [
   {
+    "id": "staff-console-navigation",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Yönetim",
+    "title": "Yönetim panellerinde daha rahat gezin",
+    "summary": "Owner ve Admin panelleri; telefonda açılan menü, daha okunaklı ekranlar ve belirgin işlem düğmeleriyle yenilendi.",
+    "highlights": [
+      "Bulunduğun bölüm sayfa adresinde korunur; yenileme, geri ve ileri tuşlarıyla aynı bölüme dönebilirsin.",
+      "Veriler yüklenemezse tekrar deneyebilir, son yenileme zamanını görebilirsin.",
+      "Yönetim logosunun bazı ortamlarda görünmemesi düzeltildi."
+    ]
+  },
+  {
+    "id": "owner-overview-activity",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Owner paneli",
+    "title": "Platform hareketini daha net takip et",
+    "summary": "Öncelikli göstergeler, yedi günlük hareket grafiği ve hızlı geçişler Owner genel bakışında bir araya geldi.",
+    "highlights": [
+      "Boş günler grafikte sıfır görünür; günlük hesap, içerik ve şikâyet sayılarını ayrı inceleyebilirsin.",
+      "Gizlenmiş topluluk ve etkinlik sayıları göstergelere eklendi.",
+      "Ürün alanlarını arayabilir, tüm göstergeleri istediğinde genişletebilirsin."
+    ]
+  },
+  {
+    "id": "owner-team-dialogs",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Owner paneli",
+    "title": "Yönetim ekibini kişiye özel işlemlerle yönet",
+    "summary": "Admin hesaplarını arayıp durumlarına göre filtreleyebilir; oluşturma, parola sıfırlama ve erişim değişikliklerini ayrı pencerelerde tamamlayabilirsin.",
+    "highlights": [
+      "İşlem uygulanacak kişinin adı ve kullanıcı adı işlemden önce gösterilir.",
+      "İlk parola değişimini bekleyen hesapları ve son giriş zamanlarını görebilirsin."
+    ]
+  },
+  {
+    "id": "owner-settings-drafts",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Owner paneli",
+    "title": "Ayar değişikliklerini kaydetmeden gözden geçir",
+    "summary": "Değişen ayarlar belirginleşir; bakım mesajının önizlemesini görüp tercihlerini birlikte kaydedebilirsin.",
+    "highlights": [
+      "Kaydedilmemiş değişikliklerle bölümden çıkarken uyarı gösterilir.",
+      "Değişiklikleri topluca geri alabilir, hata oluşursa seçimlerini koruyarak yeniden deneyebilirsin."
+    ]
+  },
+  {
+    "id": "admin-report-review-desk",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Admin paneli",
+    "title": "Şikâyetleri ayrıntılı inceleme alanında sonuçlandır",
+    "summary": "Şikâyet listesi, tam kanıt metni, itiraz ve karar formu birlikte kullanılacak şekilde düzenlendi.",
+    "highlights": [
+      "Kişi, durum ve içerik türüne göre filtreleyebilir; kayıtlar arasında sayfalama yapabilirsin.",
+      "Her şikâyetin karar taslağı o kayda özel tutulur; bağlantı hatasında yazdıkların korunur.",
+      "Özetteki bir şikâyete tıklayarak ilgili incelemeye geçebilirsin."
+    ]
+  },
+  {
+    "id": "admin-content-account-actions",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Admin paneli",
+    "title": "İçerik ve hesap işlemlerini gerekçesiyle tamamla",
+    "summary": "İçerik denetimi ve öğrenci hesapları; arama, filtreleme ve seçilen kayda özel işlem pencereleriyle geliştirildi.",
+    "highlights": [
+      "İçerik metnini ve açıklamasını işlem öncesinde okuyabilirsin; mekân, etkinlik ve fiyat kayıtları da denetim listesine eklendi.",
+      "Hesapları kampüs ve duruma göre filtreleyebilir, askıya alma veya yeniden açma gerekçesini seçili hesap üzerinde yazabilirsin."
+    ]
+  },
+  {
+    "id": "staff-history-update-center",
+    "releasedAt": "2026-09-05T01:25:00+03:00",
+    "category": "İyileştirme",
+    "area": "Yönetim",
+    "title": "İşlem geçmişini ve ürün yeniliklerini kolayca bul",
+    "summary": "İşlem kayıtları anlaşılır adlarla gösterilir; güncelleme notlarına hem Owner hem Admin panelinden ulaşılabilir.",
+    "highlights": [
+      "İşlemleri yetkili, gerekçe, alan ve tarihe göre filtreleyip yüklenen sonuçları tablo olarak indirebilirsin.",
+      "Ürün güncellemelerini alan ve değişiklik türüne göre arayabilir, sayfalar halinde inceleyebilirsin."
+    ]
+  },
+  {
     "id": "staff-login-hint-removed",
     "releasedAt": "2026-09-05T00:47:04+03:00",
     "category": "İyileştirme",

@@ -35,49 +35,65 @@ export async function GET(request: Request) {
       }>(),
       Promise.all([
         DB.prepare(
-          `SELECT 'post' AS entity_type, p.id, SUBSTR(p.content, 1, 140) AS title, u.display_name AS owner_name,
+          `SELECT 'post' AS entity_type, p.id, SUBSTR(p.content, 1, 140) AS title, p.content AS review_text, u.display_name AS owner_name,
                   CASE WHEN p.deleted_at IS NULL THEN 'active' ELSE 'hidden' END AS status, p.created_at
            FROM posts p JOIN users u ON u.email = p.author_email ORDER BY p.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, u.display_name AS owner_name,
+          `SELECT 'comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, c.content AS review_text, u.display_name AS owner_name,
                   CASE WHEN c.deleted_at IS NULL THEN 'active' ELSE 'hidden' END AS status, c.created_at
            FROM post_comments c JOIN users u ON u.email = c.author_email ORDER BY c.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'note-comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, u.display_name AS owner_name,
+          `SELECT 'note-comment' AS entity_type, c.id, SUBSTR(c.content, 1, 140) AS title, c.content AS review_text, u.display_name AS owner_name,
                   CASE WHEN c.deleted_at IS NULL THEN 'active' ELSE 'hidden' END AS status, c.created_at
            FROM note_comments c JOIN users u ON u.email = c.author_email ORDER BY c.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'note' AS entity_type, n.id, n.title, u.display_name AS owner_name, n.status, n.created_at
+          `SELECT 'note' AS entity_type, n.id, n.title, n.description AS review_text, u.display_name AS owner_name, n.status, n.created_at
            FROM notes n JOIN users u ON u.email = n.owner_email WHERE n.deleted_at IS NULL ORDER BY n.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'community' AS entity_type, c.id, c.name AS title, u.display_name AS owner_name,
+          `SELECT 'community' AS entity_type, c.id, c.name AS title, c.description AS review_text, u.display_name AS owner_name,
                   CASE WHEN c.moderation_status = 'hidden' THEN 'hidden' ELSE c.status END AS status, c.created_at
            FROM communities c JOIN users u ON u.email = c.creator_email ORDER BY c.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'community-event' AS entity_type, e.id, e.title, u.display_name AS owner_name, e.status, e.created_at
+          `SELECT 'community-event' AS entity_type, e.id, e.title, e.description AS review_text, u.display_name AS owner_name, e.status, e.created_at
            FROM community_events e JOIN users u ON u.email = e.creator_email ORDER BY e.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'pulse' AS entity_type, p.id, SUBSTR(p.content, 1, 140) AS title,
+          `SELECT 'pulse' AS entity_type, p.id, SUBSTR(p.content, 1, 140) AS title, p.content AS review_text,
                   CASE WHEN p.is_anonymous = 1 THEN 'Anonim öğrenci' ELSE u.display_name END AS owner_name, p.status, p.created_at
            FROM campus_pulse_posts p JOIN users u ON u.email = p.author_email
            WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'listing' AS entity_type, l.id, l.title, u.display_name AS owner_name, l.status, l.created_at
+          `SELECT 'listing' AS entity_type, l.id, l.title, l.description AS review_text, u.display_name AS owner_name, l.status, l.created_at
            FROM marketplace_listings l JOIN users u ON u.email = l.owner_email ORDER BY l.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'housing-message' AS entity_type, h.id, SUBSTR(h.content, 1, 140) AS title,
+          `SELECT 'housing-message' AS entity_type, h.id, SUBSTR(h.content, 1, 140) AS title, h.content AS review_text,
                   CASE WHEN h.is_anonymous = 1 THEN 'Anonim öğrenci' ELSE u.display_name END AS owner_name,
                   h.status, h.created_at
            FROM housing_discussions h JOIN users u ON u.email = h.author_email
            WHERE h.status <> 'deleted' ORDER BY h.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'place' AS entity_type, p.id, p.name AS title, p.description AS review_text,
+                  u.display_name AS owner_name, p.status, p.created_at
+           FROM campus_places p JOIN users u ON u.email = p.creator_email ORDER BY p.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'event' AS entity_type, e.id, e.title, e.description AS review_text,
+                  u.display_name AS owner_name, e.status, e.created_at
+           FROM campus_events e JOIN users u ON u.email = e.creator_email ORDER BY e.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'price' AS entity_type, p.id, p.item_name AS title,
+                  p.place_name || ' · ' || printf('%.2f TL', p.price_cents / 100.0) || ' · ' || p.source_note AS review_text,
+                  u.display_name AS owner_name, p.status, p.created_at
+           FROM campus_price_reports p JOIN users u ON u.email = p.reporter_email ORDER BY p.created_at DESC LIMIT 100`,
         ).all(),
       ]),
       DB.prepare(

@@ -35,6 +35,8 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM notes WHERE deleted_at IS NULL AND status = 'published') AS notes_published,
           (SELECT COUNT(*) FROM communities WHERE status = 'active' AND moderation_status = 'active') AS communities_active,
           (SELECT COUNT(*) FROM community_members WHERE status = 'active') AS community_memberships,
+          (SELECT COUNT(*) FROM communities WHERE moderation_status = 'hidden') AS communities_hidden,
+          (SELECT COUNT(*) FROM community_events WHERE status = 'hidden') AS community_events_hidden,
           (SELECT COUNT(*) FROM community_events WHERE status = 'active' AND datetime(starts_at) >= datetime('now')) AS community_events_upcoming,
           (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'active' AND deleted_at IS NULL) AS pulse_active,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'active') AS listings_active,
@@ -64,13 +66,13 @@ export async function GET(request: Request) {
       DB.prepare(
         `SELECT day, SUM(accounts) AS accounts, SUM(content) AS content, SUM(reports) AS reports FROM (
            SELECT date(created_at) AS day, COUNT(*) AS accounts, 0 AS content, 0 AS reports FROM users
-             WHERE datetime(created_at) >= datetime('now', '-6 days') GROUP BY day
+             WHERE datetime(created_at) >= datetime('now', 'start of day', '-6 days') GROUP BY day
            UNION ALL SELECT date(created_at), 0, COUNT(*), 0 FROM posts
-             WHERE datetime(created_at) >= datetime('now', '-6 days') GROUP BY date(created_at)
+             WHERE datetime(created_at) >= datetime('now', 'start of day', '-6 days') GROUP BY date(created_at)
            UNION ALL SELECT date(created_at), 0, COUNT(*), 0 FROM notes
-             WHERE datetime(created_at) >= datetime('now', '-6 days') GROUP BY date(created_at)
+             WHERE datetime(created_at) >= datetime('now', 'start of day', '-6 days') GROUP BY date(created_at)
            UNION ALL SELECT date(created_at), 0, 0, COUNT(*) FROM content_reports
-             WHERE datetime(created_at) >= datetime('now', '-6 days') GROUP BY date(created_at)
+             WHERE datetime(created_at) >= datetime('now', 'start of day', '-6 days') GROUP BY date(created_at)
          ) GROUP BY day ORDER BY day`,
       ).all(),
       Promise.all(ADMIN_FEATURE_REGISTRY.map(async (feature) => {
