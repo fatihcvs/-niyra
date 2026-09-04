@@ -46,7 +46,7 @@ lisans, yüksek lisans ve doktora programlarını içerir.
 
 - 241 kurumun 239'unda resmî program kapsamı mevcut.
 - 3.212 birim ve 16.454 program referans bütünlüğüyle üretildi.
-- 984 resmî ders dağılımı/müfredat bağlantısı bulundu.
+- 994 resmî ders dağılımı/müfredat bağlantısı bulundu.
 - İki kurumda doğrulanabilir 2026 program kaydı yok; ürün bu kurumlarda manuel giriş
   yedeğini gösteriyor ve kaydı “resmî katalog” gibi sunmuyor.
 - Tüm üniversitelerin tek tek dönem derslerini kapsayan güncel bir ulusal kaynak
@@ -65,3 +65,17 @@ lisans, yüksek lisans ve doktora programlarını içerir.
 - Hava Harp Okulu program tanıtım sayfalarında ayrıntılı yarıyıl ders planı,
   Bando Astsubay MYO için de doğrulanabilir bir resmî ders planı bulunamadığından
   bu altı programa bağlantı üretilmedi.
+
+## Kıbrıs resmî müfredatları — dördüncü parça
+
+- Altınbaş Kıbrıs'ın 21 erişilebilir program sayfası karşılaştırıldı. Yalnız
+  dönem, ders kodu ve AKTS/kredi tablosu doğrulanan 7 sayfa programa bağlandı;
+  boş müfredat sekmeleri ve yalnız tanıtım metni içeren sayfalar dışarıda bırakıldı.
+- Avrupa Liderlik Üniversitesinin tüm program sayfaları incelendi. Tam dönem/ders
+  dağılımı sunan Data Science ve ayrıntılı kod/ECTS listesi sunan Computer
+  Engineering programları bağlandı; kısa tanıtım listeleri tam müfredat sayılmadı.
+- National and Kapodistrian University of Athens'in BAAG Kıbrıs programı için
+  üniversitenin yönlendirdiği güncel sekiz yarıyıllık müfredat sayfası bağlandı.
+- Onbeş Kasım'ın arama indeksindeki yakın tarihli ders planı PDF'leri içerik olarak
+  uygun görünse de 4 Eylül 2026 canlı kontrolünde 404 döndürdü. Kullanıcıya ölü
+  veya doğrulanamayan bağlantı sunmamak için veri kümesine eklenmedi.

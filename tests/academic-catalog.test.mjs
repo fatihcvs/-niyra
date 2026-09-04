@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 984,
+    curriculumLinkCount: 994,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 20);
+  assert.equal(catalog.meta.sources.length, 23);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -42,6 +42,21 @@ test("MSU curriculum links identify their official authority and publication per
   const dated = curriculumPrograms.filter((program) => program.curriculumPeriod === "2021-2022");
   assert.equal(dated.length, 27);
   assert.ok(dated.every((program) => program.unitId.includes("astsubay-myo")));
+});
+
+test("Cyprus curriculum expansion links only verified official programme pages", () => {
+  const expected = {
+    "kktc-altinbas-kibris-universitesi": [7, "wpu.edu.tr"],
+    "kktc-avrupa-liderlik-universitesi": [2, "elu.edu.tr"],
+    "cy-national-and-kapodistrian-university-of-athens-cyprus-branch": [1, "baag.uoa.gr"],
+  };
+
+  for (const [universityId, [expectedCount, expectedHost]] of Object.entries(expected)) {
+    const programs = catalog.universities[universityId].programs.filter((program) => program.curriculumUrls?.length);
+    assert.equal(programs.length, expectedCount, universityId);
+    assert.ok(programs.every((program) => program.curriculumAuthority), `${universityId}: missing authority`);
+    assert.ok(programs.every((program) => program.curriculumUrls.every((url) => new URL(url).hostname === expectedHost)), `${universityId}: unexpected host`);
+  }
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

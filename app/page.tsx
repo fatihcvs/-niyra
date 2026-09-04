@@ -1261,7 +1261,7 @@ function AcademicOnboarding({
           {step === 4 && (
             <div className="course-step">
               <div className="course-count"><span><strong>{validCustomCourses.length}</strong> ders ekledin</span><small>En az 3 · En fazla 8</small></div>
-              {selectedDepartment?.curriculumUrls?.[0] && <a className="catalog-curriculum-link" href={selectedDepartment.curriculumUrls[0]} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Resmî ders / müfredat planını aç{selectedDepartment.curriculumPeriod ? <small>{selectedDepartment.curriculumAuthority ? `${selectedDepartment.curriculumAuthority} · ` : ""}{selectedDepartment.curriculumPeriod}</small> : null}</span><Icon name="arrow" size={14}/></a>}
+              {selectedDepartment?.curriculumUrls?.[0] && <a className="catalog-curriculum-link" href={selectedDepartment.curriculumUrls[0]} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Resmî ders / müfredat planını aç{(selectedDepartment.curriculumAuthority || selectedDepartment.curriculumPeriod) ? <small>{[selectedDepartment.curriculumAuthority, selectedDepartment.curriculumPeriod].filter(Boolean).join(" · ")}</small> : null}</span><Icon name="arrow" size={14}/></a>}
               <div className="custom-course-list">
                 {customCourses.map((course, index) => <div className="custom-course-row" key={index}>
                   <label><span>Ders kodu</span><input value={course.code} onChange={(event) => updateCustomCourse(index, "code", event.target.value)} maxLength={20} placeholder="BİL 101"/></label>

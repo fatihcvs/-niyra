@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 984 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 994 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -43,6 +43,17 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Kara, Deniz ve Hava Astsubay Meslek Yüksekokullarındaki 27 programa ders kodu,
   kredi ve AKTS içeren resmî 2021-2022 belgeleri bağlandı. Eski dönem bilgisi
   arayüzde görünür tutuldu; belgeler güncel plan gibi etiketlenmedi.
+
+## Kıbrıs müfredat genişletmesi — dördüncü parça
+
+- Altınbaş Kıbrıs Üniversitesinde ders kodu, kredi ve AKTS tablosu gerçekten
+  yayımlanan 7 programa doğrudan resmî müfredat bağlantısı eklendi.
+- Avrupa Liderlik Üniversitesinde sekiz dönemlik Data Science planı ile ayrıntılı
+  Computer Engineering ders/ECTS kataloğu programa bağlandı.
+- Atina Üniversitesi Kıbrıs Şubesindeki BAAG programına sekiz yarıyıllık resmî
+  müfredat bağlandı.
+- Onbeş Kasım'ın arama indeksinde bulunan eski ders planı PDF adresleri canlıda
+  404 döndürdüğü için yayına alınmadı; ölü bağlantılar katalog sayısına katılmadı.
 
 ## Bilinen sınır
 
