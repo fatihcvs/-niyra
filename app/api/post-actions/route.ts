@@ -1,5 +1,6 @@
 import { and, count, eq, isNull, sql } from "drizzle-orm";
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { sameOriginRequest } from "../../../lib/app-auth";
 import { getDb } from "../../../db";
 import {
   postComments,
@@ -40,6 +41,7 @@ function initials(name: string) {
 }
 
 export async function POST(request: Request) {
+  if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan etkileşim isteği reddedildi." }, { status: 403 });
   const identity = await getChatGPTUser();
   if (!identity) {
     return Response.json(
@@ -113,10 +115,10 @@ export async function POST(request: Request) {
     if (post.communityId) {
       const communityAccess = await DB.prepare(
         `SELECT c.id FROM communities c
-         WHERE c.id = ? AND c.status = 'active' AND (c.join_policy = 'open' OR EXISTS (
+         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND (c.join_policy = 'open' OR EXISTS (
            SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
          )) LIMIT 1`,
-      ).bind(post.communityId, identity.email).first();
+      ).bind(post.communityId, actor.universityId, identity.email).first();
       if (!communityAccess) return Response.json({ error: "Bu topluluk gönderisine erişim iznin yok." }, { status: 403 });
     }
 

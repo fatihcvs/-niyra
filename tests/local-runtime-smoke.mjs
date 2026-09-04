@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.7.5");
+assert.equal(healthBody.version, "1.8.0");
 
 const officialCourses = await fetch(`${baseUrl}/api/course-catalog?universityId=omu&programId=program-osym-108210665`);
 assert.equal(officialCourses.status, 200);
@@ -400,15 +400,58 @@ const community = (await json("/api/communities", {
 })).body.community;
 assert.equal(community.role, "founder");
 
+const joinedCommunity = (await json("/api/communities", {
+  method: "PATCH",
+  body: JSON.stringify({ id: community.id, action: "join" }),
+}, peerEmail)).body;
+assert.equal(joinedCommunity.joined, true);
+const communityDetail = (await json(`/api/communities?id=${encodeURIComponent(community.id)}`, {}, peerEmail)).body;
+assert.ok(communityDetail.members.some((member) => member.publicId === peer.publicId));
+
 const communityPost = (await json("/api/community-posts", {
   method: "POST",
-  body: JSON.stringify({ communityId: community.id, content: "Otomatik kritik yol doğrulama gönderisi." }),
+  body: JSON.stringify({ communityId: community.id, content: "Otomatik kritik yol doğrulama gönderisi.", postType: "question" }),
 })).body.post;
+assert.equal(communityPost.postType, "question");
+const communityLike = (await json("/api/post-actions", {
+  method: "POST",
+  body: JSON.stringify({ postId: communityPost.id, type: "like" }),
+}, peerEmail)).body;
+assert.equal(communityLike.active, true);
+const communityComment = (await json("/api/post-actions", {
+  method: "POST",
+  body: JSON.stringify({ postId: communityPost.id, type: "comment", content: "Bu soru için birlikte çalışabiliriz." }),
+}, peerEmail)).body;
+assert.equal(communityComment.count, 1);
+const communityFeed = (await json(`/api/community-posts?communityId=${encodeURIComponent(community.id)}`, {}, peerEmail)).body.posts;
+assert.ok(communityFeed.some((post) => post.id === communityPost.id && post.postType === "question" && post.likeCount === 1 && post.commentCount === 1));
 const pin = (await json("/api/community-posts", {
   method: "PATCH",
   body: JSON.stringify({ communityId: community.id, postId: communityPost.id }),
 })).body;
 assert.equal(pin.active, true);
+
+const eventStartsAt = new Date(Date.now() + 86_400_000).toISOString();
+const communityEvent = (await json("/api/community-events", {
+  method: "POST",
+  body: JSON.stringify({
+    communityId: community.id,
+    title: `Runtime soru çözümü ${runId}`,
+    description: "Final öncesi güvenli ortak alanda birlikte soru çözümü.",
+    location: "Merkez Kütüphane çalışma salonu",
+    startsAt: eventStartsAt,
+    capacity: 12,
+  }),
+})).body.event;
+assert.equal(communityEvent.attendeeCount, 1);
+const eventRsvp = (await json("/api/community-events", {
+  method: "PATCH",
+  body: JSON.stringify({ id: communityEvent.id, action: "rsvp" }),
+}, peerEmail)).body;
+assert.equal(eventRsvp.going, true);
+assert.equal(eventRsvp.attendeeCount, 2);
+const communityEvents = (await json(`/api/community-events?communityId=${encodeURIComponent(community.id)}`, {}, peerEmail)).body.events;
+assert.ok(communityEvents.some((event) => event.id === communityEvent.id && event.going && event.attendeeCount === 2));
 
 const upload = new FormData();
 upload.set("title", `Runtime PDF ${runId}`);
@@ -505,4 +548,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Kampira v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, private messaging with verified content attachments, moderation, community, expanded verified note library/R2, search, notifications and safety.");
+console.log("Kampira v1.8.0 runtime smoke passed: signup, academic guidance, auth, interactive course hubs, rich profiles, themes, owner/admin consoles, campus isolation, Campus Anlık, matching, campus guide, library occupancy, marketplace, prices, private messaging, structured community feeds and events, moderation, notes, search, notifications and safety.");

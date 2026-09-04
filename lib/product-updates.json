@@ -1,5 +1,18 @@
 [
   {
+    "id": "community-hubs",
+    "releasedAt": "2026-09-04T23:40:00+03:00",
+    "category": "İyileştirme",
+    "area": "Topluluklar",
+    "title": "Topluluklar gerçek bir kampüs buluşma alanına dönüştü",
+    "summary": "Topluluklar artık keşif, düzenli paylaşım, etkinlik ve üye yönetimini tek bir anlaşılır merkezde birleştiriyor.",
+    "highlights": [
+      "İlgi alanı, hareketlilik ve üyelik durumuna göre topluluk bulmak kolaylaştı.",
+      "Soru, kaynak, duyuru ve sohbet paylaşımları beğeni, yorum ve kaydetme desteği kazandı.",
+      "Topluluk yöneticileri etkinlik, katılım isteği, üye rolü, bildirim ve güvenlik ayarlarını yönetebilir."
+    ]
+  },
+  {
     "id": "private-campus-messages",
     "releasedAt": "2026-09-04T22:45:00+03:00",
     "category": "Yeni özellik",

@@ -785,6 +785,7 @@ for (const [label, path] of [
   ["note library", "/api/notes"],
   ["note comments", "/api/note-comments?noteId=example"],
   ["community directory", "/api/communities"],
+  ["community events", "/api/community-events?communityId=example"],
   ["notification center", "/api/notifications"],
   ["direct messages", "/api/messages"],
   ["unified search", "/api/search?q=mat"],
@@ -827,6 +828,20 @@ test("community creation rejects invalid join policies before database access", 
       method: "POST",
       headers: { "content-type": "application/json", ...platformHeaders },
       body: JSON.stringify({ name: "Matematik çevresi", description: "Birlikte düzenli matematik çalışırız.", joinPolicy: "secret" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+  assert.equal(response.status, 400);
+});
+
+test("community event creation rejects malformed details before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/community-events", {
+      method: "POST",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ communityId: "example", title: "X", description: "Kısa", location: "", startsAt: "not-a-date" }),
     }),
     runtimeEnv,
     runtimeContext,

@@ -627,6 +627,7 @@ export const communities = sqliteTable(
   {
     id: text("id").primaryKey(),
     creatorEmail: text("creator_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    universityId: text("university_id").references(() => universities.id),
     courseId: text("course_id").references(() => courses.id),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
@@ -635,6 +636,8 @@ export const communities = sqliteTable(
     joinPolicy: text("join_policy").notNull().default("open"),
     rules: text("rules").notNull().default(""),
     status: text("status").notNull().default("active"),
+    moderationStatus: text("moderation_status").notNull().default("active"),
+    lastActivityAt: text("last_activity_at"),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     archivedAt: text("archived_at"),
@@ -642,6 +645,7 @@ export const communities = sqliteTable(
   (table) => [
     uniqueIndex("communities_slug_unique").on(table.slug),
     index("communities_status_created_idx").on(table.status, table.createdAt),
+    index("communities_university_status_activity_idx").on(table.universityId, table.moderationStatus, table.status, table.lastActivityAt),
   ],
 );
 
@@ -652,12 +656,72 @@ export const communityMembers = sqliteTable(
     userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
     role: text("role").notNull().default("member"),
     status: text("status").notNull().default("active"),
+    notificationLevel: text("notification_level").notNull().default("all"),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     primaryKey({ columns: [table.communityId, table.userEmail] }),
     index("community_members_user_status_idx").on(table.userEmail, table.status),
+  ],
+);
+
+export const communityPostMeta = sqliteTable(
+  "community_post_meta",
+  {
+    postId: text("post_id").primaryKey().references(() => posts.id, { onDelete: "cascade" }),
+    postType: text("post_type").notNull().default("discussion"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("community_post_meta_type_idx").on(table.postType)],
+);
+
+export const communityBans = sqliteTable(
+  "community_bans",
+  {
+    communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+    userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    bannedByEmail: text("banned_by_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    reason: text("reason").notNull().default(""),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.communityId, table.userEmail] }),
+    index("community_bans_actor_idx").on(table.bannedByEmail, table.createdAt),
+  ],
+);
+
+export const communityEvents = sqliteTable(
+  "community_events",
+  {
+    id: text("id").primaryKey(),
+    communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+    creatorEmail: text("creator_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    location: text("location").notNull().default(""),
+    startsAt: text("starts_at").notNull(),
+    endsAt: text("ends_at"),
+    capacity: integer("capacity"),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("community_events_community_starts_idx").on(table.communityId, table.status, table.startsAt)],
+);
+
+export const communityEventAttendees = sqliteTable(
+  "community_event_attendees",
+  {
+    eventId: text("event_id").notNull().references(() => communityEvents.id, { onDelete: "cascade" }),
+    userEmail: text("user_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    status: text("status").notNull().default("going"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.eventId, table.userEmail] }),
+    index("community_event_attendees_user_idx").on(table.userEmail, table.status, table.createdAt),
   ],
 );
 

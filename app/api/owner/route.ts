@@ -33,7 +33,9 @@ export async function GET(request: Request) {
           ((SELECT COUNT(*) FROM post_comments WHERE deleted_at IS NULL) +
            (SELECT COUNT(*) FROM note_comments WHERE deleted_at IS NULL)) AS comments_active,
           (SELECT COUNT(*) FROM notes WHERE deleted_at IS NULL AND status = 'published') AS notes_published,
-          (SELECT COUNT(*) FROM communities WHERE status = 'active') AS communities_active,
+          (SELECT COUNT(*) FROM communities WHERE status = 'active' AND moderation_status = 'active') AS communities_active,
+          (SELECT COUNT(*) FROM community_members WHERE status = 'active') AS community_memberships,
+          (SELECT COUNT(*) FROM community_events WHERE status = 'active' AND datetime(starts_at) >= datetime('now')) AS community_events_upcoming,
           (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'active' AND deleted_at IS NULL) AS pulse_active,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'active') AS listings_active,
           (SELECT COUNT(*) FROM direct_conversations) AS direct_conversations,
@@ -86,7 +88,7 @@ export async function GET(request: Request) {
       activity: activity.results,
       features: featureCounts,
       system: {
-        version: "1.7.5",
+        version: "1.8.0",
         database: "ok",
         storage: FILES ? "configured" : "unavailable",
         courseCatalogPrograms: courseCoverage.length,

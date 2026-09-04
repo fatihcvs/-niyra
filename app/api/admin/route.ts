@@ -19,6 +19,8 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM campus_places WHERE status = 'hidden') AS places_hidden,
           (SELECT COUNT(*) FROM housing_discussions WHERE status = 'hidden') AS housing_hidden,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'hidden') AS listings_hidden,
+          (SELECT COUNT(*) FROM communities WHERE moderation_status = 'hidden') AS communities_hidden,
+          (SELECT COUNT(*) FROM community_events WHERE status = 'hidden') AS community_events_hidden,
           (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'hidden' AND deleted_at IS NULL) AS pulse_hidden,
           (SELECT COUNT(*) FROM direct_messages WHERE deleted_at IS NOT NULL) AS direct_messages_hidden`,
       ).first<Record<string, number>>(),
@@ -52,8 +54,13 @@ export async function GET(request: Request) {
            FROM notes n JOIN users u ON u.email = n.owner_email WHERE n.deleted_at IS NULL ORDER BY n.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
-          `SELECT 'community' AS entity_type, c.id, c.name AS title, u.display_name AS owner_name, c.status, c.created_at
+          `SELECT 'community' AS entity_type, c.id, c.name AS title, u.display_name AS owner_name,
+                  CASE WHEN c.moderation_status = 'hidden' THEN 'hidden' ELSE c.status END AS status, c.created_at
            FROM communities c JOIN users u ON u.email = c.creator_email ORDER BY c.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'community-event' AS entity_type, e.id, e.title, u.display_name AS owner_name, e.status, e.created_at
+           FROM community_events e JOIN users u ON u.email = e.creator_email ORDER BY e.created_at DESC LIMIT 100`,
         ).all(),
         DB.prepare(
           `SELECT 'pulse' AS entity_type, p.id, SUBSTR(p.content, 1, 140) AS title,
@@ -194,7 +201,8 @@ async function applyModerationState(db: D1Database, entityType: ModeratableEntit
     comment: db.prepare(`UPDATE post_comments SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
     note: db.prepare(`UPDATE notes SET status = ?, rejection_reason = ?, published_at = CASE WHEN ? = 'published' THEN CURRENT_TIMESTAMP ELSE published_at END, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL`).bind(hidden ? "rejected" : "published", hidden ? reason : null, hidden ? "rejected" : "published", id),
     "note-comment": db.prepare(`UPDATE note_comments SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
-    community: db.prepare(`UPDATE communities SET status = ?, archived_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "archived" : "active", hidden ? new Date().toISOString() : null, id),
+    community: db.prepare(`UPDATE communities SET moderation_status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
+    "community-event": db.prepare(`UPDATE community_events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     pulse: db.prepare(`UPDATE campus_pulse_posts SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL`).bind(hidden ? "hidden" : "active", id),
     listing: db.prepare(`UPDATE marketplace_listings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     place: db.prepare(`UPDATE campus_places SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),

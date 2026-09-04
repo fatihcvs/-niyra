@@ -39,6 +39,10 @@ const ownerMetricLabels: Record<string, [string, string]> = {
   posts_active: ["Gönderi", "Yayında"],
   notes_published: ["Çalışma notu", "Yayınlanmış"],
   communities_active: ["Topluluk", "Aktif"],
+  community_memberships: ["Topluluk üyeliği", "Aktif"],
+  community_events_upcoming: ["Topluluk etkinliği", "Yaklaşan"],
+  communities_hidden: ["Topluluk", "Gizlenen"],
+  community_events_hidden: ["Topluluk etkinliği", "Gizlenen"],
   direct_conversations: ["Özel konuşma", "Toplam"],
   direct_messages_sent: ["Özel mesaj", "Gönderilmiş"],
   reports_pending: ["Bekleyen şikâyet", "Açık + itiraz"],
@@ -368,5 +372,5 @@ function errorMessage(error: unknown) { return error instanceof Error ? error.me
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr-TR"); }
 function formatDate(value: unknown) { const parsed = new Date(String(value ?? "")); return Number.isNaN(parsed.getTime()) ? "-" : dateTime.format(parsed); }
 function formatUpdateDate(value: string) { const parsed = new Date(value); return Number.isNaN(parsed.getTime()) ? "-" : updateDateTime.format(parsed); }
-function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", "note-comment": "Not yorumu", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", "direct-message": "Özel mesaj", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
+function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", "note-comment": "Not yorumu", community: "Topluluk", "community-event": "Topluluk etkinliği", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", "direct-message": "Özel mesaj", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
 function evidenceSummary(evidence: JsonRecord) { return String(evidence.content ?? evidence.title ?? evidence.name ?? evidence.description ?? evidence.item_name ?? evidence.display_name ?? "Kanıt anlık görüntüsü kaydedildi.").slice(0, 280); }

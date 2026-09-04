@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'note-comment', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'direct-message', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'note-comment', 'community', 'community-event', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'direct-message', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -143,8 +143,13 @@ export async function POST(request: Request) {
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "community") evidence = await DB.prepare(
         `SELECT c.id, c.creator_email, c.name, c.description, c.rules, c.created_at FROM communities c
-         JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
-         WHERE c.id = ? AND creator_profile.university_id = ? LIMIT 1`,
+         WHERE c.id = ? AND c.university_id = ? LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "community-event") evidence = await DB.prepare(
+        `SELECT e.id, e.creator_email, e.community_id, e.title, e.description, e.location,
+                e.starts_at, e.ends_at, e.capacity, e.created_at
+         FROM community_events e JOIN communities c ON c.id = e.community_id
+         WHERE e.id = ? AND c.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "pulse") evidence = await DB.prepare(
         `SELECT p.id, p.author_email, p.kind, p.category, p.content, p.campus_zone,

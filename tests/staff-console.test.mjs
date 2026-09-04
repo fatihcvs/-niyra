@@ -48,9 +48,20 @@ test("owner snapshot exposes verified course catalog coverage", async () => {
 
 test("management registry covers every current product moderation surface", async () => {
   const registry = await source("../lib/admin-registry.ts");
-  for (const key of ["users", "posts", "comments", "notes", "noteComments", "communities", "pulse", "market", "places", "housingDiscussions", "events", "prices", "matches", "library", "directConversations", "directMessages", "reports"]) {
+  for (const key of ["users", "posts", "comments", "notes", "noteComments", "communities", "communityEvents", "pulse", "market", "places", "housingDiscussions", "events", "prices", "matches", "library", "directConversations", "directMessages", "reports"]) {
     assert.match(registry, new RegExp(`key: "${key}"`));
   }
+});
+
+test("community moderation cannot be undone by student archive controls", async () => {
+  const [admin, communities] = await Promise.all([
+    source("../app/api/admin/route.ts"),
+    source("../app/api/communities/route.ts"),
+  ]);
+  assert.match(admin, /community: db\.prepare\(`UPDATE communities SET moderation_status/);
+  assert.match(admin, /"community-event": db\.prepare/);
+  assert.match(communities, /moderation_status = 'active'/);
+  assert.match(communities, /WHERE id = \? AND moderation_status = 'active'/);
 });
 
 test("owner feature switches are enforced by their product APIs", async () => {

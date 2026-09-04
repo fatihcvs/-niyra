@@ -9,6 +9,7 @@ import {
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { audit, getRuntime } from "../../../lib/server-api";
 import { profileMediaUrl } from "../../../lib/profile";
+import { sameOriginRequest } from "../../../lib/app-auth";
 
 type CommentPayload = {
   id?: string;
@@ -81,10 +82,10 @@ async function canUseComments(viewerEmail: string, postId: string) {
     if (!blocked && post.communityId) {
       const communityAccess = await DB.prepare(
         `SELECT c.id FROM communities c
-         WHERE c.id = ? AND c.status = 'active' AND (c.join_policy = 'open' OR EXISTS (
+         WHERE c.id = ? AND c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ? AND (c.join_policy = 'open' OR EXISTS (
            SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'
          )) LIMIT 1`,
-      ).bind(post.communityId, viewerEmail).first();
+      ).bind(post.communityId, viewer?.universityId ?? "", viewerEmail).first();
       blocked = !communityAccess;
     }
   }
@@ -159,6 +160,7 @@ export async function GET(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan yorum isteği reddedildi." }, { status: 403 });
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 

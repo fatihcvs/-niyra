@@ -2,6 +2,7 @@
 
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { Bell } from "@phosphor-icons/react/dist/csr/Bell";
 import { BookOpen } from "@phosphor-icons/react/dist/csr/BookOpen";
 import { CalendarDots } from "@phosphor-icons/react/dist/csr/CalendarDots";
@@ -23,7 +24,6 @@ import {
 } from "../lib/academic-data";
 import { curatedNotes, featuredCuratedNotes, getCuratedSources } from "../lib/curated-notes";
 import {
-  CommunitiesWorkspace,
   NotesWorkspace,
   NotificationsWorkspace,
   ProfileSafetyMenu,
@@ -36,6 +36,10 @@ import { CampusGuideWorkspace } from "./campus-guide";
 import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
 import { DirectMessagesWorkspace, type DirectMessageRecipient } from "./direct-messages";
+
+const CommunitiesWorkspace = dynamic(() => import("./communities-workspace").then((module) => module.CommunitiesWorkspace), {
+  loading: () => <div className="empty-state"><strong>Topluluklar hazırlanıyor</strong><span>Kampüs çevren yükleniyor.</span></div>,
+});
 
 type IconName =
   | "home" | "compass" | "notes" | "users" | "bell" | "bookmark"
@@ -2553,7 +2557,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Kampira v1.7</strong><span>Akademik katalog yayında</span></div>
+          <div><strong>Kampira v1.8</strong><span>Topluluk merkezi yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>

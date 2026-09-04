@@ -13,6 +13,7 @@ import "./auth-screen.test.mjs";
 import "./onboarding-guidance.test.mjs";
 import "./course-hub.test.mjs";
 import "./direct-messages.test.mjs";
+import "./communities.test.mjs";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
