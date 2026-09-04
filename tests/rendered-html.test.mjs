@@ -9,6 +9,7 @@ import "./staff-console.test.mjs";
 import "./theme.test.mjs";
 import "./official-course-catalog.test.mjs";
 import "./auth-screen.test.mjs";
+import "./onboarding-guidance.test.mjs";
 import "./course-hub.test.mjs";
 
 const developmentPreviewMeta =

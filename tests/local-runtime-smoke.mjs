@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.7.4");
+assert.equal(healthBody.version, "1.7.5");
 
 const officialCourses = await fetch(`${baseUrl}/api/course-catalog?universityId=omu&programId=program-osym-108210665`);
 assert.equal(officialCourses.status, 200);
@@ -462,4 +462,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.7.4 runtime smoke passed: auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");
+console.log("Üniyra v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");

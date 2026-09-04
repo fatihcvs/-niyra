@@ -1109,12 +1109,38 @@ function ProfileBoot() {
 
 function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) => void }) {
   const [mode, setMode] = useState<"register" | "login">("register");
+  const [fields, setFields] = useState({ displayName: "", email: "", password: "", passwordConfirmation: "" });
+  const [attempted, setAttempted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim());
+  const authRequirements: Array<{ field: keyof typeof fields; message: string }> = [];
+  if (mode === "register" && fields.displayName.trim().length < 2) authRequirements.push({ field: "displayName", message: "Adını ve soyadını en az 2 karakterle yaz." });
+  if (!emailIsValid) authRequirements.push({ field: "email", message: mode === "register" ? "Geçerli bir e-posta adresi yaz." : "Geçerli e-posta adresini yaz." });
+  if (fields.password.length < 10) authRequirements.push({ field: "password", message: mode === "register" ? "En az 10 karakterli bir parola oluştur." : "En az 10 karakterli parolanı yaz." });
+  if (mode === "register" && (fields.passwordConfirmation.length < 10 || fields.passwordConfirmation !== fields.password)) {
+    authRequirements.push({ field: "passwordConfirmation", message: "Parolanı aynı şekilde tekrar yaz." });
+  }
+
+  function updateAuthField(field: keyof typeof fields, value: string) {
+    setFields((current) => ({ ...current, [field]: value }));
+    setError("");
+  }
+
+  function switchAuthMode(nextMode: "register" | "login") {
+    setMode(nextMode);
+    setAttempted(false);
+    setError("");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
+    setAttempted(true);
+    if (authRequirements.length) {
+      event.currentTarget.querySelector<HTMLInputElement>(`[name="${authRequirements[0].field}"]`)?.focus();
+      return;
+    }
     setBusy(true);
     setError("");
     const form = new FormData(event.currentTarget);
@@ -1152,16 +1178,25 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
         <div className="auth-brand"><Logo/></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
-          <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
-          <button className={mode === "login" ? "active" : ""} type="button" role="tab" aria-selected={mode === "login"} onClick={() => { setMode("login"); setError(""); }}>Giriş yap</button>
+          <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => switchAuthMode("register")}>Kayıt ol</button>
+          <button className={mode === "login" ? "active" : ""} type="button" role="tab" aria-selected={mode === "login"} onClick={() => switchAuthMode("login")}>Giriş yap</button>
         </div>
-        <form className="auth-form" onSubmit={(event) => void submit(event)}>
-          {mode === "register" && <label><span>Adın ve soyadın</span><input name="displayName" autoComplete="name" minLength={2} maxLength={60} required placeholder="Deniz Öztürk"/></label>}
-          <label><span>E-posta adresin</span><input name="email" type="email" autoComplete="email" maxLength={254} required placeholder="ogrenci@universite.edu.tr"/></label>
-          <label><span>Parolan</span><input name="password" type="password" autoComplete={mode === "register" ? "new-password" : "current-password"} minLength={10} maxLength={128} required placeholder="En az 10 karakter"/></label>
-          {mode === "register" && <label><span>Parolanı tekrar yaz</span><input name="passwordConfirmation" type="password" autoComplete="new-password" minLength={10} maxLength={128} required/></label>}
+        <form className="auth-form" noValidate onSubmit={(event) => void submit(event)}>
+          {mode === "register" && <label><span>Adın ve soyadın</span><input name="displayName" value={fields.displayName} onChange={(event) => updateAuthField("displayName", event.target.value)} autoComplete="name" minLength={2} maxLength={60} required aria-invalid={attempted && fields.displayName.trim().length < 2} aria-describedby="auth-requirements" placeholder="Deniz Öztürk"/></label>}
+          <label><span>E-posta adresin</span><input name="email" type="email" value={fields.email} onChange={(event) => updateAuthField("email", event.target.value)} autoComplete="email" maxLength={254} required aria-invalid={attempted && !emailIsValid} aria-describedby="auth-requirements" placeholder="ogrenci@universite.edu.tr"/></label>
+          <label><span>Parolan</span><input name="password" type="password" value={fields.password} onChange={(event) => updateAuthField("password", event.target.value)} autoComplete={mode === "register" ? "new-password" : "current-password"} minLength={10} maxLength={128} required aria-invalid={attempted && fields.password.length < 10} aria-describedby="auth-requirements" placeholder="En az 10 karakter"/></label>
+          {mode === "register" && <label><span>Parolanı tekrar yaz</span><input name="passwordConfirmation" type="password" value={fields.passwordConfirmation} onChange={(event) => updateAuthField("passwordConfirmation", event.target.value)} autoComplete="new-password" minLength={10} maxLength={128} required aria-invalid={attempted && (fields.passwordConfirmation.length < 10 || fields.passwordConfirmation !== fields.password)} aria-describedby="auth-requirements"/></label>}
+          <div className={`auth-requirements${authRequirements.length ? "" : " ready"}`} id="auth-requirements" role="status" aria-live="polite">
+            <span className="auth-requirements-icon"><Icon name={authRequirements.length ? "sparkles" : "check"} size={16}/></span>
+            <div>
+              <strong>{authRequirements.length ? "Devam etmek için" : "Bilgilerin hazır"}</strong>
+              {authRequirements.length
+                ? <ul>{authRequirements.map((requirement) => <li key={requirement.field}>{requirement.message}</li>)}</ul>
+                : <p>{mode === "register" ? "Hesabını şimdi oluşturabilirsin." : "Hesabına şimdi giriş yapabilirsin."}</p>}
+            </div>
+          </div>
           {error && <p className="auth-error" role="alert">{error}</p>}
-          <button className="auth-submit" type="submit" disabled={busy}>{busy ? "İşlem tamamlanıyor…" : mode === "register" ? "Hesabımı oluştur" : "Giriş yap"}<Icon name="arrow" size={17}/></button>
+          <button className="auth-submit" type="submit" disabled={busy} aria-describedby="auth-requirements">{busy ? "İşlem tamamlanıyor…" : mode === "register" ? "Hesabımı oluştur" : "Giriş yap"}<Icon name="arrow" size={17}/></button>
         </form>
         <p className="auth-terms">Devam ederek <a href="/legal#terms">Kullanım Koşulları</a> ve <a href="/legal#privacy">Gizlilik Metni</a>&apos;ni kabul etmiş olursun.</p>
       </section>
@@ -1528,13 +1563,54 @@ function AcademicOnboarding({
     }
   }
 
-  const nextDisabled =
-    (step === 1 && !universityId) ||
-    (step === 2 && (catalogLoading || (usesOfficialCatalog ? !facultyId : customFacultyName.trim().length < 2))) ||
-    (step === 3 && (usesOfficialCatalog ? !departmentId : customDepartmentName.trim().length < 2)) ||
-    (step === 4 && validCustomCourses.length < 3) ||
-    (step === 5 && displayName.trim().length < 2) ||
-    saving;
+  const stepRequirement =
+    step === 1 && !universityId
+      ? "Bir üniversite seç."
+      : step === 2 && catalogLoading
+        ? "Akademik birimlerin yüklenmesini bekle; ardından fakülte, yüksekokul veya enstitünü seç."
+        : step === 2 && usesOfficialCatalog && !facultyId
+          ? "Fakülte, yüksekokul veya akademik birimini listeden seç."
+          : step === 2 && !usesOfficialCatalog && customFacultyName.trim().length < 2
+            ? "Akademik biriminin adını en az 2 karakterle yaz."
+            : step === 3 && usesOfficialCatalog && !departmentId
+              ? "Bölüm veya programını listeden seç."
+              : step === 3 && !usesOfficialCatalog && customDepartmentName.trim().length < 2
+                ? "Bölüm veya program adını en az 2 karakterle yaz."
+                : step === 4 && validCustomCourses.length < 3
+                  ? `${3 - validCustomCourses.length} ders daha seç veya ders kodu ve adıyla ekle.`
+                  : step === 5 && displayName.trim().length < 2
+                    ? "Görünen adını en az 2 karakterle yaz."
+                    : "";
+  const nextDisabled = saving || (step === 2 && catalogLoading);
+
+  function focusMissingOnboardingField() {
+    const panel = document.querySelector<HTMLElement>(".onboarding-panel");
+    const selector = step === 1
+      ? ".university-search-field input"
+      : step === 2
+        ? usesOfficialCatalog ? ".catalog-inline-search input" : ".custom-academic-field input"
+        : step === 3
+          ? usesOfficialCatalog ? ".catalog-inline-search input" : ".custom-academic-field input"
+          : step === 4
+            ? manualCourseEntry ? ".custom-course-row input" : ".official-course-grid > button"
+            : ".summary-name-field input";
+    const target = panel?.querySelector<HTMLElement>(selector);
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    target?.focus({ preventScroll: true });
+  }
+
+  function continueOnboarding() {
+    if (stepRequirement) {
+      focusMissingOnboardingField();
+      return;
+    }
+    if (step < 5) {
+      setStep((current) => current + 1);
+      setError("");
+      return;
+    }
+    void saveProfile();
+  }
 
   return (
     <main className="onboarding-shell">
@@ -1600,7 +1676,7 @@ function AcademicOnboarding({
 
           {step === 2 && (
             <div className="academic-step">
-              <div className="onboarding-field-title"><span>Akademik birimin</span><small>{selectedUniversity?.name}</small></div>
+              <div className="onboarding-field-title"><span>Akademik birimin{stepRequirement && !catalogLoading ? <em>Seçim gerekli</em> : null}</span><small>{selectedUniversity?.name}</small></div>
               {catalogLoading && <div className="catalog-loading"><Icon name="sparkles" size={18}/> Resmî akademik katalog yükleniyor…</div>}
               {!catalogLoading && catalog?.units.length ? <>
                 <div className="catalog-source-note"><Icon name="check" size={15}/><span><strong>{catalog.units.length} seçilebilir birim · {catalog.programs.length} resmî program</strong><small>{catalog.sources.map((source) => source.authority).filter((value, index, values) => values.indexOf(value) === index).join(" + ")} · {catalog.updatedAt}</small></span></div>
@@ -1614,14 +1690,14 @@ function AcademicOnboarding({
                 </div>}
                 <button className="catalog-manual-toggle" type="button" onClick={() => { setManualAcademic((current) => !current); setFacultyId(""); setDepartmentId(""); setCourseCatalog(null); setCourseCatalogLoading(false); setCourseCatalogError(""); setManualCourseEntry(true); setError(""); }}>{manualAcademic ? "Resmî listeden seç" : "Birimim listede yok"}</button>
               </> : null}
-              {!catalogLoading && (manualAcademic || !catalog?.units.length) && <label className="custom-academic-field"><span>Fakülte, yüksekokul veya enstitü adı</span><input value={customFacultyName} onChange={(event) => { setCustomFacultyName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Mühendislik Fakültesi"/><small>Resmî öğrenci kaydında gördüğün akademik birim adını yaz.</small></label>}
+              {!catalogLoading && (manualAcademic || !catalog?.units.length) && <label className="custom-academic-field"><span>Fakülte, yüksekokul veya enstitü adı</span><input value={customFacultyName} onChange={(event) => { setCustomFacultyName(event.target.value); setError(""); }} maxLength={100} aria-invalid={customFacultyName.trim().length < 2} aria-describedby="onboarding-requirement" placeholder="Örn. Mühendislik Fakültesi"/><small>Resmî öğrenci kaydında gördüğün akademik birim adını yaz.</small></label>}
               {!catalogLoading && (catalogError || !catalog?.units.length) && <p className="catalog-coverage-warning">{catalogError || "Bu kurum için merkezî resmî program kaydı bulunamadı; bilgini öğrenci kaydındaki biçimiyle yazabilirsin."}</p>}
             </div>
           )}
 
           {step === 3 && (
             <div className="academic-step">
-              <div className="onboarding-field-title"><span>Programın</span><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName}</small></div>
+              <div className="onboarding-field-title"><span>Programın{stepRequirement ? <em>Seçim gerekli</em> : null}</span><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName}</small></div>
               {usesOfficialCatalog ? <>
                 <label className="catalog-inline-search"><Icon name="search" size={16}/><input value={programQuery} onChange={(event) => setProgramQuery(event.target.value)} placeholder="Bölüm veya program ara"/></label>
                 <div className="department-grid catalog-program-grid">
@@ -1632,7 +1708,7 @@ function AcademicOnboarding({
                 ))}
                 </div>
                 {visiblePrograms.length === 0 && <p className="university-catalog-empty">Bu birimde aramanla eşleşen program bulunamadı.</p>}
-              </> : <label className="custom-academic-field"><span>Bölüm veya program adı</span><input value={customDepartmentName} onChange={(event) => { setCustomDepartmentName(event.target.value); setError(""); }} maxLength={100} placeholder="Örn. Bilgisayar Mühendisliği"/><small>Önlisans, lisans veya lisansüstü program adını kullanabilirsin.</small></label>}
+              </> : <label className="custom-academic-field"><span>Bölüm veya program adı</span><input value={customDepartmentName} onChange={(event) => { setCustomDepartmentName(event.target.value); setError(""); }} maxLength={100} aria-invalid={customDepartmentName.trim().length < 2} aria-describedby="onboarding-requirement" placeholder="Örn. Bilgisayar Mühendisliği"/><small>Önlisans, lisans veya lisansüstü program adını kullanabilirsin.</small></label>}
               <div className="onboarding-field-title class-title"><span>Kaçıncı sınıftasın?</span><small>Hazırlık dahil seçim yapabilirsin.</small></div>
               <div className="year-picker">
                 {[1, 2, 3, 4, 5, 6].map((year) => <button className={classYear === year ? "selected" : ""} type="button" onClick={() => setClassYear(year)} key={year}>{year === 1 ? "Hazırlık / 1" : year}<small>{year === 6 ? "+" : ". sınıf"}</small></button>)}
@@ -1642,7 +1718,7 @@ function AcademicOnboarding({
 
           {step === 4 && (
             <div className="course-step">
-              <div className="course-count"><span><strong>{validCustomCourses.length}</strong> ders ekledin</span><small>En az 3 · En fazla 8</small></div>
+              <div className={`course-count${validCustomCourses.length < 3 ? " needs-selection" : ""}`}><span><strong>{validCustomCourses.length}</strong> ders ekledin</span><small>{validCustomCourses.length < 3 ? `${3 - validCustomCourses.length} ders daha gerekli` : "En fazla 8 ders"}</small></div>
               {selectedDepartment?.curriculumUrls?.[0] && <a className="catalog-curriculum-link" href={selectedDepartment.curriculumUrls[0]} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Resmî ders / müfredat planını aç{(selectedDepartment.curriculumAuthority || selectedDepartment.curriculumPeriod) ? <small>{[selectedDepartment.curriculumAuthority, selectedDepartment.curriculumPeriod].filter(Boolean).join(" · ")}</small> : null}</span><Icon name="arrow" size={14}/></a>}
               {courseCatalogLoading && <div className="course-catalog-loading"><Icon name="sparkles" size={18}/> Bölümünün resmî dersleri hazırlanıyor…</div>}
               {!courseCatalogLoading && courseCatalog?.available && <section className="official-course-picker" aria-labelledby="official-course-picker-title">
@@ -1665,8 +1741,8 @@ function AcademicOnboarding({
               <button className="manual-course-toggle" type="button" onClick={toggleManualCourseEntry}><Icon name={manualCourseEntry ? "close" : "plus"} size={15}/>{manualCourseEntry ? "Elle ders ekleme alanını kapat" : "Dersim listede yok, elle ekle"}</button>
               {manualCourseEntry && <div className="custom-course-list">
                 {customCourses.map((course, index) => course.source !== "catalog" && <div className="custom-course-row" key={index}>
-                  <label><span>Ders kodu</span><input value={course.code} onChange={(event) => updateCustomCourse(index, "code", event.target.value)} maxLength={20} placeholder="BİL 101"/></label>
-                  <label><span>Ders adı</span><input value={course.name} onChange={(event) => updateCustomCourse(index, "name", event.target.value)} maxLength={100} placeholder="Programlamaya Giriş"/></label>
+                  <label><span>Ders kodu</span><input value={course.code} onChange={(event) => updateCustomCourse(index, "code", event.target.value)} maxLength={20} aria-invalid={Boolean(course.name.trim()) && !course.code.trim()} aria-describedby="onboarding-requirement" placeholder="BİL 101"/></label>
+                  <label><span>Ders adı</span><input value={course.name} onChange={(event) => updateCustomCourse(index, "name", event.target.value)} maxLength={100} aria-invalid={Boolean(course.code.trim()) && !course.name.trim()} aria-describedby="onboarding-requirement" placeholder="Programlamaya Giriş"/></label>
                   <button type="button" onClick={() => setCustomCourses((current) => current.filter((_, courseIndex) => courseIndex !== index))} aria-label={`${index + 1}. dersi kaldır`}><Icon name="trash" size={16}/></button>
                 </div>)}
                 {validCustomCourses.length < 8 && <button className="custom-course-add" type="button" onClick={() => setCustomCourses((current) => [...current, { code: "", name: "", source: "manual" }])}><Icon name="plus" size={15}/> Başka ders ekle</button>}
@@ -1678,7 +1754,7 @@ function AcademicOnboarding({
             <div className="onboarding-summary">
               <div className="summary-identity">
                 <span className="summary-avatar">{getInitials(displayName || identityName)}</span>
-                <label className="summary-name-field"><span>Görünen adın</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setError(""); }} maxLength={60} autoComplete="name" aria-label="Görünen ad"/><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} · {usesOfficialCatalog ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</small></label>
+                <label className="summary-name-field"><span>Görünen adın{stepRequirement ? <em>Gerekli</em> : null}</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setError(""); }} maxLength={60} autoComplete="name" aria-label="Görünen ad" aria-invalid={displayName.trim().length < 2} aria-describedby="onboarding-requirement"/><small>{usesOfficialCatalog ? selectedFaculty?.name : customFacultyName} · {usesOfficialCatalog ? selectedDepartment?.name : customDepartmentName} · {classYear}. sınıf</small></label>
                 <span className="summary-ready"><Icon name="check" size={15}/> Hazır</span>
               </div>
               <div className="summary-campus">
@@ -1691,13 +1767,17 @@ function AcademicOnboarding({
           )}
         </div>
 
+        {stepRequirement && <div className={`onboarding-requirement${catalogLoading ? " loading" : ""}`} id="onboarding-requirement" role="status" aria-live="polite">
+          <span><Icon name={catalogLoading ? "sparkles" : "arrow"} size={16}/></span>
+          <div><strong>{catalogLoading ? "Seçenekler hazırlanıyor" : "Devam etmek için"}</strong><p>{stepRequirement}</p></div>
+        </div>}
         {error && <p className="onboarding-error" role="alert">{error}</p>}
 
         <footer className="onboarding-actions">
           {isEditing && <button className="onboarding-cancel" type="button" onClick={onCancel} disabled={saving}>İptal</button>}
           <div>
             {step > 1 && <button className="onboarding-back" type="button" onClick={() => { setStep((current) => current - 1); setError(""); }} disabled={saving}>Geri</button>}
-            <button className="onboarding-next" type="button" disabled={nextDisabled} onClick={() => { if (step < 5) { setStep((current) => current + 1); setError(""); } else { void saveProfile(); } }}>
+            <button className="onboarding-next" type="button" disabled={nextDisabled} aria-describedby={stepRequirement ? "onboarding-requirement" : undefined} onClick={continueOnboarding}>
               {saving ? "Kaydediliyor…" : step === 5 ? isEditing ? "Değişiklikleri kaydet" : "Üniyra’ya gir" : "Devam et"}
               {!saving && <Icon name="arrow" size={17}/>}
             </button>
