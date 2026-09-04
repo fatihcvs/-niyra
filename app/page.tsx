@@ -2607,10 +2607,6 @@ export default function Home() {
             <h1>Merhaba, {getFirstName(studentProfile.displayName)} <span>👋</span></h1>
             <p>{activeFeed.description}</p>
           </div>
-          <div className="welcome-stat">
-            <span><Icon name="sparkles" size={17}/></span>
-            <div><strong>{curatedNotes.length} doğrulanmış not</strong><small>Kampira Editoryal&apos;de</small></div>
-          </div>
         </div>
         <div className="feed-tabs" role="tablist" aria-label="Akış türü">
           {FEED_SCOPES.map((scope) => <button key={scope.key} id={`feed-tab-${scope.key}`} aria-controls="feed-posts" disabled={publishing} className={feedTab === scope.key ? "active" : ""} onClick={() => changeFeed(scope.key)} type="button" role="tab" aria-selected={feedTab === scope.key}>{scope.label}</button>)}

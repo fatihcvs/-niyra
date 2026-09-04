@@ -169,11 +169,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .feed-welcome h1 { font-size: 25px; line-height: 1.15; margin: 6px 0 5px; letter-spacing: -.7px; }
 .feed-welcome h1 span { font-size: 21px; }
 .feed-welcome p { margin: 0; color: var(--muted); font-size: 13px; }
-.welcome-stat { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: 13px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow); }
-.welcome-stat > span { width: 31px; height: 31px; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); border-radius: 10px; }
-.welcome-stat strong, .welcome-stat small { display: block; white-space: nowrap; }
-.welcome-stat strong { font-size:.875rem; }
-.welcome-stat small { font-size:.8125rem; color: var(--muted); margin-top: 2px; }
 
 .subject-section { padding: 18px 20px 16px; background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; }
@@ -492,7 +487,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .mobile-header .brand{margin-left:0}.mobile-header .brand-mark{width:36px;height:36px;border-radius:11px}.mobile-header .brand-mark span{font-size:21px}.mobile-header .brand-name{font-size:23px}.mobile-header>div{display:flex;align-items:center;gap:2px}.mobile-header .icon-button{width:44px;height:44px}.notification-button{position:relative}.notification-button i{border-color:var(--canvas)}
   .mobile-search { display:flex;align-items:center;gap:8px;margin:10px 0 -2px;padding:8px 9px 8px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#878b9c;box-shadow:0 8px 24px rgba(35,38,68,.05) }.mobile-search input{min-width:0;width:100%;min-height:40px;border:0;outline:0;font-size:1rem}.mobile-search button{width:40px;height:40px;border:0;background:transparent;color:#8d91a1;padding:0;display:grid;place-items:center}
   .feed-welcome { padding:22px 2px 18px; }
-  .feed-welcome h1{font-size:22px}.feed-welcome p{font-size:.875rem}.welcome-stat{display:none}
+  .feed-welcome h1{font-size:22px}.feed-welcome p{font-size:.875rem}
   .subject-section { margin:0 -14px;border-left:0;border-right:0;border-radius:0;padding:17px 14px 15px;box-shadow:none }.section-heading{padding:0 2px}.subject-row{display:flex;overflow-x:auto;gap:8px;margin-right:-14px;padding-right:14px;scrollbar-width:none}.subject-row::-webkit-scrollbar{display:none}.subject-item{min-width:108px}.subject-cover{width:88px;height:66px}
   .composer-card { border-radius:18px;padding:14px 13px 11px }.composer-tools>div button i{display:none}.composer-tools>div{gap:2px}.composer-main textarea{min-height:48px;font-size:1rem}.composer-tools>div button{min-height:42px;padding:6px 8px;gap:5px;font-size:.75rem}.composer-tools .tool-icon{width:30px;height:30px}.publish-button{min-height:42px;padding:8px 15px}
   .feed-tabs{gap:20px;overflow:hidden}.feed-tabs>button{white-space:nowrap;font-size:.875rem}.feed-tabs>button:nth-child(3){display:none}
@@ -1720,7 +1715,7 @@ html[data-theme="dark"] .semester-progress { background:#34304f; }
 html[data-theme="dark"] :where(input,textarea,select) { border-color:#373d51!important; background-color:#121722!important; color:#f2f4fb!important; }
 html[data-theme="dark"] :where(input,textarea)::placeholder { color:#727a90; }
 html[data-theme="dark"] :where(
-  .subject-section,.composer-card,.post-card,.side-card,.search-box,.welcome-stat,
+  .subject-section,.composer-card,.post-card,.side-card,.search-box,
   .mobile-search,.mobile-sheet,.mobile-menu-grid>button,.post-owner-menu,.comment-list,
   .discover-search,.discover-empty-product,.campus-person-card,.profile-hero,.profile-main,
   .profile-editor-card,.profile-editor-fields,.profile-editor-footer,.profile-editor-topbar,

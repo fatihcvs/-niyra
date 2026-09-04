@@ -1,5 +1,17 @@
 [
   {
+    "id": "feed-welcome-note-count-removed",
+    "releasedAt": "2026-09-04T23:15:19+00:00",
+    "category": "İyileştirme",
+    "area": "Akış",
+    "title": "Akışın karşılama alanı sadeleşti",
+    "summary": "Karşılama alanındaki doğrulanmış not sayısı kutusu kaldırıldı; üst bölüm daha sade bir görünüme kavuştu.",
+    "highlights": [
+      "Not sayısı ve editoryal etiketi içeren küçük kutu kaldırıldı.",
+      "Karşılama metnine daha geniş bir alan ayrıldı."
+    ]
+  },
+  {
     "id": "verified-notes-sidebar-spacing",
     "releasedAt": "2026-09-04T23:11:14+00:00",
     "category": "İyileştirme",
