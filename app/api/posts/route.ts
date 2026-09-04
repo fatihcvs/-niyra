@@ -16,6 +16,8 @@ import {
 } from "../../../db/schema";
 import { audit, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
 import { profileMediaUrl } from "../../../lib/profile";
+import { sameOriginRequest } from "../../../lib/app-auth";
+import { hydratePostMedia, POST_VIDEO_MAX_BYTES, PostMediaValidationError, postMediaUrl, validatePostMedia } from "../../../lib/post-media";
 
 type PostPayload = {
   id?: string;
@@ -167,10 +169,12 @@ async function readLatestPosts(
       WHERE m.muter_email = ${viewerEmail} AND m.muted_email = ${posts.authorEmail}
     )`;
   const communityVisibility = sql<boolean>`
-    ${posts.communityId} IS NULL
+    (${posts.communityId} IS NULL
     OR EXISTS (
       SELECT 1 FROM communities c
-      WHERE c.id = ${posts.communityId} AND c.status = 'active'
+      WHERE c.id = ${posts.communityId} AND c.status = 'active' AND c.moderation_status = 'active'
+        AND (c.university_id IS NULL OR c.university_id = ${viewerUniversityId})
+        AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ${viewerEmail})
         AND (
           c.join_policy = 'open'
           OR EXISTS (
@@ -178,7 +182,7 @@ async function readLatestPosts(
             WHERE cm.community_id = c.id AND cm.user_email = ${viewerEmail} AND cm.status = 'active'
           )
         )
-    )`;
+    ))`;
   const rank = feedRank(viewerEmail, feed);
   const cursorVisibility = cursor
     ? sql<boolean>`(
@@ -200,7 +204,9 @@ async function readLatestPosts(
     .limit(PAGE_SIZE + 1);
 
   const pageRows = rows.slice(0, PAGE_SIZE);
-  const pagePosts = pageRows.map((row) => serializePost(row));
+  const { DB } = await getRuntime();
+  const mediaByPost = await hydratePostMedia(DB, pageRows.map((row) => row.id));
+  const pagePosts = pageRows.map((row) => ({ ...serializePost(row), media: mediaByPost.get(row.id) ?? [] }));
   const lastRow = pageRows.at(-1);
 
   return {
@@ -232,19 +238,24 @@ async function readSharedPost(viewerEmail: string, viewerUniversityId: string, p
            OR (b.blocker_email = ${posts.authorEmail} AND b.blocked_email = ${viewerEmail})
       )`,
       sql<boolean>`
-        ${posts.communityId} IS NULL
+        (${posts.communityId} IS NULL
         OR EXISTS (
           SELECT 1 FROM communities c
-          WHERE c.id = ${posts.communityId} AND c.status = 'active'
+          WHERE c.id = ${posts.communityId} AND c.status = 'active' AND c.moderation_status = 'active'
+            AND (c.university_id IS NULL OR c.university_id = ${viewerUniversityId})
+            AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ${viewerEmail})
             AND (c.join_policy = 'open' OR EXISTS (
               SELECT 1 FROM community_members cm
               WHERE cm.community_id = c.id AND cm.user_email = ${viewerEmail} AND cm.status = 'active'
             ))
-        )`,
+        ))`,
     ))
     .limit(1);
 
-  return row ? serializePost(row) : null;
+  if (!row) return null;
+  const { DB } = await getRuntime();
+  const mediaByPost = await hydratePostMedia(DB, [row.id]);
+  return { ...serializePost(row), media: mediaByPost.get(row.id) ?? [] };
 }
 
 export async function GET(request: Request) {
@@ -297,20 +308,37 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan gönderi isteği reddedildi." }, { status: 403 });
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
   let payload: PostPayload;
+  let mediaFile: File | null = null;
   try {
-    payload = (await request.json()) as PostPayload;
+    if (request.headers.get("content-type")?.toLowerCase().startsWith("multipart/form-data")) {
+      const bodySize = Number(request.headers.get("content-length"));
+      if (bodySize > POST_VIDEO_MAX_BYTES + 64 * 1024) {
+        return Response.json({ error: "Paylaşım dosyası en fazla 20 MB olabilir." }, { status: 413 });
+      }
+      const formData = await request.formData();
+      const files = formData.getAll("media");
+      if (files.length > 1 || (files.length === 1 && !(files[0] instanceof File))) {
+        return Response.json({ error: "Her gönderiye bir görsel veya video ekleyebilirsin." }, { status: 400 });
+      }
+      mediaFile = files[0] instanceof File ? files[0] : null;
+      payload = { content: formData.get("content") as string | undefined, courseId: formData.get("courseId") as string | null };
+    } else {
+      payload = (await request.json()) as PostPayload;
+    }
+    if (!payload || typeof payload !== "object") throw new Error("Invalid post payload");
   } catch {
     return Response.json({ error: "Geçerli bir gönderi bilgisi gönderilmedi." }, { status: 400 });
   }
 
   const content = typeof payload.content === "string" ? payload.content.trim() : "";
-  if (!content || content.length > 1200) {
+  if ((!content && !mediaFile) || content.length > 1200) {
     return Response.json(
-      { error: "Gönderin 1 ile 1200 karakter arasında olmalı." },
+      { error: "Bir yazı, görsel veya video eklemelisin. Yazı en fazla 1200 karakter olabilir." },
       { status: 400 },
     );
   }
@@ -318,8 +346,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "Ders çevresi bilgisi geçerli değil." }, { status: 400 });
   }
 
+  let uploadedKey = "";
+  let committed = false;
   try {
-    const { DB } = await getRuntime();
+    const { DB, FILES } = await getRuntime();
     const limit = await enforceRateLimit(DB, identity.email, "post-create", 30, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
@@ -335,7 +365,7 @@ export async function POST(request: Request) {
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
       .where(
-        eq(studentProfiles.userEmail, identity.email),
+        and(eq(studentProfiles.userEmail, identity.email), eq(studentProfiles.onboardingCompleted, true)),
       )
       .limit(1);
 
@@ -345,6 +375,9 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
+
+    const attachment = mediaFile ? await validatePostMedia(mediaFile) : null;
+    if (attachment && !FILES) throw new Error("R2 binding FILES is unavailable");
 
     let selectedCourse: { id: string; code: string } | null = null;
     const requestedCourseId = typeof payload.courseId === "string" ? payload.courseId.trim() : "";
@@ -371,22 +404,31 @@ export async function POST(request: Request) {
     }
 
     const id = crypto.randomUUID();
-    const [created] = await db
-      .insert(posts)
-      .values({
-        id,
-        authorEmail: identity.email,
-        courseId: selectedCourse?.id ?? null,
-        content,
-      })
-      .returning({ id: posts.id, createdAt: posts.createdAt });
+    const mediaId = attachment ? crypto.randomUUID() : "";
+    const createdAt = new Date().toISOString().replace("T", " ").replace("Z", "");
+    const statements = [DB.prepare(
+      "INSERT INTO posts (id, author_email, course_id, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+    ).bind(id, identity.email, selectedCourse?.id ?? null, content, createdAt, createdAt)];
+    if (attachment && FILES) {
+      uploadedKey = `posts/${id}/${mediaId}.${attachment.storedExtension}`;
+      await FILES.put(uploadedKey, attachment.bytes, { httpMetadata: { contentType: attachment.contentType } });
+      statements.push(DB.prepare(
+        `INSERT INTO post_media (id, post_id, kind, object_key, original_file_name, content_type, byte_size)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      ).bind(mediaId, id, attachment.kind, uploadedKey, attachment.fileName, attachment.contentType, attachment.bytes.byteLength));
+    }
+    statements.push(DB.prepare(
+      "INSERT INTO audit_logs (id, actor_email, action, entity_type, entity_id, detail) VALUES (?, ?, ?, ?, ?, ?)",
+    ).bind(crypto.randomUUID(), identity.email, "post.created", "post", id, JSON.stringify({ courseId: selectedCourse?.id ?? null, mediaKind: attachment?.kind ?? null })));
+    // D1 batch is transactional: publish post, attachment and audit together.
+    await DB.batch(statements);
+    committed = true;
     const displayName = identity.fullName ?? identity.displayName;
-    await audit(DB, identity.email, "post.created", "post", created.id, { courseId: selectedCourse?.id ?? null });
 
     return Response.json(
       {
         post: {
-          id: created.id,
+          id,
           authorId: profile.authorId ?? undefined,
           name: displayName,
           initials: initials(displayName),
@@ -394,9 +436,10 @@ export async function POST(request: Request) {
           avatarUrl: profileMediaUrl(profile.authorId, "avatar", profile.avatarUpdatedAt),
           school: profile.universityName,
           department: profile.departmentName,
-          time: relativeTime(created.createdAt),
+          time: relativeTime(createdAt),
           course: selectedCourse?.code ?? "GENEL",
           text: content,
+          media: attachment ? [{ id: mediaId, kind: attachment.kind, url: postMediaUrl(mediaId), contentType: attachment.contentType, fileName: attachment.fileName }] : [],
           likes: 0,
           comments: 0,
           liked: false,
@@ -407,11 +450,19 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    if (uploadedKey && !committed) {
+      try {
+        const { FILES } = await getRuntime();
+        await FILES?.delete(uploadedKey);
+      } catch { /* Preserve the original failure; no post was published. */ }
+    }
+    if (error instanceof PostMediaValidationError) return Response.json({ error: error.message }, { status: error.status });
     return postError(error);
   }
 }
 
 export async function PATCH(request: Request) {
+  if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan gönderi isteği reddedildi." }, { status: 403 });
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
@@ -425,14 +476,21 @@ export async function PATCH(request: Request) {
   const id = typeof payload.id === "string" ? payload.id.trim() : "";
   const content = typeof payload.content === "string" ? payload.content.trim() : "";
   if (!id || id.length > 80) return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
-  if (!content || content.length > 1200) {
-    return Response.json({ error: "Gönderin 1 ile 1200 karakter arasında olmalı." }, { status: 400 });
+  if (content.length > 1200) {
+    return Response.json({ error: "Gönderi yazısı en fazla 1200 karakter olabilir." }, { status: 400 });
   }
 
   try {
     const { DB } = await getRuntime();
     const limit = await enforceRateLimit(DB, identity.email, "post-edit", 60, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+    if (!content) {
+      const attachment = await DB.prepare(
+        `SELECT pm.id FROM post_media pm JOIN posts p ON p.id = pm.post_id
+         WHERE p.id = ? AND p.author_email = ? AND p.deleted_at IS NULL LIMIT 1`,
+      ).bind(id, identity.email).first();
+      if (!attachment) return Response.json({ error: "Gönderine yazı eklemelisin." }, { status: 400 });
+    }
     const db = await getDb();
     const [updated] = await db
       .update(posts)
@@ -455,6 +513,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan gönderi isteği reddedildi." }, { status: 403 });
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
@@ -469,7 +528,7 @@ export async function DELETE(request: Request) {
   if (!id || id.length > 80) return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
 
   try {
-    const { DB } = await getRuntime();
+    const { DB, FILES } = await getRuntime();
     const db = await getDb();
     const [deleted] = await db
       .update(posts)
@@ -487,6 +546,15 @@ export async function DELETE(request: Request) {
       .returning({ id: posts.id });
 
     if (!deleted) return Response.json({ error: "Gönderi bulunamadı veya bu işlem için yetkin yok." }, { status: 404 });
+    const media = await DB.prepare("SELECT id, object_key FROM post_media WHERE post_id = ?").bind(id).all<{ id: string; object_key: string }>();
+    if (FILES) {
+      for (const item of media.results) {
+        try {
+          await FILES.delete(item.object_key);
+          await DB.prepare("DELETE FROM post_media WHERE id = ?").bind(item.id).run();
+        } catch { /* Deleted posts are immediately inaccessible; keep metadata for later storage cleanup. */ }
+      }
+    }
     await audit(DB, identity.email, "post.deleted", "post", deleted.id);
     return Response.json({ deleted: true, id: deleted.id });
   } catch (error) {

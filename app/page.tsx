@@ -36,6 +36,8 @@ import { CampusGuideWorkspace } from "./campus-guide";
 import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
 import { DirectMessagesWorkspace, type DirectMessageRecipient } from "./direct-messages";
+import { ProfileContent } from "./profile-content";
+import { POST_IMAGE_MAX_BYTES, POST_VIDEO_MAX_BYTES, type PostMedia } from "../lib/post-media";
 
 const CommunitiesWorkspace = dynamic(() => import("./communities-workspace").then((module) => module.CommunitiesWorkspace), {
   loading: () => <div className="empty-state"><strong>Topluluklar hazırlanıyor</strong><span>Kampüs çevren yükleniyor.</span></div>,
@@ -66,6 +68,7 @@ type Post = {
   liked?: boolean;
   saved?: boolean;
   edited?: boolean;
+  media?: PostMedia[];
   attachment?: {
     title: string;
     meta: string;
@@ -320,6 +323,7 @@ function FeedPost({
   onPostUpdated,
   onPostDeleted,
   onSavedChange,
+  onInteractionUpdated,
 }: {
   post: Post;
   viewerInitials?: string;
@@ -327,6 +331,7 @@ function FeedPost({
   onPostUpdated?: (id: number | string, text: string) => void;
   onPostDeleted?: (id: number | string) => void;
   onSavedChange?: (post: Post, saved: boolean) => void;
+  onInteractionUpdated?: (id: number | string, changes: Partial<Pick<Post, "liked" | "saved" | "likes" | "comments">>) => void;
 }) {
   const [liked, setLiked] = useState(post.liked ?? false);
   const [saved, setSaved] = useState(post.saved ?? false);
@@ -403,6 +408,7 @@ function FeedPost({
     }
     setLiked(Boolean(result.active));
     if (typeof result.count === "number") setLikeCount(result.count);
+    onInteractionUpdated?.(post.id, { liked: Boolean(result.active), likes: result.count ?? previousCount });
   }
 
   async function toggleSave() {
@@ -424,6 +430,7 @@ function FeedPost({
     }
     const active = Boolean(result.active);
     setSaved(active);
+    onInteractionUpdated?.(post.id, { saved: active });
     if (active !== optimisticSaved) onSavedChange?.({ ...post, text: currentText, edited }, active);
   }
 
@@ -488,6 +495,7 @@ function FeedPost({
       return;
     }
     if (typeof result.count === "number") setCommentCount(result.count);
+    onInteractionUpdated?.(post.id, { comments: result.count ?? commentCount + 1 });
     setCommentItems((current) => current.map((comment) => comment.id === optimisticId ? result.comment! : comment));
   }
 
@@ -514,6 +522,7 @@ function FeedPost({
       const data = (await response.json()) as { deleted?: boolean; count?: number; error?: string };
       if (!response.ok || !data.deleted) throw new Error(data.error ?? "Yorum silinemedi.");
       if (typeof data.count === "number") setCommentCount(data.count);
+      onInteractionUpdated?.(post.id, { comments: data.count ?? Math.max(0, previousCount - 1) });
     } catch (deleteError) {
       setCommentItems(previousItems);
       setCommentCount(previousCount);
@@ -546,7 +555,7 @@ function FeedPost({
 
   async function saveEdit() {
     const clean = editText.trim();
-    if (!clean || clean.length > 1200 || busyMutation) return;
+    if ((!clean && !post.media?.length) || clean.length > 1200 || busyMutation) return;
     setInteractionError("");
 
     if (!isPersistentPost) {
@@ -639,8 +648,9 @@ function FeedPost({
 
       <div className="post-body">
         <button className="course-tag" type="button">{post.course}</button>
-        {editing ? <div className="post-edit-box"><textarea aria-label="Gönderi metnini düzenle" autoFocus maxLength={1200} value={editText} onChange={(event) => setEditText(event.target.value)} rows={4}/><div><span>{editText.trim().length}/1200</span><button type="button" onClick={() => { setEditing(false); setEditText(currentText); }}>Vazgeç</button><button type="button" onClick={() => void saveEdit()} disabled={!editText.trim() || busyMutation === "edit"}>{busyMutation === "edit" ? "Kaydediliyor…" : "Değişiklikleri kaydet"}</button></div></div> : <p>{currentText}{edited && <small className="post-edited"> · düzenlendi</small>}</p>}
+        {editing ? <div className="post-edit-box"><textarea aria-label="Gönderi metnini düzenle" autoFocus maxLength={1200} value={editText} onChange={(event) => setEditText(event.target.value)} rows={4}/><div><span>{editText.trim().length}/1200</span><button type="button" onClick={() => { setEditing(false); setEditText(currentText); }}>Vazgeç</button><button type="button" onClick={() => void saveEdit()} disabled={(!editText.trim() && !post.media?.length) || busyMutation === "edit"}>{busyMutation === "edit" ? "Kaydediliyor…" : "Değişiklikleri kaydet"}</button></div></div> : <p>{currentText}{edited && <small className="post-edited"> · düzenlendi</small>}</p>}
         {post.attachment && <AttachmentCard attachment={post.attachment} />}
+        {post.media?.map((media) => <div className={`post-media post-media-${media.kind}`} key={media.id}>{media.kind === "image" ? <Image src={media.url} alt={currentText || `${post.name} tarafından paylaşılan fotoğraf`} width={900} height={900} sizes="(max-width: 780px) 100vw, 650px" unoptimized/> : <video src={media.url} controls playsInline preload="metadata" aria-label={currentText || `${post.name} tarafından paylaşılan video`}/>}</div>)}
         {post.poll && (
           <div className="poll" aria-label="Anket">
             {post.poll.map((item, index) => (
@@ -980,9 +990,12 @@ function ProfileEditor({ profile, onSaved, onCancel, onEditAcademic }: { profile
   );
 }
 
-function ProfileView({ profile, posts, shareable, onEdit, onSignOut, onPostUpdated, onPostDeleted }: { profile: StudentProfile; posts: Post[]; shareable: boolean; onEdit: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void }) {
+function ProfileAbout({ profile }: { profile: Pick<StudentProfile, "bio" | "links" | "universityName" | "facultyName" | "departmentName" | "classYear" | "courses"> }) {
+  return <div className="profile-about"><section><h2>Hakkında</h2><p>{profile.bio || "Henüz bir biyografi eklenmedi."}</p><ProfileLinks links={profile.links}/></section><section><h2>Akademik bilgiler</h2><dl><div><dt>Üniversite</dt><dd>{profile.universityName}</dd></div><div><dt>Fakülte</dt><dd>{profile.facultyName}</dd></div><div><dt>Bölüm</dt><dd>{profile.departmentName}</dd></div><div><dt>Sınıf</dt><dd>{profile.classYear}. sınıf</dd></div></dl></section><section><h2>Ders çevreleri</h2>{profile.courses.length ? <ul>{profile.courses.map((course) => <li key={course.id}><strong>{course.code}</strong><span>{course.name}</span></li>)}</ul> : <p>Henüz ders çevresi eklenmedi.</p>}</section></div>;
+}
+
+function ProfileView({ profile, shareable, onEdit, onSignOut, onPostUpdated, onPostDeleted, onNavigate }: { profile: StudentProfile; shareable: boolean; onEdit: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onNavigate: (name: string) => void }) {
   const initials = getInitials(profile.displayName);
-  const profilePosts = posts.filter((post) => post.authorId === profile.publicId);
   const [copied, setCopied] = useState(false);
 
   async function shareOwnProfile() {
@@ -1001,8 +1014,7 @@ function ProfileView({ profile, posts, shareable, onEdit, onSignOut, onPostUpdat
   return (
     <div className="workspace-view profile-view">
       <section className="profile-hero"><ProfileCover imageUrl={profile.bannerUrl}/><div className="profile-main"><Avatar initials={initials} className="avatar-violet" imageUrl={profile.avatarUrl}/><div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}><Icon name="edit" size={14}/>Profili düzenle</button><button type="button" onClick={onSignOut}>Çıkış yap</button></div></div><p className={`profile-bio ${profile.bio ? "" : "profile-bio-muted"}`}>{profile.bio || `${profile.universityShortName} ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.`}</p><ProfileLinks links={profile.links}/><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
-      <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
-      {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} viewerId={profile.publicId} post={post} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
+      <ProfileContent key={profile.publicId} userId={profile.publicId} own about={<ProfileAbout profile={profile}/>} onNavigate={onNavigate} onCreate={() => onNavigate("Gönderi oluştur")} renderPost={(post, actions) => <FeedPost key={post.id} viewerInitials={initials} viewerId={profile.publicId} post={post} onInteractionUpdated={actions.onInteractionUpdated} onPostUpdated={(id, text) => { actions.onPostUpdated(id, text); onPostUpdated(id, text); }} onPostDeleted={(id) => { actions.onPostDeleted(id); onPostDeleted(id); }}/>} />
     </div>
   );
 }
@@ -1077,8 +1089,7 @@ function PublicProfileView({
         <ProfileLinks links={profile.links}/>
         <div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div>
       </section>
-      <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Ders çevreleri</button><button type="button">Hakkında</button></div>
-      {profile.posts.length > 0 ? profile.posts.map((post) => <FeedPost post={post} viewerInitials={viewerInitials} viewerId={viewerId} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderi yok</strong><p>{profile.displayName} ilk paylaşımını yaptığında burada görünecek.</p></div>}
+      <ProfileContent key={profile.publicId} userId={profile.publicId} own={false} about={<ProfileAbout profile={profile}/>} renderPost={(post, actions) => <FeedPost post={post} viewerInitials={viewerInitials} viewerId={viewerId} key={post.id} {...actions}/>} />
     </div>
   );
 }
@@ -1114,7 +1125,7 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
   );
 }
 
-function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Mesajlar") return <DirectMessagesWorkspace initialRecipient={messageRecipient} onNavigate={onNavigate} onUnreadChange={onMessagesUnreadChange}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
@@ -1128,7 +1139,7 @@ function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery
   if (name === "Güvenlik") return <SafetyWorkspace/>;
   if (name === "Ayarlar") return <ThemeSettings preference={themePreference} onChange={onThemeChange}/>;
   if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} universityShortName={profile.universityShortName} onSavedChange={onSavedChange}/>;
-  if (name === "Profil") return <ProfileView profile={profile} posts={posts} shareable={shareableProfile} onEdit={onEditProfile} onSignOut={onSignOut} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted}/>;
+  if (name === "Profil") return <ProfileView profile={profile} shareable={shareableProfile} onEdit={onEditProfile} onSignOut={onSignOut} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} onNavigate={onNavigate}/>;
   return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
 }
 
@@ -1929,6 +1940,10 @@ export default function Home() {
   });
   const [feedTab, setFeedTab] = useState("Senin için");
   const [draft, setDraft] = useState("");
+  const [draftMedia, setDraftMedia] = useState<File | null>(null);
+  const [draftMediaUrl, setDraftMediaUrl] = useState("");
+  const imageInput = useRef<HTMLInputElement>(null);
+  const videoInput = useRef<HTMLInputElement>(null);
   const [composerExpanded, setComposerExpanded] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
@@ -1967,6 +1982,8 @@ export default function Home() {
   const [campusLiveStatus, setCampusLiveStatus] = useState<"loading" | "ready" | "error">("loading");
   const [campusReactionPendingId, setCampusReactionPendingId] = useState<string | null>(null);
   const sharedPostFocused = useRef(false);
+
+  useEffect(() => () => { if (draftMediaUrl) URL.revokeObjectURL(draftMediaUrl); }, [draftMediaUrl]);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
@@ -2343,25 +2360,25 @@ export default function Home() {
 
   async function publishPost() {
     const clean = draft.trim();
-    if (!clean || publishing) return;
+    if ((!clean && !draftMedia) || publishing) return;
     setComposerError("");
 
     setPublishing(true);
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          content: clean,
-          courseId: composerCourseId ?? activeProfile.courses[0]?.id ?? null,
-        }),
-      });
+      const payload = { content: clean, courseId: composerCourseId ?? activeProfile.courses[0]?.id ?? null };
+      const form = new FormData();
+      form.set("content", clean);
+      if (payload.courseId) form.set("courseId", payload.courseId);
+      if (draftMedia) form.set("media", draftMedia);
+      const response = await fetch("/api/posts", draftMedia ? { method: "POST", body: form } : { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
       const data = (await response.json()) as { post?: Post; error?: string };
       if (!response.ok || !data.post) throw new Error(data.error ?? "Gönderin paylaşılamadı.");
 
       setPosts((current) => [data.post as Post, ...current]);
       setStudentProfile((current) => current ? { ...current, postCount: current.postCount + 1 } : current);
       setDraft("");
+      setDraftMedia(null);
+      setDraftMediaUrl("");
       setComposerCourseId(null);
       setComposerExpanded(false);
     } catch (publishError) {
@@ -2405,7 +2422,7 @@ export default function Home() {
     setPosts((current) => current.filter((post) => post.id !== id));
     setSavedPosts((current) => current.filter((post) => post.id !== id));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.filter((post) => post.id !== id), postCount: Math.max(0, current.postCount - (current.posts.some((post) => post.id === id) ? 1 : 0)) } : current);
-    if (removedPost?.authorId === activeProfile.publicId) {
+    if (removedPost?.authorId === activeProfile.publicId || activeNav === "Profil") {
       setStudentProfile((current) => current ? { ...current, postCount: Math.max(0, current.postCount - 1) } : current);
     }
   }
@@ -2450,6 +2467,11 @@ export default function Home() {
   }
 
   async function signOut() {
+    setDraft("");
+    setDraftMedia(null);
+    setDraftMediaUrl("");
+    setComposerCourseId(null);
+    setComposerExpanded(false);
     await fetch("/api/auth/session", { method: "DELETE", headers: { accept: "application/json" } }).catch(() => undefined);
     if (window.location.hostname === "chatgpt.site" || window.location.hostname.endsWith(".chatgpt.site")) {
       window.location.assign("/signout-with-chatgpt?return_to=%2F");
@@ -2463,6 +2485,7 @@ export default function Home() {
   }
 
   function navigateTo(name: string, targetMarketTab?: CampusMarketTab) {
+    if (name === "Gönderi oluştur") { openFeedComposer(); return; }
     const currentUrl = new URL(window.location.href);
     if (currentUrl.searchParams.has("profile") || currentUrl.searchParams.has("post")) {
       currentUrl.searchParams.delete("profile");
@@ -2498,6 +2521,16 @@ export default function Home() {
       composer?.scrollIntoView({ behavior: "smooth", block: "center" });
       window.setTimeout(() => composer?.focus(), 260);
     });
+  }
+
+  function choosePostMedia(event: ChangeEvent<HTMLInputElement>, kind: "image" | "video") {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const allowed = kind === "image" ? ["image/png", "image/jpeg", "image/webp"] : ["video/mp4", "video/webm"];
+    if (!allowed.includes(file.type)) { setComposerError(kind === "image" ? "PNG, JPG veya WebP formatında bir fotoğraf seç." : "MP4 veya WebM formatında bir video seç."); return; }
+    if (file.size > (kind === "image" ? POST_IMAGE_MAX_BYTES : POST_VIDEO_MAX_BYTES)) { setComposerError(kind === "image" ? "Fotoğraf en fazla 8 MB olabilir." : "Video en fazla 20 MB olabilir."); return; }
+    setDraftMediaUrl(URL.createObjectURL(file)); setDraftMedia(file); setComposerError(""); setComposerExpanded(true);
   }
 
   async function toggleFollow(publicId: string) {
@@ -2620,12 +2653,16 @@ export default function Home() {
             <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
           </div>
           {composerCourse && <div className="composer-course-chip"><span><Icon name="notes" size={15}/><strong>{composerCourse.code}</strong> ders çevresinde paylaşıyorsun</span><button type="button" onClick={() => setComposerCourseId(null)} aria-label="Ders seçimini kaldır"><Icon name="close" size={14}/></button></div>}
+          {draftMedia && <div className="composer-media-preview">{draftMediaUrl && (draftMedia.type.startsWith("image/") ? <Image src={draftMediaUrl} alt="Seçilen fotoğraf" width={600} height={400} unoptimized/> : <video src={draftMediaUrl} controls playsInline preload="metadata"/>)}<div><span>{draftMedia.name}</span><button type="button" disabled={publishing} onClick={() => { setDraftMedia(null); setDraftMediaUrl(""); }} aria-label="Seçilen medyayı kaldır"><Icon name="close" size={17}/></button></div></div>}
+          <input ref={imageInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(event) => choosePostMedia(event, "image")}/>
+          <input ref={videoInput} type="file" accept="video/mp4,video/webm" hidden onChange={(event) => choosePostMedia(event, "video")}/>
           <div className="composer-tools">
             <div>
-              <button type="button"><span className="tool-icon tool-image"><Icon name="image" size={18}/></span><span>Fotoğraf</span></button>
+              <button type="button" disabled={publishing} onClick={() => imageInput.current?.click()}><span className="tool-icon tool-image"><Icon name="image" size={18}/></span><span>Fotoğraf</span></button>
+              <button type="button" disabled={publishing} onClick={() => videoInput.current?.click()}><span className="tool-icon tool-video">▷</span><span>Video</span></button>
               <button type="button" onClick={() => navigateTo("Notlar")}><span className="tool-icon tool-note"><Icon name="file" size={18}/></span><span>Not yükle</span></button>
             </div>
-            <button className="publish-button" type="button" disabled={!draft.trim() || publishing} onClick={() => void publishPost()}>{publishing ? "Paylaşılıyor…" : "Paylaş"}</button>
+            <button className="publish-button" type="button" disabled={(!draft.trim() && !draftMedia) || publishing} onClick={() => void publishPost()}>{publishing ? "Paylaşılıyor…" : "Paylaş"}</button>
           </div>
           {composerError && <p className="composer-feedback" role="alert">{composerError}</p>}
         </section>

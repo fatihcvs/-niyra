@@ -63,6 +63,7 @@ test("all database migrations apply cleanly in order", async () => {
         "platform_roles",
         "post_comments",
         "post_likes",
+        "post_media",
         "post_saves",
         "posts",
         "product_events",

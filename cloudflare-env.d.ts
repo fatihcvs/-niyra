@@ -44,7 +44,7 @@ interface R2Bucket {
       customMetadata?: Record<string, string>;
     },
   ): Promise<unknown>;
-  get(key: string): Promise<R2ObjectBody | null>;
+  get(key: string, options?: { range?: { offset: number; length: number } }): Promise<R2ObjectBody | null>;
   delete(key: string): Promise<void>;
 }
 

@@ -1,5 +1,19 @@
 [
   {
+    "id": "profile-photo-video-collections",
+    "releasedAt": "2026-09-05T00:05:00+03:00",
+    "category": "İyileştirme",
+    "area": "Profil",
+    "title": "Profil bölümleri, fotoğraf galerisi ve videolar hazır",
+    "summary": "Profilindeki gönderi, not, topluluk ve hakkında bölümleri artık çalışıyor. Fotoğraflar üç sütunlu kare galeride, videolar ayrı bir bölümde toplanıyor.",
+    "highlights": [
+      "Fotoğraf ve video seçip önizleyebilir, açıklama ekleyerek veya açıklamasız paylaşabilirsin.",
+      "Görsellere dokunarak paylaşımı açabilir, dikey videoları izleyebilir ve önceki ya da sonraki paylaşıma geçebilirsin.",
+      "Eski paylaşımlar da profilde listelenir; beğeni, yorum ve kaydetme durumu görüntüleyiciyi yeniden açınca korunur.",
+      "Paylaşımlar kampüs, engelleme ve topluluk görünürlüğü kurallarına göre gösterilir."
+    ]
+  },
+  {
     "id": "community-hubs",
     "releasedAt": "2026-09-04T23:40:00+03:00",
     "category": "İyileştirme",

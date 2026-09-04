@@ -16,6 +16,8 @@ import {
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { parseProfileLinks, profileMediaUrl } from "../../../lib/profile";
+import { hydratePostMedia } from "../../../lib/post-media";
+import { getRuntime } from "../../../lib/server-api";
 
 function signInResponse() {
   return Response.json(
@@ -129,7 +131,19 @@ export async function GET(request: Request) {
 
     const followerCount = sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followingEmail} = ${users.email})`;
     const followingCount = sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${users.email})`;
-    const postCount = sql<number>`(SELECT COUNT(*) FROM ${posts} WHERE ${posts.authorEmail} = ${users.email} AND ${posts.deletedAt} IS NULL)`;
+    const communityVisibility = sql<boolean>`(
+      ${posts.communityId} IS NULL OR EXISTS (
+        SELECT 1 FROM communities c WHERE c.id = ${posts.communityId}
+          AND c.status = 'active' AND c.moderation_status = 'active'
+          AND (c.university_id IS NULL OR c.university_id = ${viewer.universityId})
+          AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ${identity.email})
+          AND (c.join_policy = 'open' OR EXISTS (
+            SELECT 1 FROM community_members cm WHERE cm.community_id = c.id
+              AND cm.user_email = ${identity.email} AND cm.status = 'active'
+          ))
+      )
+    )`;
+    const postCount = sql<number>`(SELECT COUNT(*) FROM ${posts} WHERE ${posts.authorEmail} = ${users.email} AND ${posts.deletedAt} IS NULL AND ${communityVisibility})`;
     const isFollowing = sql<number>`EXISTS (SELECT 1 FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${identity.email} AND ${userFollows.followingEmail} = ${users.email})`;
     const sameDepartment = sql<number>`CASE WHEN ${studentProfiles.departmentId} = (SELECT department_id FROM student_profiles WHERE user_email = ${identity.email}) THEN 1 ELSE 0 END`;
     const selection = {
@@ -237,12 +251,14 @@ export async function GET(request: Request) {
         })
         .from(posts)
         .leftJoin(courses, eq(posts.courseId, courses.id))
-        .where(and(eq(posts.authorEmail, row.email), isNull(posts.deletedAt)))
+        .where(and(eq(posts.authorEmail, row.email), isNull(posts.deletedAt), communityVisibility))
         .orderBy(desc(posts.createdAt), desc(posts.id))
         .limit(20),
     ]);
 
     const person = publicPerson(row);
+    const { DB } = await getRuntime();
+    const mediaByPost = await hydratePostMedia(DB, recentPosts.map((post) => post.id));
     return Response.json({
       person: {
         ...person,
@@ -259,6 +275,7 @@ export async function GET(request: Request) {
           time: relativeTime(post.createdAt),
           course: post.courseCode ?? "GENEL",
           text: post.content,
+          media: mediaByPost.get(post.id) ?? [],
           edited: post.updatedAt !== post.createdAt,
           likes: Number(post.likeCount),
           comments: Number(post.commentCount),

@@ -415,6 +415,24 @@ export const posts = sqliteTable(
   ],
 );
 
+export const postMedia = sqliteTable(
+  "post_media",
+  {
+    id: text("id").primaryKey(),
+    postId: text("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+    kind: text("kind", { enum: ["image", "video"] }).notNull(),
+    objectKey: text("object_key").notNull(),
+    originalFileName: text("original_file_name").notNull(),
+    contentType: text("content_type").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("post_media_post_kind_idx").on(table.postId, table.kind),
+    uniqueIndex("post_media_object_key_unique").on(table.objectKey),
+  ],
+);
+
 export const postLikes = sqliteTable(
   "post_likes",
   {
