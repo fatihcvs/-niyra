@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.940 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 2.029 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -232,6 +232,21 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   Havacılık ve Uzay Mühendisliği ile Radyo-Televizyon-Sinema tahminen bağlanmadı.
   Turizm ve Gastronomi Yönetimi bağlantısı da resmî dizinde görünmesine rağmen
   hedefi 404 döndürdüğü için doğrulanmış kaynak sağlanana kadar bağlantısız bırakıldı.
+
+## Akdeniz Üniversitesi müfredat genişletmesi — on sekizinci parça
+
+- Akdeniz Üniversitesi'nin resmî [Bologna Bilgi Sistemi](https://obs.akdeniz.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr)
+  dizinindeki 26 akademik birim ve 148 yayımlanmış lisans planı, ÖSYM
+  kataloğundaki 90 güncel lisans programıyla birim ve program adı birlikte
+  değerlendirilerek karşılaştırıldı.
+- 89 güncel program kendi resmî dönemlik ders planına bağlandı. Her hedefte
+  doldurulmuş AKTS tablosu ve en az beş farklı ders kodu canlı olarak doğrulandı.
+- Almanca Edebiyat, yıllık Hukuk, İlahiyat M.T.O.K. ve Türkçe Turizm İşletmeciliği
+  için kurum ile ÖSYM arasındaki ad farkları açık eşlemelerle düzeltildi; ikinci
+  öğretim ve eski sanat programları güncel programa karıştırılmadı.
+- Tarım Ekonomisi bağlantısı resmî dizinde bölüm planı yerine OBS ana sayfasına
+  gittiği için benzer bir plan tahmin edilmedi ve doğrulanmış hedef yayımlanana
+  kadar bağlantısız bırakıldı.
 
 ## Bilinen sınır
 

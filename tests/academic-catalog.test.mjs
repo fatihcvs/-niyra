@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1940,
+    curriculumLinkCount: 2029,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 36);
+  assert.equal(catalog.meta.sources.length, 37);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -377,6 +377,29 @@ test("Dokuz Eylul programmes link only to verified 2025-2026 course-catalog plan
     "Havacılık ve Uzay Mühendisliği (İngilizce)",
     "Radyo, Televizyon ve Sinema",
   ].sort());
+});
+
+test("Akdeniz programmes link only to populated official Bologna course plans", () => {
+  const akdeniz = catalog.universities["tr-akdeniz-universitesi"];
+  const bachelorPrograms = akdeniz.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 90);
+  assert.equal(curriculumPrograms.length, 89);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Akdeniz Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "obs.akdeniz.edu.tr"
+      && parsed.pathname === "/oibs/bologna/progCourses.aspx"
+      && /^\d+$/.test(parsed.searchParams.get("curSunit") ?? "")
+      && parsed.searchParams.get("lang") === "tr";
+  })));
+
+  const englishLiterature = curriculumPrograms.find((program) => program.name === "İngiliz Dili ve Edebiyatı (İngilizce)");
+  assert.equal(new URL(englishLiterature.curriculumUrls[0]).searchParams.get("curSunit"), "872");
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name);
+  assert.deepEqual(unlinked, ["Tarım Ekonomisi"]);
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {
