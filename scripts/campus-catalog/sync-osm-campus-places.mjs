@@ -6,6 +6,7 @@ const ROOT = process.cwd();
 const CACHE_DIR = path.join(ROOT, ".sites-runtime", "campus-catalog");
 const ENDPOINT = process.env.OVERPASS_ENDPOINT ?? "https://overpass-api.de/api/interpreter";
 const BOUNDS = "34.0,25.0,43.0,45.0";
+const NEARBY_RADIUS_METERS = 1_500;
 
 const queries = {
   anchors: `[out:json][timeout:180];
@@ -21,12 +22,15 @@ out center tags;`,
 )->.campuses;
 (
   .campuses;
-  nwr(around.campuses:1500)["name"]["amenity"~"^(library|cafe|restaurant|fast_food|food_court|community_centre|cinema|theatre|arts_centre|hospital|clinic|pharmacy|doctors|bus_station)$"];
-  nwr(around.campuses:1500)["name"]["leisure"~"^(sports_centre|fitness_centre|stadium|park)$"];
-  nwr(around.campuses:1500)["name"]["public_transport"~"^(station|stop_position|platform)$"];
-  nwr(around.campuses:1500)["name"]["highway"="bus_stop"];
-  nwr(around.campuses:1500)["name"]["railway"~"^(station|halt|tram_stop|subway_entrance)$"];
-  nwr(around.campuses:1500)["name"]["shop"~"^(supermarket|convenience|books|copyshop|stationery)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["amenity"~"^(college|research_institute|library|coworking_space|internet_cafe|cafe|restaurant|fast_food|food_court|ice_cream|community_centre|cinema|theatre|arts_centre|events_venue|music_venue|bar|pub|nightclub|hospital|clinic|pharmacy|doctors|dentist|bus_station|ferry_terminal|taxi|bicycle_rental|bank|atm|post_office|parcel_locker|police|toilets)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["building"~"^(university|college)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["office"~"^(educational_institution|research)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["leisure"~"^(sports_centre|fitness_centre|stadium|sports_hall|pitch|swimming_pool|fitness_station|track|ice_rink|park|garden)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["tourism"~"^(museum|gallery|attraction)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["public_transport"~"^(station|stop_position|platform)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["highway"="bus_stop"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["railway"~"^(station|halt|tram_stop|subway_entrance)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["shop"~"^(supermarket|convenience|books|copyshop|stationery|mall|department_store|laundry|computer)$"];
 );
 out center tags;`,
 };

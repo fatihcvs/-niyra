@@ -7,8 +7,8 @@ const CACHE_DIR = path.join(ROOT, ".sites-runtime", "campus-catalog");
 const OUTPUT_PATH = path.join(ROOT, "data", "campus-places-2026.json");
 const REPORT_PATH = path.join(CACHE_DIR, "campus-place-match-report.json");
 const CHECKED_AT = "2026-09-04";
-const MAX_PLACES_PER_UNIVERSITY = 14;
-const MAX_ANCHORS_PER_UNIVERSITY = 4;
+const MAX_PLACES_PER_UNIVERSITY = 40;
+const MAX_ANCHORS_PER_UNIVERSITY = 5;
 const NEARBY_RADIUS_METERS = 1_500;
 
 const { universities } = await import("../../lib/university-catalog.ts");
@@ -159,14 +159,22 @@ function haversine(a, b) {
 function categoryFor(element) {
   const tags = element.tags ?? {};
   if (isCampusAnchor(element)) return "building";
+  if (["college", "research_institute"].includes(tags.amenity)
+    || ["university", "college"].includes(tags.building)
+    || ["educational_institution", "research"].includes(tags.office)) return "building";
   if (tags.amenity === "library") return "library";
-  if (["books", "copyshop", "stationery"].includes(tags.shop)) return "study";
-  if (["cafe", "restaurant", "fast_food", "food_court"].includes(tags.amenity)) return "food";
-  if (["sports_centre", "fitness_centre", "stadium"].includes(tags.leisure)) return "sports";
-  if (["park"].includes(tags.leisure) || ["community_centre", "cinema", "theatre", "arts_centre"].includes(tags.amenity)) return "social";
-  if (tags.public_transport || tags.highway === "bus_stop" || tags.railway || tags.amenity === "bus_station") return "transport";
-  if (["hospital", "clinic", "pharmacy", "doctors"].includes(tags.amenity)) return "health";
-  if (["supermarket", "convenience"].includes(tags.shop)) return "other";
+  if (["coworking_space", "internet_cafe"].includes(tags.amenity)
+    || ["books", "copyshop", "stationery"].includes(tags.shop)) return "study";
+  if (["cafe", "restaurant", "fast_food", "food_court", "ice_cream"].includes(tags.amenity)) return "food";
+  if (["sports_centre", "fitness_centre", "stadium", "sports_hall", "pitch", "swimming_pool", "fitness_station", "track", "ice_rink"].includes(tags.leisure)) return "sports";
+  if (["park", "garden"].includes(tags.leisure)
+    || ["community_centre", "cinema", "theatre", "arts_centre", "events_venue", "music_venue", "bar", "pub", "nightclub"].includes(tags.amenity)
+    || ["museum", "gallery", "attraction"].includes(tags.tourism)) return "social";
+  if (tags.public_transport || tags.highway === "bus_stop" || tags.railway
+    || ["bus_station", "ferry_terminal", "taxi", "bicycle_rental"].includes(tags.amenity)) return "transport";
+  if (["hospital", "clinic", "pharmacy", "doctors", "dentist"].includes(tags.amenity)) return "health";
+  if (["supermarket", "convenience", "mall", "department_store", "laundry", "computer"].includes(tags.shop)
+    || ["bank", "atm", "post_office", "parcel_locker", "police", "toilets"].includes(tags.amenity)) return "other";
   return null;
 }
 
@@ -249,7 +257,7 @@ for (const university of universities) {
   const chosen = [];
   const seenElements = new Set();
   const seenNames = new Set();
-  const categoryPriority = ["library", "food", "study", "social", "sports", "health", "transport", "other"];
+  const categoryPriority = ["building", "library", "food", "study", "social", "sports", "health", "transport", "other"];
   const anchorsFirst = candidates.filter((candidate) => candidate.isAnchor).sort((left, right) => left.distance - right.distance);
   const nearbyByCategory = new Map(categoryPriority.map((category) => [category, candidates
     .filter((candidate) => !candidate.isAnchor && candidate.category === category)
@@ -359,7 +367,7 @@ const officialPlaceCount = places.filter((place) => place.source.type === "offic
 const coordinateKnownCount = places.filter((place) => place.latitude !== null && place.longitude !== null).length;
 const payload = {
   meta: {
-    version: "2026.1",
+    version: "2026.2",
     updatedAt: CHECKED_AT,
     universityCount: universities.length,
     coveredUniversityCount: coveredUniversities,
@@ -368,7 +376,7 @@ const payload = {
     officialPlaceCount,
     coordinateKnownCount,
     radiusMeters: NEARBY_RADIUS_METERS,
-    methodology: "OpenStreetMap university/campus records were matched by official domain, Wikidata ID, exact name, or high-confidence name similarity. Nearby named places were selected within 1.5 km with category diversity. Institutions without a confident map anchor were covered by addresses published on official university or public higher-education pages; coordinates are omitted when an exact source could not be verified.",
+    methodology: "OpenStreetMap university/campus records were matched by official domain, Wikidata ID, exact name, or high-confidence name similarity. Up to 40 nearby named places were selected within 1.5 km with balanced coverage across buildings, libraries, food, study, social, sports, health, transport, and daily-needs categories. Institutions without a confident map anchor were covered by addresses published on official university or public higher-education pages; coordinates are omitted when an exact source could not be verified.",
     attribution: "© OpenStreetMap contributors",
     license: "ODbL 1.0",
     licenseUrl: "https://www.openstreetmap.org/copyright",
