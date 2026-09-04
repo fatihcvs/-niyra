@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "version": "2026.09.04.1",
+    "updatedAt": "2026-09-04",
+    "method": "Course rows are transcribed from institution-published curriculum pages and checked against their programme identity, semester heading, course code and title.",
+    "limitations": "A programme is listed only after its official course rows are structured. Missing programmes remain available through manual course entry; a curriculum link alone is not treated as course coverage."
+  },
+  "programs": {
+    "omu:program-osym-108210665": {
+      "universityId": "omu",
+      "programId": "program-osym-108210665",
+      "programName": "Bilgisayar Mühendisliği",
+      "authority": "Ondokuz Mayıs Üniversitesi",
+      "sourceUrl": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?kultur=tr-TR&Mod=1&ustbirim=6&birim=6&altbirim=-1&program=2727&organizasyonId=81&mufredatTurId=932001",
+      "verifiedAt": "2026-09-04",
+      "courses": [
+        { "code": "ATİ101", "name": "Atatürk İlkeleri ve İnkılap Tarihi I", "semester": 1, "kind": "required" },
+        { "code": "BİL123", "name": "Ayrık Matematik", "semester": 1, "kind": "required" },
+        { "code": "BİL101", "name": "Bilgisayar Mühendisliğine Giriş", "semester": 1, "kind": "required" },
+        { "code": "TBFİZ121", "name": "Fizik I", "semester": 1, "kind": "required" },
+        { "code": "TBMAT111", "name": "Matematik I", "semester": 1, "kind": "required" },
+        { "code": "BİL103", "name": "Programlamaya Giriş - I", "semester": 1, "kind": "required" },
+        { "code": "YD101", "name": "Yabancı Dil I", "semester": 1, "kind": "elective" },
+
+        { "code": "ATİ102", "name": "Atatürk İlkeleri ve İnkılap Tarihi II", "semester": 2, "kind": "required" },
+        { "code": "BİL108", "name": "Elektrik Devreleri ve Elektronik", "semester": 2, "kind": "required" },
+        { "code": "TBFİZ122", "name": "Fizik II", "semester": 2, "kind": "required" },
+        { "code": "TBMAT112", "name": "Matematik II", "semester": 2, "kind": "required" },
+        { "code": "BİL124", "name": "Olasılık ve İstatistiğe Giriş", "semester": 2, "kind": "required" },
+        { "code": "BİL104", "name": "Programlamaya Giriş-II", "semester": 2, "kind": "required" },
+        { "code": "YD102", "name": "Yabancı Dil II", "semester": 2, "kind": "elective" },
+
+        { "code": "BİL227", "name": "Diferansiyel Denklemler", "semester": 3, "kind": "required" },
+        { "code": "BİL225", "name": "Doğrusal Cebir", "semester": 3, "kind": "required" },
+        { "code": "YDI213", "name": "İleri İngilizce I", "semester": 3, "kind": "elective" },
+        { "code": "İSG101", "name": "İş Sağlığı ve Güvenliği I", "semester": 3, "kind": "required" },
+        { "code": "BİL215", "name": "Sayısal Devreler ve Mantıksal Tasarım", "semester": 3, "kind": "required" },
+        { "code": "TDİ101", "name": "Türk Dili I", "semester": 3, "kind": "required" },
+        { "code": "BİL203", "name": "Veri Yapıları", "semester": 3, "kind": "required" },
+
+        { "code": "BİL204", "name": "Algoritmalar", "semester": 4, "kind": "required" },
+        { "code": "YDI214", "name": "İleri İngilizce II", "semester": 4, "kind": "elective" },
+        { "code": "İSG102", "name": "İş Sağlığı ve Güvenliği II", "semester": 4, "kind": "required" },
+        { "code": "BİL212", "name": "Nesneye Yönelik Programlama", "semester": 4, "kind": "required" },
+        { "code": "BİL214", "name": "Sayısal Çözümleme", "semester": 4, "kind": "required" },
+        { "code": "TDİ102", "name": "Türk Dili II", "semester": 4, "kind": "required" },
+
+        { "code": "BİL305", "name": "Bilgisayar Mimarisi", "semester": 5, "kind": "required" },
+        { "code": "MUH301", "name": "Girişimcilik ve Yenilikçilik", "semester": 5, "kind": "required" },
+        { "code": "BİL313", "name": "Sistem Programlama", "semester": 5, "kind": "required" },
+        { "code": "BİL309", "name": "Veritabanı Yönetim Sistemleri", "semester": 5, "kind": "required" },
+        { "code": "BİL321", "name": "Web Teknolojileri", "semester": 5, "kind": "elective" },
+        { "code": "BİL327", "name": "Mobil Programlama", "semester": 5, "kind": "elective" },
+
+        { "code": "BİL304", "name": "İşletim Sistemleri", "semester": 6, "kind": "required" },
+        { "code": "BİL322", "name": "Mesleki İngilizce", "semester": 6, "kind": "required" },
+        { "code": "BİL318", "name": "Mikroişlemciler", "semester": 6, "kind": "required" },
+        { "code": "BİL312", "name": "Özdevinirler Kuramı", "semester": 6, "kind": "required" },
+        { "code": "BİL314", "name": "Sinyaller ve Sistemler", "semester": 6, "kind": "required" },
+        { "code": "BİL392", "name": "Staj", "semester": 6, "kind": "required" },
+
+        { "code": "BİL401", "name": "Bilgisayar Ağları", "semester": 7, "kind": "required" },
+        { "code": "BİL409", "name": "Proje Tasarımı", "semester": 7, "kind": "required" },
+        { "code": "BİL407", "name": "Yazılım Mühendisliği", "semester": 7, "kind": "required" },
+        { "code": "BİL417", "name": "Görüntü İşleme Laboratuvarı", "semester": 7, "kind": "elective" },
+        { "code": "BİL431", "name": "Bilgi Güvenliği", "semester": 7, "kind": "elective" },
+        { "code": "BİL447", "name": "Oyun Programlama", "semester": 7, "kind": "elective" },
+        { "code": "BİL429", "name": "Makine Öğrenimine Giriş", "semester": 7, "kind": "elective" },
+        { "code": "BİL441", "name": "Yapay Zeka", "semester": 7, "kind": "elective" },
+        { "code": "BİL455", "name": "İnsan Bilgisayar Arayüzü", "semester": 7, "kind": "elective" },
+
+        { "code": "BİL400", "name": "Bitirme Projesi", "semester": 8, "kind": "required" },
+        { "code": "BİL502", "name": "Mesleki Uygulama Programı", "semester": 8, "kind": "required" },
+        { "code": "BİL500", "name": "Sanayi Uygulaması", "semester": 8, "kind": "elective" },
+        { "code": "BİL494", "name": "Web Teknolojileri Laboratuvarı", "semester": 8, "kind": "elective" },
+        { "code": "BİL496", "name": "Bilgisayar Ağları Laboratuvarı", "semester": 8, "kind": "elective" },
+        { "code": "BİL506", "name": "Yazılım Test Süreçleri", "semester": 8, "kind": "elective" },
+        { "code": "BİL530", "name": "Mühendislik Ekonomisi", "semester": 8, "kind": "elective" }
+      ]
+    }
+  }
+}

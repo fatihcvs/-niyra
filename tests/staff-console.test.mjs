@@ -34,6 +34,18 @@ test("owner and admin APIs enforce distinct role scopes", async () => {
   assert.match(admin, /set-user-status/);
 });
 
+test("owner snapshot exposes verified course catalog coverage", async () => {
+  const [owner, consoleSource] = await Promise.all([
+    source("../app/api/owner/route.ts"),
+    source("../app/staff-console.tsx"),
+  ]);
+  assert.match(owner, /getOfficialCourseCoverage/);
+  assert.match(owner, /courseCatalogPrograms/);
+  assert.match(owner, /courseCatalogCourses/);
+  assert.match(consoleSource, /Ders kataloğu/);
+  assert.match(consoleSource, /Doğrulanmış ders/);
+});
+
 test("management registry covers every current product moderation surface", async () => {
   const registry = await source("../lib/admin-registry.ts");
   for (const key of ["users", "posts", "comments", "notes", "communities", "pulse", "market", "places", "events", "prices", "matches", "library", "reports"]) {

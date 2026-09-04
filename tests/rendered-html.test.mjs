@@ -7,6 +7,7 @@ import "./university-catalog.test.mjs";
 import "./campus-place-catalog.test.mjs";
 import "./staff-console.test.mjs";
 import "./theme.test.mjs";
+import "./official-course-catalog.test.mjs";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
@@ -53,3 +54,20 @@ for (const route of ["/owner", "/admin"]) {
     assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   });
 }
+
+test("official course catalog API returns selectable OMU curriculum rows", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("course-catalog-test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(
+    new Request("http://localhost/api/course-catalog?universityId=omu&programId=program-osym-108210665", { headers: { accept: "application/json" } }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.available, true);
+  assert.equal(payload.authority, "Ondokuz Mayıs Üniversitesi");
+  assert.ok(payload.courses.length >= 40);
+  assert.ok(payload.courses.some((course) => course.code === "BİL103" && course.semester === 1));
+});

@@ -1,5 +1,6 @@
 import { hashPassword } from "../../../lib/app-auth";
 import { ADMIN_FEATURE_REGISTRY } from "../../../lib/admin-registry";
+import { getOfficialCourseCoverage, officialCourseCatalogMeta } from "../../../lib/official-course-catalog";
 import { getPlatformSettings, savePlatformSettings, type PlatformSettings } from "../../../lib/platform-settings";
 import { cleanText, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
 import {
@@ -17,6 +18,8 @@ export async function GET(request: Request) {
     const { DB, FILES } = await getRuntime();
     const access = await requireStaff(DB, request, "owner");
     if ("response" in access) return access.response;
+    const courseCoverage = getOfficialCourseCoverage();
+    const courseCount = courseCoverage.reduce((total, programme) => total + programme.courses.length, 0);
     const [metrics, admins, settings, auditRows, campuses, activity, featureCounts] = await Promise.all([
       DB.prepare(
         `SELECT
@@ -79,7 +82,15 @@ export async function GET(request: Request) {
       campuses: campuses.results,
       activity: activity.results,
       features: featureCounts,
-      system: { version: "1.7.2", database: "ok", storage: FILES ? "configured" : "unavailable", generatedAt: new Date().toISOString() },
+      system: {
+        version: "1.7.3",
+        database: "ok",
+        storage: FILES ? "configured" : "unavailable",
+        courseCatalogPrograms: courseCoverage.length,
+        courseCatalogCourses: courseCount,
+        courseCatalogUpdatedAt: officialCourseCatalogMeta.updatedAt,
+        generatedAt: new Date().toISOString(),
+      },
     }, { headers: { "cache-control": "no-store" } });
   } catch {
     return Response.json({ error: "Owner paneli verileri şu anda yüklenemedi." }, { status: 503 });
