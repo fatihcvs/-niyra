@@ -1148,7 +1148,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   return (
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
-        <div className="auth-brand"><Logo/><span>MVP v1.7</span></div>
+        <div className="auth-brand"><Logo/></div>
         <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>Kayıt ol</button>
@@ -1164,7 +1164,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
         </form>
         <p className="auth-terms">Devam ederek <a href="/legal#terms">Kullanım Koşulları</a> ve <a href="/legal#privacy">Gizlilik Metni</a>&apos;ni kabul etmiş olursun.</p>
       </section>
-      <aside className="auth-aside" aria-hidden="true"><span>∑</span><span>λ</span><div><small>TÜRKİYE + KIBRIS</small><strong>Derslerini, notlarını ve kampüs çevreni tek yerde bul.</strong><p>Gerçek hesabınla başlayan, sana ait akademik alan.</p></div></aside>
+      <aside className="auth-aside" aria-hidden="true" />
     </main>
   );
 }
