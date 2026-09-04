@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { PRODUCT_UPDATES } from "../lib/product-updates";
 import styles from "./staff-console.module.css";
 
 type Mode = "owner" | "admin";
@@ -11,6 +12,7 @@ type JsonRecord = Record<string, unknown>;
 
 const number = new Intl.NumberFormat("tr-TR");
 const dateTime = new Intl.DateTimeFormat("tr-TR", { dateStyle: "medium", timeStyle: "short" });
+const updateDateTime = new Intl.DateTimeFormat("tr-TR", { dateStyle: "long", timeStyle: "short" });
 
 const ownerTabs = [
   ["overview", "Genel bakış", "⌂"],
@@ -25,6 +27,7 @@ const adminTabs = [
   ["content", "İçerik denetimi", "▦"],
   ["users", "Kullanıcılar", "♙"],
   ["decisions", "Karar geçmişi", "≡"],
+  ["updates", "Güncellemeler", "✦"],
 ] as const;
 
 const ownerMetricLabels: Record<string, [string, string]> = {
@@ -282,10 +285,48 @@ function AdminContent({ tab, data, reload, setMessage }: ContentProps) {
   if (tab === "content") return <ContentModeration data={data} reload={reload} setMessage={setMessage} />;
   if (tab === "users") return <UserModeration data={data} reload={reload} setMessage={setMessage} />;
   if (tab === "decisions") return <AuditTable rows={(data.decisions as JsonRecord[] | undefined) ?? []} />;
+  if (tab === "updates") return <AdminUpdates />;
   const metrics = (data.metrics as JsonRecord | undefined) ?? {};
   const reports = (data.reports as JsonRecord[] | undefined) ?? [];
   const content = (data.content as JsonRecord[] | undefined) ?? [];
   return <div className={styles.contentStack}><section className={styles.welcome}><div><span>MODERASYON DURUMU</span><h2>Önce en kritik sinyaller.</h2><p>İtirazlar, açık şikâyetler, bekleyen notlar ve gizlenen içerikler öncelik sırasıyla izleniyor.</p></div><div className={styles.bigNumber}><strong>{number.format(Number(metrics.reports_open ?? 0) + Number(metrics.reports_appealed ?? 0))}</strong><span>işlem bekliyor</span></div></section><MetricGrid labels={adminMetricLabels} metrics={metrics} /><div className={styles.twoColumn}><section className={styles.card}><CardTitle eyebrow="ÖNCELİKLİ KUYRUK" title="Son açık şikâyetler" detail="İtirazlar ilk sırada" /><div className={styles.compactList}>{reports.filter((item) => item.status !== "resolved").slice(0, 6).map((item) => <article key={String(item.id)}><b className={item.status === "appealed" ? styles.badBadge : styles.warnBadge}>{String(item.status)}</b><span><strong>{entityLabel(String(item.entity_type))} · {String(item.reason)}</strong><small>{String(item.reporter_name)} · {formatDate(item.created_at)}</small></span></article>)}</div></section><section className={styles.card}><CardTitle eyebrow="YENİ İÇERİK" title="Son platform hareketleri" detail="Tüm moderasyonlu modüller" /><div className={styles.compactList}>{content.slice(0, 7).map((item) => <article key={`${item.entity_type}-${item.id}`}><b className={item.status === "active" || item.status === "published" ? styles.goodBadge : styles.warnBadge}>{entityLabel(String(item.entity_type))}</b><span><strong>{String(item.title)}</strong><small>{String(item.owner_name)} · {formatDate(item.created_at)}</small></span></article>)}</div></section></div></div>;
+}
+
+function AdminUpdates() {
+  const latest = PRODUCT_UPDATES[0];
+  return <div className={styles.contentStack}>
+    <section className={styles.updatesHero} aria-labelledby="updates-title">
+      <div>
+        <span>ÜRÜNDE NELER DEĞİŞTİ?</span>
+        <h2 id="updates-title">Her yenilik, tek bakışta.</h2>
+        <p>Yeni özellikleri, iyileştirmeleri ve düzeltmeleri teknik ayrıntılara girmeden buradan takip edebilirsin.</p>
+      </div>
+      <div className={styles.updateSummary}>
+        <strong>{number.format(PRODUCT_UPDATES.length)}</strong>
+        <span>yayın notu</span>
+        <small>Son güncelleme<br />{latest ? formatUpdateDate(latest.releasedAt) : "-"}</small>
+      </div>
+    </section>
+    <section className={styles.updatesIntro} aria-label="Güncelleme notları hakkında">
+      <span aria-hidden="true">i</span>
+      <p><strong>Sade ve kullanıcı odaklı:</strong> Bu alanda değişikliğin nasıl yapıldığı değil, öğrenciler ve yönetim ekibi için neyin değiştiği anlatılır.</p>
+    </section>
+    <section className={styles.updatesGrid} aria-label="Güncelleme notları">
+      {PRODUCT_UPDATES.map((update, index) => <article className={styles.updateCard} key={update.id}>
+        <header>
+          <span className={styles.updateSequence}>{String(index + 1).padStart(2, "0")}</span>
+          <div className={styles.updateMeta}>
+            <b data-category={update.category}>{update.category}</b>
+            <span>{update.area}</span>
+          </div>
+          <time dateTime={update.releasedAt}>{formatUpdateDate(update.releasedAt)}</time>
+        </header>
+        <h3>{update.title}</h3>
+        <p>{update.summary}</p>
+        <ul>{update.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul>
+      </article>)}
+    </section>
+  </div>;
 }
 
 function ReportQueue({ data, reload, setMessage }: ContentProps) {
@@ -323,5 +364,6 @@ async function signOut(setStaff: (staff: Staff | null) => void) { await fetch("/
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "İşlem tamamlanamadı."; }
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr-TR"); }
 function formatDate(value: unknown) { const parsed = new Date(String(value ?? "")); return Number.isNaN(parsed.getTime()) ? "-" : dateTime.format(parsed); }
+function formatUpdateDate(value: string) { const parsed = new Date(value); return Number.isNaN(parsed.getTime()) ? "-" : updateDateTime.format(parsed); }
 function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", "note-comment": "Not yorumu", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
 function evidenceSummary(evidence: JsonRecord) { return String(evidence.content ?? evidence.title ?? evidence.name ?? evidence.description ?? evidence.item_name ?? evidence.display_name ?? "Kanıt anlık görüntüsü kaydedildi.").slice(0, 280); }

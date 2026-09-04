@@ -67,3 +67,40 @@ test("owner feature switches are enforced by their product APIs", async () => {
   assert.match(housing, /housingContributionsOpen/);
   assert.match(campusGuide, /housingContributionsOpen/);
 });
+
+test("admin update center keeps plain-language notes complete and ordered", async () => {
+  const [consoleSource, notesSource, standard] = await Promise.all([
+    source("../app/staff-console.tsx"),
+    source("../lib/product-updates.json"),
+    source("../docs/UPDATE_NOTES_STANDARD.md"),
+  ]);
+  const notes = JSON.parse(notesSource);
+
+  assert.match(consoleSource, /\["updates", "Güncellemeler"/);
+  assert.match(consoleSource, /tab === "updates"/);
+  assert.match(consoleSource, /PRODUCT_UPDATES\.map/);
+  assert.match(standard, /her değişiklik/iu);
+  assert.match(standard, /günlük Türkçe/iu);
+  assert.ok(notes.length >= 20, "Başlangıç güncelleme geçmişi eksik.");
+
+  const ids = new Set();
+  let previousTime = Number.POSITIVE_INFINITY;
+  const forbiddenTechnicalTerms = /\b(?:api|commit|deploy|endpoint|migration|railway|sql|typescript)\b/iu;
+  for (const note of notes) {
+    assert.equal(typeof note.id, "string");
+    assert.ok(note.id.length > 2);
+    assert.equal(ids.has(note.id), false, `Tekrarlanan güncelleme kimliği: ${note.id}`);
+    ids.add(note.id);
+    const releasedAt = Date.parse(note.releasedAt);
+    assert.ok(Number.isFinite(releasedAt), `${note.id} için yayın zamanı geçersiz.`);
+    assert.ok(releasedAt <= previousTime, "Güncelleme notları en yeniden en eskiye sıralanmalı.");
+    previousTime = releasedAt;
+    assert.ok(["Yeni özellik", "İyileştirme", "Düzeltme", "İçerik"].includes(note.category));
+    assert.ok(note.area.trim().length > 1);
+    assert.ok(note.title.trim().length > 8);
+    assert.ok(note.summary.trim().length > 25);
+    assert.ok(Array.isArray(note.highlights) && note.highlights.length >= 2);
+    const visibleCopy = [note.title, note.summary, ...note.highlights].join(" ");
+    assert.doesNotMatch(visibleCopy, forbiddenTechnicalTerms, `${note.id} fazla teknik bir ifade içeriyor.`);
+  }
+});

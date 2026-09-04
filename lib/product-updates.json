@@ -1,0 +1,279 @@
+[
+  {
+    "id": "admin-update-center",
+    "releasedAt": "2026-09-04T22:20:00+03:00",
+    "category": "Yeni özellik",
+    "area": "Yönetim",
+    "title": "Güncellemeler artık admin panelinde",
+    "summary": "Adminler üründe nelerin değiştiğini tek bir ekrandan, sade ve anlaşılır açıklamalarla takip edebilir.",
+    "highlights": [
+      "En yeni değişiklikler listenin başında gösterilir.",
+      "Her not, değişikliğin kullanıcıya ne kazandırdığını açıklar.",
+      "Yeni kullanıcıya dönük değişikliklerde bu liste de güncellenecek."
+    ]
+  },
+  {
+    "id": "cafeteria-price-shortcut",
+    "releasedAt": "2026-09-04T21:53:15+03:00",
+    "category": "Düzeltme",
+    "area": "Akış",
+    "title": "Yemekhane kısayolu doğru bölüme yönlendiriliyor",
+    "summary": "Akıştaki Yemekhane kısayolu artık öğrenci mağazası yerine doğrudan Kampüs fiyatları bölümünü açıyor.",
+    "highlights": [
+      "Yemek fiyatlarına daha hızlı ulaşılır.",
+      "Pazar menüsü açıldığında öğrenci mağazası normal görünümünde kalır."
+    ]
+  },
+  {
+    "id": "campus-map-expanded",
+    "releasedAt": "2026-09-04T21:42:23+03:00",
+    "category": "İçerik",
+    "area": "Kampüs",
+    "title": "Kampüs haritasının kapsamı büyüdü",
+    "summary": "Türkiye ve Kıbrıs'taki üniversiteler için kampüs içi ve çevresindeki doğrulanabilir yer kayıtları genişletildi.",
+    "highlights": [
+      "Bina, kütüphane, yeme-içme, çalışma, spor, sosyal alan, ulaşım ve sağlık kategorileri zenginleştirildi.",
+      "Kaynağı ve konumu bulunan kayıtlar üniversiteye göre gösterilir.",
+      "Arama ve kategori süzme seçenekleriyle doğru yere daha kolay ulaşılır."
+    ]
+  },
+  {
+    "id": "dark-theme-surfaces",
+    "releasedAt": "2026-09-04T20:36:05+03:00",
+    "category": "İyileştirme",
+    "area": "Görünüm",
+    "title": "Koyu tema daha tutarlı hale geldi",
+    "summary": "Koyu temada açık kalan kartlar, alanlar ve okunması zor metinler gözden geçirilerek uyumlu hale getirildi.",
+    "highlights": [
+      "Kart ve form yüzeyleri koyu görünümle uyumlu.",
+      "Başlık, açıklama ve yardımcı metinlerin okunabilirliği artırıldı.",
+      "Açık tema aynı görünüm düzenini koruyor."
+    ]
+  },
+  {
+    "id": "note-feedback-comments",
+    "releasedAt": "2026-09-04T20:05:05+03:00",
+    "category": "Yeni özellik",
+    "area": "Notlar",
+    "title": "Notlara yararlı değerlendirmesi ve yorum eklendi",
+    "summary": "Öğrenciler çalışma notlarını yararlı veya yararlı değil olarak değerlendirebilir ve not hakkında yorum bırakabilir.",
+    "highlights": [
+      "Değerlendirme sayıları not üzerinde görünür.",
+      "Yorumlarla eksik veya güçlü kısımlar paylaşılabilir.",
+      "Uygunsuz yorumlar moderasyon alanından yönetilebilir."
+    ]
+  },
+  {
+    "id": "kampira-brand",
+    "releasedAt": "2026-09-04T19:35:28+03:00",
+    "category": "İyileştirme",
+    "area": "Marka",
+    "title": "Ürün adı ve görsel kimlik Kampira olarak yenilendi",
+    "summary": "Uygulamanın adı, logosu ve temel marka görünümü bütün sayfalarda Kampira adı altında birleştirildi.",
+    "highlights": [
+      "Logo ve marka adı temel ekranlarda aynı biçimde kullanılır.",
+      "Önceki ürün adına ait görünür metinler temizlendi."
+    ]
+  },
+  {
+    "id": "past-exams-housing",
+    "releasedAt": "2026-09-04T19:32:43+03:00",
+    "category": "Yeni özellik",
+    "area": "Öğrenci yaşamı",
+    "title": "Çıkmış sorular ve yurt deneyimleri eklendi",
+    "summary": "Öğrenciler derslere ait geçmiş sınav içeriklerine ve yurt veya konaklama deneyimlerine ulaşabilir.",
+    "highlights": [
+      "Çıkmış sorular ders ve üniversiteyle ilişkilendirilir.",
+      "Yurtlar, yakın konaklama seçenekleri ve öğrenci deneyimleri birlikte görülebilir.",
+      "Uygunsuz paylaşımlar yönetim ekibi tarafından incelenebilir."
+    ]
+  },
+  {
+    "id": "campus-live-mobile-home",
+    "releasedAt": "2026-09-04T18:45:22+03:00",
+    "category": "İyileştirme",
+    "area": "Kampüs Anlık",
+    "title": "Kampüs Anlık telefonlarda daha akıcı",
+    "summary": "Anlık kampüs paylaşımları telefon kullanımına uygun, hızlı göz atılabilen bir ana görünümle yenilendi.",
+    "highlights": [
+      "Popüler konular ve güncel paylaşımlar daha belirgin.",
+      "Etkileşim alanları başparmakla kolay erişilecek şekilde düzenlendi.",
+      "Küçük ekranlarda gereksiz kalabalık azaltıldı."
+    ]
+  },
+  {
+    "id": "onboarding-guidance",
+    "releasedAt": "2026-09-04T18:00:51+03:00",
+    "category": "İyileştirme",
+    "area": "Üyelik",
+    "title": "Eksik seçimler artık açıkça anlatılıyor",
+    "summary": "Üyelik veya profil adımlarında devam edilemiyorsa hangi bilginin seçilmesi ya da doldurulması gerektiği gösteriliyor.",
+    "highlights": [
+      "Zorunlu alanlar kullanıcıya açık bir mesajla belirtilir.",
+      "Hata mesajı ilgili alana yönlendirir.",
+      "Tamamlanan seçimler korunur."
+    ]
+  },
+  {
+    "id": "visual-course-hubs",
+    "releasedAt": "2026-09-04T17:41:18+03:00",
+    "category": "Yeni özellik",
+    "area": "Dersler",
+    "title": "Ders kartları etkileşimli hale geldi",
+    "summary": "Ana akıştaki dersler artık yalnızca görsel değil; dersin içerik alanına açılan çalışan kısayollar sunuyor.",
+    "highlights": [
+      "Derse özel temsilî görseller eklendi.",
+      "Ders kartı ve Tümünü gör bağlantısı ilgili içeriklere yönlendirir.",
+      "Bildirim sayıları daha anlaşılır biçimde gösterilir."
+    ]
+  },
+  {
+    "id": "simplified-auth",
+    "releasedAt": "2026-09-04T17:12:03+03:00",
+    "category": "İyileştirme",
+    "area": "Üyelik",
+    "title": "Kayıt ve giriş ekranı sadeleştirildi",
+    "summary": "Kayıt ekranındaki gereksiz tanıtım ve sürüm yazıları kaldırılarak asıl işlemlere odaklanan daha temiz bir görünüm sağlandı.",
+    "highlights": [
+      "Kayıt ve giriş seçenekleri daha kolay ayırt edilir.",
+      "Gereksiz metin kalabalığı azaltıldı."
+    ]
+  },
+  {
+    "id": "source-backed-course-selection",
+    "releasedAt": "2026-09-04T17:00:52+03:00",
+    "category": "Yeni özellik",
+    "area": "Dersler",
+    "title": "Dersler listeden seçilebiliyor",
+    "summary": "Bölümün dersleri hazırsa öğrenci derslerini listeden seçebilir; eksik bir ders varsa elle ekleme seçeneğini kullanabilir.",
+    "highlights": [
+      "Hazır dersler arama ve seçim yoluyla eklenir.",
+      "Elle ders girme seçeneği korunur.",
+      "Resmî ders planı bağlantısı seçim ekranında görünür."
+    ]
+  },
+  {
+    "id": "appearance-themes",
+    "releasedAt": "2026-09-04T16:37:30+03:00",
+    "category": "Yeni özellik",
+    "area": "Ayarlar",
+    "title": "Açık ve koyu görünüm seçenekleri eklendi",
+    "summary": "Kullanıcılar uygulamayı açık, koyu veya cihazlarının görünüm tercihine göre kullanabilir.",
+    "highlights": [
+      "Seçilen görünüm sonraki ziyaretlerde korunur.",
+      "Cihaz tercihini izleyen otomatik seçenek sunulur."
+    ]
+  },
+  {
+    "id": "rich-profile-editor",
+    "releasedAt": "2026-09-04T16:25:17+03:00",
+    "category": "Yeni özellik",
+    "area": "Profil",
+    "title": "Öğrenci profilleri zenginleştirildi",
+    "summary": "Profil düzenleme alanına profil fotoğrafı, kapak görseli, biyografi, kullanıcı adı ve bağlantılar eklendi.",
+    "highlights": [
+      "Fotoğraf ve kapak görseli değiştirilebilir.",
+      "Kısa biyografi ve sosyal bağlantılar eklenebilir.",
+      "Okul, bölüm ve ders bilgileri aynı düzenleme akışında yönetilir."
+    ]
+  },
+  {
+    "id": "campus-badge-mobile-fix",
+    "releasedAt": "2026-09-04T15:55:54+03:00",
+    "category": "Düzeltme",
+    "area": "Kampüs",
+    "title": "Harita etiketlerindeki taşma giderildi",
+    "summary": "Uzun kampüs ve yer adları küçük ekranlarda kartın dışına çıkmadan okunabilir hale getirildi.",
+    "highlights": [
+      "Açık harita bağlantısı kart içinde kalır.",
+      "Uzun adlar düzeni bozmadan kısaltılır."
+    ]
+  },
+  {
+    "id": "mobile-first-shell",
+    "releasedAt": "2026-09-04T09:23:30+03:00",
+    "category": "İyileştirme",
+    "area": "Mobil kullanım",
+    "title": "Telefon kullanımı baştan düzenlendi",
+    "summary": "Kampira'nın temel gezinme, içerik oluşturma ve profil işlemleri telefonlarda daha pratik hale getirildi.",
+    "highlights": [
+      "Alt gezinme çubuğuyla temel alanlara tek elle ulaşılır.",
+      "Oluşturma ve menü seçenekleri açılır panellerde sunulur.",
+      "Ekran boşlukları ve dokunma alanları telefonlara göre ayarlandı."
+    ]
+  },
+  {
+    "id": "owner-admin-panels",
+    "releasedAt": "2026-09-04T09:02:51+03:00",
+    "category": "Yeni özellik",
+    "area": "Yönetim",
+    "title": "Owner ve admin yönetim alanları açıldı",
+    "summary": "Platform ayarları ve ekip yönetimi owner alanında; moderasyon ve kullanıcı güvenliği ise admin alanında ayrıştırıldı.",
+    "highlights": [
+      "Owner yeni admin hesabı açabilir ve erişimleri yönetebilir.",
+      "Admin şikâyet, içerik ve kullanıcı işlemlerini yürütebilir.",
+      "Yönetim işlemleri geçmiş kaydında izlenebilir."
+    ]
+  },
+  {
+    "id": "verified-study-notes",
+    "releasedAt": "2026-09-04T08:13:34+03:00",
+    "category": "İçerik",
+    "area": "Notlar",
+    "title": "Doğrulanmış çalışma notları çoğaltıldı",
+    "summary": "Güvenilir eğitim kaynaklarından yararlı çalışma içerikleri derslerle eşleştirilerek not kütüphanesine eklendi.",
+    "highlights": [
+      "Kaynağı açık olan içerikler öne çıkarılır.",
+      "Notlar ders kodu ve konusuna göre bulunabilir.",
+      "Kaynak bilgisi not ayrıntısında gösterilir."
+    ]
+  },
+  {
+    "id": "editable-academic-profile",
+    "releasedAt": "2026-09-04T07:55:32+03:00",
+    "category": "Yeni özellik",
+    "area": "Profil",
+    "title": "Akademik profil bilgileri düzenlenebiliyor",
+    "summary": "Öğrenciler üniversite, bölüm ve ders bilgilerini daha sonra profil ayarlarından güncelleyebilir.",
+    "highlights": [
+      "Üniversite ve bölüm yeniden seçilebilir.",
+      "Dönem dersleri güncellenebilir."
+    ]
+  },
+  {
+    "id": "campus-place-catalog",
+    "releasedAt": "2026-09-04T07:37:06+03:00",
+    "category": "İçerik",
+    "area": "Kampüs",
+    "title": "Kampüs yer rehberi kullanıma açıldı",
+    "summary": "Üniversiteye ait bina, çalışma alanı, yeme-içme, spor ve ulaşım noktaları harita rehberinde gösterilmeye başladı.",
+    "highlights": [
+      "Yerler üniversiteye ve kategoriye göre ayrılır.",
+      "Adres ve harita bağlantısı bulunan kayıtlar doğrudan açılabilir."
+    ]
+  },
+  {
+    "id": "campus-pulse-images",
+    "releasedAt": "2026-09-04T06:31:49+03:00",
+    "category": "Yeni özellik",
+    "area": "Kampüs Anlık",
+    "title": "Kampüs Anlık paylaşımlarına görsel eklendi",
+    "summary": "Öğrenciler kampüste o anda yaşananları metnin yanında bir görselle de paylaşabilir.",
+    "highlights": [
+      "Paylaşım oluştururken görsel seçilebilir.",
+      "Görsel, akış kartında uygun ölçüde gösterilir."
+    ]
+  },
+  {
+    "id": "university-logos",
+    "releasedAt": "2026-09-04T06:14:33+03:00",
+    "category": "İçerik",
+    "area": "Üniversiteler",
+    "title": "Üniversite logoları eklendi",
+    "summary": "Resmî görseli bulunabilen üniversitelerin logoları okul seçimi ve ilgili üniversite alanlarında gösteriliyor.",
+    "highlights": [
+      "Görseli bulunmayan üniversiteler için okunaklı harf simgesi korunur.",
+      "Logo gösterimi küçük ve büyük ekranlara uyum sağlar."
+    ]
+  }
+]
