@@ -24,5 +24,24 @@ test("saved theme is restored before the application body renders", () => {
 test("dark appearance has an explicit accessible color palette", () => {
   assert.match(cssSource, /html\[data-theme="dark"\]/);
   assert.match(cssSource, /--canvas:#0d1018/);
+  assert.match(cssSource, /--surface-raised:#1d2230/);
+  assert.match(cssSource, /--text-body:#c6cad8/);
   assert.match(cssSource, /color-scheme:dark/);
+});
+
+test("dark appearance covers feature surfaces instead of only their containers", () => {
+  for (const selector of [
+    ".safety-principles article",
+    ".curated-note-main",
+    ".pulse-empty",
+    ".social-chip-grid button",
+    ".campus-place-list article",
+    ".market-empty",
+    ".library-live-empty",
+    ".profile-editor-page",
+  ]) {
+    assert.ok(cssSource.includes(selector), `missing dark surface coverage for ${selector}`);
+  }
+  assert.match(cssSource, /\.pulse-tabs,\.social-tabs,\.campus-guide-tabs,\.market-tabs,\.market-kind-tabs/);
+  assert.match(cssSource, /background:var\(--surface-accent\)/);
 });
