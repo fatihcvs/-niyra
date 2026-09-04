@@ -3,6 +3,10 @@
 
 import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
+
+import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty, RefreshButton } from "./workspace-ui";
+import { matchesSearch } from "../lib/workspace-navigation";
+
 type PulseKind = "live" | "confession";
 type Reaction = "support" | "confirm" | "outdated";
 
@@ -64,6 +68,8 @@ function remainingLabel(expiresAt: string | null) {
 
 export function CampusPulseWorkspace({ universityShortName }: { universityShortName: string }) {
   const [kind, setKind] = useState<PulseKind>("live");
+  const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [items, setItems] = useState<PulseItem[]>([]);
   const [topics, setTopics] = useState<{ topic: string; score: number }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -257,25 +263,24 @@ export function CampusPulseWorkspace({ universityShortName }: { universityShortN
     }
   }
 
+  const visibleItems = items.filter((item) => (kind !== "live" || !categoryFilter || item.category === categoryFilter) && matchesSearch(query, item.content, item.campusZone, item.authorName));
   const visibleTopics = topics.filter((topic) => topic.score > 0);
 
   return (
     <div className="workspace-view pulse-workspace">
-      <header className="pulse-header">
-        <div><span>{universityShortName} · KAMPÜS ANLIK</span><h1>{heading}</h1><p>{description}</p></div>
-        <button className="feature-primary" type="button" onClick={openComposer}>＋ Paylaş</button>
-      </header>
+      <WorkspaceHeader section="Kampüs Anlık" eyebrow={universityShortName} title={heading} description={description} actions={<><RefreshButton onClick={() => void load()} busy={loading}/><button className="feature-primary" type="button" onClick={openComposer}>＋ Paylaş</button></>}/>
 
       <div className="pulse-tabs" role="tablist" aria-label="Kampüs Anlık görünümü">
-        <button type="button" role="tab" aria-selected={kind === "live"} className={kind === "live" ? "active" : ""} onClick={() => { setLoading(true); setError(""); setKind("live"); }}><strong>Kampüs Anlık</strong><small>Şu anda olanlar</small></button>
-        <button type="button" role="tab" aria-selected={kind === "confession"} className={kind === "confession" ? "active" : ""} onClick={() => { setLoading(true); setError(""); setKind("confession"); }}><strong>Anonim dertleşme</strong><small>İsmin görünmeden</small></button>
+        <button type="button" role="tab" aria-selected={kind === "live"} className={kind === "live" ? "active" : ""} onClick={() => { if (kind !== "live") { setLoading(true); setError(""); setKind("live"); } }}><strong>Kampüs Anlık</strong><small>Şu anda olanlar</small></button>
+        <button type="button" role="tab" aria-selected={kind === "confession"} className={kind === "confession" ? "active" : ""} onClick={() => { if (kind !== "confession") { setLoading(true); setError(""); setKind("confession"); } }}><strong>Anonim dertleşme</strong><small>İsmin görünmeden</small></button>
       </div>
 
+      <WorkspaceSearch value={query} onChange={setQuery} placeholder="Paylaşım, konu veya kampüs bölgesi ara" resultCount={loading ? undefined : visibleItems.length} onReset={query || categoryFilter ? () => { setQuery(""); setCategoryFilter(""); } : undefined}>{kind === "live" && <label><span className="sr-only">Paylaşım kategorisi</span><select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="">Tüm konular</option>{Object.entries(categoryNames).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>}</WorkspaceSearch>
       {kind === "live" && visibleTopics.length > 0 && <section className="pulse-topics" aria-label="Kampüs gündemi"><span>ŞİMDİ KONUŞULANLAR</span><div>{visibleTopics.map((topic) => <b key={topic.topic}>{topic.topic.startsWith("#") ? topic.topic : categoryNames[topic.topic] ?? topic.topic}<small>{topic.score}</small></b>)}</div></section>}
-      {error && <p className="feature-feedback-state" role="alert">{error}</p>}
+      {error && <WorkspaceEmpty error title="Akış yenilenemedi" description={error} action={<RefreshButton onClick={() => void load()} busy={loading}/>}/>}
 
-      {loading ? <div className="pulse-empty"><strong>Kampüs akışı hazırlanıyor…</strong></div> : items.length === 0 ? <div className="pulse-empty"><span>{kind === "live" ? "ŞİMDİ" : "ANONİM"}</span><strong>{kind === "live" ? "Henüz güncel kampüs paylaşımı yok" : "Henüz anonim paylaşım yok"}</strong><p>İlk güvenli paylaşımı sen başlatabilirsin.</p><button type="button" onClick={openComposer}>İlk paylaşımı yap</button></div> : <div className="pulse-grid">
-        {items.map((item) => <article className={`pulse-card pulse-${item.kind}`} key={item.id}>
+      {loading ? <div className="pulse-empty"><strong>Kampüs akışı hazırlanıyor…</strong></div> : items.length === 0 ? <div className="pulse-empty"><span>{kind === "live" ? "ŞİMDİ" : "ANONİM"}</span><strong>{kind === "live" ? "Henüz güncel kampüs paylaşımı yok" : "Henüz anonim paylaşım yok"}</strong><p>İlk güvenli paylaşımı sen başlatabilirsin.</p><button type="button" onClick={openComposer}>İlk paylaşımı yap</button></div> : visibleItems.length === 0 ? <WorkspaceEmpty action={<button type="button" onClick={() => { setQuery(""); setCategoryFilter(""); }}>Filtreleri temizle</button>}/> : <div className="pulse-grid">
+        {visibleItems.map((item) => <article className={`pulse-card pulse-${item.kind}`} key={item.id}>
           <header><span className="pulse-avatar">{item.anonymous ? "A" : item.authorName.slice(0, 1).toLocaleUpperCase("tr-TR")}</span><div><strong>{item.authorName}</strong><small>{item.time} önce{item.campusZone ? ` · ${item.campusZone}` : ""}</small></div><b>{categoryNames[item.category] ?? item.category}</b></header>
           <p>{item.content}</p>
           {item.imageUrl && <a className="pulse-card-image" href={item.imageUrl} target="_blank" rel="noreferrer" aria-label="Paylaşım görselini tam boy aç"><img src={item.imageUrl} alt={`${categoryNames[item.category] ?? "Kampüs Anlık"} paylaşım görseli`} loading="lazy" /></a>}

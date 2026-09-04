@@ -1,5 +1,185 @@
 [
   {
+    "id": "staff-login-hint-removed",
+    "releasedAt": "2026-09-05T00:47:04+03:00",
+    "category": "İyileştirme",
+    "area": "Yönetim",
+    "title": "Yönetim giriş ekranı sadeleştirildi",
+    "summary": "Yönetim giriş formunun altında görünen başlangıç hesabı ve parola açıklaması kaldırıldı.",
+    "highlights": [
+      "Başlangıç hesabının kullanıcı adı ve parolası giriş ekranında gösterilmez.",
+      "Giriş formunun altındaki kurulum açıklaması kaldırıldı."
+    ]
+  },
+  {
+    "id": "workspace-navigation",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Gezinme",
+    "title": "Sayfalar arasında gezinmek kolaylaştı",
+    "summary": "Sayfa başlıkları, arama alanları ve işlem düğmeleri daha tutarlı bir görünüme kavuştu.",
+    "highlights": [
+      "Bulunduğun bölümün adresi korunur; sayfayı yenileyebilir, geri ve ileri tuşlarıyla bölümler arasında dönebilirsin.",
+      "Telefon ekranında sekmeler ve dokunma alanları daha rahat kullanılır."
+    ]
+  },
+  {
+    "id": "feed-media-filters",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Akış",
+    "title": "Akışında fotoğraf ve videoları ayır",
+    "summary": "Akış seçeneklerinden görüntülemek istediğin paylaşım türünü seçebilirsin.",
+    "highlights": [
+      "Tüm paylaşımlar, görseller ve videolar arasında geçiş yapabilirsin.",
+      "Akışı yenileyebilir, seçtiğin türde içerik yoksa eski paylaşımları yükleyebilirsin."
+    ]
+  },
+  {
+    "id": "discover-student-filters",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Keşfet",
+    "title": "Kampüs çevreni daha kolay bul",
+    "summary": "Keşfet bölümü bölümüne, sınıfına ve takip ettiklerine göre çalışan öğrenci filtreleri kazandı.",
+    "highlights": [
+      "Arama ve sonuç sayısı aynı yerde görünür; filtreleri tek dokunuşla temizleyebilirsin.",
+      "Topluluklara, ders notlarına ve kampüs rehberine doğrudan geçebilirsin."
+    ]
+  },
+  {
+    "id": "pulse-search",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Kampüs Anlık",
+    "title": "Anlık paylaşımlarda aradığın konuyu bul",
+    "summary": "Kampüsteki güncel paylaşımları içerik, kişi veya bölgeye göre arayabilirsin.",
+    "highlights": [
+      "Paylaşımları konuya göre süzebilir ve listeyi yenileyebilirsin.",
+      "Seçili bölüme tekrar dokunduğunda ekran yükleniyor durumunda takılmaz."
+    ]
+  },
+  {
+    "id": "match-search",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Eşleş",
+    "title": "Buluşmak istediğin kişileri süz",
+    "summary": "Eşleşmelerde isim, bölüm ve tanıtım aramasıyla uygun kişileri bulmak kolaylaştı.",
+    "highlights": [
+      "Buluşma amacına ve bugün müsait olanlara göre filtreleyebilirsin.",
+      "Buluşma isteklerinde yalnızca yanıt bekleyenleri görebilirsin."
+    ]
+  },
+  {
+    "id": "campus-search",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Kampüs",
+    "title": "Kampüs rehberinde hızlı arama",
+    "summary": "Mekân adı, açıklama ve adres içinde yazarken sonuçları anında görebilirsin.",
+    "highlights": [
+      "Aramayı kategoriyle birleştirebilir ve filtreleri temizleyebilirsin.",
+      "Telefonda bir mekânın ayrıntılarına dokununca ilgili bilgiye geçebilirsin."
+    ]
+  },
+  {
+    "id": "library-discovery",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Kütüphane",
+    "title": "İhtiyacına uygun çalışma alanını bul",
+    "summary": "Kütüphane alanlarını isim, kat ve özelliklerine göre karşılaştırmak kolaylaştı.",
+    "highlights": [
+      "Sessiz, prizli veya grup çalışmasına uygun alanları filtreleyebilirsin.",
+      "Tahmini boş yeri olan alanları süzebilirsin; doluluk bilgisinin güncelliği görünür kalır."
+    ]
+  },
+  {
+    "id": "market-search-sort",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Pazar",
+    "title": "İlan ve fiyat karşılaştırması kolaylaştı",
+    "summary": "Kampüs pazarındaki ilanları ve fiyatları arayabilir, kategorilerine göre süzebilirsin.",
+    "highlights": [
+      "Fiyatları düşükten yükseğe veya yüksekten düşüğe sıralayabilirsin.",
+      "Yalnızca kendi eklediklerini gösterebilir ve filtreleri tek dokunuşla sıfırlayabilirsin."
+    ]
+  },
+  {
+    "id": "notes-discovery-sort",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Notlar",
+    "title": "Ders kaynaklarına daha kolay ulaş",
+    "summary": "Ders notlarının arama alanı ve sonuç görünümü yenilendi; öğrenci notları sıralama seçenekleri kazandı.",
+    "highlights": [
+      "Öğrenci notlarını en yeni, en yararlı veya en çok görüntülenen olarak sıralayabilirsin.",
+      "Ders ve sınav filtreleriyle birlikte sonuç sayısını takip edebilirsin."
+    ]
+  },
+  {
+    "id": "community-directory-polish",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Topluluklar",
+    "title": "Topluluk keşfi daha anlaşılır",
+    "summary": "Topluluk merkezinin başlığı, özet kartları ve arama sonuçları daha düzenli bir görünüm kazandı.",
+    "highlights": [
+      "Topluluk listesini yenileyebilir ve uyguladığın filtreleri temizleyebilirsin.",
+      "Telefon ekranında topluluk sayıları ve işlem düğmeleri daha rahat okunur."
+    ]
+  },
+  {
+    "id": "notification-inbox-controls",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Bildirimler",
+    "title": "Bildirimlerini tek tek yönet",
+    "summary": "Bildirimlerde arama yapabilir, okunmamış olanları ayırabilir ve ilgili bölüme geçebilirsin.",
+    "highlights": [
+      "Bildirimleri tek tek veya topluca okundu olarak işaretleyebilirsin.",
+      "Bildirim tercihlerini açıp düzenleyebilir; koyu temada kartları rahatça okuyabilirsin."
+    ]
+  },
+  {
+    "id": "saved-search-pagination",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Kaydedilenler",
+    "title": "Kaydettiğin paylaşımları yeniden bul",
+    "summary": "Kişisel arşivinde içerik, kişi ve ders araması yapabilir; fotoğraf ve videoları ayırabilirsin.",
+    "highlights": [
+      "Eski kayıtlarını daha fazla göster düğmesiyle yükleyebilirsin.",
+      "Kayıttan çıkarma başarısız olursa paylaşım listende kalır."
+    ]
+  },
+  {
+    "id": "safety-preference-controls",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Güvenlik",
+    "title": "Engel ve sessize alma tercihlerini yönet",
+    "summary": "Şikâyetlerini, engellediğin hesapları ve sessize aldıklarını ayrı bölümlerde bulabilirsin.",
+    "highlights": [
+      "Hesapları arayabilir, engeli veya sessize almayı buradan kaldırabilirsin.",
+      "İşlemi yeniden denemek hesabı yanlışlıkla tekrar engellemez veya sessize almaz."
+    ]
+  },
+  {
+    "id": "reading-preferences",
+    "releasedAt": "2026-09-05T00:32:56+03:00",
+    "category": "İyileştirme",
+    "area": "Ayarlar",
+    "title": "Okuma görünümünü kendine uyarla",
+    "summary": "Tema seçeneklerine hareketi azaltma ve masaüstünde daha kompakt görünüm tercihleri eklendi.",
+    "highlights": [
+      "Geçiş ve animasyonları sadeleştirebilirsin.",
+      "Tercihlerin kullandığın cihazda korunur; telefondaki dokunma alanları küçülmez."
+    ]
+  },
+  {
     "id": "profile-photo-video-collections",
     "releasedAt": "2026-09-05T00:05:00+03:00",
     "category": "İyileştirme",

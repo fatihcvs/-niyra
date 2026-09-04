@@ -195,7 +195,6 @@ function StaffLogin({ mode, onLogin }: { mode: Mode; onLogin: (staff: Staff) => 
           {error ? <div className={styles.formError}>{error}</div> : null}
           <button type="submit" disabled={busy}>{busy ? "Doğrulanıyor…" : "Güvenli giriş yap →"}</button>
         </form>
-        <small>İlk owner girişi: <code>admin</code> / <code>admin123</code>. İlk girişten sonra güçlü parola zorunludur.</small>
       </section>
     </div>
   );

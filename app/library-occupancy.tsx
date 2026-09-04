@@ -2,6 +2,10 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
+
+import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty, RefreshButton } from "./workspace-ui";
+import { matchesSearch } from "../lib/workspace-navigation";
+
 type LibraryArea = {
   id: string; name: string; floorLabel: string; zoneLabel: string; description: string; capacity: number | null;
   features: string[]; placeId: string | null; placeName: string | null; latitude: number | null; longitude: number | null;
@@ -36,6 +40,9 @@ function mapUrl(area: LibraryArea) {
 }
 
 export function LibraryOccupancyWorkspace({ universityShortName }: { universityShortName: string }) {
+  const [query, setQuery] = useState("");
+  const [featureFilter, setFeatureFilter] = useState("");
+  const [availableOnly, setAvailableOnly] = useState(false);
   const [areas, setAreas] = useState<LibraryArea[]>([]);
   const [places, setPlaces] = useState<CampusPlace[]>([]);
   const [viewerActiveAreaId, setViewerActiveAreaId] = useState<string | null>(null);
@@ -70,6 +77,7 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
 
   const activeArea = useMemo(() => areas.find((area) => area.id === viewerActiveAreaId) ?? null, [areas, viewerActiveAreaId]);
   const knownAreas = areas.filter((area) => area.estimatedFreeSeats !== null).length;
+  const visibleAreas = areas.filter((area) => matchesSearch(query, area.name, area.zoneLabel, area.floorLabel, area.placeName) && (!featureFilter || area.features.includes(featureFilter)) && (!availableOnly || (area.estimatedFreeSeats !== null && area.estimatedFreeSeats > 0))).sort((a, b) => (b.estimatedFreeSeats ?? -1) - (a.estimatedFreeSeats ?? -1));
   const activeCheckins = areas.reduce((total, area) => total + area.activeCount, 0);
 
   async function createArea(event: FormEvent<HTMLFormElement>) {
@@ -107,13 +115,14 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
   }
 
   return <div className="workspace-view library-live-workspace">
-    <header className="library-live-header"><div><span>{universityShortName} · KÜTÜPHANE ANLIK</span><h1>Çalışma alanını bul, yerini tahmin et</h1><p>Doluluk yalnız süreli öğrenci check-in&apos;lerinden hesaplanan, zaman damgalı bir tahmindir; sensör veya kesin masa sayımı değildir.</p></div><button className="feature-primary" type="button" onClick={() => setCreateOpen(true)}>＋ Alan ekle</button></header>
+    <WorkspaceHeader section="Kütüphane" eyebrow={universityShortName} title="Çalışmak için bir yer bul" description="Sessiz, prizli veya grup çalışmasına uygun alanları karşılaştır. Doluluk, süreli öğrenci check-in’lerinden üretilen bir tahmindir." actions={<><RefreshButton onClick={() => void load()} busy={loading}/><button className="feature-primary" type="button" onClick={() => setCreateOpen(true)}>＋ Alan ekle</button></>}/>
 
+    <WorkspaceSearch value={query} onChange={setQuery} placeholder="Kütüphane, kat veya çalışma alanı ara" resultCount={loading ? undefined : visibleAreas.length} onReset={query || featureFilter || availableOnly ? () => { setQuery(""); setFeatureFilter(""); setAvailableOnly(false); } : undefined}><label><span className="sr-only">Alan özelliği</span><select value={featureFilter} onChange={(event) => setFeatureFilter(event.target.value)}><option value="">Tüm özellikler</option>{featureOptions.map(([value,label]) => <option value={value} key={value}>{label}</option>)}</select></label><label><input type="checkbox" checked={availableOnly} onChange={(event) => setAvailableOnly(event.target.checked)}/>Tahmini boş yer var</label></WorkspaceSearch>
     <section className="library-live-summary" aria-label="Kütüphane doluluk özeti"><article><span>ÇALIŞMA ALANI</span><strong>{areas.length}</strong><small>kampüs kataloğunda</small></article><article><span>GÜNCEL TAHMİN</span><strong>{knownAreas}</strong><small>son 2 saatte sinyal var</small></article><article><span>AKTİF CHECK-IN</span><strong>{activeCheckins}</strong><small>süre sonunda otomatik düşer</small></article></section>
     {activeArea && <section className="library-active-checkin"><div><span>ŞU ANDA BURADASIN</span><strong>{activeArea.name} · {activeArea.floorLabel} · {activeArea.zoneLabel}</strong><small>{expiry(activeArea.viewerCheckin?.expiresAt ?? null)} saatine kadar aktif</small></div><button type="button" disabled={busy} onClick={() => void update("check-out", activeArea.id)}>Çıkış yap</button></section>}
     {notice && <p className="library-live-notice" role="status">{notice}</p>}{error && <p className="feature-feedback-state" role="alert">{error}</p>}
 
-    {loading ? <div className="library-live-empty"><strong>Çalışma alanları hazırlanıyor…</strong></div> : areas.length === 0 ? <div className="library-live-empty"><span>İLK ALAN</span><strong>Kütüphane doluluk haritası henüz boş</strong><p>Bildiğin gerçek bir kat veya çalışma bölgesini ekle. Kapasiteyi bilmiyorsan boş bırak; Kampira boş masa sayısı uydurmaz.</p><button type="button" onClick={() => setCreateOpen(true)}>İlk alanı ekle</button></div> : <div className="library-area-grid">{areas.map((area) => {
+    {loading ? <div className="library-live-empty"><strong>Çalışma alanları hazırlanıyor…</strong></div> : areas.length === 0 ? <div className="library-live-empty"><span>İLK ALAN</span><strong>Kütüphane doluluk haritası henüz boş</strong><p>Bildiğin gerçek bir kat veya çalışma bölgesini ekle. Kapasiteyi bilmiyorsan boş bırak; Kampira boş masa sayısı uydurmaz.</p><button type="button" onClick={() => setCreateOpen(true)}>İlk alanı ekle</button></div> : visibleAreas.length === 0 ? <WorkspaceEmpty action={<button type="button" onClick={() => { setQuery(""); setFeatureFilter(""); setAvailableOnly(false); }}>Filtreleri temizle</button>}/> : <div className="library-area-grid">{visibleAreas.map((area) => {
       const known = area.estimatedFreeSeats !== null && area.occupancyPercent !== null;
       const occupiedCells = known ? Math.min(12, Math.round((area.occupancyPercent! / 100) * 12)) : 0;
       return <article className={`library-area-card ${area.viewerCheckin ? "viewer-active" : ""}`} key={area.id}><header><div><span>{area.floorLabel || "Kat bilgisi yok"}</span><h2>{area.name}</h2><p>{area.zoneLabel}</p></div><b className={known ? "known" : "unknown"}>{known ? `${area.occupancyPercent}% tahmini dolu` : "Doluluk bilinmiyor"}</b></header><div className="library-seat-map" aria-label={known ? `${occupiedCells} dolu gösterge, ${12 - occupiedCells} boş gösterge` : "Güncel doluluk verisi yok"}>{Array.from({ length: 12 }, (_, index) => <i className={known ? index < occupiedCells ? "occupied" : "available" : "unknown"} key={index}/>)}</div><small className="library-map-caption">Oran göstergesidir; fiziksel masa planı değildir.</small><section className="library-estimate"><div><span>TAHMİNİ BOŞ YER</span><strong>{known ? `~${area.estimatedFreeSeats}` : "—"}</strong><small>{known ? `${area.activeCount} aktif check-in / ${area.capacity} kapasite` : area.capacity === null ? "Kapasite bilgisi yok" : "Son 2 saatte öğrenci sinyali yok"}</small></div><div><span>SON SİNYAL</span><strong>{area.lastSignalTime ? `${area.lastSignalTime} önce` : "Henüz yok"}</strong><small>{area.recentSignalCount ? `${area.recentSignalCount} yakın zamanlı güncelleme` : "Tahmin üretilmedi"}</small></div></section><p className="library-area-description">{area.description}</p><div className="library-feature-list">{area.features.map((feature) => <span key={feature}>{featureNames[feature] ?? feature}</span>)}</div><footer><div>{area.placeName && <span>{area.placeName}</span>}{area.coordinatesKnown && <a href={mapUrl(area)} target="_blank" rel="noreferrer">Haritada aç ↗</a>}{area.own && <button type="button" onClick={() => void update("archive-area", area.id)}>Arşivle</button>}</div>{area.viewerCheckin ? <button className="checkout" type="button" disabled={busy} onClick={() => void update("check-out", area.id)}>Check-out</button> : <button type="button" disabled={busy || Boolean(viewerActiveAreaId)} onClick={() => setCheckinArea(area)}>{viewerActiveAreaId ? "Başka alanda aktifsin" : "Buradayım"}</button>}</footer></article>;

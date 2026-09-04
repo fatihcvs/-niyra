@@ -224,6 +224,8 @@ function useModalBehavior(open: boolean, close: () => void) {
   return rootRef;
 }
 
+import { WorkspaceHeader, RefreshButton } from "./workspace-ui";
+
 export function CommunitiesWorkspace({ courses }: { courses: CommunityCourse[] }) {
   const [items, setItems] = useState<Community[]>([]);
   const [stats, setStats] = useState<DirectoryStats>({ total: 0, joined: 0, newThisWeek: 0, upcomingEvents: 0 });
@@ -483,10 +485,7 @@ export function CommunitiesWorkspace({ courses }: { courses: CommunityCourse[] }
   const pendingMembers = visibleMembers.filter((member) => member.status === "pending");
 
   return <div className={styles.workspace}>
-    <header className={styles.pageHeader}>
-      <div><span>TOPLULUK MERKEZİ</span><h1>Kampüsünde ait olduğun çevreyi bul</h1><p>Derslerden kulüplere; birlikte üret, etkinliklere katıl ve kalıcı bağlar kur.</p></div>
-      <button className={styles.primaryButton} type="button" onClick={() => { setCreateStep(1); setCreateOpen(true); }}><Plus size={18}/> Topluluk kur</button>
-    </header>
+    <WorkspaceHeader section="Topluluklar" eyebrow="TOPLULUK MERKEZİ" title="Kendi çevreni bul" description="Derslerden kulüplere; birlikte üret, etkinliklere katıl ve kampüste bağ kur." actions={<><RefreshButton onClick={() => void loadDirectory()} busy={directoryState === "loading"}/><button className="feature-primary" type="button" onClick={() => { setCreateStep(1); setCreateOpen(true); }}><Plus size={18}/> Topluluk kur</button></>}/>
 
     <section className={styles.insights} aria-label="Topluluk özeti">
       <div><span><UsersThree size={21}/></span><strong>{stats.joined}</strong><small>Üye olduğun</small></div>
@@ -504,10 +503,11 @@ export function CommunitiesWorkspace({ courses }: { courses: CommunityCourse[] }
       <label className={styles.sort}><span className={styles.srOnly}>Toplulukları sırala</span><select value={sort} onChange={(event) => setSort(event.target.value)}><option value="recommended">Sana uygun</option><option value="members">En çok üye</option><option value="new">Yeni kurulan</option></select></label>
     </section>
 
-    <div className={styles.categoryRail} role="group" aria-label="Topluluk kategorileri">{categories.map(([value, label]) => <button type="button" key={value || "all"} className={category === value ? styles.active : ""} onClick={() => setCategory(value)}>{value ? <CategoryIcon category={value} size={17}/> : <Compass size={17}/>} {label}</button>)}</div>
+    <div className={styles.categoryRail} role="group" aria-label="Topluluk kategorileri">{categories.map(([value, label]) => <button type="button" key={value || "all"} className={category === value ? styles.active : ""} aria-pressed={category === value} onClick={() => setCategory(value)}>{value ? <CategoryIcon category={value} size={17}/> : <Compass size={17}/>} {label}</button>)}</div>
+    <div className="workspace-result-summary" role="status"><span>{directoryState === "loading" ? "Topluluklar aranıyor…" : `${items.length} topluluk gösteriliyor`}{mine ? " · Üyeliklerin" : ""}</span>{(query || category || mine || sort !== "recommended") && <button type="button" onClick={() => { setQuery(""); setCategory(""); setMine(false); setSort("recommended"); }}>Filtreleri temizle</button>}</div>
     {error && <p className={styles.error} role="alert">{error}<button type="button" onClick={() => { setError(""); void loadDirectory(); }}>Yeniden dene</button></p>}
 
-    {directoryState === "loading" ? <div className={styles.cardGrid} aria-label="Topluluklar yükleniyor">{[0,1,2,3].map((item) => <div className={styles.skeleton} key={item}/>)}</div> : directoryState === "error" ? null : items.length === 0 ? <section className={styles.empty}><Compass size={32}/><h2>{mine ? "Henüz bir topluluğa katılmadın" : "Eşleşen topluluk bulunamadı"}</h2><p>{mine ? "Derslerine ve ilgi alanlarına göre önerilen toplulukları keşfet." : "Filtreleri temizleyebilir veya aradığın çevreyi sen kurabilirsin."}</p><button type="button" onClick={() => mine ? setMine(false) : setCategory("")}>{mine ? "Toplulukları keşfet" : "Filtreleri temizle"}</button></section> : <section className={styles.cardGrid} aria-label="Topluluklar">
+    {directoryState === "loading" ? <div className={styles.cardGrid} aria-label="Topluluklar yükleniyor">{[0,1,2,3].map((item) => <div className={styles.skeleton} key={item}/>)}</div> : directoryState === "error" ? null : items.length === 0 ? <section className={styles.empty}><Compass size={32}/><h2>{mine ? "Henüz bir topluluğa katılmadın" : "Eşleşen topluluk bulunamadı"}</h2><p>{mine ? "Derslerine ve ilgi alanlarına göre önerilen toplulukları keşfet." : "Filtreleri temizleyebilir veya aradığın çevreyi sen kurabilirsin."}</p><button type="button" onClick={() => { setMine(false); setQuery(""); setCategory(""); }}>{mine ? "Toplulukları keşfet" : "Filtreleri temizle"}</button></section> : <section className={styles.cardGrid} aria-label="Topluluklar">
       {items.map((community) => <CommunityCard community={community} key={community.id} busy={busy} onOpen={() => void openCommunity(community)} onMembership={() => void membership(community)}/>) }
     </section>}
 

@@ -91,28 +91,30 @@ export async function POST(request: Request) {
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 
     if (action === "block" || action === "mute") {
+      if (payload.active !== undefined && typeof payload.active !== "boolean") return Response.json({ error: "Görünürlük tercihi geçerli değil." }, { status: 400 });
       const targetId = cleanText(payload.targetId, 80);
       const target = await DB.prepare(
         `SELECT u.email FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email
-         WHERE u.public_id = ? AND u.email <> ? AND target_profile.university_id = ? LIMIT 1`,
-      ).bind(targetId, identity.email, profile.university_id).first<{ email: string }>();
+         WHERE u.public_id = ? AND u.email <> ? AND (target_profile.university_id = ? OR ? = 1) LIMIT 1`,
+      ).bind(targetId, identity.email, profile.university_id, payload.active === false ? 1 : 0).first<{ email: string }>();
       if (!target) return Response.json({ error: "Öğrenci bulunamadı." }, { status: 404 });
       const table = action === "block" ? "user_blocks" : "user_mutes";
       const firstColumn = action === "block" ? "blocker_email" : "muter_email";
       const secondColumn = action === "block" ? "blocked_email" : "muted_email";
       const current = await DB.prepare(`SELECT 1 AS found FROM ${table} WHERE ${firstColumn} = ? AND ${secondColumn} = ? LIMIT 1`).bind(identity.email, target.email).first();
-      if (current) {
+      const nextActive = typeof payload.active === "boolean" ? payload.active : !current;
+      if (!nextActive) {
         await DB.prepare(`DELETE FROM ${table} WHERE ${firstColumn} = ? AND ${secondColumn} = ?`).bind(identity.email, target.email).run();
       } else {
-        const statements = [DB.prepare(`INSERT INTO ${table} (${firstColumn}, ${secondColumn}) VALUES (?, ?)`).bind(identity.email, target.email)];
+        const statements = [DB.prepare(`INSERT OR IGNORE INTO ${table} (${firstColumn}, ${secondColumn}) VALUES (?, ?)`).bind(identity.email, target.email)];
         if (action === "block") {
           statements.push(DB.prepare(`DELETE FROM user_follows WHERE (follower_email = ? AND following_email = ?) OR (follower_email = ? AND following_email = ?)`).bind(identity.email, target.email, target.email, identity.email));
         }
         await DB.batch(statements);
       }
-      await audit(DB, identity.email, `user.${current ? "un" : ""}${action}ed`, "user", targetId);
-      return Response.json({ active: !current });
+      await audit(DB, identity.email, `user.${nextActive ? "" : "un"}${action}ed`, "user", targetId);
+      return Response.json({ active: nextActive });
     }
 
     if (action === "report") {

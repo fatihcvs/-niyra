@@ -2,6 +2,9 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
+import { WorkspaceHeader, WorkspaceSearch, RefreshButton } from "./workspace-ui";
+import { matchesSearch } from "../lib/workspace-navigation";
+
 type Place = {
   id: string; name: string; category: string; description: string; address: string; latitude: number | null; longitude: number | null;
   coordinatesKnown: boolean; accessibility: string[]; openingHours: string; currentCount: number; needsUpdateCount: number;
@@ -77,10 +80,10 @@ export function CampusGuideWorkspace({ universityShortName }: { universityShortN
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
-    try { applyData(await readJson(await fetch(`/api/campus-guide?category=${encodeURIComponent(category)}&q=${encodeURIComponent(query)}`)) as GuideResponse); }
+    try { applyData(await readJson(await fetch("/api/campus-guide")) as GuideResponse); }
     catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Kampüs rehberi getirilemedi."); }
     finally { setLoading(false); }
-  }, [applyData, category, query]);
+  }, [applyData]);
 
   useEffect(() => {
     let active = true;
@@ -88,7 +91,8 @@ export function CampusGuideWorkspace({ universityShortName }: { universityShortN
     return () => { active = false; };
   }, [applyData]);
 
-  const selected = useMemo(() => places.find((place) => place.id === selectedId) ?? places[0] ?? null, [places, selectedId]);
+  const visiblePlaces = useMemo(() => places.filter((place) => (!category || place.category === category) && matchesSearch(query, place.name, place.description, place.address)), [places, query, category]);
+  const selected = visiblePlaces.find((place) => place.id === selectedId) ?? visiblePlaces[0] ?? null;
   const communityPlaces = useMemo(() => places.filter((place) => !place.curated), [places]);
   const housingPlaces = useMemo(() => places.filter((place) => place.category === "housing" && !place.curated), [places]);
   const selectedHousing = useMemo(() => housingPlaces.find((place) => place.id === selectedId) ?? housingPlaces[0] ?? null, [housingPlaces, selectedId]);
@@ -158,19 +162,19 @@ export function CampusGuideWorkspace({ universityShortName }: { universityShortN
   }
 
   return <div className="workspace-view campus-guide-workspace">
-    <header className="campus-guide-header"><div><span>{universityShortName} · KAMPÜS REHBERİ</span><h1>Kampüsünü tek yerden keşfet</h1><p>Resmî adresler, açık harita noktaları ve öğrenci katkıları kaynak türleriyle birlikte gösterilir.</p></div><div><button type="button" onClick={() => setDialog("event")}>Etkinlik ekle</button><button type="button" onClick={() => setDialog("housing")}>Yurt ekle</button><button className="feature-primary" type="button" onClick={() => setDialog("place")}>＋ Mekân ekle</button></div></header>
+    <WorkspaceHeader section="Kampüs" eyebrow={universityShortName} title="Kampüs rehberin" description="Mekânları bul, etkinlikleri keşfet ve konaklama deneyimlerini incele. Her noktanın kaynak ve güncellik bilgisi yanında." actions={<><RefreshButton onClick={() => void load()} busy={loading}/><button type="button" onClick={() => setDialog("event")}>Etkinlik ekle</button><button type="button" onClick={() => setDialog("housing")}>Yurt ekle</button><button className="feature-primary" type="button" onClick={() => setDialog("place")}>＋ Mekân ekle</button></>}/>
     <nav className="campus-guide-tabs" aria-label="Kampüs rehberi bölümleri"><button className={tab === "places" ? "active" : ""} type="button" onClick={() => setTab("places")}><strong>Harita ve mekânlar</strong><small>{places.length} nokta</small></button><button className={tab === "events" ? "active" : ""} type="button" onClick={() => setTab("events")}><strong>Etkinlik takvimi</strong><small>{events.length} yaklaşan</small></button><button className={tab === "housing" ? "active" : ""} type="button" onClick={() => { setTab("housing"); if (selectedHousing) void loadHousingMessages(selectedHousing.id); }}><strong>Yurtlar ve konaklama</strong><small>{housingPlaces.length} öğrenci kaydı</small></button><button className={tab === "daily" ? "active" : ""} type="button" onClick={() => setTab("daily")}><strong>Bugünün önerisi</strong><small>Her gün yenilenir</small></button></nav>
     {notice && <p className="campus-guide-notice" role="status">{notice}</p>}{error && <p className="feature-feedback-state" role="alert">{error}</p>}
+    {tab === "places" && <WorkspaceSearch value={query} onChange={setQuery} placeholder="Mekân, açıklama veya adres ara" resultCount={loading ? undefined : visiblePlaces.length} onReset={query || category ? () => { setQuery(""); setCategory(""); } : undefined}><label><span className="sr-only">Mekân kategorisi</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="">Tüm kategoriler</option>{placeCategories.map(([value,label]) => <option value={value} key={value}>{label}</option>)}</select></label></WorkspaceSearch>}
     {loading ? <div className="campus-guide-empty"><strong>Kampüs rehberi hazırlanıyor…</strong></div> : tab === "places" ? <>
-      <form className="campus-guide-filters" onSubmit={(event) => { event.preventDefault(); void load(); }}><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Mekân, açıklama veya adres ara"/><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="">Tüm kategoriler</option>{placeCategories.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select><button type="submit">Ara</button></form>
-      {places.length === 0 ? <div className="campus-guide-empty"><span>SONUÇ YOK</span><strong>Bu aramayla eşleşen nokta bulunamadı</strong><p>Filtreleri temizleyebilir veya bildiğin gerçek bir kampüs noktasını kaynak ayrıntısıyla ekleyebilirsin.</p><button type="button" onClick={() => setDialog("place")}>Mekân ekle</button></div> : <div className="campus-guide-layout">
-        <section className="campus-place-list">{places.map((place) => <article className={selected?.id === place.id ? "active" : ""} key={place.id} onClick={() => setSelectedId(place.id)}>
+      {visiblePlaces.length === 0 ? <div className="campus-guide-empty"><span>SONUÇ YOK</span><strong>Bu aramayla eşleşen nokta bulunamadı</strong><p>Filtreleri temizleyebilir veya bildiğin gerçek bir kampüs noktasını kaynak ayrıntısıyla ekleyebilirsin.</p><button type="button" onClick={() => setDialog("place")}>Mekân ekle</button></div> : <div className="campus-guide-layout">
+        <section className="campus-place-list">{visiblePlaces.map((place) => <article className={selected?.id === place.id ? "active" : ""} key={place.id} onClick={() => setSelectedId(place.id)}>
           <header><div><span>{placeCategoryNames[place.category] ?? place.category}</span><h2>{place.name}</h2></div><b className={place.curated || place.verification.time ? "verified" : ""}>{place.verification.label}</b></header>
           <p>{place.description}</p>
           <small>{place.address || "Adres bilgisi eklenmedi"} · {place.source ? `${checkedDate(place.source.checkedAt)} tarihinde kontrol edildi` : `${timeLabel(place.updatedTime)} güncellendi`}</small>
-          <footer><div>{place.campusName && <span>{place.campusName}</span>}{place.accessibility.slice(0, 2).map((item) => <span key={item}>{accessibilityNames[item] ?? item}</span>)}</div><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedId(place.id); }}>Ayrıntılar</button></footer>
+          <footer><div>{place.campusName && <span>{place.campusName}</span>}{place.accessibility.slice(0, 2).map((item) => <span key={item}>{accessibilityNames[item] ?? item}</span>)}</div><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedId(place.id); if (window.innerWidth <= 780) window.requestAnimationFrame(() => { const detail = document.getElementById("campus-map-details"); detail?.scrollIntoView({ block: "start" }); detail?.focus({ preventScroll: true }); }); }}>Ayrıntılar</button></footer>
         </article>)}</section>
-        <aside className="campus-map-panel">{selected && <>
+        <aside className="campus-map-panel" id="campus-map-details" tabIndex={-1} aria-label="Seçilen kampüs noktası">{selected && <>
           <header><div><span>SEÇİLEN NOKTA</span><strong>{selected.name}</strong></div><b>{selected.openingHours || "Saat bilgisi yok"}</b></header>
           {selected.coordinatesKnown ? <><iframe title={`${selected.name} haritası`} loading="lazy" referrerPolicy="no-referrer" src={mapUrl(selected)}/><a href={openMapUrl(selected)} target="_blank" rel="noreferrer">OpenStreetMap&apos;te aç ↗</a></> : <div className="campus-map-unknown"><span>⌖</span><strong>Kesin koordinat henüz yok</strong><p>{selected.curated ? "Kaynakta doğrulanmış adres var; emin olmadığımız koordinatı haritada göstermiyoruz." : "Adres bilgisini kullanabilir veya noktayı ekleyen öğrenciden koordinat eklemesini isteyebilirsin."}</p></div>}
           <p className="campus-map-attribution">Harita ve açık veri © OpenStreetMap katkıcıları · ODbL</p>

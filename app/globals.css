@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./workspace-ui.css";
 
 :root {
   --ink: #172038;

@@ -36,6 +36,9 @@ import { CampusGuideWorkspace } from "./campus-guide";
 import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
 import { DirectMessagesWorkspace, type DirectMessageRecipient } from "./direct-messages";
+import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty, RefreshButton } from "./workspace-ui";
+import { SavedWorkspace } from "./saved-workspace";
+import { workspaceFromSearch, workspaceRoutes } from "../lib/workspace-navigation";
 import { ProfileContent } from "./profile-content";
 import { POST_IMAGE_MAX_BYTES, POST_VIDEO_MAX_BYTES, type PostMedia } from "../lib/post-media";
 
@@ -736,15 +739,6 @@ const libraryNotes = featuredCuratedNotes.slice(0, 8).map((note, index) => ({
   saved: index < 2,
 }));
 
-function ViewTitle({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description: string; action?: React.ReactNode }) {
-  return (
-    <header className="view-title">
-      <div>{eyebrow && <span>{eyebrow}</span>}<h1>{title}</h1><p>{description}</p></div>
-      {action}
-    </header>
-  );
-}
-
 function DiscoverView({
   profile,
   people,
@@ -767,26 +761,25 @@ function DiscoverView({
   onNavigate: (name: string) => void;
 }) {
   const [category, setCategory] = useState("Sana özel");
+  const visiblePeople = people.filter((person) => category === "Bölümüm" ? person.departmentName === profile.departmentName : category === "Sınıfım" ? person.classYear === profile.classYear : category === "Takip ettiklerim" ? person.isFollowing : true);
   return (
     <div className="workspace-view">
-      <ViewTitle eyebrow={`${profile.universityShortName} KEŞFET`} title="Kampüsünü keşfet" description={`${profile.universityName} içindeki öğrenciler, ders çevreleri ve topluluklarla buluş.`} />
-      <div className="discover-search"><Icon name="search" size={20}/><input aria-label={`${profile.universityShortName} öğrencisi ara`} value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Ad, kullanıcı adı, fakülte veya bölüm ara"/>{query ? <button type="button" onClick={() => onQueryChange("")} aria-label="Aramayı temizle"><Icon name="close" size={16}/></button> : <kbd>⌘ K</kbd>}</div>
+      <WorkspaceHeader section="Keşfet" eyebrow={profile.universityShortName} title="Kampüsünde yeni bağlantılar" description="İnsanları, dersleri ve toplulukları bul. Akademik çevreni ortak ilgi alanlarıyla genişlet."/>
+      <WorkspaceSearch value={query} onChange={onQueryChange} placeholder="Ad, kullanıcı adı, fakülte veya bölüm ara" resultCount={peopleStatus === "loading" ? undefined : visiblePeople.length} onReset={query || category !== "Sana özel" ? () => { onQueryChange(""); setCategory("Sana özel"); } : undefined}/>
+
       <UnifiedSearchResults query={query} onNavigate={onNavigate}/>
-      <div className="category-pills">
-        {["Sana özel", "Gündem", "Dersler", "Kampüsler", "Topluluklar"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} type="button" key={item}>{item}</button>)}
+      <div className="workspace-filter-pills" role="group" aria-label="Öğrenci çevresi">
+        {["Sana özel", "Bölümüm", "Sınıfım", "Takip ettiklerim"].map((item) => <button className={category === item ? "active" : ""} onClick={() => setCategory(item)} aria-pressed={category === item} type="button" key={item}>{item}</button>)}
       </div>
 
-      <section className="discover-hero">
-        <div className="discover-hero-copy"><span><Icon name="sparkles" size={15}/> AKADEMİK ÇEVREN</span><h2>Derslerini<br/>birlikte büyüt.</h2><p>Aynı üniversitedeki gerçek profilleri bul, ders çevrelerine ve paylaşımlara katıl.</p><button type="button" onClick={() => onNavigate("Topluluklar")}>Toplulukları keşfet <Icon name="arrow" size={17}/></button></div>
-        <div className="hero-orbit" aria-hidden="true"><span className="orbit-one">∑</span><span className="orbit-two">Ψ</span><span className="orbit-three">F</span><i/><strong>{profile.universityShortName}</strong><small>üniversite çevresi</small></div>
-      </section>
-
+      <div className="workspace-context-links"><button type="button" onClick={() => onNavigate("Topluluklar")}><strong>Topluluklar ↗</strong><small>Birlikte üreteceğin çevreyi bul</small></button><button type="button" onClick={() => onNavigate("Notlar")}><strong>Ders notları ↗</strong><small>Çalışmanı kolaylaştıran kaynaklar</small></button><button type="button" onClick={() => onNavigate("Kampüs")}><strong>Kampüs rehberi ↗</strong><small>Mekânlar ve yaklaşan etkinlikler</small></button></div>
       <div className="section-heading workspace-heading"><div><span className="eyebrow">ÖĞRENCİ AĞI</span><h2>{query ? `“${query}” için sonuçlar` : "Akademik çevreni genişlet"}</h2></div><span className="section-campus-label">{profile.universityShortName}</span></div>
       <div className="campus-people-grid">
         {peopleStatus === "loading" && <p className="campus-people-state">Bölümüne yakın öğrenciler getiriliyor…</p>}
         {peopleStatus === "empty" && <p className="campus-people-state">{query ? "Bu aramayla eşleşen bir kampüs öğrencisi bulunamadı." : "Henüz aynı üniversiteden başka bir profil yok. İlk gönderinle öğrenci ağını başlatabilirsin."}</p>}
-        {peopleStatus === "error" && <p className="campus-people-state">Öğrenci ağı şu anda getirilemedi. Biraz sonra yeniden deneyebilirsin.</p>}
-        {peopleStatus === "ready" && people.slice(0, 6).map((person) => (
+        {peopleStatus === "error" && <WorkspaceEmpty error title="Öğrenciler getirilemedi" description="Bağlantını kontrol edip tekrar deneyebilirsin." action={<RefreshButton onClick={() => onQueryChange(query)}/>}/>}
+        {peopleStatus === "ready" && visiblePeople.length === 0 && <WorkspaceEmpty title="Bu çevrede henüz sonuç yok" action={<button type="button" onClick={() => setCategory("Sana özel")}>Tüm öğrencileri göster</button>}/>}
+        {peopleStatus === "ready" && visiblePeople.map((person) => (
           <article className="campus-person-card" key={person.publicId}>
             <button className="campus-person-main" type="button" onClick={() => onOpenPerson(person)}>
               <Avatar initials={person.initials} className={person.avatarClass} imageUrl={person.avatarUrl}/>
@@ -799,38 +792,6 @@ function DiscoverView({
       </div>
 
       <section className="discover-empty-product"><span><Icon name="users" size={22}/></span><div><strong>Topluluklar gerçek üyelerle oluşur</strong><p>Üniversitene ait toplulukları açarak güncel üye ve gönderi sayılarını görebilirsin.</p></div><button type="button" onClick={() => onNavigate("Topluluklar")}>Topluluklara git <Icon name="arrow" size={15}/></button></section>
-    </div>
-  );
-}
-
-function SavedView({
-  posts,
-  loading,
-  error,
-  viewerInitials,
-  viewerId,
-  universityShortName,
-  onSavedChange,
-}: {
-  posts: Post[];
-  loading: boolean;
-  error: string;
-  viewerInitials: string;
-  viewerId: string;
-  universityShortName: string;
-  onSavedChange: (post: Post, saved: boolean) => void;
-}) {
-  return (
-    <div className="workspace-view">
-      <ViewTitle eyebrow="KAYDEDİLENLER" title="Sonra bakacakların" description="Kaydettiğin gönderiler hesabında kalır ve burada bir araya gelir." />
-      <section className="saved-summary"><div><span><Icon name="bookmark" size={22}/></span><div><strong>{posts.length} gönderi</strong><p>Kalıcı olarak kaydettiğin {universityShortName} paylaşımları</p></div></div></section>
-      <div className="section-heading workspace-heading"><div><span className="eyebrow">KAYDEDİLEN GÖNDERİLER</span><h2>Akademik arşivin</h2></div></div>
-      <div className="feed-list">
-        {loading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>Kayıtların getiriliyor…</strong></div>
-          : error ? <div className="feed-empty"><span><Icon name="bookmark" size={22}/></span><strong>Kayıtlarına ulaşılamadı</strong><p>{error}</p></div>
-            : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={viewerInitials} viewerId={viewerId} onSavedChange={onSavedChange} key={post.id}/>)
-              : <div className="feed-empty"><span><Icon name="bookmark" size={22}/></span><strong>Henüz kaydettiğin gönderi yok</strong><p>Akışta yer imine dokunduğun paylaşımlar burada görünecek.</p></div>}
-      </div>
     </div>
   );
 }
@@ -1095,6 +1056,12 @@ function PublicProfileView({
 }
 
 function ThemeSettings({ preference, onChange }: { preference: ThemePreference; onChange: (preference: ThemePreference) => void }) {
+  const [reducedMotion, setReducedMotion] = useState(() => typeof document !== "undefined" && document.documentElement.dataset.reduceMotion === "true");
+  const [compact, setCompact] = useState(() => typeof document !== "undefined" && document.documentElement.dataset.contentDensity === "compact");
+  function saveReadingPreference(key: "reduceMotion" | "contentDensity", value: string) {
+    document.documentElement.dataset[key] = value;
+    try { window.localStorage.setItem(`kampira-${key}`, value); } catch { /* The current page still honors the preference when storage is unavailable. */ }
+  }
   const options: Array<{ value: ThemePreference; icon: IconName; title: string; detail: string }> = [
     { value: "light", icon: "sun", title: "Açık", detail: "Aydınlık ve temiz görünüm" },
     { value: "dark", icon: "moon", title: "Koyu", detail: "Gece kullanımında daha rahat" },
@@ -1103,11 +1070,7 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
 
   return (
     <div className="workspace-view settings-view">
-      <header className="settings-header">
-        <span>GÖRÜNÜM AYARLARI</span>
-        <h1>Kampira’yı sana göre göster.</h1>
-        <p>Tema seçimin bu cihazda saklanır. Sistem seçeneği, telefonunun veya bilgisayarının açık ya da koyu görünümünü otomatik takip eder.</p>
-      </header>
+      <WorkspaceHeader section="Ayarlar" eyebrow="KİŞİSEL DENEYİMİN" title="Kampira sana göre" description="Görünümü ve okuma rahatlığını düzenle. Bu tercihler kullandığın cihazda otomatik olarak saklanır."/>
       <section className="settings-card" aria-labelledby="theme-setting-title">
         <div className="settings-card-heading"><span className="settings-card-icon"><Icon name="settings" size={20}/></span><div><h2 id="theme-setting-title">Tema</h2><p>Uygulamanın renk görünümünü seç.</p></div></div>
         <div className="theme-choice-grid" role="radiogroup" aria-label="Tema seçimi">
@@ -1119,13 +1082,15 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
             </button>
           ))}
         </div>
+        <label className="settings-preference-row"><span><strong>Hareketi azalt</strong><small>Geçişleri ve animasyonları sadeleştir. Cihazının hareket azaltma tercihi de her zaman geçerlidir.</small></span><input type="checkbox" checked={reducedMotion} onChange={(event) => { setReducedMotion(event.target.checked); saveReadingPreference("reduceMotion", String(event.target.checked)); }}/></label>
+        <label className="settings-preference-row"><span><strong>Masaüstünde kompakt görünüm</strong><small>Daha az boşlukla daha fazla içerik gör. Telefonda dokunma alanları korunur.</small></span><input type="checkbox" checked={compact} onChange={(event) => { setCompact(event.target.checked); saveReadingPreference("contentDensity", event.target.checked ? "compact" : "comfortable"); }}/></label>
         <p className="settings-saved-note" role="status"><Icon name="check" size={15}/> Seçimin otomatik kaydedilir.</p>
       </section>
     </div>
   );
 }
 
-function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, notesCourseId, marketTab, themePreference, messageRecipient, onMessagesUnreadChange, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; notesCourseId: string; marketTab: CampusMarketTab; themePreference: ThemePreference; messageRecipient: DirectMessageRecipient | null; onMessagesUnreadChange: (count: number) => void; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Mesajlar") return <DirectMessagesWorkspace initialRecipient={messageRecipient} onNavigate={onNavigate} onUnreadChange={onMessagesUnreadChange}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
@@ -1138,7 +1103,7 @@ function SecondaryView({ name, profile, people, peopleStatus, peopleQuery, share
   if (name === "Bildirimler") return <NotificationsWorkspace/>;
   if (name === "Güvenlik") return <SafetyWorkspace/>;
   if (name === "Ayarlar") return <ThemeSettings preference={themePreference} onChange={onThemeChange}/>;
-  if (name === "Kaydedilenler") return <SavedView posts={savedPosts} loading={savedPostsLoading} error={savedPostsError} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} universityShortName={profile.universityShortName} onSavedChange={onSavedChange}/>;
+  if (name === "Kaydedilenler") return <SavedWorkspace onNavigate={onNavigate} renderPost={(post, onSaved, onUpdated, onDeleted) => <FeedPost post={post} onPostUpdated={(id, text) => { onUpdated(text); onPostUpdated(id, text); }} onPostDeleted={(id) => { onDeleted(); onPostDeleted(id); }} viewerInitials={getInitials(profile.displayName)} viewerId={profile.publicId} onSavedChange={(item, saved) => { onSaved(saved); onSavedChange(item, saved); }}/>} />;
   if (name === "Profil") return <ProfileView profile={profile} shareable={shareableProfile} onEdit={onEditProfile} onSignOut={onSignOut} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} onNavigate={onNavigate}/>;
   return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
 }
@@ -1939,6 +1904,8 @@ export default function Home() {
     return saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
   });
   const [feedTab, setFeedTab] = useState("Senin için");
+  const [feedMediaFilter, setFeedMediaFilter] = useState("all");
+  const [showFeedFilters, setShowFeedFilters] = useState(false);
   const [draft, setDraft] = useState("");
   const [draftMedia, setDraftMedia] = useState<File | null>(null);
   const [draftMediaUrl, setDraftMediaUrl] = useState("");
@@ -1971,9 +1938,6 @@ export default function Home() {
   const [messageUnreadCount, setMessageUnreadCount] = useState(0);
   const [publicProfile, setPublicProfile] = useState<PublicProfile | null>(null);
   const [publicProfileLoading, setPublicProfileLoading] = useState(false);
-  const [savedPosts, setSavedPosts] = useState<Post[]>([]);
-  const [savedPostsLoading, setSavedPostsLoading] = useState(false);
-  const [savedPostsError, setSavedPostsError] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<CourseSubject | null>(null);
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const [notesCourseId, setNotesCourseId] = useState("");
@@ -1984,6 +1948,24 @@ export default function Home() {
   const sharedPostFocused = useRef(false);
 
   useEffect(() => () => { if (draftMediaUrl) URL.revokeObjectURL(draftMediaUrl); }, [draftMediaUrl]);
+
+  useEffect(() => {
+    try {
+      document.documentElement.dataset.reduceMotion = window.localStorage.getItem("kampira-reduceMotion") === "true" ? "true" : "false";
+      document.documentElement.dataset.contentDensity = window.localStorage.getItem("kampira-contentDensity") === "compact" ? "compact" : "comfortable";
+    } catch { /* Keep the standard appearance when storage is unavailable. */ }
+    const restoreLocation = () => {
+      sharedPostFocused.current = false;
+      setFollowError(""); setPublicProfileLoading(false);
+      setActiveNav(workspaceFromSearch(window.location.search));
+      setEditingProfile(null); setPublicProfile(null); setShowMobileCreate(false); setShowMobileMenu(false); setShowSearch(false);
+      setProfileReloadToken((value) => value + 1); setProfileRevision((value) => value + 1);
+      const market = new URLSearchParams(window.location.search).get("market");
+      setMarketTab(market === "prices" || market === "messages" ? market : "store");
+    };
+    window.addEventListener("popstate", restoreLocation);
+    return () => window.removeEventListener("popstate", restoreLocation);
+  }, []);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
@@ -2066,6 +2048,11 @@ export default function Home() {
           setPostsLoading(true);
           setProfileState("ready");
           const sharedProfileId = new URLSearchParams(window.location.search).get("profile")?.trim() ?? "";
+          if (!sharedProfileId) {
+            setActiveNav(new URLSearchParams(window.location.search).has("post") ? "Akış" : workspaceFromSearch(window.location.search));
+            const market = new URLSearchParams(window.location.search).get("market");
+            setMarketTab(market === "prices" || market === "messages" ? market : "store");
+          }
           if (sharedProfileId) {
             if (sharedProfileId === data.profile.publicId) {
               setActiveNav("Profil");
@@ -2163,28 +2150,6 @@ export default function Home() {
   }, [profileState, profileRevision]);
 
   useEffect(() => {
-    if (profileState !== "ready" || activeNav !== "Kaydedilenler") return;
-    let active = true;
-
-    async function loadSavedPosts() {
-      try {
-        const response = await fetch("/api/posts?feed=saved", { headers: { accept: "application/json" } });
-        const data = (await response.json()) as { posts?: Post[]; error?: string };
-        if (!active) return;
-        if (!response.ok || !data.posts) throw new Error(data.error ?? "Kaydedilen gönderiler getirilemedi.");
-        setSavedPosts(data.posts);
-      } catch (savedError) {
-        if (active) setSavedPostsError(savedError instanceof Error ? savedError.message : "Kaydedilen gönderiler getirilemedi.");
-      } finally {
-        if (active) setSavedPostsLoading(false);
-      }
-    }
-
-    void loadSavedPosts();
-    return () => { active = false; };
-  }, [activeNav, profileState]);
-
-  useEffect(() => {
     if (postsLoading || sharedPostFocused.current) return;
     const sharedPostId = new URLSearchParams(window.location.search).get("post")?.trim();
     if (!sharedPostId) return;
@@ -2238,22 +2203,6 @@ export default function Home() {
     return () => { active = false; window.clearInterval(interval); };
   }, [profileState]);
 
-  useEffect(() => {
-    function handleHistoryChange() {
-      const sharedProfileId = new URLSearchParams(window.location.search).get("profile");
-      if (!sharedProfileId) {
-        setActiveNav("Akış");
-        setPublicProfile(null);
-        setPublicProfileLoading(false);
-        setFollowError("");
-        return;
-      }
-      window.location.reload();
-    }
-
-    window.addEventListener("popstate", handleHistoryChange);
-    return () => window.removeEventListener("popstate", handleHistoryChange);
-  }, []);
 
   if (profileState === "loading") return <ProfileBoot/>;
 
@@ -2267,7 +2216,7 @@ export default function Home() {
         identityName={identityName}
         initialProfile={studentProfile}
         state={profileState === "unavailable" ? "unavailable" : "needs-onboarding"}
-        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setNextCursor(null); setSavedPosts([]); setSavedPostsError(""); setPeopleQuery(""); setPeopleStatus("loading"); setProfileState("ready"); }}
+        onComplete={(profile) => { setStudentProfile(profile); setIdentityName(profile.displayName); setPosts([]); setPostsLoading(true); setNextCursor(null); setPeopleQuery(""); setPeopleStatus("loading"); setProfileState("ready"); }}
         onRetry={() => { setProfileState("loading"); setProfileReloadToken((current) => current + 1); }}
       />
     );
@@ -2282,8 +2231,6 @@ export default function Home() {
           setIdentityName(profile.displayName);
           setPosts([]);
           setPostsLoading(true);
-          setSavedPosts([]);
-          setSavedPostsError("");
           setPeopleQuery("");
           setPeopleStatus("loading");
           setProfileRevision((current) => current + 1);
@@ -2310,8 +2257,6 @@ export default function Home() {
           setPosts([]);
           setPostsLoading(true);
           setNextCursor(null);
-          setSavedPosts([]);
-          setSavedPostsError("");
           setPeopleQuery("");
           setPeopleStatus("loading");
           setProfileRevision((current) => current + 1);
@@ -2325,6 +2270,7 @@ export default function Home() {
     );
   }
 
+  const visibleFeedPosts = posts.filter((post) => feedMediaFilter === "all" || post.media?.some((media) => media.kind === feedMediaFilter));
   const activeProfile = studentProfile;
   const initials = getInitials(activeProfile.displayName);
   const composerCourse = activeProfile.courses.find((course) => course.id === composerCourseId) ?? null;
@@ -2413,14 +2359,12 @@ export default function Home() {
 
   function updatePost(id: number | string, text: string) {
     setPosts((current) => current.map((post) => post.id === id ? { ...post, text, edited: true } : post));
-    setSavedPosts((current) => current.map((post) => post.id === id ? { ...post, text, edited: true } : post));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.map((post) => post.id === id ? { ...post, text, edited: true } : post) } : current);
   }
 
   function deletePost(id: number | string) {
     const removedPost = posts.find((post) => post.id === id);
     setPosts((current) => current.filter((post) => post.id !== id));
-    setSavedPosts((current) => current.filter((post) => post.id !== id));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.filter((post) => post.id !== id), postCount: Math.max(0, current.postCount - (current.posts.some((post) => post.id === id) ? 1 : 0)) } : current);
     if (removedPost?.authorId === activeProfile.publicId || activeNav === "Profil") {
       setStudentProfile((current) => current ? { ...current, postCount: Math.max(0, current.postCount - 1) } : current);
@@ -2428,9 +2372,6 @@ export default function Home() {
   }
 
   function updateSavedPost(post: Post, saved: boolean) {
-    setSavedPosts((current) => saved
-      ? current.some((item) => item.id === post.id) ? current : [{ ...post, saved: true }, ...current]
-      : current.filter((item) => item.id !== post.id));
     setPosts((current) => current.map((item) => item.id === post.id ? { ...item, saved } : item));
     setPublicProfile((current) => current ? { ...current, posts: current.posts.map((item) => item.id === post.id ? { ...item, saved } : item) } : current);
   }
@@ -2442,6 +2383,7 @@ export default function Home() {
     setFollowError("");
 
     const profileUrl = new URL(window.location.href);
+    profileUrl.searchParams.delete("post"); profileUrl.searchParams.delete("view"); profileUrl.searchParams.delete("market");
     profileUrl.searchParams.set("profile", person.publicId);
     window.history.pushState({}, "", `${profileUrl.pathname}${profileUrl.search}`);
 
@@ -2463,6 +2405,7 @@ export default function Home() {
     const nextQuery = query.slice(0, 60);
     setPeopleQuery(nextQuery);
     setPeopleStatus("loading");
+    if (nextQuery === peopleQuery) setProfileRevision((value) => value + 1);
 
   }
 
@@ -2487,16 +2430,13 @@ export default function Home() {
   function navigateTo(name: string, targetMarketTab?: CampusMarketTab) {
     if (name === "Gönderi oluştur") { openFeedComposer(); return; }
     const currentUrl = new URL(window.location.href);
-    if (currentUrl.searchParams.has("profile") || currentUrl.searchParams.has("post")) {
-      currentUrl.searchParams.delete("profile");
-      currentUrl.searchParams.delete("post");
-      window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.search}`);
-    }
+    currentUrl.searchParams.delete("profile"); currentUrl.searchParams.delete("post"); currentUrl.searchParams.delete("market");
+    const slug = workspaceRoutes[name as keyof typeof workspaceRoutes];
+    if (slug && slug !== "feed") currentUrl.searchParams.set("view", slug); else currentUrl.searchParams.delete("view");
+    if (name === "Pazar" && targetMarketTab && targetMarketTab !== "store") currentUrl.searchParams.set("market", targetMarketTab);
+    const nextLocation = `${currentUrl.pathname}${currentUrl.search}`;
+    if (nextLocation !== `${window.location.pathname}${window.location.search}`) window.history.pushState({}, "", nextLocation);
     sharedPostFocused.current = false;
-    if (name === "Kaydedilenler" && activeNav !== name) {
-      setSavedPostsLoading(true);
-      setSavedPostsError("");
-    }
     if (name === "Pazar") setMarketTab(targetMarketTab ?? "store");
     setPublicProfile(null);
     setPublicProfileLoading(false);
@@ -2578,7 +2518,7 @@ export default function Home() {
         <Logo />
         <nav className="main-nav" aria-label="Ana menü">
           {navItems.map((item) => (
-            <button className={activeNav === item.label ? "active" : ""} key={item.label} onClick={() => navigateTo(item.label)} type="button">
+            <button className={activeNav === item.label ? "active" : ""} aria-current={activeNav === item.label ? "page" : undefined} key={item.label} onClick={() => navigateTo(item.label)} type="button">
               <span className="nav-icon"><Icon name={item.icon}/>{item.label === "Bildirimler" && <i />}</span>
               <span>{item.label}</span>
               {item.label === "Mesajlar" && messageUnreadCount > 0 && <b className="nav-count">{messageUnreadCount > 99 ? "99+" : messageUnreadCount}</b>}
@@ -2618,6 +2558,7 @@ export default function Home() {
         )}
 
         {activeNav === "Akış" ? <>
+        <div className="workspace-mobile-title"><div><h1>Kampüs akışın</h1><p>{activeProfile.universityShortName} · Dersler, insanlar ve yeni paylaşımlar</p></div></div>
         <CampusLiveHome items={campusLiveItems} status={campusLiveStatus} universityShortName={activeProfile.universityShortName} reactionPendingId={campusReactionPendingId} onNavigate={navigateTo} onReact={(item, reaction) => void reactToCampusLive(item, reaction)}/>
         <div className="feed-welcome">
           <div>
@@ -2670,15 +2611,17 @@ export default function Home() {
         <div className="feed-tabs" role="tablist" aria-label="Akış türü">
           {["Senin için", "Takip ettiklerin", "Kampüsüm"].map((tab) => {
             const label = tab === "Senin için" ? "Sana özel" : tab === "Takip ettiklerin" ? "Takip" : tab;
-            return <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { setFeedTab(tab); setNextCursor(null); setFeedError(""); setPostsLoading(true); }} type="button" role="tab" aria-selected={feedTab === tab}>{label}</button>;
+            return <button key={tab} className={feedTab === tab ? "active" : ""} onClick={() => { if (feedTab !== tab) { setFeedTab(tab); setNextCursor(null); setFeedError(""); setPostsLoading(true); } }} type="button" role="tab" aria-selected={feedTab === tab}>{label}</button>;
           })}
-          <button className="feed-filter" type="button" aria-label="Akış seçenekleri"><Icon name="more"/></button>
+          <button className="feed-filter" type="button" aria-label="Akış seçenekleri" aria-expanded={showFeedFilters} onClick={() => setShowFeedFilters((value) => !value)}><Icon name="settings" size={18}/></button>
         </div>
 
-        <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
+        {showFeedFilters && <div className="workspace-filter-pills" role="group" aria-label="Paylaşım türü">{([['all','Tüm paylaşımlar'],['image','Fotoğraflar'],['video','Videolar']] as const).map(([value,label]) => <button type="button" key={value} aria-pressed={feedMediaFilter === value} className={feedMediaFilter === value ? "active" : ""} onClick={() => setFeedMediaFilter(value)}>{label}</button>)}<RefreshButton onClick={() => { setPostsLoading(true); setProfileRevision((value) => value + 1); }} busy={postsLoading}/></div>}
+        {feedMediaFilter !== "all" && !postsLoading && visibleFeedPosts.length === 0 && posts.length > 0 && <WorkspaceEmpty title="Yüklenen paylaşımlarda bu türde içerik yok" description={nextCursor ? "Daha fazla gönderi yükleyebilir veya tüm paylaşımlara dönebilirsin." : "Tüm paylaşım türlerine dönerek kampüs akışını görebilirsin."} action={<button type="button" onClick={() => setFeedMediaFilter("all")}>Tümünü göster</button>}/>}
+        <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? visibleFeedPosts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)} onMessage={openMessages}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} messageRecipient={messageRecipient} onMessagesUnreadChange={setMessageUnreadCount} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)} onMessage={openMessages}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} notesCourseId={notesCourseId} marketTab={marketTab} themePreference={themePreference} messageRecipient={messageRecipient} onMessagesUnreadChange={setMessageUnreadCount} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
