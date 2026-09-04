@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1244,
+    curriculumLinkCount: 1321,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 28);
+  assert.equal(catalog.meta.sources.length, 29);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -148,6 +148,26 @@ test("Bogazici current programmes all link to official course and ECTS tables", 
   ].includes(program.name));
   assert.equal(scienceEducation.length, 5);
   assert.ok(scienceEducation.every((program) => program.curriculumUrls[0].endsWith("/36")));
+});
+
+test("Hacettepe programmes link only to populated official Bologna course plans", () => {
+  const hacettepe = catalog.universities["tr-hacettepe-universitesi"];
+  const bachelorPrograms = hacettepe.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 79);
+  assert.equal(curriculumPrograms.length, 77);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Hacettepe Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "bilsis.hacettepe.edu.tr"
+      && parsed.pathname === "/oibs/bologna/progCourses.aspx"
+      && /^\d+$/.test(parsed.searchParams.get("curSunit") ?? "")
+      && parsed.searchParams.get("lang") === "tr";
+  })));
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, ["Paramedik", "Yapay Zeka ve Veri Mühendisliği (İngilizce)"].sort());
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {
