@@ -5,12 +5,12 @@ export async function GET() {
     if (!env.DB) throw new Error("database unavailable");
     await env.DB.prepare("SELECT 1 AS ok").first();
     return Response.json(
-      { status: "ok", service: "uniyra", version: "1.6.15", database: "ok", storage: env.FILES ? "configured" : "unavailable", latencyMs: Date.now() - startedAt },
+      { status: "ok", service: "uniyra", version: "1.6.16", database: "ok", storage: env.FILES ? "configured" : "unavailable", latencyMs: Date.now() - startedAt },
       { headers: { "cache-control": "no-store" } },
     );
   } catch {
     return Response.json(
-      { status: "degraded", service: "uniyra", version: "1.6.15", database: "unavailable", storage: "unknown", latencyMs: Date.now() - startedAt },
+      { status: "degraded", service: "uniyra", version: "1.6.16", database: "unavailable", storage: "unknown", latencyMs: Date.now() - startedAt },
       { status: 503, headers: { "cache-control": "no-store" } },
     );
   }

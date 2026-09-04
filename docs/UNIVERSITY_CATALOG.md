@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.859 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.940 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -216,6 +216,22 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   tekrarlı denemelerde resmî sunucudan 500 veritabanı hatası döndürdüğü, İlahiyat
   M.T.O.K. için de ayrı plan yayımlanmadığı için bu üç programa tahmini bağlantı
   verilmedi.
+
+## Dokuz Eylül Üniversitesi müfredat genişletmesi — on yedinci parça
+
+- Dokuz Eylül Üniversitesi'nin resmî [2025-2026 Ders Kataloğu](https://debis.deu.edu.tr/ders-katalog/2025-2026/tr/tr-c3.html)
+  dizinindeki 146 yayımlanmış lisans planı, ÖSYM kataloğundaki 88 güncel lisans
+  programıyla akademik birim, program adı ve eğitim dili korunarak karşılaştırıldı.
+- 81 güncel program kendi resmî ders planına bağlandı. Her hedefte AKTS alanı,
+  en az beş farklı ders kodu ve fakültenin kullandığı dönem yapısı canlı olarak
+  doğrulandı; planların yayın dönemi `2025-2026` olarak ayrıca saklandı.
+- Tıp Doktorluğu, Veteriner Hekimliği, Makina Mühendisliği ve SUNY Albany gibi
+  kurum kataloğundaki ad farkları açık eşlemelerle düzeltildi. İkinci öğretim ve
+  güncel ÖSYM kataloğunda bulunmayan eski sanat programları yeni program sayılmadı.
+- Ayrı planı bulunmayan İngilizce Tıp, İlahiyat M.T.O.K., Gence ortak programları,
+  Havacılık ve Uzay Mühendisliği ile Radyo-Televizyon-Sinema tahminen bağlanmadı.
+  Turizm ve Gastronomi Yönetimi bağlantısı da resmî dizinde görünmesine rağmen
+  hedefi 404 döndürdüğü için doğrulanmış kaynak sağlanana kadar bağlantısız bırakıldı.
 
 ## Bilinen sınır
 

@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1859,
+    curriculumLinkCount: 1940,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 35);
+  assert.equal(catalog.meta.sources.length, 36);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -346,6 +346,36 @@ test("Ege programmes link only to populated official EBP course plans", () => {
     "Bilgisayar Mühendisliği (İngilizce)",
     "Yapay Zeka ve Veri Mühendisliği (İngilizce)",
     "İlahiyat (M.T.O.K.)",
+  ].sort());
+});
+
+test("Dokuz Eylul programmes link only to verified 2025-2026 course-catalog plans", () => {
+  const deu = catalog.universities["tr-dokuz-eylul-universitesi"];
+  const bachelorPrograms = deu.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 88);
+  assert.equal(curriculumPrograms.length, 81);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Dokuz Eylül Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumPeriod === "2025-2026"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "debis.deu.edu.tr"
+      && /^\/ders-katalog\/2025-2026\/tr\/bolum_\d+_tr\.html$/.test(parsed.pathname);
+  })));
+
+  assert.ok(curriculumPrograms.find((program) => program.name === "Bilgisayar ve Öğretim Teknolojileri Öğretmenliği")
+    ?.curriculumUrls[0].endsWith("/bolum_1099_tr.html"));
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, [
+    "Tıp (İngilizce)",
+    "İlahiyat (M.T.O.K.)",
+    "Turizm ve Gastronomi Yönetimi Programları (İngilizce)",
+    "İktisat (UOLP-Gence Devlet Üniversitesi)",
+    "Tarih (UOLP-Gence Devlet Üniversitesi)",
+    "Havacılık ve Uzay Mühendisliği (İngilizce)",
+    "Radyo, Televizyon ve Sinema",
   ].sort());
 });
 
