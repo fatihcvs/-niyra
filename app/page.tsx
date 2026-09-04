@@ -1001,6 +1001,7 @@ function AcademicOnboarding({
   const [catalog, setCatalog] = useState<CatalogPayload | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
+  const [catalogRequestRevision, setCatalogRequestRevision] = useState(0);
   const [manualAcademic, setManualAcademic] = useState(false);
   const [unitQuery, setUnitQuery] = useState("");
   const [programQuery, setProgramQuery] = useState("");
@@ -1061,7 +1062,7 @@ function AcademicOnboarding({
       });
 
     return () => controller.abort();
-  }, [universityId]);
+  }, [universityId, catalogRequestRevision]);
 
   if (state === "unavailable") {
     return (
@@ -1086,6 +1087,11 @@ function AcademicOnboarding({
   }
 
   function chooseUniversity(nextUniversityId: string) {
+    if (nextUniversityId === universityId && (catalog || catalogLoading)) {
+      setUniversityQuery("");
+      setError("");
+      return;
+    }
     setUniversityId(nextUniversityId);
     setCatalog(null);
     setCatalogLoading(true);
@@ -1099,6 +1105,7 @@ function AcademicOnboarding({
     setUnitQuery("");
     setProgramQuery("");
     setError("");
+    if (nextUniversityId === universityId) setCatalogRequestRevision((revision) => revision + 1);
   }
 
   function chooseDepartment(nextDepartmentId: string) {

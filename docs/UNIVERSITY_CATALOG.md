@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 994 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.076 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -54,6 +54,17 @@ etiketlenmiş manuel giriş yedeği gösterilir.
   müfredat bağlandı.
 - Onbeş Kasım'ın arama indeksinde bulunan eski ders planı PDF adresleri canlıda
   404 döndürdüğü için yayına alınmadı; ölü bağlantılar katalog sayısına katılmadı.
+
+## OMÜ müfredat genişletmesi — beşinci parça
+
+- OMÜ'nün resmî [Bilgi Paketi / Ders Kataloğu](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR)
+  üzerindeki 103 lisans programı program ve akademik birim adıyla katalogla
+  karşılaştırıldı.
+- ÖSYM kataloğuyla kesin eşleşen 82 lisans programına ders kodu, teori/uygulama,
+  kredi ve AKTS tablolarını içeren tekil resmî program sayfası bağlandı.
+- Bilgi Paketinde karşılığı henüz yayımlanmayan 5 yeni lisans programına tahmini
+  ders planı atanmadı. Önlisans ağacındaki bağlantılar da yalnızca `javascript:`
+  hedefi verdiği için doğrulanabilir URL varmış gibi gösterilmedi.
 
 ## Bilinen sınır
 
