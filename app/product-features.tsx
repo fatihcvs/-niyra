@@ -71,6 +71,11 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} MB`;
 }
 
+function formatVerifiedDate(value: string) {
+  return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    .format(new Date(`${value}T00:00:00Z`));
+}
+
 function FeatureHeader({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: React.ReactNode }) {
   return <header className="feature-header"><div><span>{eyebrow}</span><h1>{title}</h1><p>{description}</p></div>{action}</header>;
 }
@@ -244,7 +249,7 @@ export function NotesWorkspace({ courses }: { courses: FeatureCourse[] }) {
     </section></div>}
 
     {selectedCurated && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedCurated(null); }}><section className="feature-dialog feature-detail curated-detail" role="dialog" aria-modal="true" aria-labelledby="curated-detail-title"><header><div><span>ÜNİYRA EDİTORYAL · {selectedCurated.courseCodes.join(" · ")}</span><h2 id="curated-detail-title">{selectedCurated.title}</h2></div><button type="button" onClick={() => setSelectedCurated(null)} aria-label="Pencereyi kapat">×</button></header>
-      <div className="curated-detail-intro"><span>✓ Kaynakları doğrulandı</span><p>{selectedCurated.summary}</p><small>{selectedCurated.level} · {selectedCurated.readingMinutes} dakika · 3 Eylül 2026 tarihinde doğrulandı</small></div>
+      <div className="curated-detail-intro"><span>✓ Kaynakları doğrulandı</span><p>{selectedCurated.summary}</p><small>{selectedCurated.level} · {selectedCurated.readingMinutes} dakika · {formatVerifiedDate(selectedCurated.verifiedOn)} tarihinde doğrulandı</small></div>
       <div className="curated-detail-columns"><section><h3>Bilmen gerekenler</h3><ul>{selectedCurated.takeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}</ul></section><section><h3>Çalışma kontrolü</h3><ol>{selectedCurated.checklist.map((step) => <li key={step}>{step}</li>)}</ol></section></div>
       <div className="feature-tags">{selectedCurated.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>
       <section className="curated-sources"><h3>Kaynaklar</h3><p>Bu kısa not özgün olarak hazırlandı. Konuyu ayrıntılı çalışmak ve güncel metni doğrulamak için birincil kaynağı aç.</p>{getCuratedSources(selectedCurated).map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.key}><span><strong>{source.name}</strong><small>{source.publisher}</small></span><i>↗</i></a>)}</section>

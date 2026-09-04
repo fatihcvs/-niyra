@@ -14,12 +14,12 @@ async function curatedModule() {
 test("curated library contains a large sourced collection without fabricated metrics", async () => {
   const { curatedNotes, curatedSources } = await curatedModule();
 
-  assert.equal(curatedNotes.length, 78);
-  assert.ok(Object.keys(curatedSources).length >= 40);
+  assert.equal(curatedNotes.length, 123);
+  assert.ok(Object.keys(curatedSources).length >= 75);
   assert.equal(new Set(curatedNotes.map((note) => note.id)).size, curatedNotes.length);
 
   for (const note of curatedNotes) {
-    assert.equal(note.verifiedOn, "2026-09-03", note.id);
+    assert.equal(note.verifiedOn, "2026-09-04", note.id);
     assert.ok(note.courseCodes.length >= 1, note.id);
     assert.ok(note.summary.length >= 60, note.id);
     assert.equal(note.takeaways.length, 3, note.id);
