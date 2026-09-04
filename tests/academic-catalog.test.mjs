@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 1076,
+    curriculumLinkCount: 1125,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 24);
+  assert.equal(catalog.meta.sources.length, 25);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -73,6 +73,23 @@ test("OMU bachelor curricula link to the official EBP course catalog", () => {
 
   const computerEngineering = curriculumPrograms.find((program) => program.name === "Bilgisayar Mühendisliği");
   assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("program"), "2727");
+});
+
+test("ITU standard bachelor programmes link to official OBS course-plan lists", () => {
+  const itu = catalog.universities["tr-istanbul-teknik-universitesi"];
+  const curriculumPrograms = itu.programs.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(curriculumPrograms.length, 49);
+  assert.ok(curriculumPrograms.every((program) => program.degreeLevel === "bachelor"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "İstanbul Teknik Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "obs.itu.edu.tr"
+      && parsed.pathname === "/public/DersPlan/DersPlanlariList"
+      && parsed.searchParams.get("planTipiKodu") === "lisans"
+      && parsed.searchParams.get("programKodu")?.endsWith("_LS");
+  })));
+  assert.ok(itu.programs.filter((program) => program.name.includes("UOLP")).every((program) => !program.curriculumUrls?.length));
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {

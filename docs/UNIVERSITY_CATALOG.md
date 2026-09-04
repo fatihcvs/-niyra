@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 1.076 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 1.125 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -65,6 +65,18 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Bilgi Paketinde karşılığı henüz yayımlanmayan 5 yeni lisans programına tahmini
   ders planı atanmadı. Önlisans ağacındaki bağlantılar da yalnızca `javascript:`
   hedefi verdiği için doğrulanabilir URL varmış gibi gösterilmedi.
+
+## İTÜ müfredat genişletmesi — altıncı parça
+
+- İTÜ'nün resmî [ÖBS Ders Planları](https://obs.itu.edu.tr/public/DersPlan/)
+  kataloğundaki 106 lisans program kodu, ÖSYM kataloğundaki programlarla eğitim
+  dili ve program türü korunarak karşılaştırıldı.
+- Kesin eşleşen 49 standart lisans programına, güncel ve geçmiş plan dönemlerini
+  birlikte sunan resmî program ders planı sayfası bağlandı; sayfaların her birinde
+  ders planı detay hedefi bulunduğu otomatik olarak doğrulandı.
+- ÖBS'de ayrı ders planı kodu yayımlanmayan 16 UOLP/çift diploma programı temel
+  İTÜ programına yanlış bağlanmadı ve resmî ortak plan bulunana kadar bağlantısız
+  bırakıldı.
 
 ## Bilinen sınır
 
