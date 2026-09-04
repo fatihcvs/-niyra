@@ -7,7 +7,7 @@ Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum i�
 - Kıbrıs Cumhuriyeti: 14
 
 Akademik veri katmanı 239 kurumda 3.212 akademik birim, 16.454 benzersiz program
-ve 2.029 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
+ve 2.098 resmî ders dağılımı/müfredat bağlantısı sunar. İki kurumda güncel ve
 doğrulanabilir bir resmî program kaydı bulunamadığı için kullanıcıya açıkça
 etiketlenmiş manuel giriş yedeği gösterilir.
 
@@ -247,6 +247,21 @@ etiketlenmiş manuel giriş yedeği gösterilir.
 - Tarım Ekonomisi bağlantısı resmî dizinde bölüm planı yerine OBS ana sayfasına
   gittiği için benzer bir plan tahmin edilmedi ve doğrulanmış hedef yayımlanana
   kadar bağlantısız bırakıldı.
+
+## Çukurova Üniversitesi müfredat genişletmesi — on dokuzuncu parça
+
+- Çukurova Üniversitesi'nin resmî [Eğitim Bilgi Sistemi](https://eobs.cu.edu.tr/)
+  dizinindeki 91 yayımlanmış lisans kaydı, ÖSYM kataloğundaki 72 güncel lisans
+  programıyla akademik birim ve program adı birlikte değerlendirilerek eşleştirildi.
+- 69 güncel programın dolu `2026-2027` ders planı doğrulandı. Her hedefte AKTS
+  alanı, en az beş farklı ders kodu ve çok dönemli ders yapısı canlı olarak
+  denetlendi; üretici gerektiğinde yalnızca dolu bir önceki yıl planına dönecek
+  biçimde sınırlandırıldı, ancak bu parçada tüm bağlantılar güncel yıldan geldi.
+- Güzel Sanatlar menüsündeki adı boş yayımlanan Gastronomi programı resmî program
+  kimliğiyle tanındı; buna rağmen Gastronomi ve Grafik Tasarımı planları hem güncel
+  hem önceki yılda ders içermeyen boş şablon olduğundan bağlantıya alınmadı.
+- İlahiyat M.T.O.K. için ayrı EBS planı yayımlanmadı. Bu üç programda başka bir
+  programın dersleri tahminen kullanılmadı.
 
 ## Bilinen sınır
 

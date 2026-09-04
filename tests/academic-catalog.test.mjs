@@ -11,11 +11,11 @@ test("official academic catalog has verified coverage and referential integrity"
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 2029,
+    curriculumLinkCount: 2098,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);
-  assert.equal(catalog.meta.sources.length, 37);
+  assert.equal(catalog.meta.sources.length, 38);
 
   for (const [universityId, university] of Object.entries(catalog.universities)) {
     const unitIds = new Set(university.units.map((unit) => unit.id));
@@ -400,6 +400,35 @@ test("Akdeniz programmes link only to populated official Bologna course plans", 
 
   const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name);
   assert.deepEqual(unlinked, ["Tarım Ekonomisi"]);
+});
+
+test("Cukurova programmes link only to populated current EBS course plans", () => {
+  const cukurova = catalog.universities["tr-cukurova-universitesi"];
+  const bachelorPrograms = cukurova.programs.filter((program) => program.degreeLevel === "bachelor");
+  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(bachelorPrograms.length, 72);
+  assert.equal(curriculumPrograms.length, 69);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Çukurova Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumPeriod === "2026-2027"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "ebs.cu.edu.tr"
+      && /^\/Program\/DersPlan\/\d+\/2026$/.test(parsed.pathname);
+  })));
+
+  const business = curriculumPrograms.find((program) => (
+    program.name === "İşletme"
+    && cukurova.units.find((unit) => unit.id === program.unitId)?.name === "İktisadi Ve İdari Bilimler Fakültesi"
+  ));
+  assert.ok(business.curriculumUrls[0].endsWith("/Program/DersPlan/216/2026"));
+
+  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  assert.deepEqual(unlinked, [
+    "Gastronomi ve Mutfak Sanatları",
+    "Grafik Tasarımı",
+    "İlahiyat (M.T.O.K.)",
+  ].sort());
 });
 
 test("institution-published catalogs cover the six former registry-only institutions", () => {
