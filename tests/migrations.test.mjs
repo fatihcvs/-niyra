@@ -58,6 +58,7 @@ test("all database migrations apply cleanly in order", async () => {
         "posts",
         "product_events",
         "product_feedback",
+        "profile_media",
         "rate_limit_windows",
         "platform_settings",
         "staff_accounts",

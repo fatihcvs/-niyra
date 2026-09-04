@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       campuses: campuses.results,
       activity: activity.results,
       features: featureCounts,
-      system: { version: "1.7.0", database: "ok", storage: FILES ? "configured" : "unavailable", generatedAt: new Date().toISOString() },
+      system: { version: "1.7.1", database: "ok", storage: FILES ? "configured" : "unavailable", generatedAt: new Date().toISOString() },
     }, { headers: { "cache-control": "no-store" } });
   } catch {
     return Response.json({ error: "Owner paneli verileri şu anda yüklenemedi." }, { status: 503 });

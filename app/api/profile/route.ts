@@ -24,9 +24,14 @@ import {
 import { getOfficialAcademicProgram, getOfficialAcademicUnit } from "../../../lib/academic-catalog";
 import { cleanDisplayName, sameOriginRequest } from "../../../lib/app-auth";
 import { makeAcademicShortName } from "../../../lib/university-catalog";
+import { parseProfileLinks, profileMediaUrl, type ProfileLink } from "../../../lib/profile";
 
 type ProfilePayload = {
+  action?: unknown;
   displayName?: unknown;
+  handle?: unknown;
+  bio?: unknown;
+  links?: unknown;
   universityId?: string;
   facultyId?: string;
   departmentId?: string;
@@ -36,6 +41,8 @@ type ProfilePayload = {
   courseIds?: string[];
   customCourses?: Array<{ code?: string; name?: string }>;
 };
+
+const reservedHandles = new Set(["admin", "api", "owner", "support", "uniyra", "uniyraapp", "moderator"]);
 
 function signInResponse() {
   return Response.json(
@@ -72,6 +79,45 @@ function cleanAcademicText(value: unknown, maxLength: number) {
   return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 
+function cleanProfileHandle(value: unknown) {
+  return typeof value === "string" ? value.trim().toLocaleLowerCase("en-US") : "";
+}
+
+function cleanProfileBio(value: unknown) {
+  return typeof value === "string" ? value.replace(/\r\n?/g, "\n").trim() : "";
+}
+
+function cleanProfileLinks(value: unknown): { links?: ProfileLink[]; error?: string } {
+  if (!Array.isArray(value)) return { links: [] };
+  if (value.length > 5) return { error: "Profiline en fazla 5 bağlantı ekleyebilirsin." };
+
+  const links: ProfileLink[] = [];
+  const seen = new Set<string>();
+  for (const raw of value) {
+    if (!raw || typeof raw !== "object") return { error: "Profil bağlantılarından biri geçerli değil." };
+    const item = raw as Record<string, unknown>;
+    const title = typeof item.title === "string" ? item.title.replace(/\s+/g, " ").trim() : "";
+    const urlValue = typeof item.url === "string" ? item.url.trim() : "";
+    if (!title && !urlValue) continue;
+    if (title.length < 2 || title.length > 40) return { error: "Her bağlantı başlığı 2 ile 40 karakter arasında olmalı." };
+    if (urlValue.length > 500) return { error: "Bağlantı adresi çok uzun." };
+    let parsed: URL;
+    try {
+      parsed = new URL(urlValue);
+    } catch {
+      return { error: "Bağlantılar http:// veya https:// ile başlayan geçerli adresler olmalı." };
+    }
+    if ((parsed.protocol !== "https:" && parsed.protocol !== "http:") || !parsed.hostname) {
+      return { error: "Yalnızca güvenli web bağlantıları ekleyebilirsin." };
+    }
+    const normalizedUrl = parsed.toString();
+    if (seen.has(normalizedUrl)) return { error: "Aynı bağlantıyı birden fazla kez ekleyemezsin." };
+    seen.add(normalizedUrl);
+    links.push({ title, url: normalizedUrl });
+  }
+  return { links };
+}
+
 async function stableCatalogId(kind: "fac" | "dep" | "crs", seed: string) {
   const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(seed)));
   const suffix = Array.from(digest.slice(0, 12), (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -89,6 +135,8 @@ export async function GET() {
         publicId: users.publicId,
         displayName: users.displayName,
         handle: users.handle,
+        bio: studentProfiles.bio,
+        linksJson: studentProfiles.linksJson,
         classYear: studentProfiles.classYear,
         onboardingCompleted: studentProfiles.onboardingCompleted,
         universityId: universities.id,
@@ -103,6 +151,8 @@ export async function GET() {
         postCount: sql<number>`(SELECT COUNT(*) FROM ${posts} WHERE ${posts.authorEmail} = ${users.email} AND ${posts.deletedAt} IS NULL)`,
         followerCount: sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followingEmail} = ${users.email})`,
         followingCount: sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${users.email})`,
+        avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
+        bannerUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'banner' LIMIT 1)`,
       })
       .from(studentProfiles)
       .innerJoin(users, eq(studentProfiles.userEmail, users.email))
@@ -141,6 +191,9 @@ export async function GET() {
       },
       profile: {
         ...profile,
+        links: parseProfileLinks(profile.linksJson),
+        avatarUrl: profileMediaUrl(profile.publicId, "avatar", profile.avatarUpdatedAt),
+        bannerUrl: profileMediaUrl(profile.publicId, "banner", profile.bannerUpdatedAt),
         postCount: Number(profile.postCount),
         followerCount: Number(profile.followerCount),
         followingCount: Number(profile.followingCount),
@@ -165,6 +218,47 @@ export async function PUT(request: Request) {
     payload = (await request.json()) as ProfilePayload;
   } catch {
     return Response.json({ error: "Geçerli bir profil bilgisi gönderilmedi." }, { status: 400 });
+  }
+
+  if (payload.action === "update-details") {
+    const displayName = cleanDisplayName(payload.displayName ?? identity.fullName ?? identity.displayName);
+    const handle = cleanProfileHandle(payload.handle);
+    const bio = cleanProfileBio(payload.bio);
+    const cleanedLinks = cleanProfileLinks(payload.links);
+
+    if (displayName.length < 2 || displayName.length > 50) {
+      return Response.json({ error: "Görünen adın 2 ile 50 karakter arasında olmalı." }, { status: 400 });
+    }
+    if (handle.length < 3 || handle.length > 30 || !/^[a-z0-9_](?:[a-z0-9._]{1,28}[a-z0-9_])$/.test(handle) || handle.includes("..")) {
+      return Response.json({ error: "Kullanıcı adı 3-30 karakter olmalı; harf, rakam, nokta ve alt çizgi kullanabilirsin." }, { status: 400 });
+    }
+    if (reservedHandles.has(handle)) {
+      return Response.json({ error: "Bu kullanıcı adı Üniyra tarafından ayrılmış." }, { status: 400 });
+    }
+    if (bio.length > 150) {
+      return Response.json({ error: "Biyografin en fazla 150 karakter olabilir." }, { status: 400 });
+    }
+    if (cleanedLinks.error || !cleanedLinks.links) {
+      return Response.json({ error: cleanedLinks.error ?? "Profil bağlantıları geçerli değil." }, { status: 400 });
+    }
+
+    try {
+      const { env } = await import("cloudflare:workers");
+      const d1 = env.DB;
+      const profile = await d1.prepare("SELECT 1 AS found FROM student_profiles WHERE user_email = ? AND onboarding_completed = 1 LIMIT 1").bind(identity.email).first();
+      if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+      const conflict = await d1.prepare("SELECT 1 AS found FROM users WHERE handle = ? COLLATE NOCASE AND email <> ? LIMIT 1").bind(handle, identity.email).first();
+      if (conflict) return Response.json({ error: "Bu kullanıcı adı başka bir öğrenci tarafından kullanılıyor." }, { status: 409 });
+
+      await d1.batch([
+        d1.prepare("UPDATE users SET display_name = ?, handle = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?").bind(displayName, handle, identity.email),
+        d1.prepare("UPDATE student_profiles SET bio = ?, links_json = ?, updated_at = CURRENT_TIMESTAMP WHERE user_email = ?").bind(bio, JSON.stringify(cleanedLinks.links), identity.email),
+        d1.prepare("INSERT INTO product_events (id, user_email, name, properties_json) VALUES (?, ?, 'profile.details_updated', ?)").bind(crypto.randomUUID(), identity.email, JSON.stringify({ linkCount: cleanedLinks.links.length, hasBio: Boolean(bio) })),
+      ]);
+      return GET();
+    } catch (error) {
+      return databaseError(error);
+    }
   }
 
   const displayName = cleanDisplayName(payload.displayName ?? identity.fullName ?? identity.displayName);
@@ -278,7 +372,7 @@ export async function PUT(request: Request) {
            ON CONFLICT(email) DO UPDATE SET
              public_id = COALESCE(users.public_id, excluded.public_id),
              display_name = excluded.display_name,
-             handle = excluded.handle,
+             handle = COALESCE(NULLIF(users.handle, ''), excluded.handle),
              updated_at = CURRENT_TIMESTAMP`,
         )
         .bind(identity.email, publicIdCandidate, displayName, handle),
@@ -354,44 +448,7 @@ export async function PUT(request: Request) {
     ];
 
     await d1.batch(statements);
-    const storedUser = await d1
-      .prepare(
-        `SELECT public_id,
-          (SELECT COUNT(*) FROM posts WHERE author_email = users.email AND deleted_at IS NULL) AS post_count,
-          (SELECT COUNT(*) FROM user_follows WHERE following_email = users.email) AS follower_count,
-          (SELECT COUNT(*) FROM user_follows WHERE follower_email = users.email) AS following_count
-         FROM users WHERE email = ?`,
-      )
-      .bind(identity.email)
-      .first<{
-        public_id: string;
-        post_count: number;
-        follower_count: number;
-        following_count: number;
-      }>();
-
-    return Response.json({
-      profile: {
-        publicId: storedUser?.public_id ?? publicIdCandidate,
-        displayName,
-        handle,
-        universityId: university.id,
-        universityName: university.name,
-        universityShortName: university.shortName,
-        universityCity: university.city,
-        facultyId: faculty.id,
-        facultyName: faculty.name,
-        facultyShortName: faculty.shortName,
-        departmentId: department.id,
-        departmentName: department.name,
-        classYear,
-        onboardingCompleted: true,
-        postCount: Number(storedUser?.post_count ?? 0),
-        followerCount: Number(storedUser?.follower_count ?? 0),
-        followingCount: Number(storedUser?.following_count ?? 0),
-        courses: selectedCourses,
-      },
-    });
+    return GET();
   } catch (error) {
     return databaseError(error);
   }

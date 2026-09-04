@@ -15,6 +15,7 @@ import {
   users,
 } from "../../../db/schema";
 import { audit, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
+import { profileMediaUrl } from "../../../lib/profile";
 
 type PostPayload = {
   id?: string;
@@ -40,6 +41,7 @@ type PostRow = {
   likedByViewer: number;
   savedByViewer: number;
   rank: number;
+  avatarUpdatedAt: string | null;
 };
 
 const PAGE_SIZE = 12;
@@ -116,6 +118,7 @@ function postFields(viewerEmail: string, rank: ReturnType<typeof feedRank>) {
     commentCount: sql<number>`(SELECT COUNT(*) FROM ${postComments} WHERE ${postComments.postId} = ${posts.id} AND ${postComments.deletedAt} IS NULL)`,
     likedByViewer: sql<number>`EXISTS (SELECT 1 FROM ${postLikes} WHERE ${postLikes.postId} = ${posts.id} AND ${postLikes.userEmail} = ${viewerEmail})`,
     savedByViewer: sql<number>`EXISTS (SELECT 1 FROM ${postSaves} WHERE ${postSaves.postId} = ${posts.id} AND ${postSaves.userEmail} = ${viewerEmail})`,
+    avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
     rank,
   };
 }
@@ -127,6 +130,7 @@ function serializePost(row: PostRow) {
     name: row.displayName,
     initials: initials(row.displayName),
     avatarClass: "avatar-violet",
+    avatarUrl: profileMediaUrl(row.authorId, "avatar", row.avatarUpdatedAt),
     school: row.universityName,
     department: row.departmentName,
     time: relativeTime(row.createdAt),
@@ -324,6 +328,7 @@ export async function POST(request: Request) {
         authorId: users.publicId,
         universityName: universities.name,
         departmentName: departments.name,
+        avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
       })
       .from(studentProfiles)
       .innerJoin(users, eq(studentProfiles.userEmail, users.email))
@@ -386,6 +391,7 @@ export async function POST(request: Request) {
           name: displayName,
           initials: initials(displayName),
           avatarClass: "avatar-violet",
+          avatarUrl: profileMediaUrl(profile.authorId, "avatar", profile.avatarUpdatedAt),
           school: profile.universityName,
           department: profile.departmentName,
           time: relativeTime(created.createdAt),

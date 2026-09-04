@@ -88,6 +88,57 @@ test("academic profile updates validate the editable display name before databas
   assert.match((await response.json()).error, /görünen ad/i);
 });
 
+test("profile detail updates validate usernames before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ action: "update-details", displayName: "Runtime Student", handle: "geçersiz kullanıcı", bio: "", links: [] }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /kullanıcı adı/i);
+});
+
+test("profile detail updates reject unsafe external links before database access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...platformHeaders },
+      body: JSON.stringify({ action: "update-details", displayName: "Runtime Student", handle: "runtime.student", bio: "Merhaba", links: [{ title: "Portfolyo", url: "javascript:alert(1)" }] }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
+
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /bağlantı/i);
+});
+
+test("profile media rejects anonymous reads", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(new Request("http://localhost/api/profile/media?user=student&kind=avatar"), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 401);
+});
+
+test("profile media uploads reject cross-origin browser requests", async () => {
+  const worker = await builtWorker();
+  const form = new FormData();
+  form.set("kind", "avatar");
+  form.set("image", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], "avatar.png", { type: "image/png" }));
+  const response = await worker.fetch(new Request("http://localhost/api/profile/media", {
+    method: "POST",
+    headers: { origin: "https://attacker.example", ...platformHeaders },
+    body: form,
+  }), runtimeEnv, runtimeContext);
+  assert.equal(response.status, 403);
+});
+
 test("self-service registration validates account fields before database access", async () => {
   const worker = await builtWorker();
   const response = await worker.fetch(

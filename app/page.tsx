@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   getUniversityById,
@@ -35,6 +35,7 @@ type Post = {
   name: string;
   initials: string;
   avatarClass: string;
+  avatarUrl?: string | null;
   school: string;
   department: string;
   time: string;
@@ -58,6 +59,7 @@ type PostComment = {
   authorId?: string;
   authorName: string;
   initials: string;
+  avatarUrl?: string | null;
   content: string;
   time: string;
   edited?: boolean;
@@ -69,6 +71,10 @@ type StudentProfile = {
   publicId: string;
   displayName: string;
   handle: string;
+  bio: string;
+  links: Array<{ title: string; url: string }>;
+  avatarUrl: string | null;
+  bannerUrl: string | null;
   universityId: string;
   universityName: string;
   universityShortName: string;
@@ -90,8 +96,12 @@ type CampusPerson = {
   publicId: string;
   displayName: string;
   handle: string;
+  bio: string;
+  links: Array<{ title: string; url: string }>;
   initials: string;
   avatarClass: string;
+  avatarUrl: string | null;
+  bannerUrl: string | null;
   universityName: string;
   universityShortName: string;
   facultyName: string;
@@ -224,8 +234,17 @@ function UniversityMark({ university, variant = "catalog" }: { university: Unive
   );
 }
 
-function Avatar({ initials, className, small = false }: { initials: string; className: string; small?: boolean }) {
-  return <span className={`avatar ${className} ${small ? "avatar-small" : ""}`}>{initials}</span>;
+function Avatar({ initials, className, small = false, imageUrl = null }: { initials: string; className: string; small?: boolean; imageUrl?: string | null }) {
+  return <span className={`avatar ${className} ${small ? "avatar-small" : ""}`}>{initials}{imageUrl && <Image src={imageUrl} alt="" fill sizes={small ? "32px" : "72px"} unoptimized onError={(event) => { event.currentTarget.hidden = true; }}/>}</span>;
+}
+
+function ProfileCover({ imageUrl }: { imageUrl?: string | null }) {
+  return <div className={`profile-cover ${imageUrl ? "has-image" : ""}`}><span>∑</span><span>Ψ</span><span>λ</span><i/>{imageUrl && <Image src={imageUrl} alt="" fill sizes="(max-width: 780px) 100vw, 710px" unoptimized priority onError={(event) => { event.currentTarget.hidden = true; }}/>}</div>;
+}
+
+function ProfileLinks({ links }: { links: Array<{ title: string; url: string }> }) {
+  if (links.length === 0) return null;
+  return <div className="profile-links">{links.map((link) => <a href={link.url} target="_blank" rel="noreferrer noopener" key={`${link.title}-${link.url}`}><Icon name="arrow" size={13}/>{link.title}</a>)}</div>;
 }
 
 function AttachmentCard({ attachment }: { attachment: NonNullable<Post["attachment"]> }) {
@@ -565,7 +584,7 @@ function FeedPost({
   return (
     <article className="post-card" id={`post-${post.id}`}>
       <header className="post-header">
-        <Avatar initials={post.initials} className={post.avatarClass} />
+        <Avatar initials={post.initials} className={post.avatarClass} imageUrl={post.avatarUrl}/>
         <div className="post-person">
           <div className="post-name-line">
             <strong>{post.name}</strong>
@@ -625,7 +644,7 @@ function FeedPost({
             {hasMoreComments && <p className="comments-status">En son 20 yorum gösteriliyor.</p>}
             {commentItems.map((comment) => (
               <article className={comment.pending ? "pending" : ""} key={comment.id}>
-                <Avatar initials={comment.initials} className="avatar-violet" small />
+                <Avatar initials={comment.initials} className="avatar-violet" imageUrl={comment.avatarUrl} small />
                 <div><strong>{comment.authorName}</strong><span>{comment.time === "şimdi" ? comment.time : `${comment.time} önce`}</span><p>{comment.content}{comment.edited && <small> · düzenlendi</small>}</p></div>
                 {comment.own && <button type="button" onClick={() => void deleteComment(comment)} disabled={comment.pending || deletingCommentId === comment.id} aria-label="Yorumu sil"><Icon name="trash" size={14}/></button>}
               </article>
@@ -718,7 +737,7 @@ function DiscoverView({
         {peopleStatus === "ready" && people.slice(0, 6).map((person) => (
           <article className="campus-person-card" key={person.publicId}>
             <button className="campus-person-main" type="button" onClick={() => onOpenPerson(person)}>
-              <Avatar initials={person.initials} className={person.avatarClass}/>
+              <Avatar initials={person.initials} className={person.avatarClass} imageUrl={person.avatarUrl}/>
               <span><strong>{person.displayName}</strong><small>{person.facultyShortName} · {person.departmentName}</small><em>{person.classYear}. sınıf · {formatCount(person.followerCount)} takipçi</em></span>
               <Icon name="arrow" size={15}/>
             </button>
@@ -764,6 +783,161 @@ function SavedView({
   );
 }
 
+function useProfileMediaPreview(file: File | null, fallback: string | null, removed: boolean) {
+  const objectUrl = useMemo(() => file ? URL.createObjectURL(file) : null, [file]);
+  useEffect(() => {
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [objectUrl]);
+  return removed ? null : objectUrl ?? fallback;
+}
+
+function ProfileEditor({ profile, onSaved, onCancel, onEditAcademic }: { profile: StudentProfile; onSaved: (profile: StudentProfile) => void; onCancel: () => void; onEditAcademic: () => void }) {
+  const [displayName, setDisplayName] = useState(profile.displayName);
+  const [handle, setHandle] = useState(profile.handle);
+  const [bio, setBio] = useState(profile.bio);
+  const [links, setLinks] = useState(profile.links.length ? profile.links.map((link) => ({ ...link })) : []);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+  const [removeBanner, setRemoveBanner] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const bannerInput = useRef<HTMLInputElement>(null);
+  const avatarPreview = useProfileMediaPreview(avatarFile, profile.avatarUrl, removeAvatar);
+  const bannerPreview = useProfileMediaPreview(bannerFile, profile.bannerUrl, removeBanner);
+  const initials = getInitials(displayName || profile.displayName);
+
+  function chooseMedia(event: ChangeEvent<HTMLInputElement>, kind: "avatar" | "banner") {
+    const file = event.target.files?.[0] ?? null;
+    event.target.value = "";
+    if (!file) return;
+    if (!(["image/png", "image/jpeg", "image/webp"] as string[]).includes(file.type)) {
+      setError("Yalnızca PNG, JPG veya WEBP görsel seçebilirsin.");
+      return;
+    }
+    const maxBytes = kind === "avatar" ? 4 * 1024 * 1024 : 8 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setError(kind === "avatar" ? "Profil fotoğrafı en fazla 4 MB olabilir." : "Kapak görseli en fazla 8 MB olabilir.");
+      return;
+    }
+    setError("");
+    if (kind === "avatar") {
+      setAvatarFile(file);
+      setRemoveAvatar(false);
+    } else {
+      setBannerFile(file);
+      setRemoveBanner(false);
+    }
+  }
+
+  function updateLink(index: number, field: "title" | "url", value: string) {
+    setLinks((current) => current.map((link, linkIndex) => linkIndex === index ? { ...link, [field]: value } : link));
+    setError("");
+  }
+
+  async function updateMedia(kind: "avatar" | "banner", file: File | null, removed: boolean) {
+    if (file) {
+      const form = new FormData();
+      form.set("kind", kind);
+      form.set("image", file);
+      const response = await fetch("/api/profile/media", { method: "POST", body: form });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Profil görseli kaydedilemedi.");
+      return;
+    }
+    if (removed) {
+      const response = await fetch("/api/profile/media", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind }),
+      });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Profil görseli kaldırılamadı.");
+    }
+  }
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "update-details", displayName, handle, bio, links }),
+      });
+      const data = (await response.json()) as { profile?: StudentProfile; error?: string; authRequired?: boolean };
+      if (response.status === 401 && data.authRequired) {
+        window.location.reload();
+        return;
+      }
+      if (!response.ok || !data.profile) throw new Error(data.error ?? "Profil bilgilerin kaydedilemedi.");
+
+      await Promise.all([
+        updateMedia("avatar", avatarFile, removeAvatar),
+        updateMedia("banner", bannerFile, removeBanner),
+      ]);
+      if (avatarFile || bannerFile || removeAvatar || removeBanner) {
+        const freshResponse = await fetch("/api/profile", { headers: { accept: "application/json" }, cache: "no-store" });
+        const freshData = (await freshResponse.json()) as { profile?: StudentProfile; error?: string };
+        if (!freshResponse.ok || !freshData.profile) throw new Error(freshData.error ?? "Yeni profil görünümü getirilemedi.");
+        onSaved(freshData.profile);
+      } else {
+        onSaved(data.profile);
+      }
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Profil bilgilerin kaydedilemedi.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <main className="profile-editor-page">
+      <header className="profile-editor-topbar">
+        <Logo/>
+        <div><button type="button" onClick={onCancel}>Vazgeç</button><button form="profile-editor-form" className="profile-editor-save" type="submit" disabled={saving}>{saving ? "Kaydediliyor…" : "Kaydet"}</button></div>
+      </header>
+      <form id="profile-editor-form" className="profile-editor-layout" onSubmit={save}>
+        <aside className="profile-editor-preview">
+          <span className="profile-editor-kicker">PROFİL ÖNİZLEMESİ</span>
+          <div className="profile-editor-card">
+            <ProfileCover imageUrl={bannerPreview}/>
+            <div className="profile-editor-identity"><Avatar initials={initials} className="avatar-violet" imageUrl={avatarPreview}/><div><strong>{displayName.trim() || "Görünen adın"}</strong><span>@{handle.trim() || "kullaniciadi"}</span></div></div>
+            <p>{bio.trim() || `${profile.universityShortName} kampüsünde öğreniyor ve paylaşıyor.`}</p>
+            <ProfileLinks links={links.filter((link) => link.title.trim() && link.url.trim())}/>
+          </div>
+          <div className="profile-media-controls">
+            <section><div><Avatar initials={initials} className="avatar-violet" imageUrl={avatarPreview}/><span><strong>Profil fotoğrafı</strong><small>Gönderi ve yorumlarında da görünür.</small></span></div><footer><button type="button" onClick={() => avatarInput.current?.click()}>Fotoğraf seç</button>{avatarPreview && <button className="danger" type="button" onClick={() => { setAvatarFile(null); setRemoveAvatar(true); }}>Kaldır</button>}</footer><input ref={avatarInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => chooseMedia(event, "avatar")} hidden/></section>
+            <section><div><span className="profile-banner-thumb">{bannerPreview ? <Image src={bannerPreview} alt="" fill sizes="70px" unoptimized/> : <Icon name="image" size={21}/>}</span><span><strong>Kapak görseli</strong><small>Üniyra profilini kampüsüne özgü yapar.</small></span></div><footer><button type="button" onClick={() => bannerInput.current?.click()}>Kapak seç</button>{bannerPreview && <button className="danger" type="button" onClick={() => { setBannerFile(null); setRemoveBanner(true); }}>Kaldır</button>}</footer><input ref={bannerInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => chooseMedia(event, "banner")} hidden/></section>
+          </div>
+        </aside>
+
+        <section className="profile-editor-fields">
+          <div className="profile-editor-heading"><span>PROFİLİNİ DÜZENLE</span><h1>Kendini kampüsüne anlat.</h1><p>Kim olduğunu gösteren alanları tek yerden güncelle; okul ve ders bilgilerin akademik bölümde ayrı kalır.</p></div>
+          <div className="profile-editor-field-grid">
+            <label><span>Görünen ad</span><input value={displayName} onChange={(event) => { setDisplayName(event.target.value); setError(""); }} maxLength={50} autoComplete="name"/><small>Öğrencilerin seni tanıyacağı ad.</small></label>
+            <label><span>Kullanıcı adı</span><div className="profile-handle-field"><b>@</b><input value={handle} onChange={(event) => { setHandle(event.target.value.toLocaleLowerCase("en-US").replace(/\s+/g, "")); setError(""); }} maxLength={30} autoCapitalize="none" autoCorrect="off"/></div><small>Profil bağlantında ve aramada kullanılır.</small></label>
+          </div>
+          <label className="profile-bio-field"><span>Biyografi <b>{bio.length}/150</b></span><textarea value={bio} onChange={(event) => { setBio(event.target.value); setError(""); }} maxLength={150} rows={4} placeholder="Bölümün, ilgi alanların veya kampüste aradığın şey…"/><small>Kısa, doğal ve sana ait bir tanıtım yazısı.</small></label>
+
+          <section className="profile-link-editor">
+            <header><div><strong>Bağlantılar</strong><small>Portfolyo, kulüp, proje veya sosyal hesaplarını ekle.</small></div><button type="button" disabled={links.length >= 5} onClick={() => setLinks((current) => [...current, { title: "", url: "" }])}><Icon name="plus" size={14}/> Bağlantı ekle</button></header>
+            {links.length === 0 ? <button className="profile-link-empty" type="button" onClick={() => setLinks([{ title: "", url: "" }])}><Icon name="plus" size={16}/> İlk bağlantını ekle</button> : <div className="profile-link-list">{links.map((link, index) => <div className="profile-link-row" key={index}><label><span>Başlık</span><input value={link.title} onChange={(event) => updateLink(index, "title", event.target.value)} maxLength={40} placeholder="Örn. Portfolyom"/></label><label><span>Bağlantı</span><input value={link.url} onChange={(event) => updateLink(index, "url", event.target.value)} maxLength={500} inputMode="url" autoCapitalize="none" placeholder="https://…"/></label><button type="button" aria-label={`${index + 1}. bağlantıyı kaldır`} onClick={() => setLinks((current) => current.filter((_, linkIndex) => linkIndex !== index))}><Icon name="trash" size={15}/></button></div>)}</div>}
+            <small className="profile-link-limit">En fazla 5 bağlantı ekleyebilirsin.</small>
+          </section>
+
+          <section className="profile-academic-summary"><div className="profile-academic-mark">{profile.universityShortName}</div><div><span>AKADEMİK BİLGİLER</span><strong>{profile.universityName}</strong><p>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</p><small>{profile.courses.length} ders çevresi bağlı</small></div><button type="button" onClick={onEditAcademic}><Icon name="edit" size={15}/> Okul ve bölümü düzenle</button></section>
+          {error && <p className="profile-editor-error" role="alert">{error}</p>}
+          <footer className="profile-editor-footer"><button type="button" onClick={onCancel}>Vazgeç</button><button className="profile-editor-save" type="submit" disabled={saving}>{saving ? "Kaydediliyor…" : "Değişiklikleri kaydet"}</button></footer>
+        </section>
+      </form>
+    </main>
+  );
+}
+
 function ProfileView({ profile, posts, shareable, onEdit, onSignOut, onPostUpdated, onPostDeleted }: { profile: StudentProfile; posts: Post[]; shareable: boolean; onEdit: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void }) {
   const initials = getInitials(profile.displayName);
   const profilePosts = posts.filter((post) => post.authorId === profile.publicId);
@@ -784,7 +958,7 @@ function ProfileView({ profile, posts, shareable, onEdit, onSignOut, onPostUpdat
 
   return (
     <div className="workspace-view profile-view">
-      <section className="profile-hero"><div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div><div className="profile-main"><Avatar initials={initials} className="avatar-violet"/><div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}><Icon name="edit" size={14}/>Profili düzenle</button><button type="button" onClick={onSignOut}>Çıkış yap</button></div></div><p className="profile-bio">{profile.universityShortName} ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.</p><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
+      <section className="profile-hero"><ProfileCover imageUrl={profile.bannerUrl}/><div className="profile-main"><Avatar initials={initials} className="avatar-violet" imageUrl={profile.avatarUrl}/><div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div><div className="profile-own-actions">{shareable && <button className="profile-own-share" type="button" onClick={() => void shareOwnProfile()}><Icon name={copied ? "check" : "share"} size={14}/>{copied ? "Kopyalandı" : "Paylaş"}</button>}<button type="button" onClick={onEdit}><Icon name="edit" size={14}/>Profili düzenle</button><button type="button" onClick={onSignOut}>Çıkış yap</button></div></div><p className={`profile-bio ${profile.bio ? "" : "profile-bio-muted"}`}>{profile.bio || `${profile.universityShortName} ders çevrelerin, gönderilerin ve bağlantıların burada bir araya gelir.`}</p><ProfileLinks links={profile.links}/><div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div></section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Notlarım</button><button type="button">Topluluklar</button><button type="button">Hakkımda</button></div>
       {profilePosts.length > 0 ? profilePosts.map((post) => <FeedPost viewerInitials={initials} viewerId={profile.publicId} post={post} onPostUpdated={onPostUpdated} onPostDeleted={onPostDeleted} key={post.id}/>) : <div className="profile-empty-posts"><span><Icon name="send" size={20}/></span><strong>Henüz gönderin yok</strong><p>İlk kampüs paylaşımın burada görünecek.</p></div>}
     </div>
@@ -849,13 +1023,14 @@ function PublicProfileView({
     <div className="workspace-view profile-view">
       <div className="public-profile-toolbar"><button className="public-profile-back" type="button" onClick={onBack}><Icon name="arrow" size={15}/> Öğrenci ağına dön</button><div>{shareable && <button className="public-profile-share" type="button" onClick={() => void shareProfile()}><Icon name={copied ? "check" : "share"} size={15}/>{copied ? "Bağlantı kopyalandı" : "Profili paylaş"}</button>}{shareable && <ProfileSafetyMenu targetId={profile.publicId} targetName={profile.displayName}/>}</div></div>
       <section className="profile-hero">
-        <div className="profile-cover"><span>∑</span><span>Ψ</span><span>λ</span><i/></div>
+        <ProfileCover imageUrl={profile.bannerUrl}/>
         <div className="profile-main">
-          <Avatar initials={profile.initials} className={profile.avatarClass}/>
+          <Avatar initials={profile.initials} className={profile.avatarClass} imageUrl={profile.avatarUrl}/>
           <div><h1>{profile.displayName}</h1><p>@{profile.handle} · {profile.universityName}</p><small>{profile.facultyName} · {profile.departmentName} · {profile.classYear}. sınıf</small></div>
           <button className={profile.isFollowing ? "profile-following" : ""} type="button" disabled={followPending} onClick={() => onToggleFollow(profile.publicId)}>{followPending ? "Bekle…" : profile.isFollowing ? "Takiptesin" : "Takip et"}</button>
         </div>
-        <p className="profile-bio">{profile.universityShortName} içindeki ders çevrelerinde öğreniyor ve paylaşıyor.</p>
+        <p className={`profile-bio ${profile.bio ? "" : "profile-bio-muted"}`}>{profile.bio || `${profile.universityShortName} içindeki ders çevrelerinde öğreniyor ve paylaşıyor.`}</p>
+        <ProfileLinks links={profile.links}/>
         <div className="profile-stats"><strong>{formatCount(profile.postCount)}<span>Gönderi</span></strong><strong>{formatCount(profile.followerCount)}<span>Takipçi</span></strong><strong>{formatCount(profile.followingCount)}<span>Takip</span></strong><strong>{profile.courses.length}<span>Ders çevresi</span></strong></div>
       </section>
       <div className="profile-tabs"><button className="active" type="button">Gönderiler</button><button type="button">Ders çevreleri</button><button type="button">Hakkında</button></div>
@@ -1361,7 +1536,7 @@ export default function Home() {
   const [profileState, setProfileState] = useState<ProfileState>("loading");
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [identityName, setIdentityName] = useState("Öğrenci");
-  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<"details" | "academic" | null>(null);
   const [profileNotice, setProfileNotice] = useState("");
   const [profileRevision, setProfileRevision] = useState(0);
   const [profileReloadToken, setProfileReloadToken] = useState(0);
@@ -1607,7 +1782,31 @@ export default function Home() {
     );
   }
 
-  if (editingProfile) {
+  if (editingProfile === "details") {
+    return (
+      <ProfileEditor
+        profile={studentProfile}
+        onSaved={(profile) => {
+          setStudentProfile(profile);
+          setIdentityName(profile.displayName);
+          setPosts([]);
+          setPostsLoading(true);
+          setSavedPosts([]);
+          setSavedPostsError("");
+          setPeopleQuery("");
+          setPeopleStatus("loading");
+          setProfileRevision((current) => current + 1);
+          setActiveNav("Profil");
+          setEditingProfile(null);
+          setProfileNotice("Profil görünümün güncellendi.");
+        }}
+        onCancel={() => setEditingProfile(null)}
+        onEditAcademic={() => setEditingProfile("academic")}
+      />
+    );
+  }
+
+  if (editingProfile === "academic") {
     return (
       <AcademicOnboarding
         identityName={studentProfile.displayName}
@@ -1626,11 +1825,11 @@ export default function Home() {
           setPeopleStatus("loading");
           setProfileRevision((current) => current + 1);
           setActiveNav("Profil");
-          setEditingProfile(false);
-          setProfileNotice("Profil bilgilerin güncellendi.");
+          setEditingProfile(null);
+          setProfileNotice("Akademik bilgilerin güncellendi.");
         }}
-        onCancel={() => setEditingProfile(false)}
-        onRetry={() => setEditingProfile(false)}
+        onCancel={() => setEditingProfile("details")}
+        onRetry={() => setEditingProfile("details")}
       />
     );
   }
@@ -1853,7 +2052,7 @@ export default function Home() {
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>
-          <Avatar initials={initials} className="avatar-violet" />
+          <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
           <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle}</small></span>
           <Icon name="more" size={18}/>
         </button>
@@ -1903,7 +2102,7 @@ export default function Home() {
 
         <section className="composer-card" aria-label="Gönderi oluştur">
           <div className="composer-main">
-            <Avatar initials={initials} className="avatar-violet" />
+            <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
             <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
           </div>
@@ -1927,7 +2126,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile(true); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
@@ -1960,7 +2159,7 @@ export default function Home() {
             {peopleStatus === "error" && <p className="people-state">Öğrenci önerileri şu anda getirilemedi.</p>}
             {peopleStatus === "ready" && people.slice(0, 3).map((person) => (
               <div key={person.publicId}>
-                <Avatar initials={person.initials} className={person.avatarClass}/>
+                <Avatar initials={person.initials} className={person.avatarClass} imageUrl={person.avatarUrl}/>
                 <button className="person-summary" type="button" onClick={() => void openPerson(person)}><strong>{person.displayName}</strong><small>{person.facultyShortName} · {person.departmentName}</small></button>
                 <button className={person.isFollowing ? "following" : ""} type="button" disabled={followPendingId === person.publicId} onClick={() => void toggleFollow(person.publicId)}>{followPendingId === person.publicId ? "…" : person.isFollowing ? "Takipte" : "Takip et"}</button>
               </div>
@@ -2015,7 +2214,7 @@ export default function Home() {
           <span className="mobile-sheet-handle" aria-hidden="true"/>
           <header><div><span>Üniyra</span><h2 id="mobile-menu-title">Tüm alanlar</h2></div><button type="button" onClick={() => setShowMobileMenu(false)} aria-label="Menüyü kapat"><Icon name="close" size={20}/></button></header>
           <button className="mobile-profile-link" type="button" onClick={() => navigateTo("Profil")}>
-            <Avatar initials={initials} className="avatar-violet"/>
+            <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
             <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle} · Profilini görüntüle</small></span>
             <Icon name="arrow" size={18}/>
           </button>

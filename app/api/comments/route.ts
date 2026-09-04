@@ -8,6 +8,7 @@ import {
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { audit, getRuntime } from "../../../lib/server-api";
+import { profileMediaUrl } from "../../../lib/profile";
 
 type CommentPayload = {
   id?: string;
@@ -119,6 +120,7 @@ export async function GET(request: Request) {
         content: postComments.content,
         createdAt: postComments.createdAt,
         updatedAt: postComments.updatedAt,
+        avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
       })
       .from(postComments)
       .innerJoin(users, eq(postComments.authorEmail, users.email))
@@ -143,6 +145,7 @@ export async function GET(request: Request) {
         authorId: row.authorId ?? undefined,
         authorName: row.authorName,
         initials: initials(row.authorName),
+        avatarUrl: profileMediaUrl(row.authorId, "avatar", row.avatarUpdatedAt),
         content: row.content,
         time: relativeTime(row.createdAt),
         edited: row.updatedAt !== row.createdAt,

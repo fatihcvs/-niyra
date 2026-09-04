@@ -86,7 +86,7 @@ const health = await fetch(`${baseUrl}/api/health`);
 assert.equal(health.status, 200);
 const healthBody = await health.json();
 assert.equal(healthBody.storage, "configured");
-assert.equal(healthBody.version, "1.7.0");
+assert.equal(healthBody.version, "1.7.1");
 
 const spoofedIdentity = await fetch(`${baseUrl}/api/profile`, {
   headers: {
@@ -125,6 +125,29 @@ assert.equal(updatedOwner.classYear, 4);
 const refreshedOwner = (await json("/api/profile")).body.profile;
 assert.equal(refreshedOwner.displayName, "Runtime Owner Updated");
 assert.equal(refreshedOwner.classYear, 4);
+
+const profileHandle = `runtime.${runId.replace(/[^a-z0-9]/g, "").slice(-18)}`;
+const detailedOwner = (await json("/api/profile", {
+  method: "PUT",
+  body: JSON.stringify({
+    action: "update-details",
+    displayName: "Runtime Owner Updated",
+    handle: profileHandle,
+    bio: "Bilgisayar mühendisliği, kampüs projeleri ve çalışma arkadaşları.",
+    links: [{ title: "Portfolyo", url: "https://example.com/runtime-profile" }],
+  }),
+})).body.profile;
+assert.equal(detailedOwner.handle, profileHandle);
+assert.equal(detailedOwner.links.length, 1);
+assert.match(detailedOwner.bio, /kampüs projeleri/i);
+
+const profileAvatar = new FormData();
+profileAvatar.set("kind", "avatar");
+profileAvatar.set("image", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])], "runtime-avatar.png", { type: "image/png" }));
+await json("/api/profile/media", { method: "POST", body: profileAvatar });
+const ownerWithAvatar = (await json("/api/profile")).body.profile;
+assert.match(ownerWithAvatar.avatarUrl, /^\/api\/profile\/media\?/);
+assert.equal((await fetch(`${baseUrl}${ownerWithAvatar.avatarUrl}`, { headers: headers(ownerEmail) })).status, 200);
 
 const logout = await fetch(`${baseUrl}/api/auth/session`, { method: "DELETE", headers: headers(otherCampusEmail) });
 assert.equal(logout.status, 200);
@@ -413,6 +436,7 @@ const blockedSearch = (await json(`/api/people?q=${encodeURIComponent(peer.displ
 assert.ok(!blockedSearch.some((item) => item.publicId === peer.publicId));
 
 await json("/api/notes", { method: "DELETE", body: JSON.stringify({ id: note.id }) });
+await json("/api/profile/media", { method: "DELETE", body: JSON.stringify({ kind: "avatar" }) });
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: livePulse.id }) });
 await json("/api/campus-pulse", { method: "DELETE", body: JSON.stringify({ id: visualPulse.id }) });
 assert.equal((await fetch(`${baseUrl}${visualPulse.imageUrl}`, { headers: headers(ownerEmail) })).status, 404);
@@ -431,4 +455,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.7.0 runtime smoke passed: auth, editable profiles, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");
+console.log("Üniyra v1.7.1 runtime smoke passed: auth, rich profiles with R2 media, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");

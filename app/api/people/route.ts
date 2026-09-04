@@ -15,6 +15,7 @@ import {
   users,
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { parseProfileLinks, profileMediaUrl } from "../../../lib/profile";
 
 function signInResponse() {
   return Response.json(
@@ -60,6 +61,8 @@ function publicPerson(row: {
   publicId: string | null;
   displayName: string;
   handle: string;
+  bio: string;
+  linksJson: string;
   universityName: string;
   universityShortName: string;
   facultyName: string;
@@ -70,13 +73,19 @@ function publicPerson(row: {
   followerCount: number;
   followingCount: number;
   isFollowing: number;
+  avatarUpdatedAt: string | null;
+  bannerUpdatedAt: string | null;
 }) {
   return {
     publicId: row.publicId ?? "",
     displayName: row.displayName,
     handle: row.handle,
+    bio: row.bio,
+    links: parseProfileLinks(row.linksJson),
     initials: initials(row.displayName),
     avatarClass: "avatar-blue",
+    avatarUrl: profileMediaUrl(row.publicId, "avatar", row.avatarUpdatedAt),
+    bannerUrl: profileMediaUrl(row.publicId, "banner", row.bannerUpdatedAt),
     universityName: row.universityName,
     universityShortName: row.universityShortName,
     facultyName: row.facultyName,
@@ -128,6 +137,8 @@ export async function GET(request: Request) {
       publicId: users.publicId,
       displayName: users.displayName,
       handle: users.handle,
+      bio: studentProfiles.bio,
+      linksJson: studentProfiles.linksJson,
       universityName: universities.name,
       universityShortName: universities.shortName,
       facultyName: faculties.name,
@@ -138,6 +149,8 @@ export async function GET(request: Request) {
       followerCount,
       followingCount,
       isFollowing,
+      avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
+      bannerUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'banner' LIMIT 1)`,
     };
 
     if (!publicId) {
@@ -240,6 +253,7 @@ export async function GET(request: Request) {
           name: person.displayName,
           initials: person.initials,
           avatarClass: person.avatarClass,
+          avatarUrl: person.avatarUrl,
           school: person.universityName,
           department: person.departmentName,
           time: relativeTime(post.createdAt),

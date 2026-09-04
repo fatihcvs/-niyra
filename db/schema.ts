@@ -86,12 +86,33 @@ export const studentProfiles = sqliteTable("student_profiles", {
     .notNull()
     .references(() => departments.id),
   classYear: integer("class_year").notNull(),
+  bio: text("bio").notNull().default(""),
+  linksJson: text("links_json").notNull().default("[]"),
   onboardingCompleted: integer("onboarding_completed", { mode: "boolean" })
     .notNull()
     .default(true),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const profileMedia = sqliteTable(
+  "profile_media",
+  {
+    userEmail: text("user_email")
+      .notNull()
+      .references(() => users.email, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    objectKey: text("object_key").notNull(),
+    originalFileName: text("original_file_name").notNull(),
+    contentType: text("content_type").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userEmail, table.kind] }),
+    index("profile_media_kind_updated_idx").on(table.kind, table.updatedAt),
+  ],
+);
 
 export const studentCourses = sqliteTable(
   "student_courses",

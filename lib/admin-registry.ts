@@ -1,6 +1,7 @@
 export const ADMIN_FEATURE_REGISTRY = [
   { key: "users", label: "Öğrenci hesapları", table: "users", moderation: true },
   { key: "profiles", label: "Akademik profiller", table: "student_profiles", moderation: false },
+  { key: "profileMedia", label: "Profil görselleri", table: "profile_media", moderation: false },
   { key: "posts", label: "Gönderiler", table: "posts", moderation: true },
   { key: "comments", label: "Yorumlar", table: "post_comments", moderation: true },
   { key: "notes", label: "Çalışma notları", table: "notes", moderation: true },

@@ -1,4 +1,4 @@
-import { and, count, eq, isNull } from "drizzle-orm";
+import { and, count, eq, isNull, sql } from "drizzle-orm";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
 import {
@@ -10,6 +10,7 @@ import {
   users,
 } from "../../../db/schema";
 import { audit, enforceRateLimit, getRuntime, notify, rateLimitResponse } from "../../../lib/server-api";
+import { profileMediaUrl } from "../../../lib/profile";
 
 type ActionPayload = {
   postId?: string;
@@ -81,7 +82,13 @@ export async function POST(request: Request) {
         .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
         .limit(1),
       db
-        .select({ email: users.email, publicId: users.publicId, displayName: users.displayName, universityId: studentProfiles.universityId })
+        .select({
+          email: users.email,
+          publicId: users.publicId,
+          displayName: users.displayName,
+          universityId: studentProfiles.universityId,
+          avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
+        })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
         .where(eq(users.email, identity.email))
@@ -177,6 +184,7 @@ export async function POST(request: Request) {
           authorId: actor.publicId ?? undefined,
           authorName: actor.displayName,
           initials: initials(actor.displayName),
+          avatarUrl: profileMediaUrl(actor.publicId, "avatar", actor.avatarUpdatedAt),
           content: commentContent,
           time: "şimdi",
           edited: false,
