@@ -94,6 +94,16 @@ type StudentProfile = {
   courses: AcademicCourse[];
 };
 
+type CourseSubject = {
+  id: string;
+  code: string;
+  label: string;
+  tone: string;
+  imageUrl: string;
+  noteCount: number;
+  postCount: number;
+};
+
 type CampusPerson = {
   publicId: string;
   displayName: string;
@@ -165,15 +175,6 @@ const navItems: { label: string; icon: IconName }[] = [
 ];
 
 const mobileMenuItems = navItems.filter((item) => !["Akış", "Keşfet", "Kampüs Anlık"].includes(item.label));
-
-const subjects = [
-  { code: "MAT", label: "Matematik", tone: "coral", icon: "∑" },
-  { code: "FİZ", label: "Fizik", tone: "violet", icon: "φ" },
-  { code: "YAZ", label: "Yazılım", tone: "blue", icon: "</>" },
-  { code: "HUK", label: "Hukuk", tone: "amber", icon: "§" },
-  { code: "PSİ", label: "Psikoloji", tone: "mint", icon: "Ψ" },
-  { code: "MİM", label: "Mimarlık", tone: "rose", icon: "△" },
-];
 
 function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const common = {
@@ -1077,14 +1078,14 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
   );
 }
 
-function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
+function SecondaryView({ name, profile, posts, people, peopleStatus, peopleQuery, shareableProfile, followPendingId, savedPosts, savedPostsLoading, savedPostsError, notesCourseId, themePreference, onThemeChange, onOpenPerson, onQueryPeople, onToggleFollow, onNavigate, onEditProfile, onSignOut, onPostUpdated, onPostDeleted, onSavedChange }: { name: string; profile: StudentProfile; posts: Post[]; people: CampusPerson[]; peopleStatus: "loading" | "ready" | "empty" | "error"; peopleQuery: string; shareableProfile: boolean; followPendingId: string | null; savedPosts: Post[]; savedPostsLoading: boolean; savedPostsError: string; notesCourseId: string; themePreference: ThemePreference; onThemeChange: (preference: ThemePreference) => void; onOpenPerson: (person: CampusPerson) => void; onQueryPeople: (query: string) => void; onToggleFollow: (publicId: string) => void; onNavigate: (name: string) => void; onEditProfile: () => void; onSignOut: () => void; onPostUpdated: (id: number | string, text: string) => void; onPostDeleted: (id: number | string) => void; onSavedChange: (post: Post, saved: boolean) => void }) {
   if (name === "Keşfet") return <DiscoverView profile={profile} people={people} peopleStatus={peopleStatus} query={peopleQuery} followPendingId={followPendingId} onOpenPerson={onOpenPerson} onQueryChange={onQueryPeople} onToggleFollow={onToggleFollow} onNavigate={onNavigate}/>;
   if (name === "Kampüs Anlık") return <CampusPulseWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Eşleş") return <SocialMatchWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Kampüs") return <CampusGuideWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Kütüphane") return <LibraryOccupancyWorkspace universityShortName={profile.universityShortName}/>;
   if (name === "Pazar") return <CampusMarketWorkspace universityShortName={profile.universityShortName}/>;
-  if (name === "Notlar") return <NotesWorkspace courses={profile.courses}/>;
+  if (name === "Notlar") return <NotesWorkspace courses={profile.courses} initialCourseId={notesCourseId}/>;
   if (name === "Topluluklar") return <CommunitiesWorkspace courses={profile.courses}/>;
   if (name === "Bildirimler") return <NotificationsWorkspace/>;
   if (name === "Güvenlik") return <SafetyWorkspace/>;
@@ -1235,6 +1236,14 @@ const degreeLabels: Record<CatalogProgram["degreeLevel"], string> = {
 
 function normalizeCourseCode(value: string) {
   return value.replace(/\s+/g, "").toLocaleUpperCase("tr-TR");
+}
+
+function getCourseCover(course: Pick<AcademicCourse, "code" | "name">) {
+  const haystack = `${course.code} ${course.name}`.toLocaleUpperCase("tr-TR");
+  if (/FİZ|FIZ|MEKANİK|MEKANIK|PHYS/.test(haystack)) return "/course-covers/physics.jpg";
+  if (/MAT|CEBİR|CEBIR|ANALİZ|ANALIZ|KALKÜLÜS|KALKULUS|CALCULUS|GEOMETRİ|GEOMETRI/.test(haystack)) return "/course-covers/mathematics.jpg";
+  if (/BİL|BIL|YAZ|PROGRAM|ALGORİTMA|ALGORITMA|VERİ|VERI|KOD|COMPUTER|SOFTWARE/.test(haystack)) return "/course-covers/programming.jpg";
+  return "/course-covers/study.jpg";
 }
 
 function AcademicOnboarding({
@@ -1735,21 +1744,30 @@ export default function Home() {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [savedPostsLoading, setSavedPostsLoading] = useState(false);
   const [savedPostsError, setSavedPostsError] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState<CourseSubject | null>(null);
+  const [showAllSubjects, setShowAllSubjects] = useState(false);
+  const [notesCourseId, setNotesCourseId] = useState("");
+  const [composerCourseId, setComposerCourseId] = useState<string | null>(null);
   const sharedPostFocused = useRef(false);
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date()), []);
   const profileSubjects = useMemo(() => {
-    if (!studentProfile) return subjects;
+    if (!studentProfile) return [];
     const tones = ["coral", "violet", "blue", "amber", "mint", "rose"];
-    const symbols = ["∑", "φ", "</>", "§", "Ψ", "△"];
 
-    return studentProfile.courses.slice(0, 6).map((course, index) => ({
-      code: course.code,
-      label: course.name,
-      tone: tones[index % tones.length],
-      icon: symbols[index % symbols.length],
-    }));
-  }, [studentProfile]);
+    return studentProfile.courses.map((course, index) => {
+      const normalizedCode = normalizeCourseCode(course.code);
+      return {
+        id: course.id,
+        code: course.code,
+        label: course.name,
+        tone: tones[index % tones.length],
+        imageUrl: getCourseCover(course),
+        noteCount: curatedNotes.filter((note) => note.courseCodes.some((code) => normalizeCourseCode(code) === normalizedCode)).length,
+        postCount: posts.filter((post) => normalizeCourseCode(post.course) === normalizedCode).length,
+      };
+    });
+  }, [posts, studentProfile]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -1767,7 +1785,7 @@ export default function Home() {
   }, [themePreference]);
 
   useEffect(() => {
-    if (!showMobileCreate && !showMobileMenu) return;
+    if (!showMobileCreate && !showMobileMenu && !showAllSubjects && !selectedSubject) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -1775,6 +1793,8 @@ export default function Home() {
       if (event.key === "Escape") {
         setShowMobileCreate(false);
         setShowMobileMenu(false);
+        setShowAllSubjects(false);
+        setSelectedSubject(null);
       }
     }
     window.addEventListener("keydown", closeOnEscape);
@@ -1782,7 +1802,7 @@ export default function Home() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [showMobileCreate, showMobileMenu]);
+  }, [selectedSubject, showAllSubjects, showMobileCreate, showMobileMenu]);
 
   useEffect(() => {
     let active = true;
@@ -2034,6 +2054,7 @@ export default function Home() {
 
   const activeProfile = studentProfile;
   const initials = getInitials(activeProfile.displayName);
+  const composerCourse = activeProfile.courses.find((course) => course.id === composerCourseId) ?? null;
   const emptyFeedCopy = feedTab === "Takip ettiklerin"
     ? { title: "Takip akışın henüz boş", description: "Öğrenci ağından ilgini çeken kişileri takip ettiğinde paylaşımları burada görünecek." }
     : feedTab === "Kampüsüm"
@@ -2052,7 +2073,7 @@ export default function Home() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           content: clean,
-          courseId: activeProfile.courses[0]?.id ?? null,
+          courseId: composerCourseId ?? activeProfile.courses[0]?.id ?? null,
         }),
       });
       const data = (await response.json()) as { post?: Post; error?: string };
@@ -2061,6 +2082,7 @@ export default function Home() {
       setPosts((current) => [data.post as Post, ...current]);
       setStudentProfile((current) => current ? { ...current, postCount: current.postCount + 1 } : current);
       setDraft("");
+      setComposerCourseId(null);
     } catch (publishError) {
       setComposerError(publishError instanceof Error ? publishError.message : "Gönderin paylaşılamadı.");
     } finally {
@@ -2286,12 +2308,12 @@ export default function Home() {
         <section className="subject-section" aria-labelledby="subjects-title">
           <div className="section-heading">
             <div><span className="eyebrow">Ders çevrelerin</span><h2 id="subjects-title">Bugün ne çalışıyorsun?</h2></div>
-            <button type="button">Tümünü gör <Icon name="arrow" size={15}/></button>
+            <button type="button" onClick={() => setShowAllSubjects(true)}>Tümünü gör <Icon name="arrow" size={15}/></button>
           </div>
           <div className="subject-row">
-            {profileSubjects.map((subject, index) => (
-              <button className="subject-item" type="button" key={subject.code}>
-                <span className={`subject-ring subject-${subject.tone}`}><span>{subject.icon}</span>{index < 3 && <i>{index + 2}</i>}</span>
+            {profileSubjects.slice(0, 6).map((subject) => (
+              <button className="subject-item" type="button" key={subject.id} onClick={() => setSelectedSubject(subject)} aria-label={`${subject.code} ${subject.label} dersini aç`}>
+                <span className={`subject-cover subject-${subject.tone}`}><Image src={subject.imageUrl} alt="" fill unoptimized sizes="78px"/>{subject.noteCount > 0 && <i aria-label={`${subject.noteCount} doğrulanmış not`}>{subject.noteCount}</i>}</span>
                 <strong>{subject.code}</strong><small>{subject.label}</small>
               </button>
             ))}
@@ -2304,6 +2326,7 @@ export default function Home() {
             <label className="sr-only" htmlFor="post-draft">Gönderi metni</label>
             <textarea id="post-draft" value={draft} maxLength={1200} onChange={(event) => { setDraft(event.target.value); setComposerError(""); }} onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === "Enter") void publishPost(); }} placeholder="Kampüsünde ne paylaşmak istersin?" rows={1}/>
           </div>
+          {composerCourse && <div className="composer-course-chip"><span><Icon name="notes" size={15}/><strong>{composerCourse.code}</strong> ders çevresinde paylaşıyorsun</span><button type="button" onClick={() => setComposerCourseId(null)} aria-label="Ders seçimini kaldır"><Icon name="close" size={14}/></button></div>}
           <div className="composer-tools">
             <div>
               <button type="button"><span className="tool-icon tool-image"><Icon name="image" size={18}/></span><span>Fotoğraf</span></button>
@@ -2324,7 +2347,7 @@ export default function Home() {
         <div className="feed-list">{postsLoading ? <div className="feed-empty feed-loading" aria-live="polite"><span className="profile-boot-line"><i/></span><strong>{activeProfile.universityShortName} akışın hazırlanıyor…</strong></div> : posts.length > 0 ? posts.map((post) => <FeedPost post={post} viewerInitials={initials} viewerId={studentProfile.publicId} onPostUpdated={updatePost} onPostDeleted={deletePost} key={post.id}/>) : <div className="feed-empty"><span><Icon name="users" size={22}/></span><strong>{emptyFeedCopy.title}</strong><p>{emptyFeedCopy.description}</p></div>}</div>
         {!postsLoading && feedError && <p className="feed-error" role="alert">{feedError}</p>}
         {!postsLoading && nextCursor && <button className="feed-load-more" type="button" onClick={() => void loadMorePosts()} disabled={loadingMore}>{loadingMore ? "Gönderiler getiriliyor…" : "Daha fazla gönderi göster"}</button>}
-        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
+        </> : activeNav === "Öğrenci" ? <PublicProfileView profile={publicProfile} loading={publicProfileLoading} shareable viewerInitials={initials} viewerId={studentProfile.publicId} followPending={followPendingId === publicProfile?.publicId} onBack={() => navigateTo("Keşfet")} onToggleFollow={(publicId) => void toggleFollow(publicId)}/> : <>{activeNav === "Profil" && profileNotice && <p className="profile-update-notice" role="status"><Icon name="check" size={16}/>{profileNotice}</p>}<SecondaryView name={activeNav} profile={studentProfile} posts={posts} people={people} peopleStatus={peopleStatus} peopleQuery={peopleQuery} shareableProfile followPendingId={followPendingId} savedPosts={savedPosts} savedPostsLoading={savedPostsLoading} savedPostsError={savedPostsError} notesCourseId={notesCourseId} themePreference={themePreference} onThemeChange={setThemePreference} onOpenPerson={(person) => void openPerson(person)} onQueryPeople={queryPeople} onToggleFollow={(publicId) => void toggleFollow(publicId)} onNavigate={navigateTo} onEditProfile={() => { setProfileNotice(""); setEditingProfile("details"); }} onSignOut={() => void signOut()} onPostUpdated={updatePost} onPostDeleted={deletePost} onSavedChange={updateSavedPost}/></>}
         {(activeNav === "Öğrenci" || activeNav === "Keşfet") && followError && <p className="profile-action-error" role="alert">{followError}</p>}
       </section>
 
@@ -2425,6 +2448,41 @@ export default function Home() {
             ))}
           </div>
         </section>
+      )}
+
+      {showAllSubjects && (
+        <div className="feature-overlay course-hub-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAllSubjects(false); }}>
+          <section className="feature-dialog course-directory-dialog" role="dialog" aria-modal="true" aria-labelledby="course-directory-title">
+            <header><div><span>DERS ÇEVRELERİN</span><h2 id="course-directory-title">Bu dönemki tüm derslerin</h2></div><button type="button" onClick={() => setShowAllSubjects(false)} aria-label="Dersleri kapat"><Icon name="close" size={19}/></button></header>
+            <div className="course-directory-grid">
+              {profileSubjects.map((subject) => (
+                <button type="button" key={subject.id} onClick={() => { setShowAllSubjects(false); setSelectedSubject(subject); }}>
+                  <span className="course-directory-cover"><Image src={subject.imageUrl} alt="" fill unoptimized sizes="(max-width: 680px) 44vw, 250px"/></span>
+                  <span><strong>{subject.code}</strong><small>{subject.label}</small><em>{subject.noteCount} doğrulanmış not · {subject.postCount} paylaşım</em></span>
+                  <Icon name="arrow" size={17}/>
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {selectedSubject && (
+        <div className="feature-overlay course-hub-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedSubject(null); }}>
+          <section className="feature-dialog course-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="course-detail-title">
+            <header><div><span>DERS MERKEZİ</span><h2 id="course-detail-title">{selectedSubject.code} · {selectedSubject.label}</h2></div><button type="button" onClick={() => setSelectedSubject(null)} aria-label="Ders merkezini kapat"><Icon name="close" size={19}/></button></header>
+            <div className="course-detail-body">
+              <div className="course-detail-cover"><Image src={selectedSubject.imageUrl} alt={`${selectedSubject.code} ${selectedSubject.label} için temsili ders kapağı`} fill unoptimized sizes="(max-width: 680px) 100vw, 600px" priority/></div>
+              <div className="course-detail-label"><Icon name="sparkles" size={15}/> Temsili ders kapağı</div>
+              <p>Bu dersin doğrulanmış kaynaklarına ulaşabilir veya doğrudan ders çevresinde paylaşım başlatabilirsin.</p>
+              <div className="course-detail-stats"><span><strong>{selectedSubject.noteCount}</strong><small>Doğrulanmış not</small></span><span><strong>{selectedSubject.postCount}</strong><small>Akış paylaşımı</small></span></div>
+              <div className="course-detail-actions">
+                <button className="feature-primary" type="button" onClick={() => { setNotesCourseId(selectedSubject.id); setSelectedSubject(null); navigateTo("Notlar"); }}><Icon name="notes" size={17}/> Notları gör</button>
+                <button type="button" onClick={() => { setComposerCourseId(selectedSubject.id); setSelectedSubject(null); openFeedComposer(); }}><Icon name="edit" size={17}/> Akışta paylaş</button>
+              </div>
+            </div>
+          </section>
+        </div>
       )}
     </main>
   );

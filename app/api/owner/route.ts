@@ -83,7 +83,7 @@ export async function GET(request: Request) {
       activity: activity.results,
       features: featureCounts,
       system: {
-        version: "1.7.3",
+        version: "1.7.4",
         database: "ok",
         storage: FILES ? "configured" : "unavailable",
         courseCatalogPrograms: courseCoverage.length,

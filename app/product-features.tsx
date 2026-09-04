@@ -84,12 +84,12 @@ function EmptyState({ icon, title, text }: { icon: string; title: string; text: 
   return <div className="feature-empty" role="status"><span>{icon}</span><strong>{title}</strong><p>{text}</p></div>;
 }
 
-export function NotesWorkspace({ courses }: { courses: FeatureCourse[] }) {
+export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: FeatureCourse[]; initialCourseId?: string }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
-  const [courseId, setCourseId] = useState("");
+  const [courseId, setCourseId] = useState(initialCourseId);
   const [scope, setScope] = useState<"all" | "mine" | "saved">("all");
   const [showUpload, setShowUpload] = useState(false);
   const [selected, setSelected] = useState<Note | null>(null);
