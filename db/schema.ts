@@ -198,6 +198,24 @@ export const campusPlaceConfirmations = sqliteTable(
   (table) => [primaryKey({ columns: [table.placeId, table.userEmail] })],
 );
 
+export const housingDiscussions = sqliteTable(
+  "housing_discussions",
+  {
+    id: text("id").primaryKey(),
+    placeId: text("place_id").notNull().references(() => campusPlaces.id, { onDelete: "cascade" }),
+    authorEmail: text("author_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    isAnonymous: integer("is_anonymous", { mode: "boolean" }).notNull().default(false),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("housing_discussions_place_status_created_idx").on(table.placeId, table.status, table.createdAt),
+    index("housing_discussions_author_created_idx").on(table.authorEmail, table.createdAt),
+  ],
+);
+
 export const libraryAreas = sqliteTable(
   "library_areas",
   {
@@ -488,6 +506,9 @@ export const notes = sqliteTable(
     title: text("title").notNull(),
     description: text("description").notNull().default(""),
     noteType: text("note_type").notNull().default("ders-notu"),
+    examYear: integer("exam_year"),
+    examTerm: text("exam_term"),
+    examKind: text("exam_kind"),
     tagsJson: text("tags_json").notNull().default("[]"),
     objectKey: text("object_key").notNull(),
     originalFileName: text("original_file_name").notNull(),
@@ -503,6 +524,7 @@ export const notes = sqliteTable(
   },
   (table) => [
     index("notes_course_status_created_idx").on(table.courseId, table.status, table.createdAt),
+    index("notes_exam_course_year_idx").on(table.noteType, table.courseId, table.examYear, table.status),
     index("notes_owner_created_idx").on(table.ownerEmail, table.createdAt),
     uniqueIndex("notes_object_key_unique").on(table.objectKey),
   ],

@@ -39,6 +39,7 @@ test("all database migrations apply cleanly in order", async () => {
         "courses",
         "departments",
         "faculties",
+        "housing_discussions",
         "library_areas",
         "library_checkins",
         "marketplace_inquiries",

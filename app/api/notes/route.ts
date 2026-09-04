@@ -14,6 +14,9 @@ import {
 import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
+const noteTypes = new Set(["ders-notu", "formul-kagidi", "cikmis-soru", "sunum"]);
+const examTerms = new Set(["guz", "bahar", "yaz"]);
+const examKinds = new Set(["vize", "final", "butunleme", "quiz"]);
 const allowedFiles: Record<string, { extensions: string[]; magic: (bytes: Uint8Array) => boolean }> = {
   "application/pdf": {
     extensions: ["pdf"],
@@ -47,6 +50,9 @@ type NoteRow = {
   title: string;
   description: string;
   note_type: string;
+  exam_year: number | null;
+  exam_term: string | null;
+  exam_kind: string | null;
   tags_json: string;
   original_file_name: string;
   content_type: string;
@@ -72,6 +78,9 @@ function serializeNote(row: NoteRow) {
     title: row.title,
     description: row.description,
     noteType: row.note_type,
+    examYear: row.exam_year === null ? null : Number(row.exam_year),
+    examTerm: row.exam_term,
+    examKind: row.exam_kind,
     tags: parseJsonArray(row.tags_json),
     originalFileName: row.original_file_name,
     contentType: row.content_type,
@@ -97,8 +106,15 @@ export async function GET(request: Request) {
   const id = cleanText(url.searchParams.get("id"), 80);
   const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
   const courseId = cleanText(url.searchParams.get("courseId"), 80);
+  const noteType = cleanText(url.searchParams.get("noteType"), 40);
+  const examYearInput = cleanText(url.searchParams.get("examYear"), 4);
+  const examYear = examYearInput ? Number(examYearInput) : 0;
+  const examKind = cleanText(url.searchParams.get("examKind"), 24);
   const mine = url.searchParams.get("mine") === "1" ? 1 : 0;
   const saved = url.searchParams.get("saved") === "1" ? 1 : 0;
+  if (noteType && !noteTypes.has(noteType)) return Response.json({ error: "Not türü geçerli değil." }, { status: 400 });
+  if (examYearInput && (!Number.isInteger(examYear) || examYear < 2000 || examYear > new Date().getFullYear() + 1)) return Response.json({ error: "Sınav yılı geçerli değil." }, { status: 400 });
+  if (examKind && !examKinds.has(examKind)) return Response.json({ error: "Sınav türü geçerli değil." }, { status: 400 });
 
   try {
     const { DB } = await getRuntime();
@@ -108,7 +124,7 @@ export async function GET(request: Request) {
     const baseSql = `
       SELECT n.id, u.public_id AS owner_id, u.display_name AS owner_name,
              n.course_id, c.code AS course_code, c.name AS course_name,
-             n.title, n.description, n.note_type, n.tags_json,
+             n.title, n.description, n.note_type, n.exam_year, n.exam_term, n.exam_kind, n.tags_json,
              n.original_file_name, n.content_type, n.byte_size, n.page_count,
              n.status, n.rejection_reason, n.created_at,
              CASE WHEN ns.user_email IS NULL THEN 0 ELSE 1 END AS saved,
@@ -143,6 +159,9 @@ export async function GET(request: Request) {
           AND (n.status = 'published' OR n.owner_email = ?)
           AND owner_profile.university_id = ?
           AND (? = '' OR n.course_id = ?)
+          AND (? = '' OR n.note_type = ?)
+          AND (? = 0 OR n.exam_year = ?)
+          AND (? = '' OR n.exam_kind = ?)
           AND (? = 0 OR n.owner_email = ?)
           AND (? = 0 OR ns.user_email IS NOT NULL)
           AND (? = '' OR LOWER(n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name) LIKE ?)
@@ -156,6 +175,12 @@ export async function GET(request: Request) {
         profile.university_id,
         courseId,
         courseId,
+        noteType,
+        noteType,
+        examYear,
+        examYear,
+        examKind,
+        examKind,
         mine,
         identity.email,
         saved,
@@ -188,6 +213,10 @@ export async function POST(request: Request) {
   const description = cleanText(form.get("description"), 600);
   const courseId = cleanText(form.get("courseId"), 80);
   const noteType = cleanText(form.get("noteType"), 40) || "ders-notu";
+  const examYearInput = cleanText(form.get("examYear"), 4);
+  const examYear = Number(examYearInput);
+  const examTerm = cleanText(form.get("examTerm"), 16);
+  const examKind = cleanText(form.get("examKind"), 24);
   const tags = cleanText(form.get("tags"), 240)
     .split(",")
     .map((tag) => tag.trim().toLocaleLowerCase("tr-TR"))
@@ -197,6 +226,10 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) return Response.json({ error: "Yüklenecek dosyayı seçmelisin." }, { status: 400 });
   if (!title || title.length < 3) return Response.json({ error: "Not başlığı en az 3 karakter olmalı." }, { status: 400 });
   if (!courseId) return Response.json({ error: "Notun dersini seçmelisin." }, { status: 400 });
+  if (!noteTypes.has(noteType)) return Response.json({ error: "Not türü geçerli değil." }, { status: 400 });
+  if (noteType === "cikmis-soru" && (!Number.isInteger(examYear) || examYear < 2000 || examYear > new Date().getFullYear() + 1 || !examTerms.has(examTerm) || !examKinds.has(examKind))) {
+    return Response.json({ error: "Çıkmış soru için yıl, dönem ve sınav türünü seçmelisin." }, { status: 400 });
+  }
   if (!file.size || file.size > MAX_FILE_SIZE) return Response.json({ error: "Dosya 15 MB sınırını aşmamalı." }, { status: 413 });
   if (file.name.length > 140 || /[\\/\0]/.test(file.name)) return Response.json({ error: "Dosya adı geçerli değil." }, { status: 400 });
 
@@ -239,9 +272,9 @@ export async function POST(request: Request) {
     await DB
       .prepare(
         `INSERT INTO notes
-         (id, owner_email, course_id, title, description, note_type, tags_json,
+         (id, owner_email, course_id, title, description, note_type, exam_year, exam_term, exam_kind, tags_json,
           object_key, original_file_name, content_type, byte_size, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'processing')`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'processing')`,
       )
       .bind(
         id,
@@ -250,6 +283,9 @@ export async function POST(request: Request) {
         title,
         description,
         noteType,
+        noteType === "cikmis-soru" ? examYear : null,
+        noteType === "cikmis-soru" ? examTerm : null,
+        noteType === "cikmis-soru" ? examKind : null,
         JSON.stringify(tags),
         objectKey,
         file.name,
@@ -277,7 +313,7 @@ export async function POST(request: Request) {
        LEFT JOIN notification_preferences np ON np.user_email = sc.user_email
        WHERE sc.course_id = ? AND sc.user_email <> ? AND COALESCE(np.courses, 1) = 1`,
     ).bind(identity.email, `${title} notu yayınlandı`, `Takip ettiğin ders çevresine yeni bir kaynak eklendi.`, id, courseId, identity.email).run();
-    await audit(DB, identity.email, "note.created", "note", id, { courseId, contentType: file.type, byteSize: file.size });
+    await audit(DB, identity.email, "note.created", "note", id, { courseId, noteType, examYear: noteType === "cikmis-soru" ? examYear : null, examTerm: noteType === "cikmis-soru" ? examTerm : null, examKind: noteType === "cikmis-soru" ? examKind : null, contentType: file.type, byteSize: file.size });
     const response = await GET(new Request(`${new URL(request.url).origin}/api/notes?id=${encodeURIComponent(id)}`, { headers: request.headers }));
     const payload = await response.json();
     return Response.json(payload, { status: 201 });

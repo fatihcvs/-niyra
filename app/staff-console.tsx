@@ -46,6 +46,7 @@ const adminMetricLabels: Record<string, [string, string]> = {
   users_suspended: ["Askıdaki hesap", "Erişim kapalı"],
   notes_attention: ["Not incelemesi", "İşlem bekliyor"],
   places_hidden: ["Gizli mekân", "Moderasyon"],
+  housing_hidden: ["Gizli yurt deneyimi", "Moderasyon"],
   listings_hidden: ["Gizli ilan", "Moderasyon"],
   pulse_hidden: ["Gizli anlık", "Moderasyon"],
 };
@@ -268,6 +269,7 @@ function OwnerSettings({ data, reload, setMessage }: ContentProps) {
     ["registrationOpen", "Yeni öğrenci kaydı", "Kapalı olduğunda yeni hesap oluşturulamaz."],
     ["noteUploadsOpen", "Çalışma notu yükleme", "Dosya yükleme API’sini anında açar veya kapatır."],
     ["communityCreationOpen", "Yeni topluluk kurma", "Mevcut toplulukları etkilemeden yeni kurulumları durdurur."],
+    ["housingContributionsOpen", "Yurt ve konaklama katkıları", "Yeni konaklama kaydı ve öğrenci deneyimi paylaşımını yönetir."],
     ["maintenanceMode", "Bakım duyurusu", "Tüm sayfalarda owner mesajını gösterir."],
   ];
   return <div className={styles.contentStack}><section className={styles.welcome}><div><span>PLATFORM ANAHTARLARI</span><h2>Ürünü kod dağıtmadan yönet.</h2><p>Kritik kullanıcı işlemlerini durdurabilir, bakım mesajını yayınlayabilir ve değişiklikleri işlem günlüğünde izleyebilirsin.</p></div><button className={styles.primaryAction} disabled={busy} onClick={() => void save()}>{busy ? "Kaydediliyor…" : "Değişiklikleri yayınla →"}</button></section><section className={styles.settingsGrid}>{toggles.map(([key, label, detail]) => <article key={key}><div><strong>{label}</strong><p>{detail}</p></div><button type="button" role="switch" aria-checked={Boolean(settings[key])} className={settings[key] ? styles.switchOn : styles.switchOff} onClick={() => setSettings({ ...settings, [key]: !settings[key] })}><i /></button></article>)}</section><section className={styles.card}><CardTitle eyebrow="DUYURU METNİ" title="Bakım mesajı" detail="Bakım anahtarı açıkken öğrencilere gösterilir" /><textarea className={styles.largeTextarea} value={String(settings.maintenanceMessage ?? "")} onChange={(e) => setSettings({ ...settings, maintenanceMessage: e.target.value })} maxLength={240} /><footer className={styles.fieldFoot}><span>{String(settings.maintenanceMessage ?? "").length}/240 karakter</span><button onClick={() => void save()}>Mesajı kaydet</button></footer></section></div>;
@@ -319,5 +321,5 @@ async function signOut(setStaff: (staff: Staff | null) => void) { await fetch("/
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "İşlem tamamlanamadı."; }
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr-TR"); }
 function formatDate(value: unknown) { const parsed = new Date(String(value ?? "")); return Number.isNaN(parsed.getTime()) ? "-" : dateTime.format(parsed); }
-function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", event: "Etkinlik", price: "Fiyat", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
+function entityLabel(value: string) { return ({ post: "Gönderi", comment: "Yorum", note: "Not", community: "Topluluk", pulse: "Kampüs Anlık", listing: "İlan", place: "Mekân", "housing-message": "Yurt deneyimi", event: "Etkinlik", price: "Fiyat", user: "Kullanıcı" } as Record<string, string>)[value] ?? value; }
 function evidenceSummary(evidence: JsonRecord) { return String(evidence.content ?? evidence.title ?? evidence.name ?? evidence.description ?? evidence.item_name ?? evidence.display_name ?? "Kanıt anlık görüntüsü kaydedildi.").slice(0, 280); }

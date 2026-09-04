@@ -2,6 +2,7 @@ export const PLATFORM_SETTING_DEFAULTS = {
   registrationOpen: true,
   noteUploadsOpen: true,
   communityCreationOpen: true,
+  housingContributionsOpen: true,
   maintenanceMode: false,
   maintenanceMessage: "Üniyra üzerinde planlı bir bakım çalışması yürütülüyor.",
 } as const;
@@ -11,14 +12,16 @@ export type PlatformSettings = {
   registrationOpen: boolean;
   noteUploadsOpen: boolean;
   communityCreationOpen: boolean;
+  housingContributionsOpen: boolean;
   maintenanceMode: boolean;
   maintenanceMessage: string;
 };
 
 export async function getPlatformSettings(db: D1Database): Promise<PlatformSettings> {
+  const keys = Object.keys(PLATFORM_SETTING_DEFAULTS);
   const rows = await db.prepare(
-    `SELECT key, value_json FROM platform_settings WHERE key IN (?, ?, ?, ?, ?)`,
-  ).bind(...Object.keys(PLATFORM_SETTING_DEFAULTS)).all<{ key: string; value_json: string }>();
+    `SELECT key, value_json FROM platform_settings WHERE key IN (${keys.map(() => "?").join(", ")})`,
+  ).bind(...keys).all<{ key: string; value_json: string }>();
   const settings: PlatformSettings = { ...PLATFORM_SETTING_DEFAULTS };
   for (const row of rows.results) {
     if (!(row.key in settings)) continue;

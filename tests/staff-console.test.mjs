@@ -48,18 +48,22 @@ test("owner snapshot exposes verified course catalog coverage", async () => {
 
 test("management registry covers every current product moderation surface", async () => {
   const registry = await source("../lib/admin-registry.ts");
-  for (const key of ["users", "posts", "comments", "notes", "communities", "pulse", "market", "places", "events", "prices", "matches", "library", "reports"]) {
+  for (const key of ["users", "posts", "comments", "notes", "communities", "pulse", "market", "places", "housingDiscussions", "events", "prices", "matches", "library", "reports"]) {
     assert.match(registry, new RegExp(`key: "${key}"`));
   }
 });
 
 test("owner feature switches are enforced by their product APIs", async () => {
-  const [register, notes, communities] = await Promise.all([
+  const [register, notes, communities, housing, campusGuide] = await Promise.all([
     source("../app/api/auth/register/route.ts"),
     source("../app/api/notes/route.ts"),
     source("../app/api/communities/route.ts"),
+    source("../app/api/housing/route.ts"),
+    source("../app/api/campus-guide/route.ts"),
   ]);
   assert.match(register, /registrationOpen/);
   assert.match(notes, /noteUploadsOpen/);
   assert.match(communities, /communityCreationOpen/);
+  assert.match(housing, /housingContributionsOpen/);
+  assert.match(campusGuide, /housingContributionsOpen/);
 });

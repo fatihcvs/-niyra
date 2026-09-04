@@ -16,6 +16,9 @@ type Note = {
   title: string;
   description: string;
   noteType: string;
+  examYear: number | null;
+  examTerm: string | null;
+  examKind: string | null;
   tags: string[];
   originalFileName: string;
   contentType: string;
@@ -90,8 +93,11 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [courseId, setCourseId] = useState(initialCourseId);
-  const [scope, setScope] = useState<"all" | "mine" | "saved">("all");
+  const [scope, setScope] = useState<"all" | "exams" | "mine" | "saved">("all");
+  const [examYear, setExamYear] = useState("");
+  const [examKind, setExamKind] = useState("");
   const [showUpload, setShowUpload] = useState(false);
+  const [uploadType, setUploadType] = useState("ders-notu");
   const [selected, setSelected] = useState<Note | null>(null);
   const [selectedCurated, setSelectedCurated] = useState<CuratedNote | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Note | null>(null);
@@ -119,6 +125,9 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
       const params = new URLSearchParams();
       if (query.trim()) params.set("q", query.trim());
       if (courseId) params.set("courseId", courseId);
+      if (scope === "exams") params.set("noteType", "cikmis-soru");
+      if (scope === "exams" && examYear) params.set("examYear", examYear);
+      if (scope === "exams" && examKind) params.set("examKind", examKind);
       if (scope === "mine") params.set("mine", "1");
       if (scope === "saved") params.set("saved", "1");
       const response = await fetch(`/api/notes?${params}`, { headers: { accept: "application/json" } });
@@ -138,7 +147,7 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
   // loadNotes is intentionally scoped to the selected filters.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, courseId, scope]);
+  }, [query, courseId, scope, examYear, examKind]);
 
   async function toggleSave(note: Note) {
     const previous = note.saved;
@@ -179,6 +188,7 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
       setNotes((current) => [body.note!, ...current]);
       setShowUpload(false);
       form.reset();
+      setUploadType("ders-notu");
       setProgress(0);
       setSelected(body.note);
     };
@@ -201,12 +211,13 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
   }
 
   return <div className="workspace-view feature-workspace">
-    <FeatureHeader eyebrow="NOT KÜTÜPHANESİ" title="Ders notlarını bul ve paylaş" description="Kaynakları doğrulanmış Üniyra Editoryal notlarını ve kampüsündeki öğrenci paylaşımlarını ders, konu ve başlığa göre ara." action={<button className="feature-primary" type="button" onClick={() => setShowUpload(true)}>＋ Not yükle</button>}/>
-    <section className="feature-search" aria-label="Not ara"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ders kodu, konu, başlık veya öğrenci ara"/><button type="button" onClick={() => setQuery("")} disabled={!query}>Temizle</button></section>
+    <FeatureHeader eyebrow={scope === "exams" ? "ÇIKMIŞ SORULAR" : "NOT KÜTÜPHANESİ"} title={scope === "exams" ? "Sınava gerçekten ne çıktığını gör" : "Ders notlarını bul ve paylaş"} description={scope === "exams" ? "Kampüsündeki öğrencilerin yüklediği geçmiş sınavları ders, yıl ve sınav türüne göre filtrele. Her yükleme topluluk moderasyonuna açıktır." : "Kaynakları doğrulanmış Üniyra Editoryal notlarını ve kampüsündeki öğrenci paylaşımlarını ders, konu ve başlığa göre ara."} action={<button className="feature-primary" type="button" onClick={() => { if (scope === "exams") setUploadType("cikmis-soru"); setShowUpload(true); }}>＋ {scope === "exams" ? "Soru yükle" : "Not yükle"}</button>}/>
+    <section className="feature-search" aria-label="Not ara"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={scope === "exams" ? "Ders kodu, sınav başlığı veya konu ara" : "Ders kodu, konu, başlık veya öğrenci ara"}/><button type="button" onClick={() => setQuery("")} disabled={!query}>Temizle</button></section>
     <div className="feature-toolbar">
-      <div role="tablist" aria-label="Not görünümü">{([['all','Tüm notlar'],['mine','Notlarım'],['saved','Kaydettiklerim']] as const).map(([value,label]) => <button role="tab" aria-selected={scope === value} className={scope === value ? "active" : ""} type="button" onClick={() => setScope(value)} key={value}>{label}</button>)}</div>
+      <div role="tablist" aria-label="Not görünümü">{([['all','Tüm notlar'],['exams','Çıkmış Sorular'],['mine','Notlarım'],['saved','Kaydettiklerim']] as const).map(([value,label]) => <button role="tab" aria-selected={scope === value} className={scope === value ? "active" : ""} type="button" onClick={() => setScope(value)} key={value}>{label}</button>)}</div>
       <label>Ders<select value={courseId} onChange={(event) => setCourseId(event.target.value)}><option value="">Tümü</option>{courses.map((course) => <option value={course.id} key={course.id}>{course.code} · {course.name}</option>)}</select></label>
     </div>
+    {scope === "exams" && <section className="exam-filter-strip" aria-label="Çıkmış soru filtreleri"><div><span>⌁</span><p><strong>Dersini seç, geçmiş sınavları karşılaştır.</strong><small>Yüklemeler resmî cevap anahtarı olarak kabul edilmez; çözümleri ders kaynağınla doğrula.</small></p></div><label>Yıl<select value={examYear} onChange={(event) => setExamYear(event.target.value)}><option value="">Tümü</option>{Array.from({ length: 8 }, (_, index) => new Date().getFullYear() - index).map((year) => <option key={year} value={year}>{year}</option>)}</select></label><label>Sınav<select value={examKind} onChange={(event) => setExamKind(event.target.value)}><option value="">Tümü</option><option value="vize">Vize</option><option value="final">Final</option><option value="butunleme">Bütünleme</option><option value="quiz">Quiz</option></select></label></section>}
     {error && <p className="feature-error" role="alert">{error} <button type="button" onClick={() => void loadNotes()}>Yeniden dene</button></p>}
     {scope === "all" && <section className="curated-library" aria-labelledby="curated-library-title">
       <header className="curated-library-header"><div><span>ÜNİYRA EDİTORYAL · KAYNAKLI</span><h2 id="curated-library-title">Doğrulanmış çalışma notları</h2><p>Resmi kurumlar, üniversite açık dersleri ve açık ders kitaplarından araştırılarak özgün biçimde hazırlandı.</p></div><strong>{visibleCuratedNotes.length}<small>{query || selectedCourse ? "eşleşen not" : "editoryal not"}</small></strong></header>
@@ -223,32 +234,35 @@ export function NotesWorkspace({ courses, initialCourseId = "" }: { courses: Fea
         </article>;
       })}</div> : <div className="curated-empty"><strong>Bu filtreyle editoryal not bulunamadı.</strong><p>Arama terimini veya ders filtresini değiştirerek yeniden dene.</p></div>}
     </section>}
-    <div className="campus-notes-heading"><div><span>KAMPÜS KÜTÜPHANESİ</span><h2>Öğrenci notları</h2></div></div>
+    <div className="campus-notes-heading"><div><span>{scope === "exams" ? "SINAV ARŞİVİ" : "KAMPÜS KÜTÜPHANESİ"}</span><h2>{scope === "exams" ? "Öğrencilerin yüklediği sorular" : "Öğrenci notları"}</h2></div></div>
     {state === "loading" ? <EmptyState icon="…" title="Notlar getiriliyor" text="Kampüs kütüphanen hazırlanıyor."/> : notes.length === 0 ? <EmptyState icon="▤" title="Bu görünümde not yok" text="Aramayı veya filtreleri değiştir; istersen ilk notu sen yükle."/> : <div className="feature-note-grid">{notes.map((note) => <article className="feature-note-card" key={note.id}>
       <button className="feature-note-cover" type="button" onClick={() => setSelected(note)}><span>{note.courseCode}</span><strong>{note.contentType === "application/pdf" ? "PDF" : note.originalFileName.split('.').at(-1)?.toLocaleUpperCase("tr-TR")}</strong><i>{note.status === "published" ? "YAYINDA" : note.status === "processing" ? "İŞLENİYOR" : "İNCELENDİ"}</i></button>
-      <div><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div><button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small></div>
+      <div><div><span>{note.courseCode}</span><button className={note.saved ? "active" : ""} type="button" onClick={() => void toggleSave(note)} aria-label={note.saved ? "Notu kayıtlardan çıkar" : "Notu kaydet"}>⌑</button></div>{note.noteType === "cikmis-soru" && <div className="exam-note-meta"><span>{note.examYear}</span><span>{({ vize: "Vize", final: "Final", butunleme: "Bütünleme", quiz: "Quiz" } as Record<string, string>)[note.examKind ?? ""] ?? note.examKind}</span><span>{note.examTerm === "guz" ? "Güz" : note.examTerm === "bahar" ? "Bahar" : "Yaz"}</span></div>}<button className="feature-note-title" type="button" onClick={() => setSelected(note)}>{note.title}</button><p>{note.ownerName}</p><small>{formatBytes(note.byteSize)} · {note.viewCount.toLocaleString("tr-TR")} görüntülenme</small></div>
     </article>)}</div>}
 
-    {showUpload && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) setShowUpload(false); }}><section className="feature-dialog" role="dialog" aria-modal="true" aria-labelledby="upload-title"><header><div><span>GÜVENLİ YÜKLEME</span><h2 id="upload-title">Yeni ders notu</h2></div><button type="button" onClick={() => setShowUpload(false)} disabled={uploading} aria-label="Pencereyi kapat">×</button></header><form onSubmit={uploadNote}>
+    {showUpload && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) setShowUpload(false); }}><section className="feature-dialog" role="dialog" aria-modal="true" aria-labelledby="upload-title"><header><div><span>GÜVENLİ YÜKLEME</span><h2 id="upload-title">{uploadType === "cikmis-soru" ? "Çıkmış soru ekle" : "Yeni ders notu"}</h2></div><button type="button" onClick={() => setShowUpload(false)} disabled={uploading} aria-label="Pencereyi kapat">×</button></header><form onSubmit={uploadNote}>
       <label>Başlık<input name="title" required minLength={3} maxLength={120} placeholder="Örn. Lineer Cebir Final Özeti"/></label>
       <label>Ders<select name="courseId" required defaultValue=""><option value="" disabled>Dersini seç</option>{courses.map((course) => <option value={course.id} key={course.id}>{course.code} · {course.name}</option>)}</select></label>
-      <div className="feature-field-row"><label>Not türü<select name="noteType" defaultValue="ders-notu"><option value="ders-notu">Ders notu</option><option value="formul-kagidi">Formül kâğıdı</option><option value="cikmis-soru">Çıkmış soru</option><option value="sunum">Sunum</option></select></label><label>Etiketler<input name="tags" maxLength={240} placeholder="final, integral, özet"/></label></div>
+      <div className="feature-field-row"><label>Not türü<select name="noteType" value={uploadType} onChange={(event) => setUploadType(event.target.value)}><option value="ders-notu">Ders notu</option><option value="formul-kagidi">Formül kâğıdı</option><option value="cikmis-soru">Çıkmış soru</option><option value="sunum">Sunum</option></select></label><label>Etiketler<input name="tags" maxLength={240} placeholder="final, integral, özet"/></label></div>
+      {uploadType === "cikmis-soru" && <div className="exam-upload-fields"><label>Yıl<input name="examYear" type="number" min="2000" max={new Date().getFullYear() + 1} required defaultValue={new Date().getFullYear()}/></label><label>Dönem<select name="examTerm" required defaultValue=""><option value="" disabled>Seç</option><option value="guz">Güz</option><option value="bahar">Bahar</option><option value="yaz">Yaz</option></select></label><label>Sınav türü<select name="examKind" required defaultValue=""><option value="" disabled>Seç</option><option value="vize">Vize</option><option value="final">Final</option><option value="butunleme">Bütünleme</option><option value="quiz">Quiz</option></select></label></div>}
       <label>Açıklama<textarea name="description" maxLength={600} rows={3} placeholder="Notta hangi konuların bulunduğunu kısaca anlat."/></label>
       <label className="feature-file-field"><span>Dosya seç</span><input name="file" type="file" required accept=".pdf,.docx,.png,.jpg,.jpeg,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg,image/webp"/><small>PDF, DOCX, PNG, JPG veya WEBP · en fazla 15 MB</small></label>
+      {uploadType === "cikmis-soru" && <p className="exam-upload-warning">Yalnız paylaşma hakkın olan materyali yükle. Kişisel bilgi, izinsiz ticari soru bankası veya “resmî” diye doğrulanmamış cevap anahtarı ekleme.</p>}
       {uploading && <div className="feature-progress" aria-live="polite"><span style={{ width: `${progress}%` }}/><strong>%{progress} yükleniyor</strong></div>}
       {uploadError && <p className="feature-error" role="alert">{uploadError}</p>}
-      <footer><button type="button" onClick={() => setShowUpload(false)} disabled={uploading}>Vazgeç</button><button className="feature-primary" type="submit" disabled={uploading}>{uploading ? "Yükleniyor…" : "Notu yükle"}</button></footer>
+      <footer><button type="button" onClick={() => setShowUpload(false)} disabled={uploading}>Vazgeç</button><button className="feature-primary" type="submit" disabled={uploading}>{uploading ? "Yükleniyor…" : uploadType === "cikmis-soru" ? "Soruyu yükle" : "Notu yükle"}</button></footer>
     </form></section></div>}
 
     {selected && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}><section className="feature-dialog feature-detail" role="dialog" aria-modal="true" aria-labelledby="note-detail-title"><header><div><span>{selected.courseCode} · {selected.noteType.replaceAll('-', ' ')}</span><h2 id="note-detail-title">{selected.title}</h2></div><button type="button" onClick={() => setSelected(null)} aria-label="Pencereyi kapat">×</button></header>
       <div className="feature-detail-meta"><span className="feature-avatar">{initials(selected.ownerName)}</span><div><strong>{selected.ownerName}</strong><small>{selected.time} önce · {formatBytes(selected.byteSize)}</small></div><span className={`feature-status status-${selected.status}`}>{selected.status === "published" ? "Yayında" : selected.status === "processing" ? "İşleniyor" : "Reddedildi"}</span></div>
       {selected.description && <p className="feature-detail-description">{selected.description}</p>}
+      {selected.noteType === "cikmis-soru" && <div className="exam-note-meta detail"><span>{selected.examYear}</span><span>{selected.examTerm === "guz" ? "Güz" : selected.examTerm === "bahar" ? "Bahar" : "Yaz"}</span><span>{({ vize: "Vize", final: "Final", butunleme: "Bütünleme", quiz: "Quiz" } as Record<string, string>)[selected.examKind ?? ""] ?? selected.examKind}</span></div>}
       {selected.tags.length > 0 && <div className="feature-tags">{selected.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}
       {selected.status === "published" ? <div className="feature-preview">{selected.contentType.startsWith("image/") ? <img src={selected.fileUrl} alt={`${selected.title} önizlemesi`}/> : selected.contentType === "application/pdf" ? <iframe src={selected.fileUrl} title={`${selected.title} PDF önizlemesi`}/> : <EmptyState icon="DOCX" title="Belge indirilmeye hazır" text="DOCX dosyaları güvenli indirme bağlantısıyla açılır."/>}</div> : <EmptyState icon="!" title={selected.status === "processing" ? "Dosya işleniyor" : "Dosya yayınlanmadı"} text={selected.rejectionReason ?? "İnceleme tamamlandığında burada görünecek."}/>} 
       <footer><button type="button" onClick={() => void toggleSave(selected)}>{selected.saved ? "Kaydedildi" : "Kaydet"}</button>{selected.own && <button className="feature-danger" type="button" onClick={() => setDeleteConfirm(selected)}>Notu sil</button>}{selected.status === "published" && <><a href={selected.fileUrl} target="_blank" rel="noreferrer">Yeni sekmede aç</a><a className="feature-primary" href={`${selected.fileUrl}&download=1`}>İndir</a></>}</footer>
     </section></div>}
 
-    {selectedCurated && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedCurated(null); }}><section className="feature-dialog feature-detail curated-detail" role="dialog" aria-modal="true" aria-labelledby="curated-detail-title"><header><div><span>ÜNİYRA EDİTORYAL · {selectedCurated.courseCodes.join(" · ")}</span><h2 id="curated-detail-title">{selectedCurated.title}</h2></div><button type="button" onClick={() => setSelectedCurated(null)} aria-label="Pencereyi kapat">×</button></header>
+    {selectedCurated && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedCurated(null); }}><section className="feature-dialog feature-detail curated-detail" role="dialog" aria-modal="true" aria-labelledby="curated-detail-title"><header><div><span>KAMPIRA EDİTORYAL · {selectedCurated.courseCodes.join(" · ")}</span><h2 id="curated-detail-title">{selectedCurated.title}</h2></div><button type="button" onClick={() => setSelectedCurated(null)} aria-label="Pencereyi kapat">×</button></header>
       <div className="curated-detail-intro"><span>✓ Kaynakları doğrulandı</span><p>{selectedCurated.summary}</p><small>{selectedCurated.level} · {selectedCurated.readingMinutes} dakika · {formatVerifiedDate(selectedCurated.verifiedOn)} tarihinde doğrulandı</small></div>
       <div className="curated-detail-columns"><section><h3>Bilmen gerekenler</h3><ul>{selectedCurated.takeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}</ul></section><section><h3>Çalışma kontrolü</h3><ol>{selectedCurated.checklist.map((step) => <li key={step}>{step}</li>)}</ol></section></div>
       <div className="feature-tags">{selectedCurated.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>

@@ -12,8 +12,9 @@ import {
   unavailableResponse,
 } from "../../../lib/server-api";
 import { getCuratedCampusPlaces } from "../../../lib/campus-place-catalog";
+import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
-const placeCategories = new Set(["building", "library", "food", "study", "sports", "social", "transport", "health", "other"]);
+const placeCategories = new Set(["building", "library", "food", "study", "sports", "social", "transport", "health", "housing", "other"]);
 const eventCategories = new Set(["academic", "social", "sports", "culture", "career", "volunteering", "other"]);
 const accessibilityOptions = new Set(["step-free", "elevator", "accessible-toilet", "quiet", "power", "wifi"]);
 
@@ -126,6 +127,7 @@ export async function GET(request: Request) {
     const suggestion = suggestionPool.length ? suggestionPool[stableIndex(`${profile.university_id}:${identity.email}:${dayKey()}`, suggestionPool.length)] : null;
     return Response.json({ places, events, suggestion: suggestion ? { day: dayKey(), ...suggestion } : null });
   } catch (error) {
+    console.error("[campus-guide] read failed", error);
     return unavailableResponse(error, "Kampüs rehberi şu anda getirilemiyor.");
   }
 }
@@ -171,6 +173,9 @@ export async function POST(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    if (action === "place" && category === "housing" && !(await getBooleanPlatformSetting(DB, "housingContributionsOpen"))) {
+      return Response.json({ error: "Yurt ve konaklama katkıları owner tarafından geçici olarak durduruldu." }, { status: 503 });
+    }
     const limit = await enforceRateLimit(DB, identity.email, `campus-guide-${action}`, action === "place" ? 8 : 12, 24 * 60 * 60);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     if (action === "place") {

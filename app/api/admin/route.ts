@@ -16,6 +16,7 @@ export async function GET(request: Request) {
           (SELECT COUNT(*) FROM users WHERE status = 'suspended') AS users_suspended,
           (SELECT COUNT(*) FROM notes WHERE status IN ('processing', 'rejected') AND deleted_at IS NULL) AS notes_attention,
           (SELECT COUNT(*) FROM campus_places WHERE status = 'hidden') AS places_hidden,
+          (SELECT COUNT(*) FROM housing_discussions WHERE status = 'hidden') AS housing_hidden,
           (SELECT COUNT(*) FROM marketplace_listings WHERE status = 'hidden') AS listings_hidden,
           (SELECT COUNT(*) FROM campus_pulse_posts WHERE status = 'hidden' AND deleted_at IS NULL) AS pulse_hidden`,
       ).first<Record<string, number>>(),
@@ -56,6 +57,13 @@ export async function GET(request: Request) {
         DB.prepare(
           `SELECT 'listing' AS entity_type, l.id, l.title, u.display_name AS owner_name, l.status, l.created_at
            FROM marketplace_listings l JOIN users u ON u.email = l.owner_email ORDER BY l.created_at DESC LIMIT 100`,
+        ).all(),
+        DB.prepare(
+          `SELECT 'housing-message' AS entity_type, h.id, SUBSTR(h.content, 1, 140) AS title,
+                  CASE WHEN h.is_anonymous = 1 THEN 'Anonim öğrenci' ELSE u.display_name END AS owner_name,
+                  h.status, h.created_at
+           FROM housing_discussions h JOIN users u ON u.email = h.author_email
+           WHERE h.status <> 'deleted' ORDER BY h.created_at DESC LIMIT 100`,
         ).all(),
       ]),
       DB.prepare(
@@ -182,6 +190,7 @@ async function applyModerationState(db: D1Database, entityType: ModeratableEntit
     pulse: db.prepare(`UPDATE campus_pulse_posts SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL`).bind(hidden ? "hidden" : "active", id),
     listing: db.prepare(`UPDATE marketplace_listings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     place: db.prepare(`UPDATE campus_places SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
+    "housing-message": db.prepare(`UPDATE housing_discussions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND status <> 'deleted'`).bind(hidden ? "hidden" : "active", id),
     event: db.prepare(`UPDATE campus_events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     price: db.prepare(`UPDATE campus_price_reports SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     user: db.prepare(`UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ?`).bind(hidden ? "suspended" : "active", hidden ? new Date().toISOString() : null, hidden ? reason : null, id),

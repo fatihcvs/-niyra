@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const entityType = cleanText(payload.entityType, 24);
   const entityId = cleanText(payload.entityId, 80);
   const reason = cleanText(payload.reason, 40);
-  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
+  if (action === "report" && (!['post', 'comment', 'note', 'community', 'pulse', 'meetup', 'place', 'housing-message', 'event', 'listing', 'price', 'user'].includes(entityType) || !entityId)) {
     return Response.json({ error: "Şikâyet edilen içerik geçerli değil." }, { status: 400 });
   }
   if (action === "report" && !['spam', 'harassment', 'privacy', 'copyright', 'misinformation', 'other'].includes(reason)) {
@@ -160,6 +160,12 @@ export async function POST(request: Request) {
         `SELECT id, creator_email, name, category, description, address, latitude, longitude,
                 accessibility_json, opening_hours, verified_at, created_at
          FROM campus_places WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
+      ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
+      if (entityType === "housing-message") evidence = await DB.prepare(
+        `SELECT h.id, h.author_email, h.place_id, h.content, h.is_anonymous, h.created_at
+         FROM housing_discussions h
+         JOIN campus_places cp ON cp.id = h.place_id
+         WHERE h.id = ? AND cp.university_id = ? AND h.status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (entityType === "event") evidence = await DB.prepare(
         `SELECT id, creator_email, place_id, title, description, category, starts_at, ends_at, created_at
