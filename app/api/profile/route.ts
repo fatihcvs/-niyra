@@ -42,7 +42,7 @@ type ProfilePayload = {
   customCourses?: Array<{ code?: string; name?: string }>;
 };
 
-const reservedHandles = new Set(["admin", "api", "owner", "support", "uniyra", "uniyraapp", "moderator"]);
+const reservedHandles = new Set(["admin", "api", "owner", "support", "kampira", "kampiraapp", "uniyra", "uniyraapp", "moderator"]);
 
 function signInResponse() {
   return Response.json(
@@ -233,7 +233,7 @@ export async function PUT(request: Request) {
       return Response.json({ error: "Kullanıcı adı 3-30 karakter olmalı; harf, rakam, nokta ve alt çizgi kullanabilirsin." }, { status: 400 });
     }
     if (reservedHandles.has(handle)) {
-      return Response.json({ error: "Bu kullanıcı adı Üniyra tarafından ayrılmış." }, { status: 400 });
+      return Response.json({ error: "Bu kullanıcı adı Kampira tarafından ayrılmış." }, { status: 400 });
     }
     if (bio.length > 150) {
       return Response.json({ error: "Biyografin en fazla 150 karakter olabilir." }, { status: 400 });

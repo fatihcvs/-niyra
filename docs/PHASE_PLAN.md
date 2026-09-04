@@ -1,6 +1,6 @@
-# Üniyra ürün ve geliştirme faz planı
+# Kampira ürün ve geliştirme faz planı
 
-Bu belge Üniyra'yı görsel bir prototipten, gerçek öğrencilerin güvenle
+Bu belge Kampira'yı görsel bir prototipten, gerçek öğrencilerin güvenle
 kullanabildiği bir sosyal öğrenme ürününe taşımak için izlenecek çalışma
 planıdır. Planın ana ilkesi nettir: ilk dönemde ücretli özellik, abonelik,
 premium paket, reklam veya ödeme duvarı yoktur. Öncelik kullanıcı kazanımı,
@@ -8,7 +8,7 @@ tekrar kullanım alışkanlığı, ders bazlı içerik yoğunluğu ve güvenilir
 
 ## Ürün hedefi
 
-Üniyra; Türkiye ve Kıbrıs'taki 241 yükseköğretim kurumunu kapsayan,
+Kampira; Türkiye ve Kıbrıs'taki 241 yükseköğretim kurumunu kapsayan,
 fakülte, bölüm ve ders bağlamını merkeze alan bir öğrenci sosyal ağıdır.
 Öğrenciler kendi akademik çevrelerini oluşturur, gönderi ve not
 paylaşır, topluluklara katılır ve ihtiyaç duydukları kaynağa hızlıca ulaşır.
@@ -39,7 +39,7 @@ Başarıyı ilk aşamada şu göstergelerle ölçeceğiz:
 
 **Durum:** Tamamlandı.
 
-**Kullanıcı sonucu:** Üniyra'nın ne olduğu ilk ekranda anlaşılır; akış, notlar,
+**Kullanıcı sonucu:** Kampira'nın ne olduğu ilk ekranda anlaşılır; akış, notlar,
 topluluklar ve keşif alanları tek bir tutarlı ürün diliyle deneyimlenir.
 
 **Kapsam**
@@ -68,7 +68,7 @@ ayrı hesapla doğrulandı; hesap açılışı yönetici onayı gerektirmez.
 
 **Kullanıcı sonucu:** Öğrenci kimliğiyle giriş yapan kişi; üniversitesini,
 fakültesini, bölümünü, sınıfını ve derslerini bir kez seçer. Bu profil sonraki oturumlarda
-hatırlanır ve Üniyra deneyimini kişiselleştirir.
+hatırlanır ve Kampira deneyimini kişiselleştirir.
 
 **Veri modeli**
 
@@ -210,7 +210,7 @@ topluluklar kurar ve yönetir.
 
 **Çıkış koşulu:** Ürün ekibi en az üç aktif topluluğu gerçek üyelerle yönetir.
 
-## Faz 5 — Arama ve kaynaklı Üniyra AI
+## Faz 5 — Arama ve kaynaklı Kampira AI
 
 **Durum:** MVP için standart birleşik arama tamamlandı; öğrenci, ders, gönderi,
 not ve topluluk aynı arama yüzeyinde kaynak bağlantılarıyla bulunur. Yapay zekâ
@@ -304,7 +304,7 @@ oluşturabilir ve yeniden girişte aynı profile ulaşabilir.
 şema, API, üretim derlemesi ve kritik kullanıcı yolculuğu otomatik olarak
 doğrulanır. Railway herkese açık ana ürün yüzeyidir.
 
-**Kullanıcı sonucu:** Üniyra daha geniş öğrenci kitlesine güvenilir, hızlı ve
+**Kullanıcı sonucu:** Kampira daha geniş öğrenci kitlesine güvenilir, hızlı ve
 izlenebilir biçimde açılır.
 
 **Kapsam**

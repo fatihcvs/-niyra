@@ -1,4 +1,4 @@
-# Üniyra üniversite ve akademik program kataloğu
+# Kampira üniversite ve akademik program kataloğu
 
 Katalog 4 Eylül 2026 itibarıyla Türkiye ve Kıbrıs'ta 241 benzersiz kurum içerir:
 

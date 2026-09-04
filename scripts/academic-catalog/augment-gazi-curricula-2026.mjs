@@ -6,7 +6,7 @@ const catalog = JSON.parse(await readFile(catalogUrl, "utf8"));
 const universityId = "tr-gazi-universitesi";
 const authority = "Gazi Üniversitesi";
 const indexUrl = "https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr";
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "gazi-bologna-curricula-2026",
   authority,

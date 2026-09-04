@@ -10,7 +10,7 @@ const publicBaseUrl = "https://bologna.ankara.edu.tr";
 const bachelorProgrammeTypeId = "e0000000-0000-0000-0000-000000000002";
 const headers = {
   "content-type": "application/json",
-  "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)",
+  "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)",
 };
 const source = {
   id: "ankara-bologna-curricula-2026",

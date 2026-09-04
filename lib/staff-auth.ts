@@ -135,7 +135,7 @@ async function bootstrapInitialOwner(db: D1Database, username: string, password:
     await db.prepare(
       `INSERT INTO staff_accounts
        (id, username, display_name, role, password_hash, password_salt, password_iterations, must_change_password)
-       VALUES (?, ?, 'Üniyra Owner', 'owner', ?, ?, ?, 1)`,
+       VALUES (?, ?, 'Kampira Owner', 'owner', ?, ?, ?, 1)`,
     ).bind(id, INITIAL_OWNER_USERNAME, credential.hash, credential.salt, credential.iterations).run();
     await staffAudit(db, null, "staff.owner_bootstrapped", "staff", id, { username: INITIAL_OWNER_USERNAME });
   } catch {

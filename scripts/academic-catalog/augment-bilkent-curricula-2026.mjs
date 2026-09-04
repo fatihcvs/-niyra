@@ -6,7 +6,7 @@ const catalog = JSON.parse(await readFile(catalogUrl, "utf8"));
 const universityId = "tr-ihsan-dogramaci-bilkent-universitesi";
 const authority = "İhsan Doğramacı Bilkent Üniversitesi";
 const indexUrl = "https://catalog.bilkent.edu.tr/dep/index.html";
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "bilkent-online-academic-catalog-2026",
   authority: "Bilkent University",

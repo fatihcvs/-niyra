@@ -4,7 +4,7 @@ Araştırma tarihi: 4 Eylül 2026
 
 ## Soru ve kapsam
 
-Türkiye, Kuzey Kıbrıs ve Kıbrıs Cumhuriyeti'ndeki Üniyra kurum kataloğu için
+Türkiye, Kuzey Kıbrıs ve Kıbrıs Cumhuriyeti'ndeki Kampira kurum kataloğu için
 fakülte/akademik birim, program ve erişilebilen resmî ders dağılımlarını tek bir
 doğrulanabilir veri modelinde toplamak. Kapsam; önlisans, lisans, bütünleşik yüksek
 lisans, yüksek lisans ve doktora programlarını içerir.

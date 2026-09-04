@@ -46,7 +46,7 @@ async function fetchBatch(query) {
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-          "User-Agent": "uniyra-campus-research/1.0 (https://github.com/fatihcvs/-niyra)",
+          "User-Agent": "kampira-campus-research/1.0 (https://github.com/fatihcvs/-niyra)",
         },
         body: new URLSearchParams({ data: query }),
         signal: controller.signal,

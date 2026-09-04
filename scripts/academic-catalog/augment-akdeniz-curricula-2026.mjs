@@ -7,7 +7,7 @@ const universityId = "tr-akdeniz-universitesi";
 const authority = "Akdeniz Üniversitesi";
 const baseUrl = "https://obs.akdeniz.edu.tr/oibs/bologna/";
 const indexUrl = `${baseUrl}unitSelection.aspx?type=lis&lang=tr`;
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "akdeniz-bologna-curricula-2026",
   authority,

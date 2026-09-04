@@ -1,4 +1,4 @@
-# Üniyra mobil ürün standardı
+# Kampira mobil ürün standardı
 
 Bu belge, mobil web ile gelecekteki Android ve iOS uygulamalarının aynı bilgi mimarisini ve etkileşim dilini kullanması için ürün sözleşmesidir.
 

@@ -7,6 +7,7 @@ import "./university-catalog.test.mjs";
 import "./campus-place-catalog.test.mjs";
 import "./staff-console.test.mjs";
 import "./theme.test.mjs";
+import "./branding.test.mjs";
 import "./official-course-catalog.test.mjs";
 import "./auth-screen.test.mjs";
 import "./onboarding-guidance.test.mjs";
@@ -40,7 +41,11 @@ test("renders development preview metadata", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(await response.text(), developmentPreviewMeta);
+  const html = await response.text();
+  assert.match(html, developmentPreviewMeta);
+  assert.match(html, /Kampira · Kampüsün tek yerde/);
+  assert.match(html, /\/kampira-mark\.png/);
+  assert.doesNotMatch(html, /Üniyra/);
 });
 
 for (const route of ["/owner", "/admin"]) {

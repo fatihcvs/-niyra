@@ -16,5 +16,5 @@ export default function PlatformBanner() {
       .catch(() => undefined);
     return () => { cancelled = true; };
   }, []);
-  return message ? <aside className={styles.banner} role="status"><strong>Üniyra duyurusu</strong><span>{message}</span></aside> : null;
+  return message ? <aside className={styles.banner} role="status"><strong>Kampira duyurusu</strong><span>{message}</span></aside> : null;
 }

@@ -38,7 +38,7 @@ const programAliases = new Map([
 ]);
 
 const response = await fetch(rootUrl, {
-  headers: { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" },
+  headers: { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" },
 });
 if (!response.ok) throw new Error(`OMÜ Bilgi Paketi alınamadı: HTTP ${response.status}`);
 

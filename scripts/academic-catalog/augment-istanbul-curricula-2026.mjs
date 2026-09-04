@@ -9,7 +9,7 @@ const baseUrl = "https://ebs.istanbul.edu.tr";
 const indexUrl = `${baseUrl}/home/lisans`;
 const treeUrl = `${baseUrl}/home/getdata/?id=3`;
 const years = [2026, 2025, 2024];
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "istanbul-ebs-curricula-2026",
   authority,

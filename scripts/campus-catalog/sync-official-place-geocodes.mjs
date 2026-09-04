@@ -35,7 +35,7 @@ for (let index = 0; index < input.records.length; index += 1) {
   const response = await fetch(url, {
     headers: {
       "Accept": "application/json",
-      "User-Agent": "uniyra-campus-research/1.0 (https://github.com/fatihcvs/-niyra)",
+      "User-Agent": "kampira-campus-research/1.0 (https://github.com/fatihcvs/-niyra)",
       "Referer": "https://github.com/fatihcvs/-niyra",
     },
   });

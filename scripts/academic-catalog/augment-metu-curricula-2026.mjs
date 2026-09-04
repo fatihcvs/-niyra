@@ -4,7 +4,7 @@ const catalogUrl = new URL("../../data/academic-catalog-2026.json", import.meta.
 const catalog = JSON.parse(await readFile(catalogUrl, "utf8"));
 
 const rootUrl = "https://catalog.metu.edu.tr/";
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "metu-academic-catalog-curricula-2026",
   authority: "Middle East Technical University",

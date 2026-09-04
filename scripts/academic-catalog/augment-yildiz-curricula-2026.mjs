@@ -12,7 +12,7 @@ const indexUrl = `${baseUrl}/index.php?r=program%2Fbachelor`;
 const headers = {
   accept: "text/html,application/xhtml+xml",
   "accept-encoding": "identity",
-  "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)",
+  "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)",
 };
 const source = {
   id: "yildiz-bologna-curricula-2026",

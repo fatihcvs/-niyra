@@ -6,7 +6,7 @@ const catalog = JSON.parse(await readFile(catalogUrl, "utf8"));
 const universityId = "tr-bogazici-universitesi";
 const authority = "Boğaziçi Üniversitesi";
 const indexUrl = "https://bogazici.edu.tr/tr/pages/lisans-programlari/301";
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "bogazici-official-undergraduate-catalog-2026",
   authority,

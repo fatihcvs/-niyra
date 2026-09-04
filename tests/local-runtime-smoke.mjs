@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 
-const baseUrl = process.env.UNIYRA_BASE_URL ?? "http://localhost:5173";
+const baseUrl = process.env.KAMPIRA_BASE_URL ?? process.env.UNIYRA_BASE_URL ?? "http://localhost:5173";
 const runId = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 const ownerEmail = `runtime.owner.${runId}@omu.edu.tr`;
 const peerEmail = `runtime.peer.${runId}@omu.edu.tr`;
 const otherCampusEmail = `runtime.campus.${runId}@bogazici.edu.tr`;
-const testPassword = `UniyraMvp${runId}!`;
+const testPassword = `KampiraMvp${runId}!`;
 const sessionCookies = new Map();
 
 function headers(email, json = false) {
@@ -462,4 +462,4 @@ await json("/api/campus-market", { method: "PATCH", body: JSON.stringify({ actio
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: community.id, action: "archive" }) });
 await json("/api/communities", { method: "PATCH", body: JSON.stringify({ id: otherCampusCommunity.id, action: "archive" }) }, otherCampusEmail);
 
-console.log("Üniyra v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");
+console.log("Kampira v1.7.5 runtime smoke passed: explicit signup and academic-step guidance, auth, interactive visual course hubs, source-backed course selection with manual fallback, rich profiles with R2 media, persistent light/dark/system themes, separate owner/admin consoles, campus isolation, visual Campus Anlık, matching, meetups, campus guide, bounded library occupancy, six-image marketplace gallery, timestamped price aggregation, moderation, community, expanded verified note library/R2, search, notifications and safety.");

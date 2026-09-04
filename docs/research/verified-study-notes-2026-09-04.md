@@ -2,7 +2,7 @@
 
 ## Amaç ve kapsam
 
-Bu çalışma, Üniyra Editoryal not kütüphanesindeki konu boşluklarını kurumsal ve birincil eğitim kaynaklarıyla kapatmak için yapıldı. Mevcut 78 not; ders kodu, kategori, kaynak türü ve konu kapsamı açısından tarandı. Hukuk gibi güncelliği hızla değişebilen alanlara yeni yorum eklemek yerine, temel bilimler ve yaygın lisans derslerindeki kalıcı çekirdek konulara öncelik verildi.
+Bu çalışma, Kampira Editoryal not kütüphanesindeki konu boşluklarını kurumsal ve birincil eğitim kaynaklarıyla kapatmak için yapıldı. Mevcut 78 not; ders kodu, kategori, kaynak türü ve konu kapsamı açısından tarandı. Hukuk gibi güncelliği hızla değişebilen alanlara yeni yorum eklemek yerine, temel bilimler ve yaygın lisans derslerindeki kalıcı çekirdek konulara öncelik verildi.
 
 Sonuç: 45 yeni not ve 32 yeni ayrıntılı kaynak kaydı eklendi. Kütüphane 16 kategoride 123 doğrulanmış nota ve toplam 79 kaynak kaydına ulaştı.
 

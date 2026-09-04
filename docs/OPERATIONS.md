@@ -1,4 +1,4 @@
-# Üniyra üretim operasyonları
+# Kampira üretim operasyonları
 
 Bu belge kapalı pilot ve açık beta için hizmet sağlığı, olay müdahalesi ve geri
 alma akışını tanımlar.

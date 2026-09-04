@@ -7,7 +7,7 @@ import { universities } from "../../lib/university-catalog.ts";
 const outputDirectory = path.resolve("public/university-logos");
 const catalogPath = path.resolve("data/university-logos-2026.json");
 const repository = "izzetemredemir/Turkish-universities";
-const userAgent = "UniyraLogoCatalog/1.0 (educational university discovery product)";
+const userAgent = "KampiraLogoCatalog/1.0 (educational university discovery product)";
 
 const datasetNameAliases = new Map([
   ["Bezmialem Vakıf Üniversitesi", "Bezm-i Âlem Vakıf Üniversitesi"],

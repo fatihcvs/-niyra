@@ -7,7 +7,7 @@ const universityId = "tr-cukurova-universitesi";
 const authority = "Çukurova Üniversitesi";
 const baseUrl = "https://ebs.cu.edu.tr";
 const indexUrl = "https://eobs.cu.edu.tr/";
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "cukurova-ebs-curricula-2026",
   authority,

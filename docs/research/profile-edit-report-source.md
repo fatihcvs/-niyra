@@ -1,27 +1,27 @@
-# Üniyra profil düzenleme araştırması
+# Kampira profil düzenleme araştırması
 
-Audience: Üniyra ürün ve geliştirme ekibi  
+Audience: Kampira ürün ve geliştirme ekibi
 Date: 4 Eylül 2026  
-Scope: Instagram'ın güncel profil düzenleme modelinden Üniyra öğrenci profiline aktarılabilecek alanlar.
+Scope: Instagram'ın güncel profil düzenleme modelinden Kampira öğrenci profiline aktarılabilecek alanlar.
 
 ## Doğrudan sonuç
 
-Instagram'ın temel profil kimliği görünen ad, kullanıcı adı ve profil fotoğrafı/avatardan oluşuyor. Meta'nın resmî yardım içeriği bu alanların hesaplar arasında eşitlenebildiğini ve kullanıcı adının profil kimliği olarak kullanıldığını doğruluyor. Meta ayrıca profil içine en fazla beş bağlantı ekleme özelliğini resmî olarak duyurdu. Üniyra bu çekirdeği profil fotoğrafı, görünen ad, benzersiz kullanıcı adı, 150 karakterlik biyografi ve en fazla beş bağlantı olarak kullanmalı; okul, fakülte, bölüm, sınıf ve ders çevreleri ise ayrı akademik düzenleme alanında kalmalı.
+Instagram'ın temel profil kimliği görünen ad, kullanıcı adı ve profil fotoğrafı/avatardan oluşuyor. Meta'nın resmî yardım içeriği bu alanların hesaplar arasında eşitlenebildiğini ve kullanıcı adının profil kimliği olarak kullanıldığını doğruluyor. Meta ayrıca profil içine en fazla beş bağlantı ekleme özelliğini resmî olarak duyurdu. Kampira bu çekirdeği profil fotoğrafı, görünen ad, benzersiz kullanıcı adı, 150 karakterlik biyografi ve en fazla beş bağlantı olarak kullanmalı; okul, fakülte, bölüm, sınıf ve ders çevreleri ise ayrı akademik düzenleme alanında kalmalı.
 
-Instagram'ın standart kişisel profil modelinde bir kapak/banner alanı belgelenmiyor. Bu negatif bulgu doğrudan bir "banner yoktur" belgesine değil, Meta'nın belgelenen profil alanları ve mevcut ürün yapısına dayalı bir çıkarımdır. Kullanıcı bunu özellikle istediği için kapak görseli Instagram kopyası olarak değil, Üniyra'ya özgü kampüs kimliği katmanı olarak uygulanır.
+Instagram'ın standart kişisel profil modelinde bir kapak/banner alanı belgelenmiyor. Bu negatif bulgu doğrudan bir "banner yoktur" belgesine değil, Meta'nın belgelenen profil alanları ve mevcut ürün yapısına dayalı bir çıkarımdır. Kullanıcı bunu özellikle istediği için kapak görseli Instagram kopyası olarak değil, Kampira'ya özgü kampüs kimliği katmanı olarak uygulanır.
 
 ## Uygulama kararları
 
 - Profil fotoğrafı gönderi, yorum, öğrenci dizini ve profil ekranında tekrar kullanılır.
 - Kullanıcı adı 3-30 karakterdir; küçük harf, rakam, nokta ve alt çizgi kabul edilir. Çakışma kontrolü sunucuda yapılır.
-- Biyografi 150 karakterle sınırlandırılır. Bu Üniyra ürün kararıdır; araştırmada Meta'nın güncel resmî karakter sınırına erişilemedi.
+- Biyografi 150 karakterle sınırlandırılır. Bu Kampira ürün kararıdır; araştırmada Meta'nın güncel resmî karakter sınırına erişilemedi.
 - En fazla beş `http` veya `https` bağlantısı başlıkla birlikte saklanır. Tehlikeli protokoller reddedilir.
-- Kapak görseli Üniyra'ya özgüdür ve profilin kampüs/kişilik anlatımını güçlendirir.
+- Kapak görseli Kampira'ya özgüdür ve profilin kampüs/kişilik anlatımını güçlendirir.
 - Akademik bilgiler aynı editörde özetlenir ancak ayrı, doğrulanabilir katalog akışında düzenlenir.
 
 ## Sınırlamalar ve ayrışan kanıt
 
-Meta yardım sayfaları bazı oturumlarda giriş ekranına yönlendirebildiği için içerik arama dizini üzerinden de kontrol edildi. Beş bağlantı özelliği için Meta'nın resmî duyurusu birincil kaynaktır. Bağlantıların başlıklandırılması ve sıralanması TechCrunch'ın Meta açıklamasına dayalı ürün incelemesiyle desteklendi; Üniyra'nın ilk sürümünde sıralama ekleme sırasını korur.
+Meta yardım sayfaları bazı oturumlarda giriş ekranına yönlendirebildiği için içerik arama dizini üzerinden de kontrol edildi. Beş bağlantı özelliği için Meta'nın resmî duyurusu birincil kaynaktır. Bağlantıların başlıklandırılması ve sıralanması TechCrunch'ın Meta açıklamasına dayalı ürün incelemesiyle desteklendi; Kampira'nın ilk sürümünde sıralama ekleme sırasını korur.
 
 ## Claim-to-source ledger
 

@@ -1,10 +1,10 @@
-# Üniyra Resmî Ders Kataloğu Standardı
+# Kampira Resmî Ders Kataloğu Standardı
 
 Üniversite ve program kaydı tek başına ders seçicisini etkinleştirmez. Bir programın dersleri ancak kurumun kendi yayımladığı müfredat veya ders kataloğu doğrulandıktan sonra `data/official-course-catalog-2026.json` içine eklenir.
 
 ## Zorunlu kayıt alanları
 
-- Üniyra üniversite kimliği ve resmî program kimliği
+- Kampira üniversite kimliği ve resmî program kimliği
 - Program adıyla birebir eşleşen kurum kaynağı
 - Kaynak kurum, doğrudan kaynak URL'si ve son kontrol tarihi
 - Her ders için resmî ders kodu, ders adı, dönem ve zorunlu/seçmeli türü

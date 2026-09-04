@@ -1,6 +1,6 @@
-# Üniyra
+# Kampira
 
-Üniyra, Türkiye ve Kıbrıs'taki üniversite öğrencileri için ders, not, topluluk
+Kampira, Türkiye ve Kıbrıs'taki üniversite öğrencileri için ders, not, topluluk
 ve akademik çevre odaklı sosyal öğrenme ürünüdür. 241 kurumluk resmî kaynaklı
 katalog ilk katılımda aranabilir; öğrenci akışı ve sosyal yüzeyler seçilen
 üniversiteye göre ayrılır. MVP v1.6 vinext üzerinde çalışır; kalıcı ilişkisel veri D1'de,
@@ -50,7 +50,7 @@ Scripts that need writable project-scoped home, npm, XDG, and temporary paths us
 - `.openai/hosting.json` declares the Sites D1 and R2 bindings
 - `vite.config.ts` simulates declared bindings for local development
 - `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` contains the versioned Üniyra product schema
+- `db/schema.ts` contains the versioned Kampira product schema
 - `examples/d1/` contains an optional D1 example surface
 - `drizzle.config.ts` supports local migration generation when needed
 

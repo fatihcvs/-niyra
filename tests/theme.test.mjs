@@ -11,10 +11,11 @@ const [pageSource, layoutSource, cssSource] = await Promise.all([
 test("appearance settings offer light, dark and system preferences", () => {
   assert.match(pageSource, /type ThemePreference = "light" \| "dark" \| "system"/);
   assert.match(pageSource, /role="radiogroup" aria-label="Tema seçimi"/);
-  assert.match(pageSource, /window\.localStorage\.setItem\("uniyra-theme", themePreference\)/);
+  assert.match(pageSource, /window\.localStorage\.setItem\("kampira-theme", themePreference\)/);
 });
 
 test("saved theme is restored before the application body renders", () => {
+  assert.match(layoutSource, /localStorage\.getItem\("kampira-theme"\)/);
   assert.match(layoutSource, /localStorage\.getItem\("uniyra-theme"\)/);
   assert.match(layoutSource, /prefers-color-scheme: dark/);
   assert.match(layoutSource, /suppressHydrationWarning/);

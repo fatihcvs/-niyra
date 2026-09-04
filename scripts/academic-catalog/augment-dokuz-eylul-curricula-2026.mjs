@@ -8,7 +8,7 @@ const authority = "Dokuz Eylül Üniversitesi";
 const period = "2025-2026";
 const baseUrl = `https://debis.deu.edu.tr/ders-katalog/${period}/tr/`;
 const indexUrl = `${baseUrl}tr-c3.html`;
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "deu-course-catalog-curricula-2026",
   authority,

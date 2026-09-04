@@ -1,7 +1,7 @@
-# Üniyra kampüs çevresi kataloğu — araştırma kaydı
+# Kampira kampüs çevresi kataloğu — araştırma kaydı
 
 Araştırma ve veri kontrol tarihi: 4 Eylül 2026
-Kapsam: Üniyra üniversite kataloğundaki 241 kurum; Türkiye, Kuzey Kıbrıs ve Kıbrıs Cumhuriyeti.
+Kapsam: Kampira üniversite kataloğundaki 241 kurum; Türkiye, Kuzey Kıbrıs ve Kıbrıs Cumhuriyeti.
 Çıktı: Kaynak türü kullanıcıya açıkça gösterilen 2.856 kampüs ve kampüs çevresi kaydı.
 
 ## Sonuç
@@ -18,11 +18,11 @@ Kapsam: Üniyra üniversite kataloğundaki 241 kurum; Türkiye, Kuzey Kıbrıs v
 |---|---|---|
 | Resmî kaynak | Üniversitenin kendi alan adı veya yetkili kamu/yükseköğretim sayfasında yayımlanan adres | Adres resmî sayfada bulundu; sayfada yazmayan saat ve erişilebilirlik özellikleri eklenmedi |
 | Açık harita kaydı | OpenStreetMap'te adı bulunan güncel bir nesne ve yüksek güvenli kampüs eşleşmesine en çok 1,5 km mesafe | Harita topluluğunun kaydıdır; üniversite tarafından resmen işletildiği veya onaylandığı anlamına gelmez |
-| Topluluk kaydı | Üniyra öğrencisinin uygulamadan eklediği kayıt | Ayrı kullanıcı onay sayacıyla gösterilir; araştırma kataloğuyla karıştırılmaz |
+| Topluluk kaydı | Kampira öğrencisinin uygulamadan eklediği kayıt | Ayrı kullanıcı onay sayacıyla gösterilir; araştırma kataloğuyla karıştırılmaz |
 
 ## Araştırma ve seçim yöntemi
 
-1. Kurum kapsamı YÖK, YÖDAK ve Kıbrıs Cumhuriyeti yükseköğretim listeleriyle oluşturulan mevcut Üniyra kataloğundan alındı.
+1. Kurum kapsamı YÖK, YÖDAK ve Kıbrıs Cumhuriyeti yükseköğretim listeleriyle oluşturulan mevcut Kampira kataloğundan alındı.
 2. OpenStreetMap üniversite/kampüs nesneleri tek bir önbellekli araştırma çalıştırmasıyla alındı. Eşleştirme; resmî alan adı, Wikidata kimliği, tam ad veya yüksek güvenli ad benzerliğiyle sınırlandı.
 3. Her kabul edilen kampüs çapası çevresinde 1,5 km içindeki yalnız adlandırılmış ve ürün kategorisine çevrilebilen noktalar tarandı.
 4. İlk sonuçların yalnız en yakın kafe veya duraklarla dolmasını önlemek için kategori dengeli seçim uygulandı; üniversite başına en fazla 14 açık harita kaydı tutuldu.

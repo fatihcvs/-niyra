@@ -12,7 +12,7 @@ const source = {
   title: "Öğrenci Bilgi Sistemi lisans ders planları",
   url: rootUrl,
 };
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 
 const decodeHtml = (value) => value
   .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))

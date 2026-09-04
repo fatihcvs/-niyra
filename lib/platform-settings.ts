@@ -4,7 +4,7 @@ export const PLATFORM_SETTING_DEFAULTS = {
   communityCreationOpen: true,
   housingContributionsOpen: true,
   maintenanceMode: false,
-  maintenanceMessage: "Üniyra üzerinde planlı bir bakım çalışması yürütülüyor.",
+  maintenanceMessage: "Kampira üzerinde planlı bir bakım çalışması yürütülüyor.",
 } as const;
 
 export type PlatformSettingKey = keyof typeof PLATFORM_SETTING_DEFAULTS;

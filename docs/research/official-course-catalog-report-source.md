@@ -1,6 +1,6 @@
 # Resmî Ders Seçici Kaynak Notu
 
-Audience: Üniyra ürün ve veri ekibi  
+Audience: Kampira ürün ve veri ekibi
 Date: 2026-09-04  
 Scope: Program bazlı ders seçicinin ilk doğrulanmış kaydı ve genişleme standardı.
 

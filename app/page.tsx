@@ -525,7 +525,7 @@ function FeedPost({
 
     try {
       if (navigator.share) {
-        await navigator.share({ title: `${post.name} · Üniyra`, text: currentText, url: shareUrl });
+        await navigator.share({ title: `${post.name} · Kampira`, text: currentText, url: shareUrl });
         return;
       }
       await navigator.clipboard.writeText(shareUrl);
@@ -700,9 +700,9 @@ function FeedPost({
 
 function Logo() {
   return (
-    <a className="brand" href="#top" aria-label="Üniyra ana sayfa">
+    <a className="brand" href="#top" aria-label="Kampira ana sayfa">
       <span className="brand-mark" aria-hidden="true" />
-      <span className="brand-name">üniyra</span>
+      <span className="brand-name">Kampira</span>
     </a>
   );
 }
@@ -712,7 +712,7 @@ const noteSymbols: Record<string, string> = { "limit-sureklilik": "lim", "algori
 const libraryNotes = featuredCuratedNotes.slice(0, 8).map((note, index) => ({
   code: note.courseCodes[0],
   title: note.title,
-  author: "Üniyra Editoryal",
+  author: "Kampira Editoryal",
   meta: `${getCuratedSources(note)[0].publisher} · ${note.readingMinutes} dk`,
   tone: noteTones[index % noteTones.length],
   symbol: noteSymbols[note.id] ?? "✓",
@@ -946,7 +946,7 @@ function ProfileEditor({ profile, onSaved, onCancel, onEditAcademic }: { profile
           </div>
           <div className="profile-media-controls">
             <section><div><Avatar initials={initials} className="avatar-violet" imageUrl={avatarPreview}/><span><strong>Profil fotoğrafı</strong><small>Gönderi ve yorumlarında da görünür.</small></span></div><footer><button type="button" onClick={() => avatarInput.current?.click()}>Fotoğraf seç</button>{avatarPreview && <button className="danger" type="button" onClick={() => { setAvatarFile(null); setRemoveAvatar(true); }}>Kaldır</button>}</footer><input ref={avatarInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => chooseMedia(event, "avatar")} hidden/></section>
-            <section><div><span className="profile-banner-thumb">{bannerPreview ? <Image src={bannerPreview} alt="" fill sizes="70px" unoptimized/> : <Icon name="image" size={21}/>}</span><span><strong>Kapak görseli</strong><small>Üniyra profilini kampüsüne özgü yapar.</small></span></div><footer><button type="button" onClick={() => bannerInput.current?.click()}>Kapak seç</button>{bannerPreview && <button className="danger" type="button" onClick={() => { setBannerFile(null); setRemoveBanner(true); }}>Kaldır</button>}</footer><input ref={bannerInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => chooseMedia(event, "banner")} hidden/></section>
+            <section><div><span className="profile-banner-thumb">{bannerPreview ? <Image src={bannerPreview} alt="" fill sizes="70px" unoptimized/> : <Icon name="image" size={21}/>}</span><span><strong>Kapak görseli</strong><small>Kampira profilini kampüsüne özgü yapar.</small></span></div><footer><button type="button" onClick={() => bannerInput.current?.click()}>Kapak seç</button>{bannerPreview && <button className="danger" type="button" onClick={() => { setBannerFile(null); setRemoveBanner(true); }}>Kaldır</button>}</footer><input ref={bannerInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => chooseMedia(event, "banner")} hidden/></section>
           </div>
         </aside>
 
@@ -1085,7 +1085,7 @@ function ThemeSettings({ preference, onChange }: { preference: ThemePreference; 
     <div className="workspace-view settings-view">
       <header className="settings-header">
         <span>GÖRÜNÜM AYARLARI</span>
-        <h1>Üniyra’yı sana göre göster.</h1>
+        <h1>Kampira’yı sana göre göster.</h1>
         <p>Tema seçimin bu cihazda saklanır. Sistem seçeneği, telefonunun veya bilgisayarının açık ya da koyu görünümünü otomatik takip eder.</p>
       </header>
       <section className="settings-card" aria-labelledby="theme-setting-title">
@@ -1203,7 +1203,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
         <div className="auth-brand"><Logo/></div>
-        <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Üniyra hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
+        <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Kampira hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
         <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" aria-selected={mode === "register"} onClick={() => switchAuthMode("register")}>Kayıt ol</button>
           <button className={mode === "login" ? "active" : ""} type="button" role="tab" aria-selected={mode === "login"} onClick={() => switchAuthMode("login")}>Giriş yap</button>
@@ -1643,7 +1643,7 @@ function AcademicOnboarding({
     <main className="onboarding-shell">
       <header className="onboarding-topbar">
         <Logo/>
-        <div className="onboarding-progress-copy"><span>{selectedUniversity?.shortName ?? "Üniyra"} {isEditing ? "profil düzenleme" : "profil kurulumu"}</span><strong>{step} / 5</strong></div>
+        <div className="onboarding-progress-copy"><span>{selectedUniversity?.shortName ?? "Kampira"} {isEditing ? "profil düzenleme" : "profil kurulumu"}</span><strong>{step} / 5</strong></div>
       </header>
 
       <section className="onboarding-panel" aria-labelledby="onboarding-title">
@@ -1805,7 +1805,7 @@ function AcademicOnboarding({
           <div>
             {step > 1 && <button className="onboarding-back" type="button" onClick={() => { setStep((current) => current - 1); setError(""); }} disabled={saving}>Geri</button>}
             <button className="onboarding-next" type="button" disabled={nextDisabled} aria-describedby={stepRequirement ? "onboarding-requirement" : undefined} onClick={continueOnboarding}>
-              {saving ? "Kaydediliyor…" : step === 5 ? isEditing ? "Değişiklikleri kaydet" : "Üniyra’ya gir" : "Devam et"}
+              {saving ? "Kaydediliyor…" : step === 5 ? isEditing ? "Değişiklikleri kaydet" : "Kampira’ya gir" : "Devam et"}
               {!saving && <Icon name="arrow" size={17}/>}
             </button>
           </div>
@@ -1981,7 +1981,7 @@ export default function Home() {
       document.documentElement.dataset.theme = resolved;
       document.documentElement.dataset.themePreference = themePreference;
       document.documentElement.style.colorScheme = resolved;
-      window.localStorage.setItem("uniyra-theme", themePreference);
+      window.localStorage.setItem("kampira-theme", themePreference);
     };
     applyTheme();
     if (themePreference !== "system") return;
@@ -2520,7 +2520,7 @@ export default function Home() {
         </button>
         <div className="semester-card">
           <span className="semester-icon"><Icon name="calendar" size={19}/></span>
-          <div><strong>Üniyra v1.7</strong><span>Akademik katalog yayında</span></div>
+          <div><strong>Kampira v1.7</strong><span>Akademik katalog yayında</span></div>
           <span className="semester-progress"><i /></span>
         </div>
         <button className="profile-mini" type="button" onClick={() => navigateTo("Profil")}>
@@ -2556,7 +2556,7 @@ export default function Home() {
           </div>
           <div className="welcome-stat">
             <span><Icon name="sparkles" size={17}/></span>
-            <div><strong>{curatedNotes.length} doğrulanmış not</strong><small>Üniyra Editoryal&apos;de</small></div>
+            <div><strong>{curatedNotes.length} doğrulanmış not</strong><small>Kampira Editoryal&apos;de</small></div>
           </div>
         </div>
         <section className="subject-section" aria-labelledby="subjects-title">
@@ -2609,7 +2609,7 @@ export default function Home() {
 
       <aside className="right-sidebar">
         <div className="search-box">
-          <Icon name="search" size={18}/><input aria-label="Üniyra'da ara" value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="Ders, not veya öğrenci ara"/>{peopleQuery ? <button type="button" onClick={() => queryPeople("")} aria-label="Aramayı temizle"><Icon name="close" size={15}/></button> : <kbd>⌘ K</kbd>}
+          <Icon name="search" size={18}/><input aria-label="Kampira'da ara" value={peopleQuery} onChange={(event) => { queryPeople(event.target.value); if (activeNav !== "Keşfet") navigateTo("Keşfet"); }} placeholder="Ders, not veya öğrenci ara"/>{peopleQuery ? <button type="button" onClick={() => queryPeople("")} aria-label="Aramayı temizle"><Icon name="close" size={15}/></button> : <kbd>⌘ K</kbd>}
         </div>
 
         <section className="side-card campus-card">
@@ -2647,7 +2647,7 @@ export default function Home() {
 
         <footer className="side-footer">
           <div><a href="/legal#about">Hakkımızda</a><button type="button" onClick={() => navigateTo("Güvenlik")}>Güvenlik</button><a href="/legal#help">Yardım</a><a href="/legal#privacy">Gizlilik</a></div>
-          <span>© 2026 Üniyra · Öğrencilerle, öğrenciler için.</span>
+          <span>© 2026 Kampira · Öğrencilerle, öğrenciler için.</span>
         </footer>
       </aside>
 
@@ -2689,7 +2689,7 @@ export default function Home() {
       {showMobileMenu && (
         <section className="mobile-sheet mobile-menu-sheet" id="mobile-menu-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
           <span className="mobile-sheet-handle" aria-hidden="true"/>
-          <header><div><span>Üniyra</span><h2 id="mobile-menu-title">Tüm alanlar</h2></div><button type="button" onClick={() => setShowMobileMenu(false)} aria-label="Menüyü kapat"><Icon name="close" size={20}/></button></header>
+          <header><div><span>Kampira</span><h2 id="mobile-menu-title">Tüm alanlar</h2></div><button type="button" onClick={() => setShowMobileMenu(false)} aria-label="Menüyü kapat"><Icon name="close" size={20}/></button></header>
           <button className="mobile-profile-link" type="button" onClick={() => navigateTo("Profil")}>
             <Avatar initials={initials} className="avatar-violet" imageUrl={activeProfile.avatarUrl}/>
             <span><strong>{studentProfile.displayName}</strong><small>@{studentProfile.handle} · Profilini görüntüle</small></span>

@@ -7,7 +7,7 @@ const universityId = "tr-marmara-universitesi";
 const authority = "Marmara Üniversitesi";
 const baseUrl = "https://meobs.marmara.edu.tr";
 const indexUrl = `${baseUrl}/Program/programlar-hakkinda-bilgi/lisans-900002`;
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "marmara-meobs-curricula-2026",
   authority,

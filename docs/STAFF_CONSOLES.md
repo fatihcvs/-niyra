@@ -1,4 +1,4 @@
-# Üniyra Owner ve Admin panelleri
+# Kampira Owner ve Admin panelleri
 
 ## Erişim modeli
 

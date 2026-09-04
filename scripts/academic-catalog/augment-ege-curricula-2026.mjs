@@ -8,7 +8,7 @@ const authority = "Ege Üniversitesi";
 const baseUrl = "https://ebp.ege.edu.tr";
 const indexUrl = `${baseUrl}/DereceProgramlari/1`;
 const jsonUrl = `${baseUrl}/DereceProgramlari/GetJson/1?lang=tr-TR`;
-const headers = { "user-agent": "UniyraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
 const source = {
   id: "ege-ebp-curricula-2026",
   authority,

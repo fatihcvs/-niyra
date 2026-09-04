@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import styles from "./staff-console.module.css";
 
@@ -110,8 +111,8 @@ export default function StaffConsole({ mode }: { mode: Mode }) {
   return (
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
-        <Link className={styles.brand} href="/" aria-label="Üniyra ana sayfa">
-          <span className={styles.brandMark}>ü</span><strong>üniyra</strong>
+        <Link className={styles.brand} href="/" aria-label="Kampira ana sayfa">
+          <Image className={styles.brandMark} src="/kampira-mark.png" width={42} height={42} alt=""/><strong>Kampira</strong>
         </Link>
         <div className={styles.panelIdentity}>
           <span>{mode === "owner" ? "OWNER CONTROL" : "ADMIN DESK"}</span>
@@ -170,8 +171,8 @@ function StaffLogin({ mode, onLogin }: { mode: Mode; onLogin: (staff: Staff) => 
   return (
     <div className={styles.authPage}>
       <section className={styles.authStory}>
-        <Link className={styles.brand} href="/"><span className={styles.brandMark}>ü</span><strong>üniyra</strong></Link>
-        <div><span>{mode === "owner" ? "OWNER CONTROL" : "ADMIN DESK"}</span><h1>{mode === "owner" ? "Üniyra’nın tamamı tek merkezde." : "Kampüs topluluğunu güvenle yönet."}</h1><p>{mode === "owner" ? "Ekip erişimleri, büyüme, içerik sağlığı, özellik anahtarları ve tüm operasyon geçmişi." : "Şikâyetleri incele, içerikleri yönet ve öğrenciler için güvenli bir kampüs alanı oluştur."}</p></div>
+        <Link className={styles.brand} href="/" aria-label="Kampira ana sayfa"><Image className={styles.brandMark} src="/kampira-mark.png" width={42} height={42} alt=""/><strong>Kampira</strong></Link>
+        <div><span>{mode === "owner" ? "OWNER CONTROL" : "ADMIN DESK"}</span><h1>{mode === "owner" ? "Kampira’nın tamamı tek merkezde." : "Kampüs topluluğunu güvenle yönet."}</h1><p>{mode === "owner" ? "Ekip erişimleri, büyüme, içerik sağlığı, özellik anahtarları ve tüm operasyon geçmişi." : "Şikâyetleri incele, içerikleri yönet ve öğrenciler için güvenli bir kampüs alanı oluştur."}</p></div>
         <footer><span>◉ Güvenli staff oturumu</span><span>◷ 8 saatlik erişim</span><span>⌁ İşlem günlüğü</span></footer>
       </section>
       <section className={styles.authCard}>
@@ -234,7 +235,7 @@ function OwnerContent({ tab, data, reload, setMessage }: ContentProps) {
   const system = (data.system as JsonRecord | undefined) ?? {};
   const maxActivity = Math.max(1, ...activity.map((row) => Number(row.content ?? 0) + Number(row.accounts ?? 0) + Number(row.reports ?? 0)));
   return <div className={styles.contentStack}>
-    <section className={styles.welcome}><div><span>OWNER SNAPSHOT</span><h2>Platformun nabzı burada.</h2><p>Öğrenci büyümesi, içerik üretimi, moderasyon yükü ve operasyon ekibi tek canlı görünümde.</p></div><div className={styles.healthPanel}><span><i /> Veritabanı</span><strong>{String(system.database ?? "-")}</strong><span><i /> Dosya depolama</span><strong>{String(system.storage ?? "-")}</strong><span><i /> Ders kataloğu</span><strong>{number.format(Number(system.courseCatalogPrograms ?? 0))} program</strong><span><i /> Doğrulanmış ders</span><strong>{number.format(Number(system.courseCatalogCourses ?? 0))}</strong><small>Üniyra v{String(system.version ?? "-")} · katalog {String(system.courseCatalogUpdatedAt ?? "-")}</small></div></section>
+    <section className={styles.welcome}><div><span>OWNER SNAPSHOT</span><h2>Platformun nabzı burada.</h2><p>Öğrenci büyümesi, içerik üretimi, moderasyon yükü ve operasyon ekibi tek canlı görünümde.</p></div><div className={styles.healthPanel}><span><i /> Veritabanı</span><strong>{String(system.database ?? "-")}</strong><span><i /> Dosya depolama</span><strong>{String(system.storage ?? "-")}</strong><span><i /> Ders kataloğu</span><strong>{number.format(Number(system.courseCatalogPrograms ?? 0))} program</strong><span><i /> Doğrulanmış ders</span><strong>{number.format(Number(system.courseCatalogCourses ?? 0))}</strong><small>Kampira v{String(system.version ?? "-")} · katalog {String(system.courseCatalogUpdatedAt ?? "-")}</small></div></section>
     <MetricGrid labels={ownerMetricLabels} metrics={metrics} />
     <div className={styles.twoColumn}>
       <section className={styles.card}><CardTitle eyebrow="7 GÜNLÜK AKIŞ" title="Büyüme ve içerik hareketi" detail="Hesap, içerik ve şikâyet toplamı" />
@@ -242,7 +243,7 @@ function OwnerContent({ tab, data, reload, setMessage }: ContentProps) {
       </section>
       <section className={styles.card}><CardTitle eyebrow="KAMPÜS DAĞILIMI" title="En aktif üniversiteler" detail="Tamamlanan öğrenci profilleri" /><div className={styles.rankList}>{campuses.slice(0, 7).map((campus, index) => <div key={String(campus.id)}><b>{String(index + 1).padStart(2, "0")}</b><span><strong>{String(campus.short_name)}</strong><small>{String(campus.name)}</small></span><em>{number.format(Number(campus.student_count ?? 0))}</em></div>)}</div></section>
     </div>
-    <section className={styles.card}><CardTitle eyebrow="MODÜL ENVANTERİ" title="Tüm Üniyra özellikleri" detail="Yeni ürün alanları bu kayıt defterinden panele eklenir" /><div className={styles.featureGrid}>{features.map((feature) => <article key={String(feature.key)}><span>{feature.moderation ? "MODERASYONLU" : "OPERASYON"}</span><strong>{String(feature.label)}</strong><b>{number.format(Number(feature.count ?? 0))}</b></article>)}</div></section>
+    <section className={styles.card}><CardTitle eyebrow="MODÜL ENVANTERİ" title="Tüm Kampira özellikleri" detail="Yeni ürün alanları bu kayıt defterinden panele eklenir" /><div className={styles.featureGrid}>{features.map((feature) => <article key={String(feature.key)}><span>{feature.moderation ? "MODERASYONLU" : "OPERASYON"}</span><strong>{String(feature.label)}</strong><b>{number.format(Number(feature.count ?? 0))}</b></article>)}</div></section>
   </div>;
 }
 

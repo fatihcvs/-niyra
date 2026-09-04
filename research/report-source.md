@@ -1,7 +1,7 @@
-# Üniyra doğrulanmış not kütüphanesi — araştırma kaydı
+# Kampira doğrulanmış not kütüphanesi — araştırma kaydı
 
 Araştırma tarihi: 3 Eylül 2026  
-Kapsam: Üniyra'da tanımlı 52 dersin tüm konu alanları; 78 özgün mikro çalışma notu.  
+Kapsam: Kampira'da tanımlı 52 dersin tüm konu alanları; 78 özgün mikro çalışma notu.
 Amaç: Öğrenci yüklemelerinden ayrı, kaynağı görünür ve telif açısından güvenli bir editoryal kütüphane oluşturmak.
 
 ## Yöntem

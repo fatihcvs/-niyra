@@ -9,7 +9,7 @@ import {
 } from "../../../../lib/server-api";
 
 function safeDownloadName(value: string) {
-  return value.replace(/[\r\n"\\/]/g, "_").slice(0, 140) || "uniyra-notu";
+  return value.replace(/[\r\n"\\/]/g, "_").slice(0, 140) || "kampira-notu";
 }
 
 export async function GET(request: Request) {
