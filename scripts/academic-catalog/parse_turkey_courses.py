@@ -18,10 +18,11 @@ from parse_turkey_pdf_courses import parse_pdf
 from parse_turkey_cag_courses import parse_cag
 from parse_turkey_cankaya_courses import parse_cankaya
 from parse_turkey_isik_courses import parse_isik, parse_isik_pdf
+from parse_turkey_ozyegin_courses import parse_ozyegin
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py'])).hexdigest()[:12]
 
 
 def course_code(value):
@@ -167,6 +168,7 @@ def _parse_source(source):
     if source.get('family')=='cankaya':return parse_cankaya(read(CACHE/source['file']),course_code)
     if source.get('family')=='isik':return parse_isik(soup(source), source.get('selection', {}).get('label'), course_code, course_kind, heading_period)
     if source.get('family')=='isik-pdf':return parse_isik_pdf(CACHE/source['file'], course_code, heading_period)
+    if source.get('family')=='ozyegin':return parse_ozyegin(read(CACHE/source['file']), course_code)
     if source.get('family')=='cag':return parse_cag(soup(source),course_code,course_kind)
     if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
     if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)

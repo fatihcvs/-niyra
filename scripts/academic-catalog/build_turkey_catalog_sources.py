@@ -3,6 +3,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 import re
+from bs4 import ParserRejectedMarkup
 from turkey_research import CACHE, ROOT, fetch, read, soup, write, fair_tasks
 from discover_turkey_courses import links
 
@@ -39,9 +40,12 @@ def build():
         for f in as_completed(futures):
             s=f.result()
             if s['status']!=200 or not s.get('sha256'):continue
+            if re.search(r'(?:application/pdf|octet-stream|image/)', s.get('contentType', ''), re.I):continue
             final=s.get('finalUrl',s['url'])
             if not final.startswith('https://') or re.search(r'challenge|login|signin',final,re.I):continue
-            doc=soup(s);title=doc.title.get_text(' ',strip=True) if doc.title else ''
+            try:doc=soup(s)
+            except ParserRejectedMarkup:continue
+            title=doc.title.get_text(' ',strip=True) if doc.title else ''
             if re.search('access denied|just a moment|security check|captcha',title,re.I):continue
             navigation=links(doc,final)
             degree_links=any(re.search(r'unitSelection|/akademik/tip/(?:L|OL)/|/dereceprogramlari/[01]|/home/(?:lisans|onlisans)|/birim/dersplan|/program/|ects.*(?:cycle|program)|/DegreePrograms',u,re.I) for u in navigation)

@@ -190,7 +190,7 @@ def main():
  if (CACHE/'bau-yalova-courses.json').exists():output+=read(CACHE/'bau-yalova-courses.json')
  if (CACHE/'bau-yalova-directories.json').exists():
   directories+=read(CACHE/'bau-yalova-directories.json');write(CACHE/'more-directories.json',directories)
- for prefix in ['continuation','agu-izu','recovered-oibs','foundation','antalya','kion','recovered-ubys','nisantasi','piri','cag','cankaya','tarsus','isik']:
+ for prefix in ['continuation','agu-izu','recovered-oibs','foundation','antalya','kion','recovered-ubys','nisantasi','piri','cag','cankaya','tarsus','isik','ozyegin']:
   if (CACHE/(prefix+'-courses.json')).exists():output+=read(CACHE/(prefix+'-courses.json'))
   if (CACHE/(prefix+'-directories.json')).exists():directories+=read(CACHE/(prefix+'-directories.json'))
  write(CACHE/'more-directories.json',directories)

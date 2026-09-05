@@ -2534,8 +2534,15 @@
     "status": "catalogue-checked"
   },
   "tr-ozyegin-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.ozyegin.edu.tr/tr/ders-planlari",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4964398a7eea2d9d158ea8e2f454792808e6ae2fe66ecbee924e363f73d0a63a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-pamukkale-universitesi": {
     "catalogs": [

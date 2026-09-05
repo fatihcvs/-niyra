@@ -530,4 +530,35 @@ class IsikCatalogTests(unittest.TestCase):
         self.assertNotEqual(first,second)
 
 
+class OzyeginCatalogTests(unittest.TestCase):
+    def test_ozyegin_reads_explicit_year_terms_and_rejects_uncoded_slots(self):
+        from parse_turkey_ozyegin_courses import parse_ozyegin
+        data={'rows':[
+          {'group':'1. Yıl - Güz','code':None,'title':None},
+          {'code':'CS 101','title':'Bilgisayar Programlama'},
+          {'code':None,'title':'FE Serbest Seçmeli'},
+          {'group':'1. Yıl - Bahar','code':None,'title':None},
+          {'code':'CS 102','title':'Nesneye Dayalı Programlama'},
+          {'group':'2. Year - Fall','code':None,'title':None},
+          {'code':'CS 201','title':'Veri Yapıları ve Algoritmalar'},
+        ]}
+        rows,issues=parse_ozyegin(data,course_code)
+        self.assertEqual(issues,[])
+        self.assertEqual(rows,[
+          {'code':'CS101','name':'Bilgisayar Programlama','semester':1,'kind':None},
+          {'code':'CS102','name':'Nesneye Dayalı Programlama','semester':2,'kind':None},
+          {'code':'CS201','name':'Veri Yapıları ve Algoritmalar','semester':3,'kind':None},
+        ])
+
+    def test_ozyegin_duplicate_course_names_fail_closed(self):
+        from parse_turkey_ozyegin_courses import parse_ozyegin
+        data={'rows':[
+          {'group':'1. Yıl - Güz'}, {'code':'CS 101','title':'Programlama'},
+          {'group':'1. Yıl - Bahar'}, {'code':'CS 101','title':'Başka Ders'},
+        ]}
+        rows,issues=parse_ozyegin(data,course_code)
+        self.assertEqual(rows,[])
+        self.assertEqual(issues,['CS101'])
+
+
 if __name__=='__main__':unittest.main()

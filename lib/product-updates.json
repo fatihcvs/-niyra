@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-tenth-expansion",
+    "releasedAt": "2026-09-05T21:51:22Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Özyeğin Üniversitesinin 20 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.568’e, program-ders kaydı sayısı 1.420.925’e ulaştı.",
+    "highlights": [
+      "Özyeğin Üniversitesinin 20 lisans programına 699 resmî program-ders kaydı eklendi. Önceden yayımlanan program ve ders kayıtları korundu.",
+      "Resmî ders planları dizini, fakülte/program sayfası ve her sayfanın tekil kamuya açık SIS kodu birlikte doğrulanır; program adı, derece, fakülte ve İngilizce öğretim ayrımı korunur.",
+      "Dinamik SIS tabloları her program için temiz tarayıcı oturumunda yakalanır. Yalnız gerçek ders kodları ve açık yıl-güz/bahar grupları aktarılır; kodsuz seçmeli yer tutucuları dışarıda kalır.",
+      "Farklı dönem veya müfredatlar birleştirilmez ve kaynakta bulunmayan müfredat dönemi üretilmez. Tarama sırasında yanıt alınamayan Mimarlık, İletişim ve Tasarımı ile İç Mimarlık ve Çevre Tasarımı programları doldurulmuş sayılmadı.",
+      "190 kurumda ders kaydı, 185 kurumda doğrulanmış katalog girişi bulunur. 2.615 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-ninth-expansion",
     "releasedAt": "2026-09-05T20:41:46Z",
     "category": "İyileştirme",

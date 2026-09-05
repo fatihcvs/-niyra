@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-05
 
-204 kurum · 15,183 program · 12,548 programda ders kaydı · 2,635 programda ders listesi eksik.
-Toplam 1,420,226 program-ders kaydı. 184 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,568 programda ders kaydı · 2,615 programda ders listesi eksik.
+Toplam 1,420,925 program-ders kaydı. 185 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,194
+- Resmî program eşleşmesi eksik: 2,171
 - Okunabilir ders listesi bulunamadı: 378
 - Kaynakta program ayrımı doğrulanamadı: 38
-- Ders kaynağına erişilemedi: 25
+- Ders kaynağına erişilemedi: 28
 
 ## Kurumlar
 
@@ -182,7 +182,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Orta Doğu Teknik Üniversitesi | 42 | 42 | 0 | 1,726 | 5 | Doğrulanmış giriş yok |
 | Osmaniye Korkut Ata Üniversitesi | 76 | 76 | 0 | 5,166 | 5 | [Kaynak 1](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | OSTİM Teknik Üniversitesi | 38 | 36 | 2 | 2,533 | 5 | [Kaynak 1](https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Özyeğin Üniversitesi | 23 | 0 | 23 | 0 | 5 | Doğrulanmış giriş yok |
+| Özyeğin Üniversitesi | 23 | 20 | 3 | 699 | 5 | [Kaynak 1](https://www.ozyegin.edu.tr/tr/ders-planlari) |
 | Pamukkale Üniversitesi | 155 | 144 | 11 | 16,992 | 20 | [Kaynak 1](https://ebs.pusula.pau.edu.tr/bilgigoster/DereceProgram.aspx?lng=1) |
 | Piri Reis Üniversitesi | 25 | 12 | 13 | 669 | 8 | [Kaynak 1](https://dmyo.pirireis.edu.tr/programlar/ascilik-programi/program-hakkinda/) · [Kaynak 2](https://dmyo.pirireis.edu.tr/programlar/lojistik-programi/program-hakkinda/) · [Kaynak 3](https://muhendislik.pirireis.edu.tr/bolumler/bilgisayar-muhendisligi/dosyalar/) · [Kaynak 4](https://ois.pirireis.edu.tr/bilgipaketi/eobsakts) |
 | Recep Tayyip Erdoğan Üniversitesi | 82 | 72 | 10 | 9,472 | 15 | [Kaynak 1](https://bologna2.erdogan.edu.tr/tr/programlar/5367) · [Kaynak 2](https://bologna2.erdogan.edu.tr/tr/programlar/5368) |

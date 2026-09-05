@@ -23,7 +23,7 @@ Bu çalışma `academic-catalog-2026.json` içindeki **Türkiye grubuna ait 204 
 
 ## Tekrar üretme
 
-Gerekenler: Python 3 + `beautifulsoup4` + `pdfplumber`, Node.js, proje npm bağımlılıkları. Komutlar depo kökünden çalıştırılır. Ham yanıtlar ve işaret dosyaları `.sites-runtime/turkey-courses/` altında tutulur ve Git'e eklenmez. Toplayıcılar mevcut başarılı yanıtları yeniden kullanır; yeni bir tarihli tarama için eski önbelleği ayrı bir arşiv olarak saklayıp boş çalışma önbelleği kullanın.
+Gerekenler: Python 3.11 + `beautifulsoup4` + `pdfplumber`, Node.js, proje npm bağımlılıkları. Özyeğin'in dinamik SIS tabloları, toplayıcının sabitlediği `agent-browser@0.36.0` sürümüyle ve her program için temiz bir tarayıcı oturumunda okunur. Komutlar depo kökünden çalıştırılır. Ham yanıtlar ve işaret dosyaları `.sites-runtime/turkey-courses/` altında tutulur ve Git'e eklenmez. Toplayıcılar mevcut başarılı yanıtları yeniden kullanır; yeni bir tarihli tarama için eski önbelleği ayrı bir arşiv olarak saklayıp boş çalışma önbelleği kullanın.
 
 Başlangıç envanteri ve genel tarama:
 
@@ -70,10 +70,11 @@ python scripts/academic-catalog/collect_turkey_cag_catalog.py
 python scripts/academic-catalog/collect_turkey_cankaya_catalog.py
 python scripts/academic-catalog/collect_turkey_tarsus_catalog.py
 python scripts/academic-catalog/collect_turkey_isik_catalog.py
+python scripts/academic-catalog/collect_turkey_ozyegin_catalog.py
 python scripts/academic-catalog/collect_turkey_more_catalogs.py
 ```
 
-`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ, Bilgi, AFSÜ, Atılım, Bahçeşehir/Yalova, Kültür/Ankara Medipol/UBYS devam taraması, AGÜ/İZÜ, yeniden bulunan OIBS ve UBYS dizinleri, vakıf üniversiteleri/Galatasaray, Antalya Bilim, dil etiketi, Çağ, Çankaya, Tarsus, Işık ve web müfredat sonuçlarını aynı manifestte birleştirir. İlk taramada devam toplayıcısından önce de bir kez çalıştırılmalıdır; Altınbaş eşleşmeleri bu dizinin yayımlanmış bağlantılarını kullanır. Çankırı Karatekin'in kamuya açık Rebis dizini ve ders yanıtları da bu toplayıcıdadır. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
+`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ, Bilgi, AFSÜ, Atılım, Bahçeşehir/Yalova, Kültür/Ankara Medipol/UBYS devam taraması, AGÜ/İZÜ, yeniden bulunan OIBS ve UBYS dizinleri, vakıf üniversiteleri/Galatasaray, Antalya Bilim, dil etiketi, Çağ, Çankaya, Tarsus, Işık, Özyeğin ve web müfredat sonuçlarını aynı manifestte birleştirir. İlk taramada devam toplayıcısından önce de bir kez çalıştırılmalıdır; Altınbaş eşleşmeleri bu dizinin yayımlanmış bağlantılarını kullanır. Çankırı Karatekin'in kamuya açık Rebis dizini ve ders yanıtları da bu toplayıcıdadır. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
 
 Bilgi'de yalnız anonim dil tercihi kullanılır; hesap veya kalıcı çerez gerekmez. Sınıf numarası ve dönem birlikte değerlendirilir; seçmeli havuz başlıkları ders sayılmaz. Atılım ve Bahçeşehir'de resmî dil listeleri, katalogdaki kısaltılmamış program adlarıyla eşleştirilir. `TR/EN` karma dil etiketi ve ikinci öğretim ayrımı korunur. AFSÜ'de web istemcisinin kullandığı açık dizin ve dönem API'leri izlenir; yıllık derslerde yarıyıl uydurulmaz. AFSÜ'nün `2026-2026` gibi dönem etiketleri kaynakta yayımlandığı biçimde tutulur; bitiş yılı tahmin edilmez.
 
@@ -115,6 +116,10 @@ Ardahan Üniversitesinin [açık UBYS bilgi paketi](https://ubys.ardahan.edu.tr/
 Tarsus Üniversitesinin resmî [ön lisans](https://bologna.tarsus.edu.tr/tr/programlar/5367) ve [lisans](https://bologna.tarsus.edu.tr/tr/programlar/5368) program ağaçları ayrı izlenir. Programlar derece, akademik birim ve adla tam eşleştirilir. Açık ders paketi arayüzünün gösterdiği 2026-2027 yılı kullanılır; her program için yalnız kimliği en yüksek etkin **Ana Müfredat** seçilir ve planın kendi dönem etiketi korunur. Farklı yıllar birleştirilmez. Kaynak ağacındaki yeni `PR` son eki yalnız programın kendi güncel ana müfredat başlığı aynı alanı doğruladığında kaldırılır. Aynı kodla farklı ders bilgisi veren çakışmalı satırlar yayımlanmaz.
 
 Işık Üniversitesinde [resmî bölüm dizini](https://www.isikun.edu.tr/ogrenci/bolumler) ile programların kendi ders programı sayfaları birlikte izlenir. Program adı, derece, akademik birim ve İngilizce dil ayrımı tam eşleşmelidir. Bir sayfada birden fazla plan yayımlandığında yalnız açıkça seçilen güncel bölüm okunur; alternatif yıllar birleştirilmez. Aynı yanıt gövdesindeki farklı plan seçimleri önbellekte ayrı kimliklerle tutulur. HTML sayfalarındaki `Slot Kodu/Slot Adı` ve `Ders Kodu/Ders Adı` tabloları dönem başlıklarıyla okunur; seçmeli yer tutucuları ders sayılmaz. İç Mimarlık ve Çevre Tasarımı (İngilizce) için güncel bölümün bağladığı resmî 2026-2027 PDF'sindeki yan yana dönemler ayrı işlenir. İnşaat Teknolojisi sayfasında kodlu müfredat tablosu bulunmadığı için bu program eksik kalır.
+
+Özyeğin Üniversitesinde [resmî ders planları dizini](https://www.ozyegin.edu.tr/tr/ders-planlari), fakülte/program sayfaları ve her sayfanın bağladığı tekil kamuya açık SIS program kodu birlikte doğrulanır. Program adı, derece, fakülte ve İngilizce öğretim ayrımı korunur. Dinamik SIS tablosu her program için temiz bir tarayıcı oturumunda yakalanır; yalnız gerçek ders kodları ile açık `Yıl - Güz/Bahar` grupları yayımlanır. Kodsuz seçmeli yer tutucuları ders sayılmaz, farklı dönem veya müfredatlar birleştirilmez ve kaynakta bulunmayan müfredat dönemi üretilmez. Yakalanan JSON gövdelerinin SHA-256 özetleri saklanır. Güncel 23 programdan 20'si yayımlanmıştır; tarama sırasında SIS yanıtı alınamayan Mimarlık, İletişim ve Tasarımı ile İç Mimarlık ve Çevre Tasarımı programları eksik kalır.
+
+Katalog giriş raporu HTML olarak doğrulanamayan PDF, ikili dosya ve görsel yanıtlarını katalog sayfası saymaz. İşaretleme ayrıştırıcısının reddettiği ikili gövdeler de rapor üretimini durdurmadan elenir.
 
 `data/course-catalog-index-2026.json` yalnız program özetlerini tutar. Dersler `data/course-catalog/<universityId>.json` dosyalarına ayrılır ve sunucuda seçilen üniversite için yüklenir. Bellek önbelleği dört üniversiteyle sınırlıdır. Bütün ders verisi istemci JavaScript'ine gönderilmez. Bölüm seçimi, önceki boş katalog yanıtının tarayıcı önbelleğinde kalmaması için yeniden doğrulama ister.
 
