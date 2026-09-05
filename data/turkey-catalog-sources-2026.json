@@ -370,8 +370,15 @@
     "status": "catalogue-checked"
   },
   "tr-ardahan-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ubys.ardahan.edu.tr/AIS/OutcomeBasedLearning/Home/Index",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3d99f61187bd0eb6b5d5b113b97c969472dbb956e99a2935aa4793c801f3ab4f",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-artvin-coruh-universitesi": {
     "catalogs": [
@@ -750,8 +757,21 @@
     "status": "catalogue-checked"
   },
   "tr-cankaya-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://bilgipaketi.cankaya.edu.tr/associate",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "37833eaa09adc10eef8e77f3f2dec8b7bd9b62b33ec860b3ac9f58eae30b849d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bilgipaketi.cankaya.edu.tr/bachelors",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "37833eaa09adc10eef8e77f3f2dec8b7bd9b62b33ec860b3ac9f58eae30b849d",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-cankiri-karatekin-universitesi": {
     "catalogs": [

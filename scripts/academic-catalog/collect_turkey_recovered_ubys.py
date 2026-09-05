@@ -3,7 +3,10 @@ from concurrent.futures import ThreadPoolExecutor
 from turkey_research import CACHE,ROOT,read,write,fetch
 from collect_turkey_ubys import discover
 
-ROOTS={'tr-gaziantep-islam-bilim-ve-teknoloji-universitesi':'https://ubys.gibtu.edu.tr/ais/outcomebasedlearning/home/index?culture=tr-tr'}
+ROOTS={
+    'tr-gaziantep-islam-bilim-ve-teknoloji-universitesi':'https://ubys.gibtu.edu.tr/ais/outcomebasedlearning/home/index?culture=tr-tr',
+    'tr-ardahan-universitesi':'https://ubys.ardahan.edu.tr/AIS/OutcomeBasedLearning/Home/Index',
+}
 
 
 def main():

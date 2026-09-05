@@ -418,4 +418,53 @@ class PdfCourseTableTests(unittest.TestCase):
         self.assertEqual([c['semester'] for c in rows],[4,None])
 
 
+class CankayaCatalogTests(unittest.TestCase):
+    def test_selected_curriculum_matches_public_default_and_checks_programme(self):
+        from collect_turkey_cankaya_catalog import selected_plan
+        rows=[['418','11','Bilgisayar Mühendisliği 2022','','3','2022','1','157371'],
+              ['499','11','Alternatif 2025','','3','2025','1','157371']]
+        self.assertEqual(selected_plan(rows,'157371'),{'id':'418','name':'Bilgisayar Mühendisliği 2022'})
+        with self.assertRaises(ValueError):selected_plan(rows,'999999')
+
+    def test_cankaya_elective_members_need_matching_curriculum_and_parent(self):
+        from parse_turkey_cankaya_courses import parse_cankaya
+        required=['418','20','1','1','2','CENG','112','Programlama II','','','3','2','4','6,00']
+        parent=['418','1','2','3','1','ELEC','1','Teknik Seçmeli','','','3','0','3','5,00']
+        old=['399',*required[1:]]
+        members=[{'MufredatNo':418,'BolumKodu':1,'DersKod':'CENG  405','DersAdıTurkce':'Güvenlik'},
+                 {'MufredatNo':399,'BolumKodu':1,'DersKod':'CENG406','DersAdıTurkce':'Eski plan'},
+                 {'MufredatNo':418,'BolumKodu':7,'DersKod':'CENG407','DersAdıTurkce':'Başka havuz'}]
+        rows,issues=parse_cankaya({'curriculum':{'id':'418'},'courses':[required,parent,old],
+                                  'groups':[{'parent':parent,'courses':members}]},course_code)
+        self.assertEqual(rows,[{'code':'CENG112','name':'Programlama II','semester':2,'kind':'required'},
+                               {'code':'CENG405','name':'Güvenlik','semester':5,'kind':'elective'}])
+        self.assertIn('course-from-another-curriculum',issues)
+        self.assertIn('elective-member-from-another-pool',issues)
+        self.assertEqual(parse_cankaya({'curriculum':{'id':'418'},'courses':[],
+          'groups':[{'parent':parent,'courses':members}]},course_code)[0],[])
+
+    def test_cankaya_unknown_semester_is_not_inferred(self):
+        from parse_turkey_cankaya_courses import parse_cankaya
+        row=['418','1','2','Seçmeli Dersler','','CENG','405','Güvenlik','','','3','0','3','5,00']
+        self.assertEqual(parse_cankaya({'curriculum':{'id':'418'},'courses':[row]},course_code)[0],
+                         [{'code':'CENG405','name':'Güvenlik','semester':None,'kind':'elective'}])
+
+    def test_cankaya_identity_keeps_turkish_exceptions_degree_and_unit(self):
+        from collect_turkey_cankaya_catalog import programme_reference
+        from discover_turkey_courses import match
+        from parse_cyprus_courses import fold
+        policy=fold('Öğretim dili %100 İngilizcedir. Adalet Meslek Yüksekokulu, Hukuk Fakültesi ile Halkla İlişkiler ve Reklamcılık Bölümü Türkçe eğitim vermektedir.')
+        faculty={'FakTurkce':'İktisadi ve İdari Bilimler Fakültesi'}
+        raw={'ProgramId':378142,'ProgramAdi':'Halkla İlişkiler ve Reklamcılık (Lisans)','ProgramAdiEn':'Public Relations'}
+        ref=programme_reference(raw,faculty,'bachelor',policy)
+        self.assertEqual(ref['title'],'Halkla İlişkiler ve Reklamcılık')
+        english=programme_reference({**raw,'ProgramAdi':'İşletme (Lisans)'},faculty,'bachelor',policy)
+        self.assertEqual(english['title'],'İşletme (İngilizce)')
+        university={'units':[{'id':'u','name':faculty['FakTurkce']}],
+                    'programs':[{'id':'p','unitId':'u','name':english['title'],'degreeLevel':'bachelor'}]}
+        self.assertIsNone(match(university,{**english,'degree':'associate'}))
+        self.assertIsNone(match(university,{**english,'unit':'Mühendislik Fakültesi'}))
+        with self.assertRaises(ValueError):programme_reference(raw,faculty,'bachelor','')
+
+
 if __name__=='__main__':unittest.main()

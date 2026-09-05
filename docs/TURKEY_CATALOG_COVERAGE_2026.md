@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-05
 
-204 kurum · 15,183 program · 12,407 programda ders kaydı · 2,776 programda ders listesi eksik.
-Toplam 1,403,524 program-ders kaydı. 180 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,473 programda ders kaydı · 2,710 programda ders listesi eksik.
+Toplam 1,412,959 program-ders kaydı. 182 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,337
-- Okunabilir ders listesi bulunamadı: 377
+- Resmî program eşleşmesi eksik: 2,269
+- Okunabilir ders listesi bulunamadı: 378
 - Kaynakta program ayrımı doğrulanamadı: 38
-- Ders kaynağına erişilemedi: 24
+- Ders kaynağına erişilemedi: 25
 
 ## Kurumlar
 
@@ -41,7 +41,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Ankara Yıldırım Beyazıt Üniversitesi | 72 | 43 | 29 | 4,080 | 20 | [Kaynak 1](https://obs.aybu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.aybu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Antalya Belek Üniversitesi | 23 | 23 | 0 | 1,335 | 5 | [Kaynak 1](https://obs.belek.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.belek.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://www.belek.edu.tr/Home/Page/41) |
 | Antalya Bilim Üniversitesi | 42 | 24 | 18 | 1,211 | 5 | [Kaynak 1](https://dersbilgipaketi.antalya.edu.tr/index.php?lang=tr) |
-| Ardahan Üniversitesi | 47 | 0 | 47 | 0 | 3 | Doğrulanmış giriş yok |
+| Ardahan Üniversitesi | 47 | 41 | 6 | 5,482 | 3 | [Kaynak 1](https://ubys.ardahan.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Artvin Çoruh Üniversitesi | 81 | 75 | 6 | 4,924 | 20 | [Kaynak 1](https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Atatürk Üniversitesi | 218 | 183 | 35 | 8,330 | 14 | [Kaynak 1](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/1) · [Kaynak 2](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/2) |
 | Atılım Üniversitesi | 49 | 48 | 1 | 7,918 | 5 | [Kaynak 1](https://www.atilim.edu.tr/tr/ects/site-courses/programlar/lisans) · [Kaynak 2](https://www.atilim.edu.tr/tr/ects/site-courses/programlar/onlisans) |
@@ -67,7 +67,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Bursa Uludağ Üniversitesi | 167 | 152 | 15 | 12,745 | 25 | [Kaynak 1](https://bilgipaketi.uludag.edu.tr/Programlar/Index/21) · [Kaynak 2](https://bilgipaketi.uludag.edu.tr/Programlar/Index/33) |
 | Çağ Üniversitesi | 15 | 14 | 1 | 444 | 5 | [Kaynak 1](https://www.cag.edu.tr/tr/hukuk-program-tanimi-2) · [Kaynak 2](https://www.cag.edu.tr/tr/turk-dili-ve-edebiyati-program-tanimi) |
 | Çanakkale Onsekiz Mart Üniversitesi | 184 | 151 | 33 | 15,005 | 16 | [Kaynak 1](https://ubys.comu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
-| Çankaya Üniversitesi | 25 | 0 | 25 | 0 | 11 | Doğrulanmış giriş yok |
+| Çankaya Üniversitesi | 25 | 25 | 0 | 3,953 | 11 | [Kaynak 1](https://bilgipaketi.cankaya.edu.tr/associate) · [Kaynak 2](https://bilgipaketi.cankaya.edu.tr/bachelors) |
 | Çankırı Karatekin Üniversitesi | 79 | 73 | 6 | 32,633 | 8 | [Kaynak 1](https://cakubologna.karatekin.edu.tr/tr/programlar/5367) · [Kaynak 2](https://cakubologna.karatekin.edu.tr/tr/programlar/5368) |
 | Çukurova Üniversitesi | 137 | 69 | 68 | 5,671 | 22 | [Kaynak 1](https://ebs.cu.edu.tr) · [Kaynak 2](https://eobs.cu.edu.tr) |
 | Demiroğlu Bilim Üniversitesi | 20 | 17 | 3 | 1,160 | 5 | [Kaynak 1](https://akts.demiroglu.bilim.edu.tr/?txtCulture=tr-TR&secim=1) · [Kaynak 2](https://akts.demiroglu.bilim.edu.tr/?txtCulture=tr-TR&secim=4) |

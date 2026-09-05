@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-seventh-expansion",
+    "releasedAt": "2026-09-05T19:01:58.7620638Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Çankaya ve Ardahan ders katalogları eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.473’e, program-ders kaydı sayısı 1.412.959’a ulaştı.",
+    "highlights": [
+      "Çankaya Üniversitesinin 25 lisans ve ön lisans programına 3.953 resmî program-ders kaydı eklendi; böylece üniversitenin güncel katalogdaki tüm programları ders listesine kavuştu.",
+      "Ardahan Üniversitesinin 41 programına 5.482 program-ders kaydı eklendi. Okunabilir planı bulunmayan veya mevcut müfredatı doğrulanamayan programlar tamamlanmış sayılmadı.",
+      "Çankaya’da programın fakültesi, derecesi ve öğretim dili birlikte doğrulanır. Resmî sitenin ilk gösterdiği müfredat kullanılır; alternatif yıllar birleştirilmez ve boş seçmeli havuzlar doldurulmaz.",
+      "Ardahan’ın açık UBYS kataloğunda yalnız onaylı ve Bologna için etkin planlar kullanılır. Aynı kodla farklı ad taşıyan çakışmalı dersler rastgele seçilmez.",
+      "187 kurumda ders kaydı, 182 kurumda doğrulanmış katalog girişi bulunur. 2.710 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-sixth-expansion",
     "releasedAt": "2026-09-05T17:35:29.923757+00:00",
     "category": "İyileştirme",
