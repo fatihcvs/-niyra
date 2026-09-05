@@ -9,10 +9,39 @@ from parse_turkey_courses import parse_tables, _parse_source, course_code, cours
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir
 from discover_turkey_courses import match
 from collect_turkey_ecatalogs import discover
+from curriculum_metadata import selected_oibs_curriculum, retain_matching_metadata
 
 def html(value): return BeautifulSoup(value,'html.parser')
 
 class CourseParsers(unittest.TestCase):
+    def test_curriculum_label_tracks_the_selected_response_not_a_shared_url(self):
+        body='''<select id="unrelated"><option selected>Old label</option></select>
+          <select name="cmbYillar" id="cmbYillar"><option value="99">2017 (Old plan)</option>
+          <option selected="selected" value="11761">2021 (2021 SINIF YENİ MÜFREDAT)</option></select>'''
+        self.assertEqual(selected_oibs_curriculum(body),{'curriculumPeriod':'2021 (2021 SINIF YENİ MÜFREDAT)','sourceSelection':{'cmbYillar':'11761'}})
+        old={'sourceHash':'old','sourceUrl':'https://example.edu.tr/plan','curriculumPeriod':'2017'}
+        changed={'sourceHash':'new','sourceUrl':old['sourceUrl']}
+        self.assertNotIn('curriculumPeriod',retain_matching_metadata(changed,old))
+        self.assertEqual(retain_matching_metadata({'sourceHash':'old'},old)['curriculumPeriod'],'2017')
+
+    def test_curriculum_selector_without_one_explicit_selection_is_unknown(self):
+        for body in ['<select id="cmbYillar"><option>2026</option></select>',
+          '<select id="cmbYillar"><option selected value="1">2025</option><option selected value="2">2026</option></select>']:
+            self.assertIsNone(selected_oibs_curriculum(body))
+
+    def test_source_course_codes_keep_curriculum_years_and_numeric_subcourses(self):
+        for value in ['BS198-2020','AİİT101-2020','BLP101-2024','4905.020221','4905.030221.1']:
+            self.assertEqual(course_code(value),value)
+        for value in ['2025-2026','1. Yarıyıl','4905.020221.1.2','BS198-hello','<script>']:
+            self.assertIsNone(course_code(value))
+        rows,_=parse_tables(html('''<table><tr><td>2.Yarıyıl Ders Planı</td></tr>
+          <tr><th>Ders Kodu</th><th>Ders Adı</th><th>Zorunlu/Seçmeli</th></tr>
+          <tr><td>BS198-2020</td><td>Yabancı Dil II</td><td>Zorunlu</td></tr>
+          <tr><td>4905.030221</td><td>BÖLÜM SEÇMELİ 1</td><td>Seçmeli</td></tr>
+          <tr><td>4905.030221.1</td><td>ÇEVRE BİLİMİ</td><td>Seçmeli</td></tr></table>'''))
+        self.assertEqual(rows,[{'code':'BS198-2020','name':'Yabancı Dil II','semester':2,'kind':'required'},
+          {'code':'4905.030221.1','name':'ÇEVRE BİLİMİ','semester':2,'kind':'elective'}])
+
     def test_igdir_resource_labels_keep_real_codes_and_types(self):
         doc=html('''<table><tr><td>1. [Donem]</td></tr><tr><th>[DersKodu]</th><th>[DersAdi]</th><th>[DersTuru]</th></tr>
           <tr><td>ATA101</td><td>ATATÜRK İLKELERİ I</td><td>[Zorunlu]</td></tr></table>''')
@@ -206,6 +235,68 @@ class CourseParsers(unittest.TestCase):
 
 
 class ContinuationParsersTest(unittest.TestCase):
+    def test_khas_elective_pool_does_not_inherit_last_semester(self):
+        from parse_turkey_foundation_courses import parse_foundation_tables
+        rows,_=parse_foundation_tables(html('''<h3>4. Yıl Bahar</h3>
+          <table><tr><th>KOD</th><th>TİPİ (Z/S)</th><th>DERS</th></tr>
+          <tr><td>FENS402</td><td>Z</td><td>Mühendislik Tasarım Projesi II</td></tr></table>
+          <table><tr><th>KOD</th><th>DERS TİPİ</th><th>DERS</th></tr>
+          <tr><td>CMPE320</td><td>S</td><td>Veri Bilimi</td></tr></table>'''),
+            'khas',course_code,course_kind,heading_period)
+        self.assertEqual([(r['semester'],r['kind']) for r in rows],[(8,'required'),(None,'elective')])
+
+    def test_gsu_letter_sections_and_shared_course_table(self):
+        from parse_turkey_foundation_courses import parse_foundation_tables
+        rows,_=parse_foundation_tables(html('''<table><tr><th>2. Yarıyıl</th></tr>
+          <tr><th>Ders Kodu</th><th>Dersin Adı</th><th>Türü</th></tr>
+          <tr><td>INF114-B</td><td>İleri Bilgisayar Programlama</td><td>Zorunlu</td></tr></table>
+          <table><tr><th>Ortak Bölüm Dersleri</th></tr>
+          <tr><th>Ders Kodu</th><th>Dersin Adı</th><th>Türü</th></tr>
+          <tr><td>CNT414</td><td>Bilim Tarihi</td><td>Seçmeli</td></tr></table>'''),
+            'gsu',course_code,course_kind,heading_period)
+        self.assertEqual([(r['code'],r['semester'],r['kind']) for r in rows],
+            [('INF114-B',2,'required'),('CNT414',None,'elective')])
+
+    def test_demiroglu_year_and_half_and_pool_alignment(self):
+        from parse_turkey_foundation_courses import parse_demiroglu
+        rows,_=parse_demiroglu(html('''<table><tr><th>Ders Kodu</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+          <tr><td>Yıl 3</td><td>Semester 2</td><td></td></tr>
+          <tr><td>101001512024<br><ul><li><a href="DersGetir?dersID=1">101001032012</a></li>
+          <li><a href="DersGetir?dersID=2">101001532024</a></li></ul></td>
+          <td>Seçmeli-I<br>Sosyolojiye Giriş<br>Psikolojide Akademik Okuma</td><td>Seçmeli<br>Seçmeli<br>Seçmeli</td></tr>
+          <tr><td>101001512025<br><ul><li><a href="DersGetir?dersID=3">101001032013</a></li></ul></td>
+          <td>Seçmeli-II</td><td>Seçmeli</td></tr></table>'''),course_code,course_kind)
+        self.assertEqual([(r['code'],r['semester'],r['kind']) for r in rows],
+            [('101001032012',6,'elective'),('101001532024',6,'elective')])
+
+    def test_antalya_uses_active_plan_and_only_its_elective_pools(self):
+        import json
+        from parse_turkey_foundation_courses import parse_antalya
+        plan=[{'status':10201,'semester':3,'course_type':'course','course_id':1,'code':'CENG201','course_name':'Veri Yapıları'},
+            {'status':10200,'semester':3,'course_type':'course','course_id':2,'code':'CENG202','course_name':'Eski Ders'},
+            {'status':10201,'semester':3,'course_type':'elective_pool','elective_pool_id':10,'code':'NAE1000','course_name':'Seçmeli'}]
+        electives=[{'elective_pool_id':10,'code':'LGRM201','name':'Almanca I'},
+            {'elective_pool_id':20,'code':'TEST101','name':'Farklı havuz'}]
+        rows,_=parse_antalya(html('<script>const coursePlan = '+json.dumps(plan)+'; const electiveCourses = '+json.dumps(electives)+';</script>'),course_code)
+        self.assertEqual(rows,[{'code':'CENG201','name':'Veri Yapıları','semester':3,'kind':None},
+            {'code':'LGRM201','name':'Almanca I','semester':3,'kind':'elective'}])
+
+    def test_esenyurt_elective_children_keep_selected_term_and_numeric_prefix(self):
+        from parse_turkey_continuation_courses import parse_esenyurt
+        from parse_turkey_courses import course_kind
+        rows,_=parse_esenyurt(html('''<table id="grdBolognaDersler">
+          <tr><td>2.Yarıyıl Ders Planı</td></tr>
+          <tr><th>Ders Kodu</th><th>Ders Adı</th><th>Zorunlu/Seçmeli</th></tr>
+          <tr><td>2021G3003</td><td>Programlama</td><td>Zorunlu</td></tr>
+          <tr><td><span class="expandCollapse" id="span_123"></span>11B1SDG</td><td>MYO Ortak Seçmeli II</td><td>Seçmeli</td></tr>
+          <tr class="collapse collapse_123"><td>1110B1005_1</td><td>Bilişimde Güncel Konular</td><td>Zorunlu</td></tr>
+          <tr class="collapse collapse_999"><td>1110B1005</td><td>Orphan pool course</td><td>Zorunlu</td></tr>
+          <tr><td>-1.Yarıyıl Ders Planı</td></tr>
+          <tr><th>Ders Kodu</th><th>Ders Adı</th><th>Zorunlu/Seçmeli</th></tr>
+          <tr><td>PREP101</td><td>Hazırlık</td><td>Zorunlu</td></tr></table>'''),course_code,course_kind)
+        self.assertEqual(rows,[{'code':'2021G3003','name':'Programlama','semester':2,'kind':'required'},
+            {'code':'1110B1005_1','name':'Bilişimde Güncel Konular','semester':2,'kind':'elective'}])
+
     def test_agu_negative_preparation_term_and_elective_slots_are_excluded(self):
         from parse_turkey_continuation_courses import parse_agu
         from parse_turkey_courses import course_kind

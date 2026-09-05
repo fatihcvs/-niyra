@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-fourth-expansion",
+    "releasedAt": "2026-09-05T14:38:00+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "559 programın ders kataloğu daha eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.150’ye, program-ders kaydı sayısı 1.377.324’e ulaştı.",
+    "highlights": [
+      "Antalya Bilim, Demiroğlu Bilim, İbn Haldun, İstanbul Esenyurt, Kadir Has ve Toros dahil vakıf üniversitelerinin lisans ve ön lisans ders listeleri genişletildi.",
+      "Manisa Celal Bayar, Hakkari ve Galatasaray ders listeleri eklendi. Erzincan Binali Yıldırım, İnönü ve Malatya Turgut Özal kataloglarında yıl ekli ve noktalı ders kodları okunur.",
+      "12 kurumda 559 yeni program listesi ve toplamda net 67.157 program-ders kaydı eklendi. Seçmeli havuzlar dahil bu sayılar ülke genelinde tekil ders sayısı değildir.",
+      "30 programda eski alternatif planın yerine resmî katalogda seçili daha yeni müfredat kullanılır. Müfredat etiketi ve seçim kimliği doğrudan aynı kaynak yanıtından alınır; farklı planlar birleştirilmez.",
+      "176 kurum için doğrulanmış katalog girişleri bulunur. 3.033 programın yapılandırılmış ders listesi hâlâ eksiktir; yeni listeler kısmi kapsamdadır. Üniversite bazındaki durum owner panelinde görünür."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-third-expansion",
     "releasedAt": "2026-09-05T07:28:39+00:00",
     "category": "İyileştirme",

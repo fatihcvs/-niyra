@@ -11,16 +11,17 @@ from parse_cyprus_html import parse_metu
 from parse_cyprus_extra import parse_itu
 from discover_turkey_courses import match as match_program
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu, parse_bilgi, parse_afsu
-from parse_turkey_continuation_courses import parse_agu, parse_izu
+from parse_turkey_continuation_courses import parse_agu, parse_izu, parse_esenyurt
+from parse_turkey_foundation_courses import parse_foundation_tables, parse_demiroglu, parse_antalya
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py'])).hexdigest()[:12]
 
 
 def course_code(value):
     value = re.sub(r'\s+', '', clean(value)).upper()
-    if re.fullmatch(r'[A-ZÇĞİÖŞÜΑ-Ω]{1,12}(?:[-_][A-ZÇĞİÖŞÜ]{1,8})*[_-]?\d{2,10}[A-ZÇĞİÖŞÜ]{0,3}|\d{5,16}', value) and len(value) <= 20:
+    if re.fullmatch(r'[A-ZÇĞİÖŞÜΑ-Ω]{1,12}(?:[-_][A-ZÇĞİÖŞÜ]{1,8})*[_-]?\d{2,10}[A-ZÇĞİÖŞÜ]{0,3}(?:-(?:19|20)\d{2})?|\d{5,16}|\d{4}\.\d{6}(?:\.\d{1,3})?', value) and len(value) <= 20:
         return value
     return None
 
@@ -156,7 +157,12 @@ def parse_combined(doc, family):
 
 def _parse_source(source):
     if source['status'] != 200: return [], []
+    if source.get('selectionError'):return [], [source['selectionError']]
     url = source['url']
+    if source.get('family') in ['khas','gsu']:return parse_foundation_tables(soup(source),source['family'],course_code,course_kind,heading_period)
+    if source.get('family')=='demiroglu':return parse_demiroglu(soup(source),course_code,course_kind)
+    if source.get('family')=='antalya':return parse_antalya(soup(source),course_code)
+    if source.get('family') == 'esenyurt':return parse_esenyurt(soup(source),course_code,course_kind)
     if source.get('family') == 'agu':return parse_agu(soup(source),course_code,course_kind)
     if source.get('family') == 'izu':return parse_izu(soup(source),course_code,course_kind)
     if 'katalog.ktu.edu.tr' in url:return parse_ktu(soup(source),course_code,course_kind,heading_period)
@@ -294,7 +300,7 @@ def main():
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
             if key not in records: records[key] = record
-        if number%200==0:
+        if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)
     pool.shutdown()

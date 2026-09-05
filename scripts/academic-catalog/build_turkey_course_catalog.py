@@ -8,6 +8,7 @@ import subprocess
 from urllib.parse import urlparse
 from turkey_research import CACHE, ROOT, read, write
 from parse_turkey_courses import PARSER_VERSION
+from curriculum_metadata import selected_oibs_curriculum, retain_matching_metadata
 
 
 def compact(path, data):
@@ -18,8 +19,6 @@ def compact(path, data):
 
 def build():
     academic = read(ROOT / 'data/academic-catalog-2026.json')
-    baseline_result=subprocess.run(['git','show','HEAD:data/academic-catalog-2026.json'],cwd=ROOT,capture_output=True,check=True)
-    baseline=json.loads(baseline_result.stdout)
     legacy = read(ROOT / 'data/official-course-catalog-2026.json')
     candidates = read(CACHE / 'turkey-course-candidates.json')
     receipt=read(CACHE/'parse-receipt.json')
@@ -28,6 +27,8 @@ def build():
     assert receipt['programCount']==len(candidates)
     assert receipt['candidateHash']==hashlib.sha256((CACHE/'turkey-course-candidates.json').read_bytes()).hexdigest()
     assert all(hashlib.sha256((CACHE/name).read_bytes()).hexdigest()==value for name,value in receipt['inputs'].items()), 'Sources changed; parse again.'
+    sources={s.get('sha256'):s for name in receipt['inputs'] for s in read(CACHE/name)}
+    previous_shards={}
     shards, index = defaultdict(dict), {}
     for key, r in sorted(candidates.items()):
         if key in legacy['programs']: continue
@@ -36,9 +37,21 @@ def build():
         assert u and u['region'] == 'Türkiye', key
         p = next((p for p in u['programs'] if p['id'] == r['programId']), None)
         assert p and p['name'] == r['programName'], key
-        old=next((v for v in baseline['universities'][r['universityId']]['programs'] if v['id']==r['programId']),None)
-        if not r.get('curriculumPeriod') and old and old.get('curriculumPeriod') and r['sourceUrl'] in old.get('curriculumUrls',[]):
-            r['curriculumPeriod']=old['curriculumPeriod']
+        uid=r['universityId']
+        if uid not in previous_shards:
+            result=subprocess.run(['git','show',f'HEAD:data/course-catalog/{uid}.json'],cwd=ROOT,capture_output=True)
+            previous_shards[uid]=json.loads(result.stdout) if result.returncode==0 else {}
+        retain_matching_metadata(r,previous_shards[uid].get(key))
+        if '/oibs/bologna/progCourses.aspx' in r['sourceUrl']:
+            source=sources[r['sourceHash']]
+            body=(CACHE/source['file']).read_bytes()
+            assert hashlib.sha256(body).hexdigest()==r['sourceHash'], key
+            selected=selected_oibs_curriculum(body.decode('utf-8-sig'))
+            if selected:
+                if r.get('sourceSelection',{}).get('cmbYillar'):
+                    assert r['sourceSelection']['cmbYillar']==selected['sourceSelection']['cmbYillar'], key
+                r['curriculumPeriod']=selected['curriculumPeriod']
+                r['sourceSelection']={**r.get('sourceSelection',{}),**selected['sourceSelection']}
         assert key == f"{r['universityId']}:{r['programId']}", key
         assert urlparse(r['sourceUrl']).scheme == 'https', key
         assert re.fullmatch(r'[a-f0-9]{64}', r['sourceHash']), key
@@ -96,14 +109,14 @@ def build():
             'missingProgramIds':missing,'missingReasons':reasons})
     write(ROOT / 'data/turkey-catalog-coverage-2026.json', {'checkedAt':today,'universities':coverage,
         'research':{'sourceCount':receipt['sourceCount'],'parserVersion':receipt['parserVersion'],'manifestHashes':receipt['inputs']}})
-    meta = {**legacy['meta'], 'version':'2026.09.05.4', 'updatedAt':today,
+    meta = {**legacy['meta'], 'version':'2026.09.05.5', 'updatedAt':today,
         'method':'Official university curriculum pages and public Bologna course data, matched to programme, degree, language and academic unit. Course source checksums are retained.',
         'stats':{'programCount':len(all_records),'courseCount':sum(r['courseCount'] for r in all_records.values()),
             'universityCount':len({r['universityId'] for r in all_records.values()}),
             'partialProgramCount':sum(r.get('coverage') == 'partial' for r in all_records.values()),
             'totalAcademicProgramCount':academic['meta']['stats']['programCount']}}
     compact(ROOT / 'data/course-catalog-index-2026.json', {'meta':meta,'programs':index})
-    academic['meta']['version'] = '2026.23'
+    academic['meta']['version'] = '2026.24'
     for source in academic['meta']['sources']:
         if source['id']=='yildiz-bologna-curricula-2026':source['url']=source['url'].replace('https://www.bologna.yildiz.edu.tr/','https://bologna.yildiz.edu.tr/')
     academic['meta']['updatedAt'] = today
