@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-05
 
-204 kurum · 15,183 program · 12,150 programda ders kaydı · 3,033 programda ders listesi eksik.
-Toplam 1,377,324 program-ders kaydı. 176 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,393 programda ders kaydı · 2,790 programda ders listesi eksik.
+Toplam 1,403,080 program-ders kaydı. 179 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,607
-- Okunabilir ders listesi bulunamadı: 367
+- Resmî program eşleşmesi eksik: 2,351
+- Okunabilir ders listesi bulunamadı: 377
 - Kaynakta program ayrımı doğrulanamadı: 38
-- Ders kaynağına erişilemedi: 21
+- Ders kaynağına erişilemedi: 24
 
 ## Kurumlar
 
@@ -53,7 +53,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Bartın Üniversitesi | 77 | 69 | 8 | 7,733 | 10 | [Kaynak 1](https://ubys.bartin.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Başkent Üniversitesi | 107 | 95 | 12 | 11,070 | 10 | [Kaynak 1](https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=lisans) · [Kaynak 2](https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=onLisans) |
 | Batman Üniversitesi | 68 | 65 | 3 | 4,247 | 21 | [Kaynak 1](https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Bayburt Üniversitesi | 66 | 8 | 58 | 393 | 7 | [Kaynak 1](https://ebp.bayburt.edu.tr/DereceProgramlari/1) · [Kaynak 2](https://ebp.bayburt.edu.tr/) |
+| Bayburt Üniversitesi | 66 | 54 | 12 | 2,744 | 7 | [Kaynak 1](https://ebp.bayburt.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.bayburt.edu.tr/DereceProgramlari/1) |
 | Beykoz Üniversitesi | 36 | 32 | 4 | 2,697 | 5 | [Kaynak 1](https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_15/ln/tr) · [Kaynak 2](https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_14/ln/tr) |
 | Bezmialem Vakıf Üniversitesi | 24 | 20 | 4 | 1,821 | 5 | [Kaynak 1](https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Bilecik Şeyh Edebali Üniversitesi | 96 | 94 | 2 | 8,832 | 10 | [Kaynak 1](https://ebs.bilecik.edu.tr/Bolumler?BolumAd=Lisans) |
@@ -86,10 +86,10 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Fırat Üniversitesi | 137 | 130 | 7 | 36,057 | 10 | [Kaynak 1](https://obs.firat.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.firat.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://www.firat.edu.tr/tr/uluslararasi/uluslararasi-kuruluslara-uyelikler) |
 | Galatasaray Üniversitesi | 14 | 13 | 1 | 922 | 5 | [Kaynak 1](https://ects.gsu.edu.tr/) |
 | Gazi Üniversitesi | 89 | 82 | 7 | 6,948 | 20 | [Kaynak 1](https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Gaziantep İslam Bilim ve Teknoloji Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |
+| Gaziantep İslam Bilim ve Teknoloji Üniversitesi | 22 | 14 | 8 | 1,180 | 5 | [Kaynak 1](https://ubys.gibtu.edu.tr/ais/outcomebasedlearning/home/index?culture=tr-tr) |
 | Gaziantep Üniversitesi | 135 | 113 | 22 | 8,941 | 10 | [Kaynak 1](https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://obs.gaziantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 4](https://obs.gaziantep.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Gebze Teknik Üniversitesi | 23 | 5 | 18 | 471 | 5 | [Kaynak 1](https://obs.gtu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gtu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Giresun Üniversitesi | 120 | 107 | 13 | 5,959 | 25 | [Kaynak 1](https://ebp.giresun.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.giresun.edu.tr/DereceProgramlari/1) |
+| Giresun Üniversitesi | 120 | 108 | 12 | 6,024 | 25 | [Kaynak 1](https://ebp.giresun.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.giresun.edu.tr/dereceprogramlari/1) |
 | Gümüşhane Üniversitesi | 90 | 89 | 1 | 5,754 | 15 | [Kaynak 1](https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hacettepe Üniversitesi | 105 | 103 | 2 | 9,685 | 18 | [Kaynak 1](https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hakkari Üniversitesi | 43 | 41 | 2 | 2,060 | 9 | [Kaynak 1](https://obs.hakkari.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.hakkari.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
@@ -105,7 +105,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İhsan Doğramacı Bilkent Üniversitesi | 27 | 27 | 0 | 1,072 | 10 | Doğrulanmış giriş yok |
 | İnönü Üniversitesi | 90 | 75 | 15 | 12,242 | 15 | [Kaynak 1](https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İskenderun Teknik Üniversitesi | 56 | 14 | 42 | 1,200 | 5 | [Kaynak 1](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| İstanbul 29 Mayıs Üniversitesi | 29 | 0 | 29 | 0 | 5 | Doğrulanmış giriş yok |
+| İstanbul 29 Mayıs Üniversitesi | 29 | 25 | 4 | 2,115 | 5 | [Kaynak 1](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2026) · [Kaynak 2](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2026) |
 | İstanbul Arel Üniversitesi | 84 | 84 | 0 | 10,676 | 10 | [Kaynak 1](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Atlas Üniversitesi | 54 | 52 | 2 | 5,666 | 5 | [Kaynak 1](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_3/ln/tr) · [Kaynak 2](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_2/ln/tr) |
 | İstanbul Aydın Üniversitesi | 137 | 0 | 137 | 0 | 15 | Doğrulanmış giriş yok |
@@ -119,7 +119,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İstanbul Kültür Üniversitesi | 57 | 50 | 7 | 8,718 | 10 | [Kaynak 1](https://akademikpaket.iku.edu.tr/TR/ects.php?p=1&r=0) · [Kaynak 2](https://akademikpaket.iku.edu.tr/TR/ects.php?p=3&r=0) |
 | İstanbul Medeniyet Üniversitesi | 52 | 49 | 3 | 7,453 | 20 | [Kaynak 1](https://ubys.medeniyet.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | İstanbul Medipol Üniversitesi | 149 | 104 | 45 | 6,514 | 10 | [Kaynak 1](https://www.medipol.edu.tr/akademik/fakulteler/hukuk-fakultesi) · [Kaynak 2](https://www.medipol.edu.tr/akademik/fakulteler/iletisim-fakultesi) |
-| İstanbul Nişantaşı Üniversitesi | 114 | 65 | 49 | 6,574 | 5 | [Kaynak 1](https://ebp.nisantasi.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.nisantasi.edu.tr/DereceProgramlari/1) |
+| İstanbul Nişantaşı Üniversitesi | 114 | 109 | 5 | 9,365 | 5 | [Kaynak 1](https://ebp.nisantasi.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.nisantasi.edu.tr/DereceProgramlari/1) |
 | İstanbul Okan Üniversitesi | 114 | 108 | 6 | 22,681 | 10 | [Kaynak 1](https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr) · [Kaynak 4](https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr) |
 | İstanbul Rumeli Üniversitesi | 107 | 40 | 67 | 3,781 | 5 | [Kaynak 1](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Sabahattin Zaim Üniversitesi | 38 | 21 | 17 | 2,366 | 10 | [Kaynak 1](https://www.izu.edu.tr/icerik/tum-programlar) |
@@ -135,7 +135,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İzmir Demokrasi Üniversitesi | 37 | 32 | 5 | 6,918 | 20 | [Kaynak 1](https://obs.idu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.idu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İzmir Ekonomi Üniversitesi | 88 | 52 | 36 | 3,558 | 10 | [Kaynak 1](https://ects.ieu.edu.tr/new/firstCycle.php?lang=tr) · [Kaynak 2](https://ects.ieu.edu.tr/new/shortCycle.php?lang=tr) |
 | İzmir Katip Çelebi Üniversitesi | 53 | 48 | 5 | 6,514 | 15 | [Kaynak 1](https://ubs.ikc.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
-| İzmir Tınaztepe Üniversitesi | 28 | 28 | 0 | 1,637 | 5 | [Kaynak 1](https://ebp.tinaztepe.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.tinaztepe.edu.tr/DereceProgramlari/1) |
+| İzmir Tınaztepe Üniversitesi | 28 | 28 | 0 | 1,637 | 5 | [Kaynak 1](https://ebp.tinaztepe.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.tinaztepe.edu.tr/DereceProgramlari/1?lang=tr-TR) |
 | İzmir Yüksek Teknoloji Enstitüsü | 18 | 17 | 1 | 3,362 | 3 | [Kaynak 1](https://ubys.iyte.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | Kadir Has Üniversitesi | 20 | 17 | 3 | 17,477 | 5 | [Kaynak 1](https://bologna.khas.edu.tr/lisans) · [Kaynak 2](https://bologna.khas.edu.tr/) |
 | Kafkas Üniversitesi | 85 | 82 | 3 | 12,162 | 15 | [Kaynak 1](https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://obsyeni.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 4](https://obsyeni.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
@@ -151,7 +151,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Kırklareli Üniversitesi | 100 | 84 | 16 | 5,449 | 10 | [Kaynak 1](https://obs.klu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.klu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Kırşehir Ahi Evran Üniversitesi | 92 | 90 | 2 | 14,930 | 6 | [Kaynak 1](https://obs.ahievran.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ahievran.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Kilis 7 Aralık Üniversitesi | 52 | 52 | 0 | 4,681 | 10 | [Kaynak 1](https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Kocaeli Sağlık ve Teknoloji Üniversitesi | 26 | 0 | 26 | 0 | 5 | Doğrulanmış giriş yok |
+| Kocaeli Sağlık ve Teknoloji Üniversitesi | 26 | 25 | 1 | 773 | 5 | [Kaynak 1](https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2025) · [Kaynak 2](https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2025) |
 | Kocaeli Üniversitesi | 146 | 141 | 5 | 9,464 | 25 | [Kaynak 1](https://ects.kocaeli.edu.tr/) |
 | Koç Üniversitesi | 22 | 0 | 22 | 0 | 9 | Doğrulanmış giriş yok |
 | Konya Gıda ve Tarım Üniversitesi | 9 | 9 | 0 | 661 | 5 | [Kaynak 1](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
@@ -177,14 +177,14 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Nevşehir Hacı Bektaş Veli Üniversitesi | 87 | 79 | 8 | 19,085 | 5 | [Kaynak 1](https://ubys.nevsehir.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Niğde Ömer Halisdemir Üniversitesi | 119 | 105 | 14 | 9,285 | 5 | [Kaynak 1](https://www.ohu.edu.tr/akts/bilgipaketi/lisans) · [Kaynak 2](https://www.ohu.edu.tr/akts/bilgipaketi/onlisans) |
 | Nuh Naci Yazgan Üniversitesi | 17 | 17 | 0 | 1,809 | 5 | [Kaynak 1](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Ondokuz Mayıs Üniversitesi | 168 | 74 | 94 | 7,510 | 30 | [Kaynak 1](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR) |
+| Ondokuz Mayıs Üniversitesi | 168 | 74 | 94 | 7,510 | 30 | [Kaynak 1](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?kultur=tr-TR&Mod=1) |
 | Ordu Üniversitesi | 81 | 78 | 3 | 11,557 | 10 | [Kaynak 1](https://bologna.odu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bologna.odu.edu.tr/dereceprogramlari/1) |
 | Orta Doğu Teknik Üniversitesi | 42 | 42 | 0 | 1,726 | 5 | Doğrulanmış giriş yok |
 | Osmaniye Korkut Ata Üniversitesi | 76 | 76 | 0 | 5,166 | 5 | [Kaynak 1](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | OSTİM Teknik Üniversitesi | 38 | 36 | 2 | 2,533 | 5 | [Kaynak 1](https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Özyeğin Üniversitesi | 23 | 0 | 23 | 0 | 5 | Doğrulanmış giriş yok |
 | Pamukkale Üniversitesi | 155 | 144 | 11 | 16,992 | 20 | [Kaynak 1](https://ebs.pusula.pau.edu.tr/bilgigoster/DereceProgram.aspx?lng=1) |
-| Piri Reis Üniversitesi | 25 | 0 | 25 | 0 | 8 | [Kaynak 1](https://ois.pirireis.edu.tr/bilgipaketi/eobsakts) |
+| Piri Reis Üniversitesi | 25 | 12 | 13 | 669 | 8 | [Kaynak 1](https://dmyo.pirireis.edu.tr/programlar/ascilik-programi/program-hakkinda/) · [Kaynak 2](https://dmyo.pirireis.edu.tr/programlar/lojistik-programi/program-hakkinda/) · [Kaynak 3](https://muhendislik.pirireis.edu.tr/bolumler/bilgisayar-muhendisligi/dosyalar/) · [Kaynak 4](https://ois.pirireis.edu.tr/bilgipaketi/eobsakts) |
 | Recep Tayyip Erdoğan Üniversitesi | 82 | 72 | 10 | 9,472 | 15 | [Kaynak 1](https://bologna2.erdogan.edu.tr/tr/programlar/5367) · [Kaynak 2](https://bologna2.erdogan.edu.tr/tr/programlar/5368) |
 | Sabancı Üniversitesi | 3 | 0 | 3 | 0 | 10 | [Kaynak 1](https://ects.sabanciuniv.edu/) |
 | Sağlık Bilimleri Üniversitesi | 64 | 9 | 55 | 1,050 | 15 | [Kaynak 1](https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
@@ -213,7 +213,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Ufuk Üniversitesi | 28 | 28 | 0 | 1,387 | 5 | [Kaynak 1](https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Uşak Üniversitesi | 102 | 98 | 4 | 34,651 | 20 | [Kaynak 1](https://obs.usak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.usak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Üsküdar Üniversitesi | 80 | 78 | 2 | 5,920 | 5 | [Kaynak 1](https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Van Yüzüncü Yıl Üniversitesi | 121 | 42 | 79 | 9,723 | 2 | [Kaynak 1](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/1) |
+| Van Yüzüncü Yıl Üniversitesi | 121 | 118 | 3 | 25,535 | 2 | [Kaynak 1](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/1) |
 | Yalova Üniversitesi | 60 | 51 | 9 | 3,885 | 12 | [Kaynak 1](https://ubs.yalova.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Yaşar Üniversitesi | 38 | 11 | 27 | 3,675 | 5 | [Kaynak 1](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Yeditepe Üniversitesi | 64 | 56 | 8 | 1,875 | 5 | [Kaynak 1](https://akts.yeditepe.edu.tr/tr/Ects/DegreePrograms?D=L) · [Kaynak 2](https://akts.yeditepe.edu.tr) |

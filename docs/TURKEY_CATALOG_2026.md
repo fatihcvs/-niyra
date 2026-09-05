@@ -23,7 +23,7 @@ Bu çalışma `academic-catalog-2026.json` içindeki **Türkiye grubuna ait 204 
 
 ## Tekrar üretme
 
-Gerekenler: Python 3 + `beautifulsoup4`, Node.js, proje npm bağımlılıkları. Komutlar depo kökünden çalıştırılır. Ham yanıtlar ve işaret dosyaları `.sites-runtime/turkey-courses/` altında tutulur ve Git'e eklenmez. Toplayıcılar mevcut başarılı yanıtları yeniden kullanır; yeni bir tarihli tarama için eski önbelleği ayrı bir arşiv olarak saklayıp boş çalışma önbelleği kullanın.
+Gerekenler: Python 3 + `beautifulsoup4` + `pdfplumber`, Node.js, proje npm bağımlılıkları. Komutlar depo kökünden çalıştırılır. Ham yanıtlar ve işaret dosyaları `.sites-runtime/turkey-courses/` altında tutulur ve Git'e eklenmez. Toplayıcılar mevcut başarılı yanıtları yeniden kullanır; yeni bir tarihli tarama için eski önbelleği ayrı bir arşiv olarak saklayıp boş çalışma önbelleği kullanın.
 
 Başlangıç envanteri ve genel tarama:
 
@@ -62,6 +62,10 @@ python scripts/academic-catalog/collect_turkey_agu_izu.py
 python scripts/academic-catalog/collect_turkey_recovered_oibs.py
 python scripts/academic-catalog/collect_turkey_foundation_catalogs.py
 python scripts/academic-catalog/collect_turkey_antalya_catalog.py
+python scripts/academic-catalog/collect_turkey_kion_catalogs.py
+python scripts/academic-catalog/collect_turkey_recovered_ubys.py
+python scripts/academic-catalog/collect_turkey_nisantasi_catalog.py
+python scripts/academic-catalog/collect_turkey_piri_catalog.py
 python scripts/academic-catalog/collect_turkey_more_catalogs.py
 ```
 
@@ -89,6 +93,12 @@ python scripts/academic-catalog/report_turkey_coverage.py
 ```
 
 Ayrıştırıcı tüm girdi özetlerini ve ayrıştırıcı sürümünü `parse-receipt.json` dosyasına yazar. Yayın üreticisi tamamlanmamış taramayı, değişmiş girdileri, geçersiz program kimliklerini ve yayımlanmış ders kayıtlarını sessizce azaltan sonucu reddeder. Tam kampüs katalog üreticisi de Türkiye bölgelerini dahil eder; yalnız bölge eklemek için artımlı `apply` komutu diğer kayıtları korur.
+
+Kocaeli Sağlık ve Teknoloji ile İstanbul 29 Mayıs için kamuya açık arayüzde tıklanarak doğrulanan program rotaları `kion-navigation-2026.json` dosyasında tutulur. Her yanıtın fakülte/program başlığı ve seçili yıl değeri yeniden doğrulanır. 29 Mayıs'ta güncel yılın ders satırı sayısı bir önceki açık yılın yarısından azsa, en az üç ders içeren önceki plan kendi yıl etiketiyle kullanılır; planlar birleştirilmez. Dersler yalnız etiketli ana tablodan okunur. Hazırlık ve seçmeli grup yer tutucuları çıkarılır; kurumun harflerden oluşan gerçek staj kodları korunur.
+
+EBP ağaçlarında gerçek program yaprağı, üstteki bölüm başlığıyla değiştirilmez. “Lisans” gibi derece başlıkları üstteki program adını kullanır; yaprak ve üst başlıktaki dil/ikinci öğretim ayrımları korunur. Üst başlığın aynen iki kez tekrarlandığı yaprak sadeleştirilir. Aynı programa iki resmî rota çıktığında, önceki yayımlanmış rota hâlâ dizinde aynı kimlikle eşleşiyorsa korunur; önceki kanıtı bulunmayan belirsiz eşleşme yayımlanmaz. Nişantaşı'nın ortak MYO ağacı, güncel [MYO](https://myo.nisantasi.edu.tr/bolumler/2) ve [Sağlık Hizmetleri MYO](https://shmyo.nisantasi.edu.tr/bolumler) listelerindeki tekil program-birim eşleşmeleriyle ayrılır. Gaziantep İslam Bilim ve Teknoloji'nin açık UBYS dizini yeniden izlenir.
+
+Piri Reis'te fakülte/program sayfasının yayımladığı PDF bağlantısı ve PDF'nin program başlığı birlikte doğrulanır. Program dili, belge çevirisinden değil [resmî MYO listesi](https://dmyo.pirireis.edu.tr/hakkimizda/bolum-ve-programlar/) veya [öğretim dili açıklamasından](https://aday.pirireis.edu.tr/sikca-sorulan-sorular/) alınır. Yan yana iki dönem tablosunun sütunları ayrı izlenir; yalnız solda devam eden seçmeli havuza sağdaki dönem taşınmaz. Tablo üzerindeki açık Romen yarıyıl başlıkları okunur. Ders kodundaki dipnot yıldızı kaldırılır; bilinmeyen ders türü tahmin edilmez. Bilgisayar Mühendisliğinde kaynak bağlantısının 2024–2025 ve sonrası etiketi korunur; ayrı seçmeli PDF'leri aktarılmadığından bu liste de kısmi kapsamdadır.
 
 ## Uygulama ve doğrulama
 

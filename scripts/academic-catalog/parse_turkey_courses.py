@@ -13,10 +13,12 @@ from discover_turkey_courses import match as match_program
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu, parse_bilgi, parse_afsu
 from parse_turkey_continuation_courses import parse_agu, parse_izu, parse_esenyurt
 from parse_turkey_foundation_courses import parse_foundation_tables, parse_demiroglu, parse_antalya
+from parse_turkey_kion_courses import parse_kion
+from parse_turkey_pdf_courses import parse_pdf
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py'])).hexdigest()[:12]
 
 
 def course_code(value):
@@ -159,6 +161,8 @@ def _parse_source(source):
     if source['status'] != 200: return [], []
     if source.get('selectionError'):return [], [source['selectionError']]
     url = source['url']
+    if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
+    if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)
     if source.get('family') in ['khas','gsu']:return parse_foundation_tables(soup(source),source['family'],course_code,course_kind,heading_period)
     if source.get('family')=='demiroglu':return parse_demiroglu(soup(source),course_code,course_kind)
     if source.get('family')=='antalya':return parse_antalya(soup(source),course_code)

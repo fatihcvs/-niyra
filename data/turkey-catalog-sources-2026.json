@@ -551,16 +551,16 @@
   "tr-bayburt-universitesi": {
     "catalogs": [
       {
+        "url": "https://ebp.bayburt.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ceb87df63a37f53253b6de8c9c9e816285e470f81e16f3bcbc98f737dc054510",
+        "evidence": "matched-programme-directory"
+      },
+      {
         "url": "https://ebp.bayburt.edu.tr/DereceProgramlari/1",
         "checkedAt": "2026-09-05",
         "sourceHash": "d285f77ebc35a578ca1be89e82472f929e2dc124b549e263cfa46120f0927647",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://ebp.bayburt.edu.tr/",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "10e47eaff1c1b155f0f239ad7395ca89cedf24d590f276794e047cabe2972203",
-        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -1040,8 +1040,15 @@
     "status": "catalogue-checked"
   },
   "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ubys.gibtu.edu.tr/ais/outcomebasedlearning/home/index?culture=tr-tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9c4637ff1351090984bbc8c0a9284458641a34b871d90b34b9bb1e8938b8fcda",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-gaziantep-universitesi": {
     "catalogs": [
@@ -1098,7 +1105,7 @@
         "evidence": "matched-programme-directory"
       },
       {
-        "url": "https://ebp.giresun.edu.tr/DereceProgramlari/1",
+        "url": "https://ebp.giresun.edu.tr/dereceprogramlari/1",
         "checkedAt": "2026-09-05",
         "sourceHash": "2b8ce138ebc15f618f645c04d9014c3bc16a52f34ce08eda0600066a91c8485a",
         "evidence": "matched-programme-directory"
@@ -1324,8 +1331,21 @@
     "status": "catalogue-checked"
   },
   "tr-istanbul-29-mayis-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2026",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "68e8937c8e15e2a22c9ee89301eb8d3a8cc6170c11040ab538729be886743b76",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2026",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b802f6b74f61e7f16a68b4a8db428f9db81ccc98568a4882710af477f577f8b3",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-istanbul-arel-universitesi": {
     "catalogs": [
@@ -1785,7 +1805,7 @@
         "evidence": "matched-programme-directory"
       },
       {
-        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/1",
+        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/1?lang=tr-TR",
         "checkedAt": "2026-09-05",
         "sourceHash": "4c9979dadb932b4c76ba4de314363b519854bc405356471f2e8abf0487f1beeb",
         "evidence": "matched-programme-directory"
@@ -2055,8 +2075,21 @@
     "status": "catalogue-checked"
   },
   "tr-kocaeli-saglik-ve-teknoloji-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2025",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7633954439f919bd2d43163e9b687ceff1400d6466bda18fab7b9a0e8809f564",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2025",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c38380cc311bc6cfa62ccc7cfc9f86cc764306d133045b5f5ece76cc492308da",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-kocaeli-universitesi": {
     "catalogs": [
@@ -2397,9 +2430,9 @@
   "omu": {
     "catalogs": [
       {
-        "url": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR",
+        "url": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?kultur=tr-TR&Mod=1",
         "checkedAt": "2026-09-05",
-        "sourceHash": "f7e48a6804de803da5b635523f1cd330d4e4373b83d4cc7c58097de20721c6cf",
+        "sourceHash": "148d1436c20bff53d8db340c47077481e99ca36da252dfd5f2446456e0b25945",
         "evidence": "matched-programme-directory"
       }
     ],
@@ -2477,6 +2510,24 @@
   },
   "tr-piri-reis-universitesi": {
     "catalogs": [
+      {
+        "url": "https://dmyo.pirireis.edu.tr/programlar/ascilik-programi/program-hakkinda/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "53a0948ecd8afef8877da1b29ed992927a6fd26ada25bd75720bc93536ff833f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://dmyo.pirireis.edu.tr/programlar/lojistik-programi/program-hakkinda/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e910e66e3d08fa245ccbf7109df2582cb5a1682443814e173ab3ee9b1da47464",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://muhendislik.pirireis.edu.tr/bolumler/bilgisayar-muhendisligi/dosyalar/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "513a84f7cf27938ff2f43268812c5c89e6910ea8a526e43fdaf4d487ae93ccb5",
+        "evidence": "matched-programme-directory"
+      },
       {
         "url": "https://ois.pirireis.edu.tr/bilgipaketi/eobsakts",
         "checkedAt": "2026-09-05",

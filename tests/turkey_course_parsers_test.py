@@ -8,12 +8,35 @@ from bs4 import BeautifulSoup
 from parse_turkey_courses import parse_tables, _parse_source, course_code, course_kind, heading_period
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir
 from discover_turkey_courses import match
-from collect_turkey_ecatalogs import discover
+from collect_turkey_ecatalogs import discover,leaf_programme_title
+from parse_turkey_kion_courses import parse_kion
 from curriculum_metadata import selected_oibs_curriculum, retain_matching_metadata
 
 def html(value): return BeautifulSoup(value,'html.parser')
 
 class CourseParsers(unittest.TestCase):
+    def test_ebp_leaf_names_preserve_programme_subject_language_and_evening_track(self):
+        cases=[('Elektrik ve Enerji Bölümü','Elektrik','Elektrik'),
+          ('Bilgisayar Programcılığı','Bilgisayar Programcılığı (İÖ)','Bilgisayar Programcılığı (İÖ)'),
+          ('Tarih (İ.Ö.)','Tarih','Tarih (İ.Ö.)'),
+          ('Tıp Fakültesi','Tıp','Tıp'),
+          ('İktisat','Lisans (İngilizce)','İktisat (İngilizce)'),
+          ('Bilgisayar Programcılığı','Önlisans (Uzaktan Öğretim)','Bilgisayar Programcılığı (Uzaktan Öğretim)'),
+          ('Tıp','Lisans ve Yüksek Lisans','Tıp')]
+        for parent,leaf,expected in cases:self.assertEqual(leaf_programme_title(parent,leaf),expected)
+        self.assertNotEqual(leaf_programme_title('Hemşirelik','Lisans Tamamlama'),'Hemşirelik')
+
+    def test_kion_grid_keeps_explicit_terms_and_alphabetic_internships(self):
+        doc=html('''<table id="Content_Content_gridCoursePlan_DXMainTable">
+          <tr id="grid_DXHeadersRow0"><td></td><td>Dönem</td><td>Ders Kodu</td><td>Ders Adi</td><td>Ders Tipi</td></tr>
+          <tr id="grid_DXDataRow0"><td></td><td>8</td><td>BLMIMEI</td><td>İŞLETMEDE MESLEKİ EĞİTİM</td><td>Zorunlu</td></tr>
+          <tr id="grid_DXDataRow1"><td></td><td>3</td><td>US002</td><td>ÜNİVERSİTE SEÇMELİ DERS II</td><td>Seçmeli</td></tr>
+          <tr id="grid_DXDataRow2"><td></td><td>0</td><td>ENG001</td><td>Hazırlık</td><td>Zorunlu</td></tr>
+          <tr id="grid_DXDataRow3"><td></td><td>2</td><td>TRA103</td><td>Kültürlerarası İletişim</td><td>Seçmeli</td></tr></table>''')
+        rows,_=parse_kion(doc,course_code,course_kind)
+        self.assertEqual(rows,[{'code':'BLMIMEI','name':'İŞLETMEDE MESLEKİ EĞİTİM','semester':8,'kind':'required'},
+          {'code':'TRA103','name':'Kültürlerarası İletişim','semester':2,'kind':'elective'}])
+
     def test_curriculum_label_tracks_the_selected_response_not_a_shared_url(self):
         body='''<select id="unrelated"><option selected>Old label</option></select>
           <select name="cmbYillar" id="cmbYillar"><option value="99">2017 (Old plan)</option>
@@ -326,6 +349,42 @@ class ContinuationParsersTest(unittest.TestCase):
           </tbody></table>'''),course_code,course_kind)
         self.assertEqual(rows,[{'code':'BIM437','name':'Bilgisayar ve Ağ Güvenliği','semester':7,'kind':'elective'},
             {'code':'BIM499','name':'Bitirme Projesi','semester':7,'kind':None}])
+
+
+class PdfCourseTableTests(unittest.TestCase):
+    def test_repeated_leaf_caption_keeps_qualifiers_and_duplicate_routes_require_published_witness(self):
+        from collect_turkey_ecatalogs import leaf_programme_title,unique_or_published
+        self.assertEqual(leaf_programme_title('Hemşirelik','Hemşirelik Hemşirelik'),'Hemşirelik')
+        self.assertEqual(leaf_programme_title('Hemşirelik','Hemşirelik Hemşirelik (İ.Ö.)'),'Hemşirelik Hemşirelik (İ.Ö.)')
+        old={'programId':'p1','courseUrl':'https://official.edu.tr/old'}
+        new={'programId':'p1','courseUrl':'https://official.edu.tr/new'}
+        self.assertEqual(unique_or_published([old,new],{}),[])
+        self.assertEqual(unique_or_published([old,new],{'p1':old['courseUrl']}),[old])
+        self.assertEqual(unique_or_published([new],{'p1':old['courseUrl']}),[new])
+
+    def test_paired_terms_do_not_leak_into_left_only_elective_pool(self):
+        from parse_turkey_pdf_courses import parse_pdf_tables
+        from parse_turkey_courses import course_kind,heading_period
+        rows,_=parse_pdf_tables([{'rows':[
+            ['1. Yarıyıl',None,None,'2. Yarıyıl',None],
+            ['Ders Kodu','Ders Adı',None,'Ders Kodu','Ders Adı'],
+            ['BIP 101*','Programlama',None,'MAT102','Matematik II'],
+            ['Seçmeli Dersler',None,None,None,None],
+            ['Ders Kodu','Ders Adı',None,None,None],
+            ['BIP201','Veri Tabanı',None,'BAD101','Eski sütun'],
+            ['SEC101','Seçmeli Ders I',None,None,None],
+        ]}],course_code,course_kind,heading_period)
+        self.assertEqual(rows,[{'code':'BIP101','name':'Programlama','semester':1,'kind':None},
+            {'code':'MAT102','name':'Matematik II','semester':2,'kind':None},
+            {'code':'BIP201','name':'Veri Tabanı','semester':None,'kind':'elective'}])
+
+    def test_pdf_uses_explicit_external_roman_heading_not_table_order(self):
+        from parse_turkey_pdf_courses import parse_pdf_tables
+        from parse_turkey_courses import course_kind,heading_period
+        rows,_=parse_pdf_tables([
+            {'heading':'IV. YARIYIL','rows':[['Dersin Kodu','Dersin Adı'],['COMP202','Algoritmalar']]},
+            {'heading':'','rows':[['Dersin Kodu','Dersin Adı'],['COMP405','Ağlar']]}],course_code,course_kind,heading_period)
+        self.assertEqual([c['semester'] for c in rows],[4,None])
 
 
 if __name__=='__main__':unittest.main()

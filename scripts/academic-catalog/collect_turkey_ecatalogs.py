@@ -1,5 +1,7 @@
 """Public EBP, ABP and institution-specific HTML programme directories."""
 import re
+import json
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urljoin
 from turkey_research import CACHE, ROOT, fetch, read, soup, write, fair_tasks
@@ -22,6 +24,32 @@ ROOTS = {
 }
 
 
+def leaf_programme_title(parent,leaf):
+    """A leaf can name a degree or an actual programme below a department."""
+    label=clean(leaf);parent=clean(parent or '')
+    if parent and normal(label)==normal(parent+' '+parent):label=parent
+    degree=re.fullmatch(r'(?:(?:Ön\s*)?Lisans(?:\s+Programı|\s+ve\s+Yüksek Lisans)?|Normal Öğretim)\s*((?:\([^)]*\)\s*)*)',label,re.I)
+    title=parent if degree else label
+    annotations=re.findall(r'\(([^)]+)\)',(degree[1] if degree else '')+' '+parent)
+    for annotation in annotations:
+        # Preparation is not a language declaration; Turkish is the unqualified label.
+        if normal(annotation) in ['turkce','zorunlu','zorunlu hazirlik','normal ogretim','no']:continue
+        if normal(annotation) not in normal(title):title+=' ('+annotation+')'
+    return title
+
+
+def unique_or_published(mapped,published):
+    """Keep a previously published route only while the public tree still matches it."""
+    groups={}
+    for item in mapped:groups.setdefault(item['programId'],[]).append(item)
+    chosen=[]
+    for pid,items in groups.items():
+        if len(items)==1:chosen+=items;continue
+        known=[item for item in items if item['courseUrl']==published.get(pid)]
+        if len(known)==1:chosen+=known
+    return chosen
+
+
 def discover(uid, root, university):
     first=fetch(root); d=soup(first); dirs={root}
     for url,title in links(d,first.get('finalUrl',root)).items():
@@ -41,9 +69,7 @@ def discover(uid, root, university):
                     if not unit:walk(n.get('children') or [],title,None)
                     elif n.get('children'):walk(n['children'],unit,title)
                     elif href and '/Detay/' in href:
-                        title=parent or title
-                        language=re.search(r'\((İngilizce|Almanca|Fransızca|Arapça)\)',n['text'])
-                        if language and language[0] not in title:title+=' '+language[0]
+                        title=leaf_programme_title(parent,title)
                         items.append({'title':title,'unit':unit,'degree':degree,'url':urljoin(url,href),'courseUrl':urljoin(url,href),'directoryUrl':url})
             walk(tree)
         for a in doc.select('a[href]'):
@@ -87,9 +113,9 @@ def discover(uid, root, university):
             if len(choices)!=1:continue
             item['courseUrl']=choices[0]
         mapped.append({**item,'universityId':uid,'programId':p['id'],'name':p['name']})
-    counts={}
-    for m in mapped:counts[m['programId']]=counts.get(m['programId'],0)+1
-    return {'universityId':uid,'matched':[m for m in mapped if counts[m['programId']]==1],
+    previous=subprocess.run(['git','show',f'HEAD:data/course-catalog/{uid}.json'],cwd=ROOT,capture_output=True)
+    published={r['programId']:r['sourceUrl'] for r in json.loads(previous.stdout).values()} if previous.returncode==0 else {}
+    return {'universityId':uid,'matched':unique_or_published(mapped,published),
         'unmatched':[i for i in items if not match(university,i)]}
 
 

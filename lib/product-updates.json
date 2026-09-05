@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-fifth-expansion",
+    "releasedAt": "2026-09-05T16:49:38.306219+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "243 programın ders kataloğu daha eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.393’e, program-ders kaydı sayısı 1.403.080’e ulaştı.",
+    "highlights": [
+      "İstanbul 29 Mayıs, Kocaeli Sağlık ve Teknoloji ve Piri Reis ders listeleri eklendi; İstanbul Nişantaşı’nın MYO ve Sağlık Hizmetleri MYO kapsamı genişletildi.",
+      "Bayburt, Van Yüzüncü Yıl, Gaziantep İslam Bilim ve Teknoloji ve Giresun ile birlikte sekiz kurumda 243 yeni program ve 25.756 program-ders kaydı eklendi. Önceden yayımlanan programlar ve dersler korundu.",
+      "Katalog ağaçlarındaki bölüm ve program başlıkları ayrı okunur; öğretim dili ve ikinci öğretim ayrımı korunur. Nişantaşı’nın ortak MYO kataloğu güncel resmî birim listeleriyle eşleştirilir.",
+      "29 Mayıs’ın henüz az ders içeren yeni yıl sayfalarında daha dolu önceki açık yılın planı kendi dönem etiketiyle gösterilir. Piri Reis PDF planlarında yan yana dönemler ve seçmeli havuzlar ayrı okunur; farklı yıllar birleştirilmez.",
+      "184 kurumda ders kaydı, 179 kurumda doğrulanmış katalog girişi bulunur. 2.790 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-fourth-expansion",
     "releasedAt": "2026-09-05T14:38:00+00:00",
     "category": "İyileştirme",
