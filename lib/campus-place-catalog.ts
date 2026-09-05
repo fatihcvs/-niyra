@@ -24,7 +24,7 @@ type CatalogPlace = {
   longitude: number | null;
   accessibility: string[];
   openingHours: string;
-  distanceMeters: number;
+  distanceMeters: number | null;
   campusName: string;
   source: CuratedPlaceSource;
 };

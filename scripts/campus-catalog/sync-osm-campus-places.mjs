@@ -23,7 +23,7 @@ out center tags;`,
 (
   .campuses;
   nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["amenity"~"^(college|research_institute|library|coworking_space|internet_cafe|cafe|restaurant|fast_food|food_court|ice_cream|community_centre|cinema|theatre|arts_centre|events_venue|music_venue|bar|pub|nightclub|hospital|clinic|pharmacy|doctors|dentist|bus_station|ferry_terminal|taxi|bicycle_rental|bank|atm|post_office|parcel_locker|police|toilets)$"];
-  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["building"~"^(university|college)$"];
+  nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["building"~"^(university|college|library)$"];
   nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["office"~"^(educational_institution|research)$"];
   nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["leisure"~"^(sports_centre|fitness_centre|stadium|sports_hall|pitch|swimming_pool|fitness_station|track|ice_rink|park|garden)$"];
   nwr(around.campuses:${NEARBY_RADIUS_METERS})["name"]["tourism"~"^(museum|gallery|attraction)$"];

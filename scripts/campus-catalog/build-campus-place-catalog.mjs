@@ -1,6 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { categoryFor } from "./classify-campus-place.mjs";
 
 const ROOT = process.cwd();
 const CACHE_DIR = path.join(ROOT, ".sites-runtime", "campus-catalog");
@@ -15,6 +16,7 @@ const { universities } = await import("../../lib/university-catalog.ts");
 const logoCatalog = JSON.parse(await readFile(path.join(ROOT, "data", "university-logos-2026.json"), "utf8"));
 const osm = JSON.parse(await readFile(path.join(CACHE_DIR, "osm-places.json"), "utf8"));
 const officialSources = JSON.parse(await readFile(path.join(ROOT, "data", "campus-place-official-sources-2026.json"), "utf8"));
+const librarySources = JSON.parse(await readFile(path.join(ROOT, "data", "campus-library-official-sources-2026.json"), "utf8"));
 const officialGeocodes = JSON.parse(await readFile(path.join(CACHE_DIR, "nominatim-official-places.json"), "utf8"));
 const wikidataEntities = JSON.parse(await readFile(path.join(CACHE_DIR, "wikidata-university-entities.json"), "utf8"));
 
@@ -156,28 +158,6 @@ function haversine(a, b) {
   return 2 * earthRadius * Math.asin(Math.sqrt(value));
 }
 
-function categoryFor(element) {
-  const tags = element.tags ?? {};
-  if (isCampusAnchor(element)) return "building";
-  if (["college", "research_institute"].includes(tags.amenity)
-    || ["university", "college"].includes(tags.building)
-    || ["educational_institution", "research"].includes(tags.office)) return "building";
-  if (tags.amenity === "library") return "library";
-  if (["coworking_space", "internet_cafe"].includes(tags.amenity)
-    || ["books", "copyshop", "stationery"].includes(tags.shop)) return "study";
-  if (["cafe", "restaurant", "fast_food", "food_court", "ice_cream"].includes(tags.amenity)) return "food";
-  if (["sports_centre", "fitness_centre", "stadium", "sports_hall", "pitch", "swimming_pool", "fitness_station", "track", "ice_rink"].includes(tags.leisure)) return "sports";
-  if (["park", "garden"].includes(tags.leisure)
-    || ["community_centre", "cinema", "theatre", "arts_centre", "events_venue", "music_venue", "bar", "pub", "nightclub"].includes(tags.amenity)
-    || ["museum", "gallery", "attraction"].includes(tags.tourism)) return "social";
-  if (tags.public_transport || tags.highway === "bus_stop" || tags.railway
-    || ["bus_station", "ferry_terminal", "taxi", "bicycle_rental"].includes(tags.amenity)) return "transport";
-  if (["hospital", "clinic", "pharmacy", "doctors", "dentist"].includes(tags.amenity)) return "health";
-  if (["supermarket", "convenience", "mall", "department_store", "laundry", "computer"].includes(tags.shop)
-    || ["bank", "atm", "post_office", "parcel_locker", "police", "toilets"].includes(tags.amenity)) return "other";
-  return null;
-}
-
 function addressFor(tags = {}) {
   if (tags["addr:full"]) return tags["addr:full"];
   const parts = [
@@ -237,7 +217,7 @@ for (const university of universities) {
   const candidates = [];
   for (const element of osm.elements) {
     const coordinates = getCoordinates(element);
-    const category = coordinates ? categoryFor(element) : null;
+    const category = coordinates ? categoryFor(element, isCampusAnchor(element)) : null;
     if (!category || !hasUsefulName(element.tags?.name)) continue;
     const nearestAnchor = anchorMatches
       .map((anchor) => ({ anchor, distance: haversine(anchor.coordinates, coordinates) }))
@@ -309,13 +289,13 @@ for (const university of universities) {
 }
 
 const officialRecordIndexes = new Map();
-for (const record of officialSources.records) {
+for (const record of [...officialSources.records, ...librarySources.records]) {
   const university = universities.find((item) => item.id === record.universityId);
   if (!university) throw new Error(`Unknown university in official campus sources: ${record.universityId}`);
   const recordIndex = officialRecordIndexes.get(record.universityId) ?? 0;
   officialRecordIndexes.set(record.universityId, recordIndex + 1);
   const geocodeKey = `${record.universityId}:${record.name}`;
-  const geocode = officialGeocodes.results[geocodeKey]?.find((result) => result.category === "amenity" || result.category === "building");
+  const geocode = record.kind === "library" ? null : officialGeocodes.results[geocodeKey]?.find((result) => result.category === "amenity" || result.category === "building");
   const wikidataId = logoCatalog.logos[record.universityId]?.wikidataId;
   const wikidataCoordinate = wikidataId ? wikidataEntities.entities[wikidataId]?.claims?.P625?.[0]?.mainsnak?.datavalue?.value : null;
   let latitude = geocode ? Number(geocode.lat) : null;
@@ -325,7 +305,7 @@ for (const record of officialSources.records) {
     label: "OpenStreetMap adres eşleşmesi",
     url: `https://www.openstreetmap.org/${geocode.osm_type}/${geocode.osm_id}`,
   } : null;
-  if (latitude === null && recordIndex === 0 && wikidataCoordinate && regionCompatible(university, { latitude: wikidataCoordinate.latitude, longitude: wikidataCoordinate.longitude })) {
+  if (record.kind !== "library" && latitude === null && recordIndex === 0 && wikidataCoordinate && regionCompatible(university, { latitude: wikidataCoordinate.latitude, longitude: wikidataCoordinate.longitude })) {
     latitude = Number(wikidataCoordinate.latitude.toFixed(6));
     longitude = Number(wikidataCoordinate.longitude.toFixed(6));
     coordinateSource = {
@@ -338,22 +318,22 @@ for (const record of officialSources.records) {
     id: `catalog:${record.universityId}:official-${slug(record.name)}`,
     universityId: record.universityId,
     name: record.name,
-    category: "building",
-    description: record.kind === "administrative"
+    category: record.kind === "library" ? "library" : "building",
+    description: record.description ?? (record.kind === "administrative"
       ? `${university.name} resmî kaynağında yayımlanan idarî birim adresi; öğrenci kampüsü olarak işaretlenmemiştir.`
-      : `${university.name} resmî kaynağında yayımlanan yerleşke adresi.`,
+      : `${university.name} resmî kaynağında yayımlanan yerleşke adresi.`),
     address: record.address,
     latitude,
     longitude,
     accessibility: [],
     openingHours: "",
-    distanceMeters: 0,
-    campusName: record.name,
+    distanceMeters: record.kind === "library" ? null : 0,
+    campusName: record.campusName ?? record.name,
     source: {
       type: "official-university",
       label: "Resmî üniversite kaynağı",
       url: record.sourceUrl,
-      checkedAt: CHECKED_AT,
+      checkedAt: record.checkedAt ?? CHECKED_AT,
       coordinateSource,
     },
   });
@@ -367,8 +347,8 @@ const officialPlaceCount = places.filter((place) => place.source.type === "offic
 const coordinateKnownCount = places.filter((place) => place.latitude !== null && place.longitude !== null).length;
 const payload = {
   meta: {
-    version: "2026.2",
-    updatedAt: CHECKED_AT,
+    version: "2026.3",
+    updatedAt: places.reduce((latest, place) => place.source.checkedAt > latest ? place.source.checkedAt : latest, CHECKED_AT),
     universityCount: universities.length,
     coveredUniversityCount: coveredUniversities,
     placeCount: places.length,
@@ -385,7 +365,8 @@ const payload = {
 };
 
 await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
-await writeFile(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+await writeFile(`${OUTPUT_PATH}.tmp`, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+await rename(`${OUTPUT_PATH}.tmp`, OUTPUT_PATH);
 const selectedAnchors = universities.flatMap((university) => matchesByUniversity.get(university.id).map((match) => ({
   universityId: university.id,
   osm: `${match.element.type}/${match.element.id}`,
@@ -404,5 +385,5 @@ console.log(JSON.stringify({
   uncoveredUniversities: universities.length - coveredUniversities,
   places: places.length,
   matchedAnchors: [...matchesByUniversity.values()].reduce((total, items) => total + items.length, 0),
-  officialSourceRecords: officialSources.records.length,
+  officialSourceRecords: officialSources.records.length + librarySources.records.length,
 }, null, 2));

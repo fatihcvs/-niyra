@@ -1,0 +1,146 @@
+{
+  "checkedAt": "2026-09-05",
+  "sourceSha256": "772b1ce5a98e174e18ee5fb6302535483622b2c6ddf05cc647c5e657adf2545e",
+  "records": [
+    {
+      "universityId": "omu",
+      "name": "OMÜ Merkez Kütüphanesi",
+      "kind": "library",
+      "address": "Kurupelit Yerleşkesi, 55139 Atakum / Samsun",
+      "campusName": "Kurupelit Yerleşkesi",
+      "description": "OMÜ Merkez Kütüphanesi. Kurum bilgilerini ve güncel duyuruları kütüphanenin resmî sayfasından inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Eğitim Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Eğitim Fakültesi, Samsun",
+      "campusName": "Eğitim Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Avusturya Kütüphanesi (Eğitim Fakültesi)",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Eğitim Fakültesi, Samsun",
+      "campusName": "Eğitim Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Güzel Sanatlar Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Güzel Sanatlar Fakültesi, Samsun",
+      "campusName": "Güzel Sanatlar Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "İlahiyat Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, İlahiyat Fakültesi, Samsun",
+      "campusName": "İlahiyat Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Ali Fuad Başgil Hukuk Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Ali Fuad Başgil Hukuk Fakültesi, Samsun",
+      "campusName": "Ali Fuad Başgil Hukuk Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "İletişim Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, İletişim Fakültesi, Samsun",
+      "campusName": "İletişim Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Terme Meslek Yüksekokulu Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Terme Meslek Yüksekokulu, Samsun",
+      "campusName": "Terme Meslek Yüksekokulu",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Alaçam Meslek Yüksekokulu Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Alaçam Meslek Yüksekokulu, Samsun",
+      "campusName": "Alaçam Meslek Yüksekokulu",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Çarşamba Ticaret Borsası Meslek Yüksekokulu Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Çarşamba Ticaret Borsası Meslek Yüksekokulu, Samsun",
+      "campusName": "Çarşamba Ticaret Borsası Meslek Yüksekokulu",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Vezirköprü Meslek Yüksekokulu Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Vezirköprü Meslek Yüksekokulu, Samsun",
+      "campusName": "Vezirköprü Meslek Yüksekokulu",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Yeşilyurt Meslek Yüksekokulu Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Yeşilyurt Meslek Yüksekokulu, Samsun",
+      "campusName": "Yeşilyurt Meslek Yüksekokulu",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "İnsan ve Toplum Bilimleri Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, İnsan ve Toplum Bilimleri Fakültesi, Samsun",
+      "campusName": "İnsan ve Toplum Bilimleri Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    },
+    {
+      "universityId": "omu",
+      "name": "Turizm Fakültesi Kütüphanesi",
+      "kind": "library",
+      "address": "Ondokuz Mayıs Üniversitesi, Turizm Fakültesi, Samsun",
+      "campusName": "Turizm Fakültesi",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "sourceUrl": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+      "checkedAt": "2026-09-05"
+    }
+  ]
+}

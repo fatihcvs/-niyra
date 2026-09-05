@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import ts from "typescript";
+import { categoryFor } from "../scripts/campus-catalog/classify-campus-place.mjs";
 
 async function universities() {
   const [source, logoCatalog] = await Promise.all([
@@ -22,13 +23,48 @@ async function catalog() {
   return JSON.parse(await readFile(new URL("../data/campus-places-2026.json", import.meta.url), "utf8"));
 }
 
+test("library services stay visible when their buildings also carry university tags", () => {
+  assert.equal(categoryFor({ tags: { amenity: "library", building: "university" } }), "library");
+  assert.equal(categoryFor({ tags: { amenity: "library", office: "educational_institution" } }), "library");
+  assert.equal(categoryFor({ tags: { building: "library" } }), "library");
+  assert.equal(categoryFor({ tags: { amenity: "library" } }, true), "library");
+  assert.equal(categoryFor({ tags: { building: "university" } }), "building");
+  assert.equal(categoryFor({ tags: { shop: "books" } }), "study");
+  assert.equal(categoryFor({ tags: { name: "Kütüphane durağı", highway: "bus_stop" } }), "transport");
+});
+
+test("OMU libraries are available through the actual campus filters without invented coordinates", async () => {
+  const data = await catalog();
+  const source = (await readFile(new URL("../lib/campus-place-catalog.ts", import.meta.url), "utf8"))
+    .replace(/^import campusPlaceCatalog from .*?;\r?\n/, `const campusPlaceCatalog = ${JSON.stringify(data)};\n`);
+  const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const { getCuratedCampusPlaces } = await import(`data:text/javascript;base64,${Buffer.from(output).toString("base64")}`);
+  const libraries = getCuratedCampusPlaces("omu", { category: "library" });
+  assert.equal(libraries.length, 14);
+  assert.ok(libraries.some((p) => p.name === "OMÜ Merkez Kütüphanesi"));
+  for (const place of libraries) {
+    assert.equal(new URL(place.source.url).hostname, "kutuphane.omu.edu.tr");
+    assert.equal(place.curated, true);
+    assert.equal(place.coordinatesKnown, false);
+    assert.equal(place.distanceMeters, null);
+    assert.equal(place.source.coordinateSource, null);
+  }
+  assert.equal(getCuratedCampusPlaces("omu", { category: "library", query: "terme" }).length, 1);
+  assert.equal(getCuratedCampusPlaces("omu", { category: "library", query: "olmayan-birim" }).length, 0);
+  assert.ok(getCuratedCampusPlaces("omu", { category: "building" }).every((p) => !libraries.some((library) => library.id === p.id)));
+  assert.deepEqual(getCuratedCampusPlaces("unknown", { category: "library" }), []);
+  const gaziLibraries = data.places.filter((p) => p.source.osmElement === "way/418123565");
+  assert.ok(gaziLibraries.length > 0);
+  assert.ok(gaziLibraries.every((p) => p.category === "library"), "Previously misclassified Gazi library must be regenerated correctly");
+});
+
 test("campus catalog gives every supported university at least one sourced record", async () => {
   const [allUniversities, data] = await Promise.all([universities(), catalog()]);
   const knownIds = new Set(allUniversities.map((university) => university.id));
   const coveredIds = new Set(data.places.map((place) => place.universityId));
 
-  assert.equal(data.meta.updatedAt, "2026-09-04");
-  assert.equal(data.meta.version, "2026.2");
+  assert.equal(data.meta.updatedAt, "2026-09-05");
+  assert.equal(data.meta.version, "2026.3");
   assert.equal(data.meta.universityCount, 241);
   assert.equal(data.meta.coveredUniversityCount, 241);
   assert.equal(data.meta.radiusMeters, 1_500);
@@ -45,7 +81,7 @@ test("campus records keep coordinates, provenance, and inferred fields honest", 
 
   assert.equal(new Set(data.places.map((place) => place.id)).size, data.places.length);
   assert.equal(data.meta.openStreetMapPlaceCount, 7141);
-  assert.equal(data.meta.officialPlaceCount, 48);
+  assert.equal(data.meta.officialPlaceCount, 62);
   assert.equal(data.meta.coordinateKnownCount, 7147);
   assert.equal(data.meta.license, "ODbL 1.0");
 
@@ -58,10 +94,12 @@ test("campus records keep coordinates, provenance, and inferred fields honest", 
       assert.ok(place.latitude >= -90 && place.latitude <= 90, place.id);
       assert.ok(place.longitude >= -180 && place.longitude <= 180, place.id);
     }
-    assert.ok(place.distanceMeters >= 0 && place.distanceMeters <= data.meta.radiusMeters, place.id);
+    if (place.distanceMeters === null) assert.equal(place.latitude, null, place.id);
+    else assert.ok(place.distanceMeters >= 0 && place.distanceMeters <= data.meta.radiusMeters, place.id);
     assert.ok(place.accessibility.every((item) => accessibility.has(item)), place.id);
     assert.match(place.source.url, /^https:\/\//, place.id);
-    assert.equal(place.source.checkedAt, data.meta.updatedAt, place.id);
+    assert.match(place.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(place.source.checkedAt <= data.meta.updatedAt, place.id);
     assert.ok(["openstreetmap", "official-university"].includes(place.source.type), place.id);
     if (place.source.type === "official-university") {
       assert.ok(place.address.length >= 5, place.id);
@@ -89,7 +127,7 @@ test("the selected nearby set is useful across core campus categories", async ()
   const officialUniversityCount = new Set(data.places.filter((place) => place.source.type === "official-university").map((place) => place.universityId)).size;
 
   assert.equal(osmUniversityCount, 215);
-  assert.equal(officialUniversityCount, 26);
+  assert.equal(officialUniversityCount, 27);
   assert.ok([...placesPerUniversity.values()].filter((count) => count >= 40).length >= 150);
   for (const category of ["building", "library", "food", "study", "social", "sports", "health", "transport", "other"]) {
     assert.ok(counts[category] >= 200, `${category}:${counts[category] ?? 0}`);

@@ -1,5 +1,18 @@
 [
   {
+    "id": "campus-library-visibility-fix",
+    "releasedAt": "2026-09-05T00:33:02+00:00",
+    "category": "Düzeltme",
+    "area": "Kampüs",
+    "title": "Kampüs rehberindeki kütüphaneler görünür oldu",
+    "summary": "Kütüphane filtresinde eksik kalan OMÜ kayıtları eklendi; bina olarak listelenen üniversite kütüphanelerinin kategorisi düzeltildi.",
+    "highlights": [
+      "OMÜ Merkez Kütüphanesi ve resmî listedeki 13 birim kütüphanesi rehbere eklendi.",
+      "Kütüphane olarak tanımlanan yapılar artık Binalar yerine Kütüphane filtresinde bulunuyor.",
+      "Resmî kaynak bağlantıları gösteriliyor; kesin konumu bilinmeyen kütüphaneler için mesafe üretilmiyor."
+    ]
+  },
+  {
     "id": "campus-sourced-housing-directory",
     "releasedAt": "2026-09-05T00:16:35+00:00",
     "category": "Yeni özellik",

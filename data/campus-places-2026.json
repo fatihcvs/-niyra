@@ -1,12 +1,12 @@
 {
   "meta": {
-    "version": "2026.2",
-    "updatedAt": "2026-09-04",
+    "version": "2026.3",
+    "updatedAt": "2026-09-05",
     "universityCount": 241,
     "coveredUniversityCount": 241,
-    "placeCount": 7189,
+    "placeCount": 7203,
     "openStreetMapPlaceCount": 7141,
-    "officialPlaceCount": 48,
+    "officialPlaceCount": 62,
     "coordinateKnownCount": 7147,
     "radiusMeters": 1500,
     "methodology": "OpenStreetMap university/campus records were matched by official domain, Wikidata ID, exact name, or high-confidence name similarity. Up to 40 nearby named places were selected within 1.5 km with balanced coverage across buildings, libraries, food, study, social, sports, health, transport, and daily-needs categories. Institutions without a confident map anchor were covered by addresses published on official university or public higher-education pages; coordinates are omitted when an exact source could not be verified.",
@@ -76,6 +76,27 @@
         "url": "https://www.openstreetmap.org/way/868658350",
         "checkedAt": "2026-09-04",
         "osmElement": "way/868658350"
+      }
+    },
+    {
+      "id": "catalog:tr-abdullah-gul-universitesi:osm-way-868658351",
+      "universityId": "tr-abdullah-gul-universitesi",
+      "name": "Abdullah Gül Kütüphanesi",
+      "category": "library",
+      "description": "Abdullah Gül Üniversitesi için 245 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 38.73821,
+      "longitude": 35.472054,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 245,
+      "campusName": "Abdullah Gül Üniversitesi Sümer Kampüsü",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/way/868658351",
+        "checkedAt": "2026-09-04",
+        "osmElement": "way/868658351"
       }
     },
     {
@@ -202,27 +223,6 @@
         "url": "https://www.openstreetmap.org/node/11868853036",
         "checkedAt": "2026-09-04",
         "osmElement": "node/11868853036"
-      }
-    },
-    {
-      "id": "catalog:tr-abdullah-gul-universitesi:osm-way-868658351",
-      "universityId": "tr-abdullah-gul-universitesi",
-      "name": "Abdullah Gül Kütüphanesi",
-      "category": "building",
-      "description": "Abdullah Gül Üniversitesi için 245 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 38.73821,
-      "longitude": 35.472054,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 245,
-      "campusName": "Abdullah Gül Üniversitesi Sümer Kampüsü",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/868658351",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/868658351"
       }
     },
     {
@@ -9008,27 +9008,6 @@
       }
     },
     {
-      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-way-418123565",
-      "universityId": "tr-ankara-haci-bayram-veli-universitesi",
-      "name": "Gazi Üniversitesi Merkez Kütüphanesi",
-      "category": "building",
-      "description": "Ankara Hacı Bayram Veli Üniversitesi için 302 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "Bandırma Caddesi 6/12, Yenimahalle, Ankara",
-      "latitude": 39.941437,
-      "longitude": 32.822141,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 302,
-      "campusName": "Hacı Bayram Veli Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/418123565",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/418123565"
-      }
-    },
-    {
       "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-way-1554352151",
       "universityId": "tr-ankara-haci-bayram-veli-universitesi",
       "name": "Gazi Mahallesi Kütüphane ve Kurs Merkezi",
@@ -9197,24 +9176,24 @@
       }
     },
     {
-      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-node-6187797785",
+      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-way-418123565",
       "universityId": "tr-ankara-haci-bayram-veli-universitesi",
-      "name": "Çalışma Salonu ÇS",
+      "name": "Gazi Üniversitesi Merkez Kütüphanesi",
       "category": "library",
-      "description": "Ankara Hacı Bayram Veli Üniversitesi için 577 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 39.932783,
-      "longitude": 32.821913,
+      "description": "Ankara Hacı Bayram Veli Üniversitesi için 302 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "Bandırma Caddesi 6/12, Yenimahalle, Ankara",
+      "latitude": 39.941437,
+      "longitude": 32.822141,
       "accessibility": [],
       "openingHours": "",
-      "distanceMeters": 577,
-      "campusName": "Ankara Hacı Bayram Veli Üniversitesi İktisadi ve İdari Bilimler Fakültesi",
+      "distanceMeters": 302,
+      "campusName": "Hacı Bayram Veli Üniversitesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/6187797785",
+        "url": "https://www.openstreetmap.org/way/418123565",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/6187797785"
+        "osmElement": "way/418123565"
       }
     },
     {
@@ -9344,24 +9323,24 @@
       }
     },
     {
-      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-way-405162217",
+      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-node-6187797785",
       "universityId": "tr-ankara-haci-bayram-veli-universitesi",
-      "name": "Millî Kütüphane",
+      "name": "Çalışma Salonu ÇS",
       "category": "library",
-      "description": "Ankara Hacı Bayram Veli Üniversitesi için 1045 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "William Thomsen Cad., Ankara",
-      "latitude": 39.916258,
-      "longitude": 32.826616,
+      "description": "Ankara Hacı Bayram Veli Üniversitesi için 577 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 39.932783,
+      "longitude": 32.821913,
       "accessibility": [],
-      "openingHours": "09:00-23:00; PH off",
-      "distanceMeters": 1045,
-      "campusName": "Ankara Hacı Bayram Veli Üniversitesi İletişim Fakültesi",
+      "openingHours": "",
+      "distanceMeters": 577,
+      "campusName": "Ankara Hacı Bayram Veli Üniversitesi İktisadi ve İdari Bilimler Fakültesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/405162217",
+        "url": "https://www.openstreetmap.org/node/6187797785",
         "checkedAt": "2026-09-04",
-        "osmElement": "way/405162217"
+        "osmElement": "node/6187797785"
       }
     },
     {
@@ -9491,24 +9470,24 @@
       }
     },
     {
-      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-node-11360349552",
+      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-way-405162217",
       "universityId": "tr-ankara-haci-bayram-veli-universitesi",
-      "name": "Uyanık Kütüphane Bahçelievler",
+      "name": "Millî Kütüphane",
       "category": "library",
-      "description": "Ankara Hacı Bayram Veli Üniversitesi için 1077 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 39.925357,
-      "longitude": 32.825035,
+      "description": "Ankara Hacı Bayram Veli Üniversitesi için 1045 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "William Thomsen Cad., Ankara",
+      "latitude": 39.916258,
+      "longitude": 32.826616,
       "accessibility": [],
-      "openingHours": "09:00-02:00",
-      "distanceMeters": 1077,
-      "campusName": "Ankara Hacı Bayram Veli Üniversitesi İktisadi ve İdari Bilimler Fakültesi",
+      "openingHours": "09:00-23:00; PH off",
+      "distanceMeters": 1045,
+      "campusName": "Ankara Hacı Bayram Veli Üniversitesi İletişim Fakültesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/11360349552",
+        "url": "https://www.openstreetmap.org/way/405162217",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/11360349552"
+        "osmElement": "way/405162217"
       }
     },
     {
@@ -9761,6 +9740,27 @@
         "url": "https://www.openstreetmap.org/node/14141044665",
         "checkedAt": "2026-09-04",
         "osmElement": "node/14141044665"
+      }
+    },
+    {
+      "id": "catalog:tr-ankara-haci-bayram-veli-universitesi:osm-node-14141044643",
+      "universityId": "tr-ankara-haci-bayram-veli-universitesi",
+      "name": "Douch & Beef",
+      "category": "food",
+      "description": "Ankara Hacı Bayram Veli Üniversitesi için 159 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 39.94274,
+      "longitude": 32.817009,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 159,
+      "campusName": "Hacı Bayram Veli Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/node/14141044643",
+        "checkedAt": "2026-09-04",
+        "osmElement": "node/14141044643"
       }
     },
     {
@@ -11551,27 +11551,6 @@
       }
     },
     {
-      "id": "catalog:tr-ankara-universitesi:osm-way-418123565",
-      "universityId": "tr-ankara-universitesi",
-      "name": "Gazi Üniversitesi Merkez Kütüphanesi",
-      "category": "building",
-      "description": "Ankara Üniversitesi için 860 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "Bandırma Caddesi 6/12, Yenimahalle, Ankara",
-      "latitude": 39.941437,
-      "longitude": 32.822141,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 860,
-      "campusName": "Ankara Üniversitesi Tandoğan Yerleşkesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/418123565",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/418123565"
-      }
-    },
-    {
       "id": "catalog:tr-ankara-universitesi:osm-node-6187797785",
       "universityId": "tr-ankara-universitesi",
       "name": "Çalışma Salonu ÇS",
@@ -12287,6 +12266,27 @@
         "url": "https://www.openstreetmap.org/node/6362871521",
         "checkedAt": "2026-09-04",
         "osmElement": "node/6362871521"
+      }
+    },
+    {
+      "id": "catalog:tr-ankara-universitesi:osm-node-8147759489",
+      "universityId": "tr-ankara-universitesi",
+      "name": "Yenişehir",
+      "category": "transport",
+      "description": "Ankara Üniversitesi için 120 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 39.929046,
+      "longitude": 32.859023,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 120,
+      "campusName": "Ankara Üniversitesi Tıp Fakültesi Dekanlık ve Morfoloji Kampüsü",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/node/8147759489",
+        "checkedAt": "2026-09-04",
+        "osmElement": "node/8147759489"
       }
     },
     {
@@ -17773,27 +17773,6 @@
       }
     },
     {
-      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-way-746618432",
-      "universityId": "tr-aydin-adnan-menderes-universitesi",
-      "name": "Kütüphane - Bilgi İşlem",
-      "category": "building",
-      "description": "Aydın Adnan Menderes Üniversitesi için 189 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 37.858193,
-      "longitude": 27.854026,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 189,
-      "campusName": "Aydın Adnan Menderes Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/746618432",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/746618432"
-      }
-    },
-    {
       "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-way-1206122998",
       "universityId": "tr-aydin-adnan-menderes-universitesi",
       "name": "Kuşadası İlçe Halk Kütüphanesi",
@@ -17962,24 +17941,24 @@
       }
     },
     {
-      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-node-2321989494",
+      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-way-746618432",
       "universityId": "tr-aydin-adnan-menderes-universitesi",
-      "name": "Atça Halk Kütüphanesi",
+      "name": "Kütüphane - Bilgi İşlem",
       "category": "library",
-      "description": "Aydın Adnan Menderes Üniversitesi için 818 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "description": "Aydın Adnan Menderes Üniversitesi için 189 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
-      "latitude": 37.88867,
-      "longitude": 28.214384,
+      "latitude": 37.858193,
+      "longitude": 27.854026,
       "accessibility": [],
       "openingHours": "",
-      "distanceMeters": 818,
-      "campusName": "Adnan Menderes Üniversitesi Atça Meslek Yüksekokulu",
+      "distanceMeters": 189,
+      "campusName": "Aydın Adnan Menderes Üniversitesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/2321989494",
+        "url": "https://www.openstreetmap.org/way/746618432",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/2321989494"
+        "osmElement": "way/746618432"
       }
     },
     {
@@ -18130,24 +18109,24 @@
       }
     },
     {
-      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-node-13248939784",
+      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-node-2321989494",
       "universityId": "tr-aydin-adnan-menderes-universitesi",
-      "name": "Efeler Belediyesi Kitap Kafe",
+      "name": "Atça Halk Kütüphanesi",
       "category": "library",
-      "description": "Aydın Adnan Menderes Üniversitesi için 1113 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "description": "Aydın Adnan Menderes Üniversitesi için 818 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
-      "latitude": 37.847643,
-      "longitude": 27.858168,
+      "latitude": 37.88867,
+      "longitude": 28.214384,
       "accessibility": [],
       "openingHours": "",
-      "distanceMeters": 1113,
-      "campusName": "Aydın Adnan Menderes Üniversitesi",
+      "distanceMeters": 818,
+      "campusName": "Adnan Menderes Üniversitesi Atça Meslek Yüksekokulu",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/13248939784",
+        "url": "https://www.openstreetmap.org/node/2321989494",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/13248939784"
+        "osmElement": "node/2321989494"
       }
     },
     {
@@ -18274,6 +18253,27 @@
         "url": "https://www.openstreetmap.org/node/11579948823",
         "checkedAt": "2026-09-04",
         "osmElement": "node/11579948823"
+      }
+    },
+    {
+      "id": "catalog:tr-aydin-adnan-menderes-universitesi:osm-node-13248939784",
+      "universityId": "tr-aydin-adnan-menderes-universitesi",
+      "name": "Efeler Belediyesi Kitap Kafe",
+      "category": "library",
+      "description": "Aydın Adnan Menderes Üniversitesi için 1113 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 37.847643,
+      "longitude": 27.858168,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 1113,
+      "campusName": "Aydın Adnan Menderes Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/node/13248939784",
+        "checkedAt": "2026-09-04",
+        "osmElement": "node/13248939784"
       }
     },
     {
@@ -26223,10 +26223,31 @@
       }
     },
     {
+      "id": "catalog:tr-bingol-universitesi:osm-way-1283847983",
+      "universityId": "tr-bingol-universitesi",
+      "name": "Merkezi Kafeterya",
+      "category": "building",
+      "description": "Bingöl Üniversitesi için 446 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 38.897938,
+      "longitude": 40.488747,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 446,
+      "campusName": "Bingöl Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/way/1283847983",
+        "checkedAt": "2026-09-04",
+        "osmElement": "way/1283847983"
+      }
+    },
+    {
       "id": "catalog:tr-bingol-universitesi:osm-way-1145549042",
       "universityId": "tr-bingol-universitesi",
       "name": "Kütüphane",
-      "category": "building",
+      "category": "library",
       "description": "Bingöl Üniversitesi için 279 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
       "latitude": 38.898402,
@@ -26325,27 +26346,6 @@
         "url": "https://www.openstreetmap.org/node/4256158849",
         "checkedAt": "2026-09-04",
         "osmElement": "node/4256158849"
-      }
-    },
-    {
-      "id": "catalog:tr-bingol-universitesi:osm-way-1283847983",
-      "universityId": "tr-bingol-universitesi",
-      "name": "Merkezi Kafeterya",
-      "category": "building",
-      "description": "Bingöl Üniversitesi için 446 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 38.897938,
-      "longitude": 40.488747,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 446,
-      "campusName": "Bingöl Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/1283847983",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/1283847983"
       }
     },
     {
@@ -35512,27 +35512,6 @@
       }
     },
     {
-      "id": "catalog:tr-dicle-universitesi:osm-way-241614798",
-      "universityId": "tr-dicle-universitesi",
-      "name": "Alî Emîrî Merkez Kütüphanesi",
-      "category": "building",
-      "description": "Dicle Üniversitesi için 1155 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 37.918528,
-      "longitude": 40.277637,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 1155,
-      "campusName": "Dicle Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/241614798",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/241614798"
-      }
-    },
-    {
       "id": "catalog:tr-dicle-universitesi:osm-way-241614769",
       "universityId": "tr-dicle-universitesi",
       "name": "Okuma Salonu",
@@ -35614,6 +35593,27 @@
         "url": "https://www.openstreetmap.org/node/11869439569",
         "checkedAt": "2026-09-04",
         "osmElement": "node/11869439569"
+      }
+    },
+    {
+      "id": "catalog:tr-dicle-universitesi:osm-way-241614798",
+      "universityId": "tr-dicle-universitesi",
+      "name": "Alî Emîrî Merkez Kütüphanesi",
+      "category": "library",
+      "description": "Dicle Üniversitesi için 1155 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 37.918528,
+      "longitude": 40.277637,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 1155,
+      "campusName": "Dicle Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/way/241614798",
+        "checkedAt": "2026-09-04",
+        "osmElement": "way/241614798"
       }
     },
     {
@@ -47356,27 +47356,6 @@
       }
     },
     {
-      "id": "catalog:tr-gazi-universitesi:osm-way-418123565",
-      "universityId": "tr-gazi-universitesi",
-      "name": "Gazi Üniversitesi Merkez Kütüphanesi",
-      "category": "building",
-      "description": "Gazi Üniversitesi için 275 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "Bandırma Caddesi 6/12, Yenimahalle, Ankara",
-      "latitude": 39.941437,
-      "longitude": 32.822141,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 275,
-      "campusName": "Gazi Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/418123565",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/418123565"
-      }
-    },
-    {
       "id": "catalog:tr-gazi-universitesi:osm-node-6187797785",
       "universityId": "tr-gazi-universitesi",
       "name": "Çalışma Salonu ÇS",
@@ -47545,26 +47524,24 @@
       }
     },
     {
-      "id": "catalog:tr-gazi-universitesi:osm-node-4333122653",
+      "id": "catalog:tr-gazi-universitesi:osm-way-418123565",
       "universityId": "tr-gazi-universitesi",
-      "name": "CerModern Kütüphane",
+      "name": "Gazi Üniversitesi Merkez Kütüphanesi",
       "category": "library",
-      "description": "Gazi Üniversitesi için 277 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "Altınsoy Caddesi 3, Altındağ, 06101",
-      "latitude": 39.931595,
-      "longitude": 32.849424,
-      "accessibility": [
-        "step-free"
-      ],
-      "openingHours": "Tu-Su 10:00-18:00",
-      "distanceMeters": 277,
-      "campusName": "Gazi Üniversitesi Mimarlık Fakültesi",
+      "description": "Gazi Üniversitesi için 275 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "Bandırma Caddesi 6/12, Yenimahalle, Ankara",
+      "latitude": 39.941437,
+      "longitude": 32.822141,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 275,
+      "campusName": "Gazi Üniversitesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/4333122653",
+        "url": "https://www.openstreetmap.org/way/418123565",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/4333122653"
+        "osmElement": "way/418123565"
       }
     },
     {
@@ -47694,24 +47671,26 @@
       }
     },
     {
-      "id": "catalog:tr-gazi-universitesi:osm-way-1554352151",
+      "id": "catalog:tr-gazi-universitesi:osm-node-4333122653",
       "universityId": "tr-gazi-universitesi",
-      "name": "Gazi Mahallesi Kütüphane ve Kurs Merkezi",
+      "name": "CerModern Kütüphane",
       "category": "library",
-      "description": "Gazi Üniversitesi için 487 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 39.94229,
-      "longitude": 32.815274,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 487,
-      "campusName": "Gazi Üniversitesi",
+      "description": "Gazi Üniversitesi için 277 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "Altınsoy Caddesi 3, Altındağ, 06101",
+      "latitude": 39.931595,
+      "longitude": 32.849424,
+      "accessibility": [
+        "step-free"
+      ],
+      "openingHours": "Tu-Su 10:00-18:00",
+      "distanceMeters": 277,
+      "campusName": "Gazi Üniversitesi Mimarlık Fakültesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/1554352151",
+        "url": "https://www.openstreetmap.org/node/4333122653",
         "checkedAt": "2026-09-04",
-        "osmElement": "way/1554352151"
+        "osmElement": "node/4333122653"
       }
     },
     {
@@ -47843,24 +47822,24 @@
       }
     },
     {
-      "id": "catalog:tr-gazi-universitesi:osm-way-421327979",
+      "id": "catalog:tr-gazi-universitesi:osm-way-1554352151",
       "universityId": "tr-gazi-universitesi",
-      "name": "Kütüphane",
+      "name": "Gazi Mahallesi Kütüphane ve Kurs Merkezi",
       "category": "library",
-      "description": "Gazi Üniversitesi için 857 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "description": "Gazi Üniversitesi için 487 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
-      "latitude": 39.93029,
-      "longitude": 32.856069,
+      "latitude": 39.94229,
+      "longitude": 32.815274,
       "accessibility": [],
       "openingHours": "",
-      "distanceMeters": 857,
-      "campusName": "Gazi Üniversitesi Mimarlık Fakültesi",
+      "distanceMeters": 487,
+      "campusName": "Gazi Üniversitesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/421327979",
+        "url": "https://www.openstreetmap.org/way/1554352151",
         "checkedAt": "2026-09-04",
-        "osmElement": "way/421327979"
+        "osmElement": "way/1554352151"
       }
     },
     {
@@ -48092,6 +48071,27 @@
         "url": "https://www.openstreetmap.org/node/4532555389",
         "checkedAt": "2026-09-04",
         "osmElement": "node/4532555389"
+      }
+    },
+    {
+      "id": "catalog:tr-gazi-universitesi:osm-node-14051668506",
+      "universityId": "tr-gazi-universitesi",
+      "name": "İlahiyat Fakültesi",
+      "category": "transport",
+      "description": "Gazi Üniversitesi için 213 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 39.932486,
+      "longitude": 32.822034,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 213,
+      "campusName": "Gazi Üniversitesi Tıp Fakültesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/node/14051668506",
+        "checkedAt": "2026-09-04",
+        "osmElement": "node/14051668506"
       }
     },
     {
@@ -86361,7 +86361,7 @@
       "id": "catalog:tr-izmir-yuksek-teknoloji-enstitusu:osm-relation-5321595",
       "universityId": "tr-izmir-yuksek-teknoloji-enstitusu",
       "name": "IZTECH Library",
-      "category": "building",
+      "category": "library",
       "description": "İzmir Yüksek Teknoloji Enstitüsü için 405 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
       "latitude": 38.319767,
@@ -95201,27 +95201,6 @@
       }
     },
     {
-      "id": "catalog:kktc-kibris-saglik-ve-toplum-bilimleri-universitesi:osm-way-690005567",
-      "universityId": "kktc-kibris-saglik-ve-toplum-bilimleri-universitesi",
-      "name": "CIU Information Center & Library",
-      "category": "building",
-      "description": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi için 652 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 35.219049,
-      "longitude": 33.417433,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 652,
-      "campusName": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/690005567",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/690005567"
-      }
-    },
-    {
       "id": "catalog:kktc-kibris-saglik-ve-toplum-bilimleri-universitesi:osm-way-717257035",
       "universityId": "kktc-kibris-saglik-ve-toplum-bilimleri-universitesi",
       "name": "Güzelyurt Halk Kütüphanesi",
@@ -95390,24 +95369,24 @@
       }
     },
     {
-      "id": "catalog:kktc-kibris-saglik-ve-toplum-bilimleri-universitesi:osm-node-14049052720",
+      "id": "catalog:kktc-kibris-saglik-ve-toplum-bilimleri-universitesi:osm-way-690005567",
       "universityId": "kktc-kibris-saglik-ve-toplum-bilimleri-universitesi",
-      "name": "Library",
+      "name": "CIU Information Center & Library",
       "category": "library",
-      "description": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi için 657 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "description": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi için 652 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
-      "latitude": 35.219048,
-      "longitude": 33.417379,
+      "latitude": 35.219049,
+      "longitude": 33.417433,
       "accessibility": [],
       "openingHours": "",
-      "distanceMeters": 657,
+      "distanceMeters": 652,
       "campusName": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi",
       "source": {
         "type": "openstreetmap",
         "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/node/14049052720",
+        "url": "https://www.openstreetmap.org/way/690005567",
         "checkedAt": "2026-09-04",
-        "osmElement": "node/14049052720"
+        "osmElement": "way/690005567"
       }
     },
     {
@@ -95555,6 +95534,27 @@
         "url": "https://www.openstreetmap.org/node/12854465852",
         "checkedAt": "2026-09-04",
         "osmElement": "node/12854465852"
+      }
+    },
+    {
+      "id": "catalog:kktc-kibris-saglik-ve-toplum-bilimleri-universitesi:osm-node-14049052720",
+      "universityId": "kktc-kibris-saglik-ve-toplum-bilimleri-universitesi",
+      "name": "Library",
+      "category": "library",
+      "description": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi için 657 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 35.219048,
+      "longitude": 33.417379,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 657,
+      "campusName": "Kıbrıs Sağlık ve Toplum Bilimleri Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/node/14049052720",
+        "checkedAt": "2026-09-04",
+        "osmElement": "node/14049052720"
       }
     },
     {
@@ -130760,7 +130760,7 @@
       "id": "catalog:tr-suleyman-demirel-universitesi:osm-way-1344463812",
       "universityId": "tr-suleyman-demirel-universitesi",
       "name": "Prof. Dr. Hasan Gürbüz Bilgi Merkezi",
-      "category": "building",
+      "category": "library",
       "description": "Süleyman Demirel Üniversitesi için 933 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
       "address": "",
       "latitude": 37.82873,
@@ -141112,27 +141112,6 @@
       }
     },
     {
-      "id": "catalog:kktc-uluslararasi-kibris-universitesi:osm-way-690005567",
-      "universityId": "kktc-uluslararasi-kibris-universitesi",
-      "name": "CIU Information Center & Library",
-      "category": "building",
-      "description": "Uluslararası Kıbrıs Üniversitesi için 314 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
-      "address": "",
-      "latitude": 35.219049,
-      "longitude": 33.417433,
-      "accessibility": [],
-      "openingHours": "",
-      "distanceMeters": 314,
-      "campusName": "Uluslararası Kıbrıs Üniversitesi",
-      "source": {
-        "type": "openstreetmap",
-        "label": "OpenStreetMap",
-        "url": "https://www.openstreetmap.org/way/690005567",
-        "checkedAt": "2026-09-04",
-        "osmElement": "way/690005567"
-      }
-    },
-    {
       "id": "catalog:kktc-uluslararasi-kibris-universitesi:osm-node-14049052720",
       "universityId": "kktc-uluslararasi-kibris-universitesi",
       "name": "Library",
@@ -141298,6 +141277,27 @@
         "url": "https://www.openstreetmap.org/node/3306514320",
         "checkedAt": "2026-09-04",
         "osmElement": "node/3306514320"
+      }
+    },
+    {
+      "id": "catalog:kktc-uluslararasi-kibris-universitesi:osm-way-690005567",
+      "universityId": "kktc-uluslararasi-kibris-universitesi",
+      "name": "CIU Information Center & Library",
+      "category": "library",
+      "description": "Uluslararası Kıbrıs Üniversitesi için 314 m çevredeki açık harita kaydı. Bilgi OpenStreetMap üzerindeki ad ve konum kaydından alınmıştır.",
+      "address": "",
+      "latitude": 35.219049,
+      "longitude": 33.417433,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": 314,
+      "campusName": "Uluslararası Kıbrıs Üniversitesi",
+      "source": {
+        "type": "openstreetmap",
+        "label": "OpenStreetMap",
+        "url": "https://www.openstreetmap.org/way/690005567",
+        "checkedAt": "2026-09-04",
+        "osmElement": "way/690005567"
       }
     },
     {
@@ -151349,6 +151349,300 @@
         "label": "Resmî üniversite kaynağı",
         "url": "https://yuksekihtisasuniversitesi.edu.tr/Uploads/duyurular_view/d9d9cbb9ddabce4dc0063eb1f5567301.pdf",
         "checkedAt": "2026-09-04",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-omu-merkez-kutuphanesi",
+      "universityId": "omu",
+      "name": "OMÜ Merkez Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ Merkez Kütüphanesi. Kurum bilgilerini ve güncel duyuruları kütüphanenin resmî sayfasından inceleyebilirsin.",
+      "address": "Kurupelit Yerleşkesi, 55139 Atakum / Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Kurupelit Yerleşkesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-egitim-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "Eğitim Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Eğitim Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Eğitim Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-avusturya-kutuphanesi-egitim-fakultesi",
+      "universityId": "omu",
+      "name": "Avusturya Kütüphanesi (Eğitim Fakültesi)",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Eğitim Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Eğitim Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-guzel-sanatlar-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "Güzel Sanatlar Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Güzel Sanatlar Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Güzel Sanatlar Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-ilahiyat-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "İlahiyat Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, İlahiyat Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "İlahiyat Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-ali-fuad-basgil-hukuk-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "Ali Fuad Başgil Hukuk Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Ali Fuad Başgil Hukuk Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Ali Fuad Başgil Hukuk Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-iletisim-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "İletişim Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, İletişim Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "İletişim Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-terme-meslek-yuksekokulu-kutuphanesi",
+      "universityId": "omu",
+      "name": "Terme Meslek Yüksekokulu Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Terme Meslek Yüksekokulu, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Terme Meslek Yüksekokulu",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-alacam-meslek-yuksekokulu-kutuphanesi",
+      "universityId": "omu",
+      "name": "Alaçam Meslek Yüksekokulu Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Alaçam Meslek Yüksekokulu, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Alaçam Meslek Yüksekokulu",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-carsamba-ticaret-borsasi-meslek-yuksekokulu-kutuphanesi",
+      "universityId": "omu",
+      "name": "Çarşamba Ticaret Borsası Meslek Yüksekokulu Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Çarşamba Ticaret Borsası Meslek Yüksekokulu, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Çarşamba Ticaret Borsası Meslek Yüksekokulu",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-vezirkopru-meslek-yuksekokulu-kutuphanesi",
+      "universityId": "omu",
+      "name": "Vezirköprü Meslek Yüksekokulu Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Vezirköprü Meslek Yüksekokulu, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Vezirköprü Meslek Yüksekokulu",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-yesilyurt-meslek-yuksekokulu-kutuphanesi",
+      "universityId": "omu",
+      "name": "Yeşilyurt Meslek Yüksekokulu Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Yeşilyurt Meslek Yüksekokulu, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Yeşilyurt Meslek Yüksekokulu",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-insan-ve-toplum-bilimleri-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "İnsan ve Toplum Bilimleri Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, İnsan ve Toplum Bilimleri Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "İnsan ve Toplum Bilimleri Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
+        "coordinateSource": null
+      }
+    },
+    {
+      "id": "catalog:omu:official-turizm-fakultesi-kutuphanesi",
+      "universityId": "omu",
+      "name": "Turizm Fakültesi Kütüphanesi",
+      "category": "library",
+      "description": "OMÜ’nün resmî birim kütüphaneleri listesinde yer alır. Bina girişi ve çalışma saatleri için ilgili birimin güncel bilgisini inceleyebilirsin.",
+      "address": "Ondokuz Mayıs Üniversitesi, Turizm Fakültesi, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "accessibility": [],
+      "openingHours": "",
+      "distanceMeters": null,
+      "campusName": "Turizm Fakültesi",
+      "source": {
+        "type": "official-university",
+        "label": "Resmî üniversite kaynağı",
+        "url": "https://kutuphane.omu.edu.tr/birim-kutuphaneleri-ofisi/",
+        "checkedAt": "2026-09-05",
         "coordinateSource": null
       }
     }
