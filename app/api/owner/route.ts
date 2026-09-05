@@ -1,6 +1,7 @@
 import { hashPassword } from "../../../lib/app-auth";
 import { ADMIN_FEATURE_REGISTRY } from "../../../lib/admin-registry";
 import cyprusCoverage from "../../../data/cyprus-catalog-coverage-2026.json";
+import turkeyCoverage from "../../../data/turkey-catalog-coverage-2026.json";
 import { getOfficialCourseCoverage, officialCourseCatalogMeta } from "../../../lib/official-course-catalog";
 import { getPlatformSettings, savePlatformSettings, type PlatformSettings } from "../../../lib/platform-settings";
 import { cleanText, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     const access = await requireStaff(DB, request, "owner");
     if ("response" in access) return access.response;
     const courseCoverage = getOfficialCourseCoverage();
-    const courseCount = courseCoverage.reduce((total, programme) => total + programme.courses.length, 0);
+    const courseCount = courseCoverage.reduce((total, programme) => total + programme.courseCount, 0);
     const [metrics, admins, settings, auditRows, campuses, activity, featureCounts] = await Promise.all([
       DB.prepare(
         `SELECT
@@ -99,6 +100,10 @@ export async function GET(request: Request) {
         courseCatalogPartialPrograms: courseCoverage.filter((programme) => programme.coverage === "partial").length,
         cyprusCatalogPrograms: cyprusCoverage.universities.reduce((total, university) => total + university.programCount, 0),
         cyprusCatalogStructuredPrograms: cyprusCoverage.universities.reduce((total, university) => total + university.structuredProgramCount, 0),
+        turkeyCatalogPrograms: turkeyCoverage.universities.reduce((total, university) => total + university.programCount, 0),
+        turkeyCatalogStructuredPrograms: turkeyCoverage.universities.reduce((total, university) => total + university.structuredProgramCount, 0),
+        turkeyCatalogUniversities: turkeyCoverage.universities.length,
+        turkeyCatalogUniversitiesWithCourses: turkeyCoverage.universities.filter((university) => university.structuredProgramCount > 0).length,
         courseCatalogUpdatedAt: officialCourseCatalogMeta.updatedAt,
         generatedAt: new Date().toISOString(),
       },

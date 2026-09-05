@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MODERATABLE_ENTITY_TYPES } from "../lib/admin-registry";
 import { PRODUCT_UPDATES } from "../lib/product-updates";
+import { CourseCatalogCoverage } from "./course-catalog-coverage";
 import styles from "./staff-console.module.css";
 import {
   StaffDialog,
@@ -750,6 +751,14 @@ function OwnerOverview({
           <strong>
             {number.format(Number(system.cyprusCatalogStructuredPrograms ?? 0))} / {number.format(Number(system.cyprusCatalogPrograms ?? 0))} program
           </strong>
+          <span>Türkiye ders kapsamı</span>
+          <strong>
+            {number.format(Number(system.turkeyCatalogStructuredPrograms ?? 0))} / {number.format(Number(system.turkeyCatalogPrograms ?? 0))} program
+          </strong>
+          <span>Türkiye üniversiteleri</span>
+          <strong>
+            {number.format(Number(system.turkeyCatalogUniversitiesWithCourses ?? 0))} / {number.format(Number(system.turkeyCatalogUniversities ?? 0))} ders kataloglu
+          </strong>
           <small>Kısmi müfredatlarda bazı dersler, dönemler veya ders türleri kaynakta bulunmayabilir.</small>
           <small>
             Kampira v{String(system.version ?? "—")} · katalog{" "}
@@ -757,6 +766,7 @@ function OwnerOverview({
           </small>
         </div>
       </section>
+      <CourseCatalogCoverage />
       <MetricGrid
         labels={Object.fromEntries(
           primaryKeys.map((key) => [key, ownerMetricLabels[key]]),

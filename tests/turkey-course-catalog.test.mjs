@@ -1,0 +1,113 @@
+import assert from "node:assert/strict";
+import { readFile, readdir } from "node:fs/promises";
+import test from "node:test";
+
+const data = (file) => readFile(new URL(`../data/${file}`, import.meta.url), "utf8").then(JSON.parse);
+const [academic, legacy, index, coverage] = await Promise.all([
+  data("academic-catalog-2026.json"), data("official-course-catalog-2026.json"),
+  data("course-catalog-index-2026.json"), data("turkey-catalog-coverage-2026.json"),
+]);
+const files = await readdir(new URL("../data/course-catalog/", import.meta.url));
+const shards = Object.fromEntries(await Promise.all(files.map(async (file) => [file.slice(0, -5), await data(`course-catalog/${file}`)])));
+const expanded = Object.assign({}, ...Object.values(shards));
+
+test("every university shard matches its programme index and preserves course provenance", () => {
+  assert.deepEqual(Object.keys(expanded).sort(), Object.keys(index.programs).sort());
+  for (const [uid, programs] of Object.entries(shards)) {
+    assert.equal(academic.universities[uid].region, "Türkiye");
+    for (const [key, record] of Object.entries(programs)) {
+      assert.equal(key, `${uid}:${record.programId}`);
+      assert.equal(record.universityId, uid);
+      assert.equal(legacy.programs[key], undefined, "original source records must be preserved");
+      const p = academic.universities[uid].programs.find((p) => p.id === record.programId);
+      assert.equal(record.programName, p.name);
+      assert.equal(index.programs[key].courseCount, record.courses.length);
+      assert.ok(p.curriculumUrls.includes(record.sourceUrl));
+      assert.equal(new URL(record.sourceUrl).protocol, "https:");
+      assert.match(record.sourceHash, /^[a-f0-9]{64}$/);
+      assert.equal(record.coverage, "partial");
+      const codes = new Set();
+      for (const c of record.courses) {
+        assert.ok(c.name.length >= 2 && c.name.length <= 200, `${key}: ${c.name}`);
+        assert.ok(c.code.length >= 2 && c.code.length <= 20);
+        assert.ok([null, "required", "elective"].includes(c.kind));
+        assert.ok(c.semester === null || Number.isInteger(c.semester) && c.semester >= 1 && c.semester <= 12);
+        if (c.year !== undefined) assert.ok(Number.isInteger(c.year) && c.year >= 1 && c.year <= 6);
+        if (c.offeredSemesters) {
+          assert.equal(c.semester, null);
+          assert.ok(c.offeredSemesters.length > 1);
+          assert.deepEqual(c.offeredSemesters, [...new Set(c.offeredSemesters)].sort((a,b) => a-b));
+        }
+        assert.ok(!codes.has(c.code.toLocaleUpperCase("tr-TR")), `${key}: duplicate ${c.code}`);
+        codes.add(c.code.toLocaleUpperCase("tr-TR"));
+      }
+    }
+  }
+});
+
+test("Turkey coverage includes every institution and explicitly accounts for missing curricula", () => {
+  const universities = Object.entries(academic.universities).filter(([, u]) => u.region === "Türkiye");
+  assert.deepEqual(coverage.universities.map((u) => u.universityId).sort(), universities.map(([uid]) => uid).sort());
+  const combined = { ...legacy.programs, ...expanded };
+  for (const u of coverage.universities) {
+    const programs = academic.universities[u.universityId].programs;
+    const known = programs.filter((p) => combined[`${u.universityId}:${p.id}`]);
+    assert.equal(u.programCount, programs.length);
+    assert.equal(u.structuredProgramCount, known.length);
+    assert.equal(u.courseCount, known.reduce((n, p) => n + combined[`${u.universityId}:${p.id}`].courses.length, 0));
+    assert.deepEqual(u.missingProgramIds.sort(), programs.filter((p) => !combined[`${u.universityId}:${p.id}`]).map((p) => p.id).sort());
+  }
+  assert.equal(index.meta.stats.programCount, Object.keys(combined).length);
+  assert.equal(index.meta.stats.courseCount, Object.values(combined).reduce((n, p) => n + p.courses.length, 0));
+});
+
+test("the built API loads the requested university shard and keeps other programme IDs isolated", async () => {
+  const { default: worker } = await import(new URL("../dist/server/index.js", import.meta.url));
+  const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
+  const context = { waitUntil() {}, passThroughOnException() {} };
+  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi"].map((uid) => Object.values(shards[uid])[0]);
+  for (const record of chosen) {
+    const url = `http://localhost/api/course-catalog?universityId=${record.universityId}&programId=${record.programId}`;
+    const response = await worker.fetch(new Request(url), env, context);
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.available, true);
+    assert.equal(body.coverage, "partial");
+    assert.deepEqual(body.courses, record.courses);
+    assert.equal(body.sourceUrl, record.sourceUrl);
+    assert.equal(body.curriculumPeriod, record.curriculumPeriod);
+    const otherUniversity = chosen.find((candidate) => candidate.universityId !== record.universityId).universityId;
+    assert.equal((await worker.fetch(new Request(url.replace(record.universityId, otherUniversity)), env, context)).status, 400);
+  }
+});
+
+test("coverage API lists all Turkey institutions and separates missing courses from official catalogue access", async () => {
+  const { default: worker } = await import(new URL("../dist/server/index.js", import.meta.url));
+  const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
+  const context = { waitUntil() {}, passThroughOnException() {} };
+  const get = (path) => worker.fetch(new Request(`http://localhost${path}`), env, context);
+  const response = await get("/api/course-catalog/coverage");
+  assert.equal(response.status, 200);
+  const list = await response.json();
+  assert.equal(list.universities.length, 204);
+  assert.ok(list.universities.every((u) => u.structuredProgramCount + u.missingProgramCount === u.programCount));
+  assert.equal((await get("/api/course-catalog/coverage?universityId=invalid")).status, 404);
+  const sources = await data("turkey-catalog-sources-2026.json");
+  for (const uid of Object.keys(sources)) {
+    for (const source of sources[uid].catalogs) {
+      assert.equal(new URL(source.url).protocol, "https:");
+      assert.match(source.sourceHash, /^[a-f0-9]{64}$/);
+      assert.doesNotMatch(source.url, /rb-challenge|captcha|signin/i);
+    }
+  }
+  const university = coverage.universities.find((u) => u.missingProgramIds.length && sources[u.universityId].catalogs.length);
+  const uid = university.universityId;
+  const detail = await (await get(`/api/course-catalog/coverage?universityId=${uid}`)).json();
+  assert.deepEqual(detail.missingPrograms.map((p) => p.id).sort(), [...university.missingProgramIds].sort());
+  assert.ok(detail.missingPrograms.every((p) => p.name && p.unit));
+  const unavailable = await (await get(`/api/course-catalog?universityId=${uid}&programId=${university.missingProgramIds[0]}`)).json();
+  assert.equal(unavailable.available, false);
+  assert.deepEqual(unavailable.courses, []);
+  assert.ok(unavailable.catalogs.length > 0);
+  assert.equal(unavailable.catalogs[0].url, sources[uid].catalogs[0].url);
+});

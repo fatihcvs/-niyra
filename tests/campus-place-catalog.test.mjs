@@ -66,7 +66,7 @@ test("campus catalog gives every supported university at least one sourced recor
   const coveredIds = new Set(data.places.map((place) => place.universityId));
 
   assert.equal(data.meta.updatedAt, "2026-09-05");
-  assert.equal(data.meta.version, "2026.4");
+  assert.equal(data.meta.version, "2026.5");
   assert.equal(data.meta.universityCount, 241);
   assert.equal(data.meta.coveredUniversityCount, 241);
   assert.equal(data.meta.radiusMeters, 1_500);

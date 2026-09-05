@@ -177,10 +177,14 @@ function fixture(t) {
       { programCount: 3, structuredProgramCount: 1 },
     ] } },
     "../../../lib/official-course-catalog": {
-      getOfficialCourseCoverage: () => [{ coverage: "partial", courses: [{ code: "CS101" }] }],
+      getOfficialCourseCoverage: () => [{ coverage: "partial", courseCount: 1 }],
       officialCourseCatalogMeta: { updatedAt: "test" },
     },
     "../../../lib/platform-settings": { getPlatformSettings: async () => ({}) },
+    "../../../data/turkey-catalog-coverage-2026.json": { default: { universities: [
+      { programCount: 10, structuredProgramCount: 4 },
+      { programCount: 8, structuredProgramCount: 0 },
+    ] } },
   };
   const owner = load(paths[2], dependencies),
     admin = load(paths[3], dependencies);

@@ -1,0 +1,2790 @@
+{
+  "tr-abdullah-gul-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-acibadem-mehmet-ali-aydinlar-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.acibadem.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a2f0d8115af4b24cc1b4ec676d1bcf02682886d17d4dfb6b015da5d789771b23",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.acibadem.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1b487c65b2d54b2cc6f767c1c4495a21200265868eba948ec42e80998711ad4b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-adana-alparslan-turkes-bilim-ve-teknoloji-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.atu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7ac5450632967cb47947a05a602d249b64075e252f469ede5b2e34b57571986e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.atu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e35040fc7293ea3acd908b3f7158cca09fdfa9465ffbe7b9f1496b1fe74dcbb1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-adiyaman-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.adiyaman.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bb8c68e15d7c9a0bd67e80c6dd408b0ae9a2c0207136b8ddc626f49e587c3af3",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.adiyaman.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "60504a965750bffad1c16fc5c8d86e4cadd6e0854191947a15584359a9a95e76",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-afyon-kocatepe-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.aku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "232e1e8bee8a9bfc7b03ecb28b83b2f017d45d451cf01d8fbac425ee52bb9997",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.aku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e346d3a1b1acc0286722cb0f7504ea748b91c03ac253fbed407976e5032dec20",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-afyonkarahisar-saglik-bilimleri-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-agri-ibrahim-cecen-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.agri.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2eec1a41466880f225313f1183794be47c45e5bdc8f294fac5935627828a29f8",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.agri.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d1fbad626c1e7ded2b2930fdc59088c724e59b6100b7b1dcdf4d79e8edce7033",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ahmet-yesevi-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-akdeniz-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.akdeniz.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4a5c313aeda75ef782e7a1b1f074944d6d295660042bb10bc19b51852521493e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.akdeniz.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f441c0645018cd361cd548b10bab21b05cc7fae945aa0f86f1b4a51c3218f7ed",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-aksaray-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.aksaray.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7c8f58d699f154e14f7e263ee2829dc8102d07c26b682e3368fa0b372bad716c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.aksaray.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ec7d090bb419075fbb133e8405185ac017bf6cd51406d5e181ddda0d4f3e382e",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-alanya-alaaddin-keykubat-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.alanya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8ccfdca68186fc3fc7baecbd1ff21b63a5f814a60c22f9ae29d8f7c25d1ea1c5",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.alanya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7a8bbeb0b620e6de0047fd819eddf52e9c7bcbf061f168b950ea45780631a8a6",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-alanya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://sis.alanyauniversity.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d7401dec4db943b5f1f1cbc7aea106309530a03bac629892d7fd133fd0775e7e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.alanyauniversity.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c673519fd4c252996ab4aa3c741028fd3a1118314b0a1c5c650deb960d676f2e",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-altinbas-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://auects.altinbas.edu.tr/web/Ects/DegreePrograms?D=L",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2fa7c01fb68b0c27e6bdb079f0c0e833a9edf99c09d78da56741bdff1d026a8c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://auects.altinbas.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a4d4d18a94eb45d399b2613ebf04abcfd0494fdabd80659a686a69062b76395c",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-amasya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.amasya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "35fc978a485a6a62228a32f0f36466a28b227cea7c0561009eeaf067ba0e545f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.amasya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1e931f8a5590812b78e290a3ca6554e872b6e771eabda85b1ac06a7d1ffb748b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-anadolu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://abp.anadolu.edu.tr/tr/akademik/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cc6f7a2b7478caa39cb94a6c9f7fcc0d2a1eba9882de461d1e234263f074013a",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://abp.anadolu.edu.tr/tr/akademik/onLisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "94fc342a39fa588376819797795e5f9a2474ac39b0351de3a094cf24ee417cc9",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ankara-bilim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ankarabilim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b05a9bc2ae21e72a0f90262fbac478c45f802eac4c45bc6c520cfdd2884b10dc",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ankarabilim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "819ded64637ecdb49f95600169767d9a91e520b189434df6e71d16894862c0c8",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ankara-haci-bayram-veli-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.hacibayram.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "5b1f6a4b4cdc7381224e6dbac6fa74f0bf6b3a83b8b42a9865f2d8eaee71ad06",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.hacibayram.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7e8b8b8f896b4f9736a683e7c12f297b0476030684ba8593f7232b431f1778cc",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ankara-medipol-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ankara-muzik-ve-guzel-sanatlar-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.mgu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b3e1f35ddad417d1552981d3335374869b5bde1da292b22dc20f4cba422f51be",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.mgu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ca62837e701a1dfa6df9fdf94bb8cc5d5c5faa9e3cb1f66dba8bed66f9255953",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ankara-sosyal-bilimler-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.asbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b8b210ad87268ef03058a95f7d3067d342a3d50e85c49d71bdb78125d3d312d7",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.asbu.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "44efe3af6ebc7f1550b22cf2bd7eb7758e94a1b8b2497cb21d72f77091443929",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ankara-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ankara-yildirim-beyazit-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.aybu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "34a024e63b0a59834ad246d58ef1b41a76ebef52a2d171048f3593af41eb4b01",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.aybu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "83208f572d6507da0536150b4409a68dca8aad795c7cbc79098e81e861c0dc03",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-antalya-belek-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.belek.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c187d7201e4a3293887b20405c35d71d519939f99d3667d24a2ba545f7620a1d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.belek.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0dbabb359fd43fdc08af659106d33f5a0777a390ef7e0f936161788a6545bbe7",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.belek.edu.tr/Home/Page/41",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d025cead25753b072a7c17a1a7202b4a1b57577f8468745c7c1398af5f181376",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-antalya-bilim-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ardahan-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-artvin-coruh-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "de90e66292c2fb80faf09e2117e2e3f5628cfda469991849f6239a3666c16448",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f8cdeaa5253528b540b3ec44b15bb695a7b0b04cbbb4cd8ba6d7442bb4cb97ac",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ataturk-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e310d5539a49178c2786e727852ffa647735e4b039e7912bdb7b201593a9f058",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/2",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a300f4c43ab2bb1ed2581b097bc42b9fc2400f8bda1a4f24ea88fe46a9cfe51b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-atilim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://www.atilim.edu.tr/tr/ects",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b20b89da72cbfbccb05f52cd4fc41f5c849162978fa7183c3aef998de680ce30",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-avrasya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.avrasya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c7c96d2c2828b09cdf15e9b09af5ec60dc612d41c58a8a46ff26a94ae57202e3",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.avrasya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bacdae917b8d50e93f44093a7da578be5c752eb8d467d96bee1d06afb539c179",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-aydin-adnan-menderes-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://akts.adu.edu.tr/degree-programmes/2/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8a0066674492fb32ae9d5974f1af61150128d3c4aada7b4d542ba9e176676607",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akts.adu.edu.tr/degree-programmes/3/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e93f661254acab32c936d618af2bdeb951bf41334ad25586727f2397090c0d30",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bahcesehir-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-balikesir-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.balikesir.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e8d75ef799ef1b0d31f384590f983fefd7da74423c2a5c34fe6e50b4aa4723bf",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.balikesir.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c0f2f69e3f681d0525fbd17b34ab537f2541efccd86d67b7f1eb46f64bc3b9f0",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bandirma-onyedi-eylul-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.bandirma.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "18e2e2200766753eb6bf78919f12d02318f332eead5a4da66ae030d19dbe4084",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bartin-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.bartin.edu.tr/AIS/OutcomeBasedLearning/Home/Index",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "199d0045eba5cbe51f10c9d17db0191d4e8b7d0b0c8babfb3fc9ff07645a90a8",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-baskent-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "120c7498b5114f8ba551bee69add9855e7bd8dda2e708eff5b9296821998fc1d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=onLisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "24ec3149a6138e1aad13fd67768d9494c5244fedb26d90a577aa76b5cd9fc733",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-batman-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "df62379c18d3c95021898291f8d590c47c10c26ac7fe684baac626977074e9f6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cccb8e9902366c3a84a1a335e936f136773a5ee34dad86297bc45b5826c5dc62",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bayburt-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.bayburt.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d285f77ebc35a578ca1be89e82472f929e2dc124b549e263cfa46120f0927647",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.bayburt.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "10e47eaff1c1b155f0f239ad7395ca89cedf24d590f276794e047cabe2972203",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-beykoz-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_15/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c62619cc711cf8e4ab104cac323229faf347146beebbeffb81a72700c53e9a6f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_14/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "046b0dc66ef2b6b9f249d46c9bee64c3b717087df5e27505240550faf0df5cf2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bezmialem-vakif-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bd44beb00af18c2b22614b4b2ffac6079a224a2461737d4fac3547f23286b2be",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0cd0324982dffc2ede937a992af2817716cd7904603a368d2436666f6ae62c4f",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bilecik-seyh-edebali-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.bilecik.edu.tr/Bolumler?BolumAd=Lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "fcf7fb776043f225c589c29633762d36dab37829cfb8d4af5677c8fcd2443314",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bingol-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.bingol.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "db422bc09a68235e04a73c7565327ade97eb4a8ec3110186380e30d1287392c1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-biruni-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://sis.biruni.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b4b486a41956506b7d2d49128e7c4a56ca453b5c4335aeffaf5934c69b83572b",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.biruni.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c1983cfa11bf2c782d55e43b6f9e9f704fe939da7c82879770721dcc206e4bd9",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bitlis-eren-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.beu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6405af70696a31c3762a75ca750c5e451b8b35b4926e98dae629ea59a4581e04",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.beu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "eb655ee60337c7563f4c2cf9c477ed2ff9db66176d6584115feceb769e6e1f01",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bogazici-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-bolu-abant-izzet-baysal-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.ibu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3f702c3cc8642c09fe310bf20594ef3c160baabb09c8d0e9d4e5e68f1ad629e1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-burdur-mehmet-akif-ersoy-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.mehmetakif.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "23437f7ce345928d4b3aa1ce5ae18f6e14410f2244f8e5e759460c980b1c0615",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.mehmetakif.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ab8d97899d6df55054b1526b2f1523c05ca27464c66327ee1bfc88ec3cfa3bd6",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bursa-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.btu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6c3b6932d053a2daed11fc78a6a1fb1498be88d244fe709ed5e6ee7a4fcd9524",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.btu.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "eaddd85211507dda4f70bfb229eed36b958b87af3528eec88d2708e2e4d75ec6",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-bursa-uludag-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bilgipaketi.uludag.edu.tr/Programlar/Index/21",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "864964170fce2d14158cda025c402b8d162ebdb981bcc59f31b905e8536e308b",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bilgipaketi.uludag.edu.tr/Programlar/Index/33",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a24f4872482c68ead03d434298e82e5fffcf15e7e2226861d56dde8a94f0b488",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-cag-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-canakkale-onsekiz-mart-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.comu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6587e6e3f400c68b010c56a2115a2b1cb023fbfad6464a2f1cb8a02826d5d857",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-cankaya-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-cankiri-karatekin-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-cukurova-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.cu.edu.tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2200164fa6deb552fd372832e7e4b996309ed4964d4528acb7f92c2ab412805f",
+        "evidence": "catalogue-navigation"
+      },
+      {
+        "url": "https://eobs.cu.edu.tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1039307625545b3164a3008fd6c448219b248f69161c38022058169194869be8",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-demiroglu-bilim-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-dicle-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.dicle.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f0a3c6e1f1bae2eccb86672b0c651be85c1902032decc627d4f40f94211cede7",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.dicle.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b1ee9b9d338ed80f92ca366cc2e0a9aa5efdaea71658979275b40fa29dfc9dd2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-dogus-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d841edf7de04c98f552117ce2d3212fd0e73e89ad935fd2fd616298ac55c5b5c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6e23b81166e93cf0789e3791035f4d75350f12adc84a835702739b7bf8bf32ed",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-dokuz-eylul-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-duzce-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.duzce.edu.tr/tr-TR/Program/Index/2",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b47efe84efb7c00202420600cdce1d3c5036aa11e01470973d26d2392948a5e0",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebs.duzce.edu.tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a198f5543d543e208148ece7234f89c829499472261cd71e4e3628022fcc5354",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ege-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.ege.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a82a5dff8f520acc4b795df9feb253b744a401ff5b4e4089ba571464b7d558dd",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.ege.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "66ca8f808ae386d53dbf44704bc83d58f28280cacd59e4baea562f6963317e79",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-erciyes-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=101",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cf3721eee5d997f0fc1afb0b1f9955c600b032151ed08aea5b11fa4fbd9d8e84",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=102",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e120279cb47a09bd311ef17248ebbaed593caa4e782dcccbcc603f6f165229d5",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-erzincan-binali-yildirim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "69b83c5ffe90a9aa1dd9bfdb878363098ab37ac538284680b75175eae6672e62",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3c1c5384879904e9d446c4324fad47731444d71c4ccc8439053463656514fd62",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-erzurum-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.erzurum.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "854bc971029514943fa9057d9714ae1c0268f6452663421eaa1f4d6db65e5c3d",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-eskisehir-osmangazi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.ogu.edu.tr/Lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "237e994ac93e58712e8adfb5a1e06e9e090b45fe34875df22db4d086580b137d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.ogu.edu.tr/Onlisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0f9655263263da96142dd3074f0dc67c9740cd8d067944023b79fed34ae717cd",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-eskisehir-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://akts.eskisehir.edu.tr/tr/akademik/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "39e2c3eb3b9d9d900482ba2719a2069bca647a8ab2ee95e98e3e1efa9a83fe71",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akts.eskisehir.edu.tr/tr/akademik/onLisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "13a6b532bd1e62b8fea00fdc4d92a22949668031ce3e7c3e5621914b7c93240d",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-fatih-sultan-mehmet-vakif-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.fsm.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7b6b475f3bb478c7c4618d1509b6f7e2bcd30ea66824b5d119f9f225376c4f41",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.fsm.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1bbca49e02b19c5f8cbaee3c1a0487f9518f046a50572e4978ab2ef08c228bc7",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-fenerbahce-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.fbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bc47a3a777d39a3463ab9896edd87f58447eceb134e6cc363c0364f4a24aebb5",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.fbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "729b9c1447f777098588a51538000de084beb9eb4248250f727819b23b7d3a9c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.fbu.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_17/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9fbe859a8b94787eee6a68842404a2bf944ed07420b8d86d4dacba50440e5f07",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.fbu.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_16/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "97ffc4b868a3260c09b6b938564b7edfee1a3326377816d82a443d83695ea04d",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-firat-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.firat.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "91c35374d9888dcbdd932df943487db088bf49fba3a0690418945d5f27f1bcdf",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.firat.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8f0ccc5b7be4300f681d54dc8e01bd6cb0aea4aa448adf6755769afc80ec6021",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.firat.edu.tr/tr/uluslararasi/uluslararasi-kuruluslara-uyelikler",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f3190fdde9e3f02f935b06ddcbca1f7e7c3ffc6a52b6c93ac7b469afcbca4ef5",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-galatasaray-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.gsu.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3c24e3651dd7a97999b7ada87daacf20a931c651a26619c87b72e8b927a430e7",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-gazi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1b8dcaa4f8c238f93301b39a30db6c7cccda1306e79cd71432c3be5908675d20",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gazi.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1b28ab3f6d0b9cbb118a49b6b3e5e5c275ebf217eed61c05f1a563af58d4a595",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-gaziantep-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b2e1d0f30912488c778d76a270830cb6cfc11ca0d18bb878aaf8523599f8c98b",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "05a25a5c698c6613dbb05e39dddeb8ecaf519e78c33d221614f4f2679b844258",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gaziantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "00b9e7120d64aec326b547cc8e33f948f1b44ef9d408f7aedee3ddc4bab91918",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gaziantep.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0d15999017ecf4a5fddd907d8b4064efeb31caf16b6aa882e3c824bb3f946bdb",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-gebze-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gtu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2fd55a3c700ffe3bd354800f7e5afea846bac9e1667e8f346bce8d79b534abd6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gtu.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "5f4d74188d3a7b96222aed246e27dee37980f8c2f21a4cbeb71b7862e8f4e4f8",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-giresun-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.giresun.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cd9a35ce1e8068680ad46ef7ea0cb36d15137fecb843256091f7b87fea208298",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.giresun.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2b8ce138ebc15f618f645c04d9014c3bc16a52f34ce08eda0600066a91c8485a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-gumushane-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a438632a195aab0b2d490a15bbed2bf66a3f2d117aa300ad6b339f058460f366",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "83083006deac175701ab5da7ac33ddac977ce8146b6bdb761e9bf720d58777d7",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-hacettepe-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "98faf43190f6b6f16db79aa1a307e2fb9223f86b7a7a084f5a9e9776e5a22167",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "143febce58d18ffbb7b8b62e57f17b8a448bd3046f2eab3094a47d2a75c24460",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-hakkari-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-halic-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6567f08e441b3f6d7dd5d0a12fa89213e25dbc6c822a2cc6ff848ff98309b28d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "93af0118a68abe40516eab1ea5c73b6a398594134d32a603854f14e3c47f7516",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-harran-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.harran.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ebba0b179c67d3f3866249ff791c4ab94493a76330daf75960ac5d7896ef1b93",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.harran.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d7898a55b86fdf5dce6a89dc07dbd2044b003b01e528153a8a730180249133a4",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-hasan-kalyoncu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9faeeb2b3415d68247adf957cd912ea64f55b908071d9107614971664b69a305",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "74c1b2c433ab2a60a0943d760ba66e30cd8ddf1c16b2cc293d22788c93ccef80",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-hatay-mustafa-kemal-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a881a3a8cbc5f8af6fcf8735f3ba2c942beaa2d4febd94397704b590a6d49293",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e01faecd8880b6df45c99f04fcc89b8fe900e3fe186daadf4cc14820c72b77c7",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-hitit-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.hitit.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a71a45caf6a433ff2f798af9fe052eb15c8d2c985d6c5d37162e7b80c68ebf22",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-igdir-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.igdir.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "74b0cf7c373a6910e52f26fe7f79358754eeae28d92d4a4a284c597a6c8545e7",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.igdir.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "926fda42c2965859267a8724f8f669baa2313c9cdc84c4a2ab695b6bccbc5411",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-isparta-uygulamali-bilimler-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://akts.isparta.edu.tr/Public/EctsIndex.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "056b7417e1736a772c67ca58a306efb83efc2af07962ec5234266dcc91d451bc",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-isik-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ibn-haldun-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ihu.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "10dc941fc30ebb17b6a12d2e402b4208831cc65d471430c7172b5a4b3ee8ad4b",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ihsan-dogramaci-bilkent-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-inonu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3154a48511a38863acb01682c67c2b19c067dca920dfec1a006affd1b1f4d96c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "26bcc359586826d822b596628b6bb6653a88b2b562cf2f5b695fb60183d5919b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-iskenderun-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ec3843d915983d36cb02c4db3709f9ad62cd10340c85ee4ddf6103f81f69b999",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "13bad4e50616cf30008f332e35bf3ace07818bf758879f36aacecd688d0c3a4c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-29-mayis-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-arel-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "5a1a844d5c8ee9c9d3474c574c4049b6db570641b81ed64e932619dd69dd891f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0af1202b47b41423983685a083ee931046e38fde35399590244db9da5bb0b82b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-atlas-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_3/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "670ae7741f0633673fdd2f2ffd0796ff908cda922427495e5987ff8a83c98c04",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_2/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c6011f49fdad1698e6b2a991547bcc3b81777a11b374e9a670044161c6f18924",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-aydin-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-beykent-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.beykent.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cac797ab513610946d87ce23925bf868aed4c6bdaf9f90d1f901d2eeb3bdaf97",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.beykent.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ae37609db2feb1cae2c32fbb139a45b37172c102aef849f9f2e28933cc5707ef",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-bilgi-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-esenyurt-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-galata-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.galata.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6b2a79a8e42b38e0c002af3ac148062fd4c1ee48faac14364c1f258fb34b2a6e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.galata.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cbc65561679c53ffb26fab1a83a4723db7172f84ba9f74579b657f166ed3c792",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-gedik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gedik.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6f856628711de4f2b7bbd34c8a1ee4455d54880b2fdd0d04ee5e691c094115bc",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gedik.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f20573749e5f2e9788efbbec7abcc3f87f1c382d7117f8d7169bd2bc89cb9bd2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-gelisim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://gbs.gelisim.edu.tr/fakulteler-2-1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e721c58d07af1d2f440dba3d480c5d254e2265c3112c31521335f573ecc13189",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-kent-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.kent.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_2/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "90d7b941ff40c610d586ce6b0e9400b3b68f56bbbd602eba574e1b5c2b7e6c06",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.kent.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_1/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d2aab4f4ad74a23d2d9aad2fb3250659a6c51fd331609c019cfb891b8df1df91",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-kultur-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-medeniyet-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.medeniyet.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3b703bdbbf1e018825485826dfd58140efd9ed0eb316716d80d453aa26d739d3",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-medipol-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://www.medipol.edu.tr/akademik/fakulteler/hukuk-fakultesi",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0d37839f3ef10b976f6ecfba181f2def72bd849ecf3f550c5ae88e1aea621a64",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.medipol.edu.tr/akademik/fakulteler/iletisim-fakultesi",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cbce23e9ecee3f6381636ca906841dc2bd12e21e92cedf2ccde2fc5681109610",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-nisantasi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.nisantasi.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3b79901ee1f1cf9f24f2604afbf922392fb15f1b2711cda2d3fea0a46abf949e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.nisantasi.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7027bf38e361f31d23d11c0fd5fadfa70c47f7571a1c90b3c38552e6d0451730",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-okan-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6a5cc144b4e5156a7a01cdb00c1739ce602d686a4f3e24565bce19e876f2177e",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "df9674969a90757cf5a41bb7e79f275351bf7a2f3cc7f2811b96c6b9f11cc4a4",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cc5e0725972a39e39a3eb847f97d52608f710df75a77c95757805a351075b6cb",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c6bfa3414b3c66358882f741cdcf86068d31db498ac730d4899c1cd64286045b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-rumeli-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bb5cd31790e443f8793af29c0774d2910ae995f4109534e7a89002e1f414f869",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f78ff69b2022eac415a6e74a261013ea4508de44c1483766be183190ea3a6383",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-sabahattin-zaim-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-saglik-ve-teknoloji-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.istun.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_14/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6c33f3dbba251a445a1caf9ca66582058923ab50f95acf2e430282ee6c242129",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.istun.edu.tr/bilgipaketi/eobsakts",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9888e6a3fb84cfdbf21b817f2c9a76786d5a188da9bbeef746ef3f6e07c81db0",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-teknik-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-istanbul-ticaret-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ticaret.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6cea1bc8ad34ed2f33146bb406c9d581c4be307b1d3ee33b4d048f334b097d00",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ticaret.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4f11b1a15763c0bd6216b20108d72795b7e4aacdc28bec6534689979ede12905",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-topkapi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.topkapi.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_14/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e89bf816926ccb0fd20fe229c82c0af9d99228af383f4544e4c2fe212be8843d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.topkapi.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_17/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "56bcddeac9f9a4868be0d300d168bfccc6a1c124c12e4f88dcf32e5412d55405",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.istanbul.edu.tr/home/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bdccb937db911b2b764dc816d14fa510046422c9ebb1eb1bb30f5133968f8da4",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-universitesi-cerrahpasa": {
+    "catalogs": [
+      {
+        "url": "https://ebs.iuc.edu.tr/home/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8fb17c7e993299f22d3d07bdbb02744620bb4bb032073073e1473549f1acc34b",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebs.iuc.edu.tr/home/onlisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "03596c834a5b7a72de59ba79e8436a93afcd6bcabb3425139e0df325a9996270",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istanbul-yeni-yuzyil-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.yeniyuzyil.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0c24aa2a25a5abfa89aaf222a675463dde90cab2d71f79877c5a3968c3aabefa",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.yeniyuzyil.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6f59f4e670420997db06df5da728993e1992c41d716e0dcb56d79d3b109d1619",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-istinye-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.istinye.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f0b42ad1554258590c41937d4c460e346dbf7422beba26415b1e5e36cb6042b4",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.istinye.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a55f7c3a67584e2438fedf54ee36b2fa564927daeddd6c6d2bdb0b0ded1e76b2",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akts.istinye.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2296d98492604736f8d8f72ba93e808d0d81eb1689559a24d0f0c3e78bedc4e6",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-bakircay-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.bakircay.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1bd29a052b59219feebff79753fc1d6f967071d58f92e16dbd2095efc3b082af",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-demokrasi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.idu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9d354343d501c61f7a7ee9598f79890c6abb1fccff07898623387b0d01bfcf8d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.idu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "25a0ea7efc743d0fbed58a786f1f740ab69f9bb791bc60c229f4ea4207c58c1c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-ekonomi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.ieu.edu.tr/new/firstCycle.php?lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "69ee9c12eb8121c75f16f578c9d4c69f770fbfd198b8ee123827fd90322678ca",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.ieu.edu.tr/new/shortCycle.php?lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "73edccb7b8701d96daf6ae7dfa06de2ec8482ccf2823986e8e4ed8fdb547ddeb",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-katip-celebi-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubs.ikc.edu.tr/AIS/OutcomeBasedLearning/Home/Index",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "87ef97fcf468b2db84e018bccc3faf0cb92e1ace3d0137bbd1e24e6fda1e7d5b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-tinaztepe-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0a91c86fdb02a6dee743ed6c6abd0e5754bb02cd10c9e59b6fd672cff5955990",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4c9979dadb932b4c76ba4de314363b519854bc405356471f2e8abf0487f1beeb",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-izmir-yuksek-teknoloji-enstitusu": {
+    "catalogs": [
+      {
+        "url": "https://ubys.iyte.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cd350de5ad727dbc84bcab6d0043aa782e0b15a1faaf406320970d3185db6663",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kadir-has-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bologna.khas.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f8a361b36b6d310f13fbcb12d0e782f196e2c4474fb31ffbac8cad67cc9dac4d",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kafkas-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f049c447653188d70c35cd8254a64b0d0adcaad5f5f153d2bec52450b7e8bf70",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "19496e2f4a888382d9522acac16f8df29a476fdf99f7a56151d7fa638c592f33",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obsyeni.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6b931da427718cb37e2622d07db75eda2bdc8525205947dd837066b01b2f8de1",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obsyeni.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "21243daa66594ce891f96d652cd7dd18a9f0010c104c861957e055b50ddb16bb",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kahramanmaras-istiklal-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.istiklal.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2a58e946e54d9460191d3225b22d083da93d65307e262a15f9ad25a1f281b715",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.istiklal.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "5c837f6e1fea4bd71db652ff13832053f27f41418b5ef71fc412bb72dfa753d3",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kahramanmaras-sutcu-imam-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ksu.edu.tr/oibs/BOLOGNA/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "775f9d3df4e371c41e740db4a6de23307a0601a082d0181e5164f2e4723736e2",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ksu.edu.tr/oibs/BOLOGNA/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d772d871ee32db56859455b1907152203ccbd8a8d3855248329319831d6a7db1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kapadokya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2479e783f15ad37c4c4cec3a6d69b763bdec856fec51d5ba60c93e3859a4923a",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "30c927c9dce062419f465e63187571aa20d3563b6482f2db2c4dbd25c5616b97",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6ec2e038da1e990e4a92b0a19249203f43a71153d96be3181736e91214cb8fb1",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b2dc614e90df3a692a6d1a3c99eedd395cdc662d05d8b7919d2d4aabbc9f53f7",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-karabuk-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.karabuk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8f2c83f9efd104733aeb31d7d8e87a41975ff623ebec0aaae8cdf2adf9dfd620",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.karabuk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2aaf2f2a3d43f54de2a78b27e7a3d21194d82063c09b78be03374c45ca485072",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-karadeniz-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ktu.edu.tr/tr/katalog",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f5be44144cdaa91ffbed34d3bd84d9cfcc7cba890a6c89311683db1e4cb230d2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-karamanoglu-mehmetbey-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.kmu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "1b2a9577cf3e3d460969b25d5909d7748b5aa77dd7864b17369c5d84ab1e8242",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kmu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6af313fd2ba123e1441323a4f77f2e23eadc7a8abf9f0ac27bb0587964d5a887",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kastamonu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.kastamonu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4e9e521a01ff6a70bb54ca0e669848252352a9a2ec740942b5726156e2a2df45",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kayseri-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://sis.kayseri.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c0b83ad2889417a46634cd75ebec06f00061f933e0bc744e40185060432eaa23",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.kayseri.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "70915483f8848103c5a9e402a36703c2bc0248b9f575b9d9d59e89ce940fe77a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kirikkale-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.kku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2d03fdb5ee186ea9a0a4a4e90f9214eae648d70daccde9c5c846ac98fdf2561c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f17567db9d81b9df20be0df6ed60c61ffc24d5a6bb73b75e8626f34418fee9ae",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kirklareli-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.klu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2ae10ae8c6ab8fb12f03d3e442b44362b2455ed866a0d194f6b50143e952c938",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.klu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9c1805b6a9edbdfdf770c261a7157dbc42e00687995ef9d4b63e1b7d7c59ef9a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kirsehir-ahi-evran-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ahievran.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b07b0c37f27bf14b259d40dae735ab0aae38eda4a8c3be6c27ecb4b23b295c8b",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ahievran.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6a1146ff1bbb54f1fd0d6f5ff0a4fcd35542121870a4af64f7bb120cd08937b6",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kilis-7-aralik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "eab7ee002fc45729c80438b899f18b7d58a2d4669dce8ee555d6bba2ff4ea887",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9aa528b03fc7673a4746ea3ffa52af4cf6db2c936acc7ca1c0a01f6381280e0b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kocaeli-saglik-ve-teknoloji-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-kocaeli-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.kocaeli.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c32911164ddf8c477b4abc844cf925dbc1ea1ee95060a65d5bab09af062b2bb8",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-koc-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-konya-gida-ve-tarim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "09eb2730c3b29821d5bde3bd8b8592583967d8e28b581af39f8e303690956afa",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9c52ef39986a3bd86fcd4c0f6dd422c8d48de3beb5efbb855e6546d443aba62b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-konya-teknik-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-kto-karatay-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "66330beb205fffe6103d12f2d33ad24447f259338b785bc11a52acff2c24bf03",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "391120b96fdfeb25ba7dc149ffa60a83abd9ff16cb379c60af82760484ee2656",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kutahya-dumlupinar-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.dpu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4018386768a54bb8f2bf50e05287ea648addbeafa0242131040436253c5aa4ee",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.dpu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2ca9238af962648ccdf3fd790cb26ef291557242aaa165b5bd8500f386f633c1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-kutahya-saglik-bilimleri-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e2dc3dbebf88edd85a3ce449339cd9950efd1b5b3147de1523d178c26afec05d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d6c11e0fa2043e876057232b3458fcb207863dc5f91e9f52136ea8af9a7dfe62",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-lokman-hekim-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.lokmanhekim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9aef14ac485c1d1b00dec223af1d6a09abae8c2a5834b0f138b0a891ec5ab411",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.lokmanhekim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "904214c185242838b88dd97dabe8fb62c0af91852609c22a72b8a135977b1fb2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-malatya-turgut-ozal-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ozal.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "dda8dc566f0fff040ffa2ce92c191f31d145c2709a93b38eab3acb44a8cf95c6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ozal.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "94b8740b68484037a1ac356a75caeca4bfafc73b09e0a72e93094c877e3eec57",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-maltepe-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.maltepe.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e2ce9016da3132b13ba178c35fb2d668454a35c2b6f748f38eabdae81398c2c8",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-manisa-celal-bayar-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-mardin-artuklu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e0778627d0f474cc1c95a45e736d27f6dac14ae07e17507de20ad97fa41d9b13",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4730bab239d350fa9f80d32e73ae4f53c56ae636cb8378be145e19852e286fa1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-marmara-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-mef-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://sis.mef.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_18/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bf86190a75784bf158121f33651ed13963d42a1e2b93d993b1aa12317b24a8f6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.mef.edu.tr/bilgipaketi/eobsakts/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "844e4844468e10fbdc80d3fa266ad541c7bc775c8a8095f9adb3c22c836f3da7",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-mersin-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "080b3f1e081197fb75c692d51216adecfa1cb82fbb336f3ed7629ba0fbd477a0",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "91fb1a3d0aed51d99f51061241a06aba825bdb7e179d9ed7abcc94d4a7347f05",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-milli-savunma-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-mimar-sinan-guzel-sanatlar-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-mudanya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_20/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c8eb3318a73bdc0850101dd1733c5439cb55b67788c5879d6df4d0afe19f3d25",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_19/ln/tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b9d11715889250aadec55abd3e1708b04fbd86c17c3ecc5cf73618dfcceb2e12",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-mugla-sitki-kocman-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "537ba18ee156f924901e78291a54b07ec4eb273332b9d5c2c2165f782322a1a8",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bb7b3f9c0e8058453057d7c36dc63968189b62123bdccbffd230f63009085736",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-munzur-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-mus-alparslan-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.alparslan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a3b7b37c73d1fa7f5754a799678a9043fdd3a1be4ebd1caf117ccf24aab0d9fd",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.alparslan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7c10de07ec2472b30ee012e06e54b3750c146b74d7ad5a6ccd00188246ad83a8",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-necmettin-erbakan-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.erbakan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "926042e1e8ae7dad69c94031a8ee258acd3075f1b06654e04dd5e529a34ae0a8",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.erbakan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0e46f04fcc8a9eba1512f09493a84eee00938b416e8be243c37ace40897c7f92",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-nevsehir-haci-bektas-veli-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.nevsehir.edu.tr/AIS/OutcomeBasedLearning/Home/Index",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "85697ee792a005eee6b707a4c65649241aaf748b75d73599faa1f91bf8bad389",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-nigde-omer-halisdemir-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://www.ohu.edu.tr/akts/bilgipaketi/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6d9438e8ef0662063306d4aeba0a3e96e02d37baf0a882b7ef1ad775c5debcaf",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.ohu.edu.tr/akts/bilgipaketi/onlisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "506e2551aa7bcde48a4c5bf159b318466ef58815ec1f99803872d1d6e1150eb5",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-nuh-naci-yazgan-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d1ea2ead7175c090213a7c76c4142815975e78a7e3c39a28c647d732b1301c75",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "aa348a73847a22122148a1c2b3d42657cf3cbe7a52f163914ccb2d43deb127da",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "omu": {
+    "catalogs": [
+      {
+        "url": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f7e48a6804de803da5b635523f1cd330d4e4373b83d4cc7c58097de20721c6cf",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ordu-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bologna.odu.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "8c1c080b8d84f7041a82554527886c78a0113dd851c1e8627581230f99e31912",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bologna.odu.edu.tr/dereceprogramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b337148176d9b34f754436e66363409428bbd28f17416b0237818b43f1171c9a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-orta-dogu-teknik-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-osmaniye-korkut-ata-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "37f16f8e108f75cc934fcec13ae12505fa00a04109ef8e705fdb4182da0266d3",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "047ed6dde093ea1fef490bca51b5650a99761323f9b00b54a605353bb6be6a34",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ostim-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ed0e2f9f036557945a067efc900511a0f8e6056f15e5b6158b6c0c85dd98894d",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ostimteknik.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2fce540ad5fbe5f951bef0575ce01581437f9bcddd7f89049b45d9ff767a48f7",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-ozyegin-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-pamukkale-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.pusula.pau.edu.tr/bilgigoster/DereceProgram.aspx?lng=1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7e9ff02eb1cf869dfabae6fd8202bcfe7c664f91508624fb2673051cedc0bf7a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-piri-reis-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ois.pirireis.edu.tr/bilgipaketi/eobsakts",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c1fb80315f5e4c5e53be1e3052f9244bd7844b09bf82684a76dea0aec320e6c7",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-recep-tayyip-erdogan-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bologna2.erdogan.edu.tr/tr/programlar/5367",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "dda2debce7e9fcceee54da84f4140f82bd6614da084feba1666ff0ef52392545",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bologna2.erdogan.edu.tr/tr/programlar/5368",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "378fe1243e8a6f8f69bda198cd557d23800a85b12c23c4495e4208678fd42a95",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sabanci-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ects.sabanciuniv.edu/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "397dcb24221a0169c66450988184bcac6ff3e5006452e9ecc273e57ab368b2ee",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-saglik-bilimleri-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9432cb187c68d2bb4e5613898f7d5a8da72c44fa721708e14fe0faf1ec864459",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "cc08ad33de30fccbd7e131d6e48b5acbec1b53ab47abc19fa553fe504d75ca8e",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sakarya-uygulamali-bilimler-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.bys.subu.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a572e5b010d34afd78f98ba3f7757447845765fbd2686de8dee85c7330282a17",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sakarya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebs.sakarya.edu.tr/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b1f4d26c30ece1b79268dd56520d58270a7af9ca6c685aa2a58f841f68b00872",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-samsun-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.samsun.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e9660f750ff37e66f31ad003a9e4f98a3b91428f0e41688473bcac6d90f7c720",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.samsun.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6e51d3638ceb8619cd6d970e41ebd6f244a3e0a914050f8b9c2c7256583853c3",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sanko-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-selcuk-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bologna.selcuk.edu.tr/tr/Birimler/lisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c9194a35afd272063679fed71e97bf1969dc178e0180e5ab03dda5fc53938b99",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bologna.selcuk.edu.tr/tr/Birimler/onlisans",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a8ba85c65ac3b288c3983241a02f2abc950de18112ae1db983ce7e32e3df5caa",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-siirt-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "db8c5ddf666b2d806ea7b8688db1f192e828433abc3aa8066c19e77a27463285",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bb0889ff7d1c42e8c6b34ce6d33d074968de29893ed4773175f5c8c444611763",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sinop-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d0ef964d9c3dbea0f3fb376c813e02685fc4719741098f53701e63f30507ba68",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ec3255ccea689be8b6fca294abe3fca4681f51b84f204306e8bf8a789f0bd2b1",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sivas-bilim-ve-teknoloji-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-sivas-cumhuriyet-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0002e0eb616487618df1211c01eacfd7732a4a1bb3779b47efb81b5339577caf",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7ca3bf61d969c3e610ea83626b0d3d5cf915a2505e8b153e12ae65e5579118ca",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-suleyman-demirel-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c3d05a997ae4e140ead09d597483ae528de4708e671500514b672852c18043cb",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d954c9619931591b7afb2208630bf5defd4a769e4b0f97b3a68cac253bc6411b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-sirnak-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f2acda81473a8c7d76744d9dce5606322c40c0b21f69bb839f8170c424bddd8f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "dbb76c0ffe1ce7da611fc5c2ac2a1d563caa88ca7dfe21b72d0988b7d32a3deb",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-tarsus-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ted-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-tekirdag-namik-kemal-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/2",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "94703d444a53e3308de6a42cde841c90a437a8eda516b2e3ba89903d8d642f80",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/3",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e1d0783c53c4567aa8fd1d90b0c7c9514812fb29d268b3c8d42ec7c74824dd90",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-tobb-ekonomi-ve-teknoloji-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-tokat-gaziosmanpasa-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a6aad943d670bd82da86595d8d30edd6301dd1e61c16d24f31fd619cbd61c2d2",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e35ccda882be338772baa41bf92da761ff3f12c7b50c7a34ee4045445dce1aad",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-toros-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-trabzon-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ubys.trabzon.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b2662685dd50c978b245ff58769eed2d4488f9b453bc5e5a002a3b731bbbcd05",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-trakya-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.trakya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "501bdf9e65b856c960461c2a78dbce512d6804ebbfd29841702b87ca565a78a1",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.trakya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "77a03f4883fbc23fdcb8d047b80666e61f625516df56bfda66a9bee593cd197f",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-turk-hava-kurumu-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-turk-alman-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.tau.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "00722c483ea1dc1c04097d2875cade54c2ac394b5ec191ddbbad84b81d242424",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.tau.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "3f16388b8b44790b0d13a4e39580285ca39c9770c03e95c3a07cb8fc904cbb41",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-turk-japon-bilim-ve-teknoloji-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-ufuk-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ac38a7508897c727ffe1d52466441654633d09cc1569a38d3b69fe72d14e210f",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7c2db315f5c555e0313a5d148148c75b83d26dc4a428336bd522fef2c6306dcf",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-usak-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.usak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e9cdcc2770b6e83a76aa3ecb01e55807cc4fc6e7f1fe7558f3219d65a7c35746",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.usak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f56341eb3257a6d175a7628ff035db15764dbaa2c7316ba3097ce625e8a07d58",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-uskudar-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f4f897e7f61f07945f8b49e1d7bcf5b85646b380e30d8048415a3962ff7772a7",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "746e5bfa32f084c764a936f91dfe71a50e1c773717cfc76f46026325eb38b004",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-van-yuzuncu-yil-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bilgipaketi.yyu.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "f9580b54fd597c42170c32f1eeef6a3a0701caa21342156eb9fee5a2b85c46ab",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bilgipaketi.yyu.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "c8a6dea4eebc3eada7db1489063b976991737ad39c15e98eae70075fa226fa8c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-yalova-universitesi": {
+    "catalogs": [],
+    "status": "no-verified-entry"
+  },
+  "tr-yasar-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "4e3356b69a005a76df1659ea2aa145a8826dd747fb3ae3afd5b9fa67fcff763c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "55939b9324cbae15f19ed5e9cca171f2f32e05570214a6c70ff8589077313e7d",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-yeditepe-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://akts.yeditepe.edu.tr/tr/Ects/DegreePrograms?D=L",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d9a11dff3d023a34d36d04b9ebeda571acfe47db4e20fa88dff22ebd9e4e7898",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akts.yeditepe.edu.tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ac0e08f74b7d6f65224475376e168d9ef111e7ad772286009d3e436b64956a94",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-yildiz-teknik-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://bologna.yildiz.edu.tr/index.php?r=program/bachelor",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "03344886793d5255655e4a729eb367a80c5272ef08770022cc6910729ceba5e3",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-yozgat-bozok-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://ebp.bozok.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b9d57196010da125e175d1dc76627cde0800f80914e3f1c616bfc7a2bfe90d17",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.bozok.edu.tr/DereceProgramlari/1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "27663aed403f7a0bf63a2d54b62be084af7bc013195373f65027fbaa7581c366",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.bozok.edu.tr/ebp",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "9bf7659191470288b640b9a7a0645b7be91a55b941ea1978e183c1130fc01fc9",
+        "evidence": "catalogue-navigation"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-yuksek-ihtisas-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.yuksekihtisasuniversitesi.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bae2f0291c5708241b261e9ac280d565f8b075d6ea6e7b5957ca3a9177248a01",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.yuksekihtisasuniversitesi.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "d3ea110c09c0ae3369512f7505d55453e52d5a4dd7ff331342e4544a48d5111c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  },
+  "tr-zonguldak-bulent-ecevit-universitesi": {
+    "catalogs": [
+      {
+        "url": "https://obs.beun.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "a62910979560f0225e7db98c67d197de797e077b7f2e4c86eabd8feba817c947",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.beun.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2d7f9ab00d22e938386129248a45936dd3ac8782e88a553fc83ff0f610116d6a",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
+  }
+}

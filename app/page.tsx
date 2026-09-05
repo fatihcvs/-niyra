@@ -1262,9 +1262,11 @@ type CourseCatalogItem = CourseSchedule & {
 
 type CourseCatalogPayload = {
   available: boolean;
+  catalogs?: Array<{ url: string; checkedAt: string }>;
   authority?: string;
   sourceUrl?: string;
   verifiedAt?: string;
+  curriculumPeriod?: string;
   coverage?: "partial" | "complete";
   courses: CourseCatalogItem[];
   limitations?: string;
@@ -1416,11 +1418,13 @@ function AcademicOnboarding({
 
     void fetch(`/api/course-catalog?universityId=${encodeURIComponent(universityId)}&programId=${encodeURIComponent(departmentId)}`, {
       headers: { accept: "application/json" },
+      cache: "no-cache",
       signal: controller.signal,
     })
       .then(async (response) => {
         const payload = (await response.json()) as CourseCatalogPayload;
         if (!response.ok) throw new Error(payload.error ?? "Ders kataloğu yüklenemedi.");
+        if (controller.signal.aborted) return;
         setCourseCatalog(payload);
         setManualCourseEntry(!payload.available);
         if (payload.available) {
@@ -1750,9 +1754,10 @@ function AcademicOnboarding({
                   })}
                 </div>
                 {visibleCourseOptions.length === 0 && <p className="official-course-empty">Bu filtreyle eşleşen ders yok. Tüm dönemleri açabilir veya dersi elle ekleyebilirsin.</p>}
-                <footer><Icon name="check" size={15}/><span>{courseCatalog.verifiedAt} tarihinde resmî kaynaktan kontrol edildi. {courseCatalog.coverage === "partial" && "Kaynakta okunabilen dersler listelenir; belirtilmeyen dönem ve ders türleri tahmin edilmez. "}Listede olmayan dersini elle ekleyebilirsin.</span></footer>
+                <footer><Icon name="check" size={15}/><span>{courseCatalog.curriculumPeriod && <>Müfredat: {courseCatalog.curriculumPeriod}. </>}{courseCatalog.verifiedAt} tarihinde resmî kaynaktan kontrol edildi. {courseCatalog.coverage === "partial" && "Kaynakta okunabilen dersler listelenir; belirtilmeyen dönem ve ders türleri tahmin edilmez. "}Listede olmayan dersini elle ekleyebilirsin.</span></footer>
               </section>}
               {!courseCatalogLoading && !courseCatalog?.available && <div className="course-catalog-unavailable"><Icon name="file" size={18}/><span><strong>Bu programın ders listesi henüz yapılandırılmadı.</strong><small>{courseCatalogError || "Resmî bağlantı mevcutsa yukarıdan kontrol edebilir; derslerini aşağıya elle ekleyebilirsin."}</small></span></div>}
+              {!courseCatalogLoading && !courseCatalog?.available && courseCatalog?.catalogs?.map((catalog, index) => <a key={catalog.url} className="catalog-curriculum-link" href={catalog.url} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Üniversitenin resmî ders kataloğunu aç{index > 0 ? ` (${index + 1})` : ""}<small>Katalogdan bölümünü seçebilirsin · {catalog.checkedAt} tarihinde kontrol edildi</small></span><Icon name="arrow" size={14}/></a>)}
               {validCustomCourses.length > 0 && <div className="selected-course-tray"><span>Seçtiklerin</span><div>{validCustomCourses.map((course) => <button type="button" onClick={() => setCustomCourses((current) => current.filter((item) => normalizeCourseCode(item.code) !== normalizeCourseCode(course.code)))} key={`${course.code}-${course.name}`}>{course.code}<Icon name="close" size={12}/></button>)}</div></div>}
               <button className="manual-course-toggle" type="button" onClick={toggleManualCourseEntry}><Icon name={manualCourseEntry ? "close" : "plus"} size={15}/>{manualCourseEntry ? "Elle ders ekleme alanını kapat" : "Dersim listede yok, elle ekle"}</button>
               {manualCourseEntry && <div className="custom-course-list">

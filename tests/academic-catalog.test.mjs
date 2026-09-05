@@ -85,9 +85,9 @@ test("ITU standard bachelor programmes link to official OBS course-plan lists", 
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
     const parsed = new URL(url);
     return parsed.hostname === "obs.itu.edu.tr"
-      && parsed.pathname === "/public/DersPlan/DersPlanlariList"
+      && (/^\/public\/DersPlan\/DersPlanDetay\/\d+$/.test(parsed.pathname) || (parsed.pathname === "/public/DersPlan/DersPlanlariList"
       && parsed.searchParams.get("planTipiKodu") === "lisans"
-      && parsed.searchParams.get("programKodu")?.endsWith("_LS");
+      && parsed.searchParams.get("programKodu")?.endsWith("_LS")));
   })));
   assert.ok(itu.programs.filter((program) => program.name.includes("UOLP")).every((program) => !program.curriculumUrls?.length));
 });
@@ -275,7 +275,7 @@ test("Yildiz Technical current bachelor programmes all link to official Bologna 
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Yıldız Teknik Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
     const parsed = new URL(url);
-    return parsed.hostname === "www.bologna.yildiz.edu.tr"
+    return parsed.hostname === "bologna.yildiz.edu.tr"
       && parsed.pathname === "/index.php"
       && parsed.searchParams.get("r") === "program/view"
       && /^\d+$/.test(parsed.searchParams.get("id") ?? "")
@@ -327,8 +327,8 @@ test("Ege programmes link only to populated official EBP course plans", () => {
   const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
 
   assert.equal(bachelorPrograms.length, 74);
-  assert.equal(curriculumPrograms.length, 71);
-  assert.equal(curriculumPrograms.reduce((total, program) => total + program.curriculumUrls.length, 0), 80);
+  assert.equal(curriculumPrograms.length, 73);
+  assert.equal(curriculumPrograms.reduce((total, program) => total + program.curriculumUrls.length, 0), 82);
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Ege Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
     const parsed = new URL(url);
@@ -343,8 +343,6 @@ test("Ege programmes link only to populated official EBP course plans", () => {
 
   const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
   assert.deepEqual(unlinked, [
-    "Bilgisayar Mühendisliği (İngilizce)",
-    "Yapay Zeka ve Veri Mühendisliği (İngilizce)",
     "İlahiyat (M.T.O.K.)",
   ].sort());
 });

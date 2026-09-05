@@ -6,7 +6,7 @@ const catalog = JSON.parse(await readFile(catalogUrl, "utf8"));
 
 const universityId = "tr-yildiz-teknik-universitesi";
 const authority = "Yıldız Teknik Üniversitesi";
-const officialHost = "www.bologna.yildiz.edu.tr";
+const officialHost = "bologna.yildiz.edu.tr";
 const baseUrl = `https://${officialHost}`;
 const indexUrl = `${baseUrl}/index.php?r=program%2Fbachelor`;
 const headers = {
@@ -21,9 +21,7 @@ const source = {
   url: indexUrl,
 };
 
-// YTÜ'nün resmî Bologna sunucusu 4 Eylül 2026'da eksik bir TLS sertifika zinciri
-// sunuyor. Sertifika denetimi yalnızca bu sabit resmî alan adı için gevşetilir;
-// yönlendirmelerin başka bir sunucuya çıkmasına izin verilmez.
+// Use the canonical university catalogue hostname with normal TLS validation.
 function getOfficialHtml(inputUrl, redirectCount = 0) {
   const url = new URL(inputUrl);
   if (url.protocol !== "https:" || url.hostname !== officialHost) {
@@ -34,7 +32,6 @@ function getOfficialHtml(inputUrl, redirectCount = 0) {
   return new Promise((resolve, reject) => {
     const request = https.get(url, {
       headers,
-      rejectUnauthorized: false,
     }, (response) => {
       if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
         response.resume();

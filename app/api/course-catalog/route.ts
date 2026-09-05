@@ -1,6 +1,7 @@
 import { getUniversityById } from "../../../lib/academic-data";
 import { getOfficialAcademicProgram } from "../../../lib/academic-catalog";
 import { getOfficialCourseProgram, officialCourseCatalogMeta } from "../../../lib/official-course-catalog";
+import { getCourseCatalogSources } from "../../../lib/course-catalog-sources";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     return Response.json({ error: "Geçerli bir üniversite ve program seçilmedi." }, { status: 400 });
   }
 
-  const courseProgramme = getOfficialCourseProgram(universityId, programId);
+  const courseProgramme = await getOfficialCourseProgram(universityId, programId);
   if (!courseProgramme) {
     return Response.json(
       {
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
         university: { id: university.id, name: university.name, shortName: university.shortName },
         program: { id: programme.id, name: programme.name },
         courses: [],
+        catalogs: getCourseCatalogSources(universityId),
         limitations: officialCourseCatalogMeta.limitations,
       },
       { headers: { "cache-control": "public, max-age=3600, stale-while-revalidate=86400" } },
@@ -35,6 +37,7 @@ export async function GET(request: Request) {
       authority: courseProgramme.authority,
       sourceUrl: courseProgramme.sourceUrl,
       verifiedAt: courseProgramme.verifiedAt,
+      curriculumPeriod: courseProgramme.curriculumPeriod,
       coverage: courseProgramme.coverage ?? "complete",
       catalogVersion: officialCourseCatalogMeta.version,
       courses: courseProgramme.courses,

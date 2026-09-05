@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-sourced-course-catalogs-and-nearby-areas",
+    "releasedAt": "2026-09-05T05:37:30+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog ve Kampüs",
+    "title": "Türkiye ders katalogları ve yakın bölgeler genişletildi",
+    "summary": "Türkiye kataloğundaki 10.802 program için 1.161.612 ders kaydı; 199 üniversite çevresinde 2.169 yakın bölge kaydı kullanılabilir.",
+    "highlights": [
+      "Bölüm seçimine göre resmî kaynaklı dersler yüklenir; kod/ad araması, sınıf filtresi ve varsa müfredat dönemi görünür.",
+      "160 kurum için kontrol edilmiş katalog girişleri eklenmiştir. Liste bulunmayan programlarda resmî kataloğa geçilebilir.",
+      "Owner panelinde 204 kurumun kapsamı, eksik programları, eksik nedenleri ve kaynakları üniversite bazında aranabilir.",
+      "4.381 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; bilinmeyen dönem ve ders türü tahmin edilmez.",
+      "Mahalle ve bölgeler filtresindeki mesafeler kaynaklı kampüs/referans noktasından kuş uçuşudur. Harita anlık görüntüsü 24 Temmuz 2026, kontrol tarihi 5 Eylül 2026’dır."
+    ]
+  },
+  {
     "id": "cyprus-sourced-courses-and-neighbourhoods",
     "releasedAt": "2026-09-05T01:59:57+00:00",
     "category": "İyileştirme",
