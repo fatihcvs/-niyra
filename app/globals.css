@@ -2308,3 +2308,5 @@ html[data-theme="dark"] .modal-success>span { background:var(--success-surface);
   .composer-audience select { width:100%; font-size:16px; }
   .composer-audience p { font-size:.8125rem; }
 }
+
+.housing-community-section{margin-top:24px;border-top:1px solid var(--border, #e6e5f0);padding-top:18px}.housing-community-section>summary{cursor:pointer;color:#756990;font-size:13px;font-weight:600;padding:10px 2px}.housing-community-section[open]>summary{margin-bottom:16px}

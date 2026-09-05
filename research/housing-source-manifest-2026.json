@@ -1,0 +1,1174 @@
+{
+  "checkedAt": "2026-09-05",
+  "gsbDirectories": [
+    {
+      "kind": "public",
+      "city": "BALIKESİR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=balikesir",
+      "count": 18,
+      "sha256": "5676f0255a3a95aeefcd5fa041d293daf4d4d3fdff043f439400bbbd79a2d8d2"
+    },
+    {
+      "kind": "private",
+      "city": "BALIKESİR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=balikesir",
+      "count": 26,
+      "sha256": "137e380ecb1b1cbb95a1db05a0614a94b047dd6aac37e637da89149dcebcee02"
+    },
+    {
+      "kind": "public",
+      "city": "BİLECİK",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bilecik",
+      "count": 5,
+      "sha256": "bd86226a2e2634285b3a22d28976c3441955dd219203c4b55a55af2bb9c8a74d"
+    },
+    {
+      "kind": "private",
+      "city": "BİLECİK",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bilecik",
+      "count": 6,
+      "sha256": "5706911c35b743973a625fc429603e2ce98163b09e3bbe115ed51ae2d73728d1"
+    },
+    {
+      "kind": "public",
+      "city": "BURSA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bursa",
+      "count": 14,
+      "sha256": "1aa51181bc37de2ad784230d12724dce2045818dfd00f830209b8585eeb58445"
+    },
+    {
+      "kind": "private",
+      "city": "BURSA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bursa",
+      "count": 46,
+      "sha256": "9c367a14d6ce463f39973c64fb52e3ddafdcd461f79a04914ac66864bbe3a7fb"
+    },
+    {
+      "kind": "public",
+      "city": "ÇANAKKALE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=canakkale",
+      "count": 12,
+      "sha256": "86fe181761bf8d86af1d51740708ce833ca4c58b251734876aaf5429ed9a20f1"
+    },
+    {
+      "kind": "private",
+      "city": "ÇANAKKALE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=canakkale",
+      "count": 45,
+      "sha256": "266ed5bb3d2eb4489bd0945454a4e4f73814cb06fc434f72a7e5237983605636"
+    },
+    {
+      "kind": "public",
+      "city": "EDİRNE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=edirne",
+      "count": 12,
+      "sha256": "d9fd24e909fd0e44f4a9fe8ac491e519e9c3b4e57b8b8d5f82598c7a5c8ba8cf"
+    },
+    {
+      "kind": "private",
+      "city": "EDİRNE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=edirne",
+      "count": 9,
+      "sha256": "bec0ecdc4d724451dd302436b2296ff03b0e93a26fcb23de15363d03ae97e70a"
+    },
+    {
+      "kind": "public",
+      "city": "İSTANBUL",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=istanbul",
+      "count": 40,
+      "sha256": "f9debe223b8776f72feee64d3906d4367045a329b22fe51179054342fcebba76"
+    },
+    {
+      "kind": "private",
+      "city": "İSTANBUL",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=istanbul",
+      "count": 350,
+      "sha256": "2f41d7e4efbc0e0638e400dc18f9936b67d0bd0fa1334a0d195fd9ac98606e79"
+    },
+    {
+      "kind": "public",
+      "city": "KIRKLARELİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kirklareli",
+      "count": 8,
+      "sha256": "dae041e2553adeba0cf47e5a75c2ea129486a671925c29004f6194ffa33ba4c3"
+    },
+    {
+      "kind": "private",
+      "city": "KIRKLARELİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kirklareli",
+      "count": 8,
+      "sha256": "413cab31911ad16b78d9ce4ba3dc44e9fd6b6ea9f42dbaaa315ad822999107bb"
+    },
+    {
+      "kind": "public",
+      "city": "KOCAELİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kocaeli",
+      "count": 18,
+      "sha256": "678298b71b9df1f9b5ce8146ef4d2769f821be9c4089f9e521699b9b0fe10508"
+    },
+    {
+      "kind": "private",
+      "city": "KOCAELİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kocaeli",
+      "count": 29,
+      "sha256": "42236c2d7c17fea33ed61e6bfc7ae47f4b2f2029a1c6329c45823dbab4c97fd9"
+    },
+    {
+      "kind": "public",
+      "city": "SAKARYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=sakarya",
+      "count": 15,
+      "sha256": "77f66cccccb087f027f5bd42082d9122a6ffd48763182d1a175b0c6cb1d03200"
+    },
+    {
+      "kind": "private",
+      "city": "SAKARYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=sakarya",
+      "count": 30,
+      "sha256": "560362cfb757c055a9abb76df10951f86497e1a6d2fde2189df7d027c3c350c6"
+    },
+    {
+      "kind": "public",
+      "city": "TEKİRDAĞ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=tekirdag",
+      "count": 6,
+      "sha256": "48bdfc4b0408fecb6ae473ede9c9d03a59190e17afacf42f2584daa6bc929ae8"
+    },
+    {
+      "kind": "private",
+      "city": "TEKİRDAĞ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=tekirdag",
+      "count": 9,
+      "sha256": "da1d23689ffee8695aaeea59ba1ba1e9181ef208fb1d7f4444381763bc55ed37"
+    },
+    {
+      "kind": "public",
+      "city": "YALOVA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=yalova",
+      "count": 5,
+      "sha256": "019b220225ec036eeff60378641d22dd560ccc4c516157114f9119d75f533bab"
+    },
+    {
+      "kind": "private",
+      "city": "YALOVA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=yalova",
+      "count": 13,
+      "sha256": "0f58d5f2df0b7e106de56c3554e2b9bdea753e68ada099804fd43f783e3538ef"
+    },
+    {
+      "kind": "public",
+      "city": "ANKARA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=ankara",
+      "count": 39,
+      "sha256": "04fcc8432cdbb4f3fdec65cd20279ff697894762d75cd56631086b31bdbae97d"
+    },
+    {
+      "kind": "private",
+      "city": "ANKARA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=ankara",
+      "count": 193,
+      "sha256": "65da270282b8436200174cf23c18a03cb9380bd55f5b6da07ec4b6081decd79e"
+    },
+    {
+      "kind": "public",
+      "city": "ÇANKIRI",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=cankiri",
+      "count": 5,
+      "sha256": "0f4f51bb966ff0f855c304a2f626fb648913ff9278a4b98167f893c5f106fe9d"
+    },
+    {
+      "kind": "private",
+      "city": "ÇANKIRI",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=cankiri",
+      "count": 3,
+      "sha256": "733952e63b422d2d0443eddb4caa4d45dd000dedcf10182125433731829d4b86"
+    },
+    {
+      "kind": "public",
+      "city": "ESKİŞEHİR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=eskisehir",
+      "count": 11,
+      "sha256": "b78baf113b5ddf2cd92ea0f7a7958b4743749b0cb11beaa2bea3153f63481ccf"
+    },
+    {
+      "kind": "private",
+      "city": "ESKİŞEHİR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=eskisehir",
+      "count": 16,
+      "sha256": "3d81a1f37396652474134ace096493485cecdffb3f82c2a0331e97577661a240"
+    },
+    {
+      "kind": "public",
+      "city": "KAYSERİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kayseri",
+      "count": 12,
+      "sha256": "b48723a3dda1bc4a997f8ae1f0b486134580385faaec71015d02c6f0dac4ead7"
+    },
+    {
+      "kind": "private",
+      "city": "KAYSERİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kayseri",
+      "count": 23,
+      "sha256": "7106100b75c0ed70d2ae07c2a82295a0f4a46ac014aba14daf27dcf0b780a855"
+    },
+    {
+      "kind": "public",
+      "city": "KIRŞEHİR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kirsehir",
+      "count": 8,
+      "sha256": "30bffa321b7cfa4eacd56d20b46f260690cb6462ef090b778119e53a9b7fccb6"
+    },
+    {
+      "kind": "private",
+      "city": "KIRŞEHİR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kirsehir",
+      "count": 7,
+      "sha256": "73d66c61c92faf7be1f0c60e1f7a87be453b4ea20744d0b3f4233583b0331fbc"
+    },
+    {
+      "kind": "public",
+      "city": "KONYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=konya",
+      "count": 33,
+      "sha256": "6a445f44975e3512bbca15efd64d4b4b1292a844ddf9887fa1d26612393b9c91"
+    },
+    {
+      "kind": "private",
+      "city": "KONYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=konya",
+      "count": 57,
+      "sha256": "9aba8a109bea9a5171ef974cf981d2352f29626619b098413db9666f09a34f20"
+    },
+    {
+      "kind": "public",
+      "city": "NEVŞEHİR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=nevsehir",
+      "count": 13,
+      "sha256": "cff315f8d238e61b1a9cb5cf2d2114dd5e07971a1f3cf9de0ae19d2bc93c1334"
+    },
+    {
+      "kind": "private",
+      "city": "NEVŞEHİR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=nevsehir",
+      "count": 2,
+      "sha256": "1b723572901e0dcfd2011890c7d4839b0fbeac07f6785a3932b2d14028d876ce"
+    },
+    {
+      "kind": "public",
+      "city": "NİĞDE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=nigde",
+      "count": 9,
+      "sha256": "79d742aaa4f05727dbf410eca667b0d9e8aa890c2a8d5d5d803543ae7a9def8d"
+    },
+    {
+      "kind": "private",
+      "city": "NİĞDE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=nigde",
+      "count": 6,
+      "sha256": "691583dbf9db66f86bf4d08d65219314921f98e964388a7dd75f3b742a128931"
+    },
+    {
+      "kind": "public",
+      "city": "SİVAS",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=sivas",
+      "count": 15,
+      "sha256": "4ad3b95a41e5d1e28487f08dc2a9328a832a6e264b4a6a85525121d1ec0e2ce6"
+    },
+    {
+      "kind": "private",
+      "city": "SİVAS",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=sivas",
+      "count": 8,
+      "sha256": "038b5d27c8362301c10b06e34da5d237d27121d5ca08e84638fa44d4775ac2bc"
+    },
+    {
+      "kind": "public",
+      "city": "YOZGAT",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=yozgat",
+      "count": 10,
+      "sha256": "37226a6e5e415c5846770221ec61ca4d6a912fa2f5c4b98365310720e7631378"
+    },
+    {
+      "kind": "private",
+      "city": "YOZGAT",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=yozgat",
+      "count": 8,
+      "sha256": "3683a23b2a4825c4e29c8ee5bfd207b21bb3b644bf1db589ddf26f1300b5646d"
+    },
+    {
+      "kind": "public",
+      "city": "AKSARAY",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=aksaray",
+      "count": 9,
+      "sha256": "b97efba4b149d72f9204dd09371de1b7aa2a1d7545e752e4973de05f51d79e2a"
+    },
+    {
+      "kind": "private",
+      "city": "AKSARAY",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=aksaray",
+      "count": 6,
+      "sha256": "14aeb9c0c8d3fded71211e2fd4faba66fd616bed57c1d4fee4b1b531976cd347"
+    },
+    {
+      "kind": "public",
+      "city": "KARAMAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=karaman",
+      "count": 7,
+      "sha256": "f789a00df7c5b28e556f75419698d27b7a88a3383b85f88138cd9b9f812fc29a"
+    },
+    {
+      "kind": "private",
+      "city": "KARAMAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=karaman",
+      "count": 1,
+      "sha256": "76ce311d39fa5d08b61687345bfc4a80e96e06b0d173a7a1d77757646089fe8d"
+    },
+    {
+      "kind": "public",
+      "city": "KIRIKKALE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kirikkale",
+      "count": 7,
+      "sha256": "c16abf5c0fbde4f4ecc9243fcd30f972092f2043e439c538b8d1d3a141870f43"
+    },
+    {
+      "kind": "private",
+      "city": "KIRIKKALE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kirikkale",
+      "count": 8,
+      "sha256": "13878d575e86ece9775d714eded75dae811cb1cb0f6d43922e117e05095fc51d"
+    },
+    {
+      "kind": "public",
+      "city": "AFYONKARAHİSAR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=afyonkarahisar",
+      "count": 17,
+      "sha256": "7f96a5136c682ffdda291e7fe7352d6c5634ea59bb0c00ed39db72be98c2fcb4"
+    },
+    {
+      "kind": "private",
+      "city": "AFYONKARAHİSAR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=afyonkarahisar",
+      "count": 13,
+      "sha256": "2965a4ee9ac9d66eea4ae97c17ea22e60915a47581aa922c015fe95c20ced2ce"
+    },
+    {
+      "kind": "public",
+      "city": "AYDIN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=aydin",
+      "count": 12,
+      "sha256": "f7993dc195a213e041903351b4a76980dbc46d8678bb427481409f9eee908b78"
+    },
+    {
+      "kind": "private",
+      "city": "AYDIN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=aydin",
+      "count": 37,
+      "sha256": "46fca9fa0c4f63045bb95bf958cf327fa90e5265cf6fe16f8af0e0cf2e8442a9"
+    },
+    {
+      "kind": "public",
+      "city": "DENİZLİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=denizli",
+      "count": 11,
+      "sha256": "9f07f762d92acb82cea1bfa3df48da8174ada0f7a0e1fe3bba43ab044f82a447"
+    },
+    {
+      "kind": "private",
+      "city": "DENİZLİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=denizli",
+      "count": 10,
+      "sha256": "fee20162f3847e5adb698b098b009ca1afaef7d7b9cddcdc573462be03d702c8"
+    },
+    {
+      "kind": "public",
+      "city": "İZMİR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=izmir",
+      "count": 28,
+      "sha256": "b2094986a3805fbcaab1ee3ee113a42174f5df0e47e8c33b9546b58718da7557"
+    },
+    {
+      "kind": "private",
+      "city": "İZMİR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=izmir",
+      "count": 87,
+      "sha256": "c223561b64e486cfb05445f41e93f8e8a23e603c532190792e2b9fef87918fd8"
+    },
+    {
+      "kind": "public",
+      "city": "KÜTAHYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kutahya",
+      "count": 11,
+      "sha256": "a2fb6e4c8d3b0b65743d9cd97653f1e682514a0ab24b41a9620f9955d76ae94b"
+    },
+    {
+      "kind": "private",
+      "city": "KÜTAHYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kutahya",
+      "count": 28,
+      "sha256": "73e91eda11bdfd5ce40b784c01c3e5785fd4b4449224d13f35a19127224335a6"
+    },
+    {
+      "kind": "public",
+      "city": "MANİSA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=manisa",
+      "count": 16,
+      "sha256": "102c29180cc930e417ed5a3cfda90d994f59de4594bd366b4c4a2712e988d2ee"
+    },
+    {
+      "kind": "private",
+      "city": "MANİSA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=manisa",
+      "count": 15,
+      "sha256": "d8c05abc201b988c5ec1c68268801eb5d8d1d0f16af449de113dfa90fe67acf1"
+    },
+    {
+      "kind": "public",
+      "city": "MUĞLA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=mugla",
+      "count": 11,
+      "sha256": "4006f4ed6221565ffc20afe9689a7b8fd75d605f76d783722283e8c2c706ae87"
+    },
+    {
+      "kind": "private",
+      "city": "MUĞLA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=mugla",
+      "count": 4,
+      "sha256": "4d8e4fc614f67a47e773b7b92fa204fba061a7e20d04c30035139de306fb5248"
+    },
+    {
+      "kind": "public",
+      "city": "UŞAK",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=usak",
+      "count": 5,
+      "sha256": "33f79641ea68cc078aca119483046a16d48ced1181eaae75ef006a2f630c03aa"
+    },
+    {
+      "kind": "private",
+      "city": "UŞAK",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=usak",
+      "count": 17,
+      "sha256": "57bec718449baeb310e8bcc8eff0904cb97ff9dfff5f84b9e6fd9770e288395a"
+    },
+    {
+      "kind": "public",
+      "city": "ADANA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=adana",
+      "count": 10,
+      "sha256": "55190d73bb19d30ec3514c39ac68b93727b70233472a4d22c896326939433441"
+    },
+    {
+      "kind": "private",
+      "city": "ADANA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=adana",
+      "count": 13,
+      "sha256": "93c9025a9952f25096b0c230cec2b383b005ff7afd6dde722ac0ba45f3e8edf0"
+    },
+    {
+      "kind": "public",
+      "city": "ANTALYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=antalya",
+      "count": 16,
+      "sha256": "e7a6d52f978059e2b3b1bda4516f9b67b933a25960511755104f1b9871404a40"
+    },
+    {
+      "kind": "private",
+      "city": "ANTALYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=antalya",
+      "count": 29,
+      "sha256": "308f4ca80bcfef041349d997b0ac4da366d040836d299087bb318e7a9db3e2d3"
+    },
+    {
+      "kind": "public",
+      "city": "BURDUR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=burdur",
+      "count": 8,
+      "sha256": "c76337f187e0c5b7cda639acb5f1095e51bb003b4856bba08ee6ba82473942a7"
+    },
+    {
+      "kind": "private",
+      "city": "BURDUR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=burdur",
+      "count": 8,
+      "sha256": "17ab513ff0be878f00e73701b8ff3970090f1701b9e364eeb41206919ee62b41"
+    },
+    {
+      "kind": "public",
+      "city": "HATAY",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=hatay",
+      "count": 13,
+      "sha256": "848d7af20d3829f6fbd6abeb7cd9304331c72e5be342e26c2a1fdcc35a05c045"
+    },
+    {
+      "kind": "private",
+      "city": "HATAY",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=hatay",
+      "count": 4,
+      "sha256": "c0bfbd403baabb536d18f86220a96ac8dcf3ddf9b61e7f63807b82adb72e332f"
+    },
+    {
+      "kind": "public",
+      "city": "ISPARTA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=isparta",
+      "count": 13,
+      "sha256": "85b3bbbcaea48d0606f5061167ea481c80c77346f18b7fe5a069377aef5b8d7f"
+    },
+    {
+      "kind": "private",
+      "city": "ISPARTA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=isparta",
+      "count": 16,
+      "sha256": "aeae0abf83fd64f255a43f6e30cdbc452e9e06c7208e7e3945446fe60cb0097a"
+    },
+    {
+      "kind": "public",
+      "city": "MERSİN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=mersin",
+      "count": 10,
+      "sha256": "239d46a0dc688407aa7bd9f8081a9652b53083e3e331e7d2ceb534bf2a9fef90"
+    },
+    {
+      "kind": "private",
+      "city": "MERSİN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=mersin",
+      "count": 12,
+      "sha256": "01a89b1ab017d4e02c537fdf011692fe1b51952a00d8979ce0c1bf0ec5ca8ca4"
+    },
+    {
+      "kind": "public",
+      "city": "KAHRAMANMARAŞ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kahramanmaras",
+      "count": 7,
+      "sha256": "d30b99762d89a50ab9c7190f27141e9038c12c40048ae7cb73a126739157fc61"
+    },
+    {
+      "kind": "private",
+      "city": "KAHRAMANMARAŞ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kahramanmaras",
+      "count": 6,
+      "sha256": "ae0307692c6300433ede94529bf2de4095f5c10ed55e35a7da65ab07511652dd"
+    },
+    {
+      "kind": "public",
+      "city": "OSMANİYE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=osmaniye",
+      "count": 5,
+      "sha256": "42c6d25014bec15ca6abd3f36c823b06461d33abc08173e6da70b3d7dbb7a088"
+    },
+    {
+      "kind": "private",
+      "city": "OSMANİYE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=osmaniye",
+      "count": 3,
+      "sha256": "429212e33481bc30e7230bcd9cbf89d319096c559d96cdbc35b385eed4128819"
+    },
+    {
+      "kind": "public",
+      "city": "AMASYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=amasya",
+      "count": 8,
+      "sha256": "2b313fe43a3960ea18cb78498d71ef85e5bd02b10979b8793812578fc47c6a74"
+    },
+    {
+      "kind": "private",
+      "city": "AMASYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=amasya",
+      "count": 5,
+      "sha256": "63d03b90f638a39f2de5c28f9978daca7094fa68b2eba63372f26bc365ab3ad8"
+    },
+    {
+      "kind": "public",
+      "city": "ARTVİN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=artvin",
+      "count": 8,
+      "sha256": "0454f80f557a4da135265517bdbe8174d4636345ae9e841d6a5c6df632b5e3aa"
+    },
+    {
+      "kind": "private",
+      "city": "ARTVİN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=artvin",
+      "count": 4,
+      "sha256": "2b67e33ddcccfe853e88abf9510f8efd30c3f82d8defd35e0c801b490f2e5c5b"
+    },
+    {
+      "kind": "public",
+      "city": "BOLU",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bolu",
+      "count": 11,
+      "sha256": "1472b20722586ad61c517d35873430cc6a0b14e0232da9263cd84e5637c1e40e"
+    },
+    {
+      "kind": "private",
+      "city": "BOLU",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bolu",
+      "count": 13,
+      "sha256": "863a2a64ae2fc994992a2e991a5f61f2a2cf34a39ecfc1f99d3cd5f3e0bfdf4a"
+    },
+    {
+      "kind": "public",
+      "city": "ÇORUM",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=corum",
+      "count": 8,
+      "sha256": "15b30d280fb5094672b8bd54ea6ff7c41b7a41a266693990fd6fec3481437349"
+    },
+    {
+      "kind": "private",
+      "city": "ÇORUM",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=corum",
+      "count": 4,
+      "sha256": "ddf1ddae2187511a8dfa7a2cbe3a80171a238f055e98b0adec69fc6e516ced9c"
+    },
+    {
+      "kind": "public",
+      "city": "GİRESUN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=giresun",
+      "count": 11,
+      "sha256": "c6547833e86dd70a5a2de4ecba1771625dc0dd8ca328e9d850620cc55ddb4fd1"
+    },
+    {
+      "kind": "private",
+      "city": "GİRESUN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=giresun",
+      "count": 7,
+      "sha256": "31e185498e6b7cdcb0dc1a6fbdb0a4d087a958f610c7e353c015b3d875f42792"
+    },
+    {
+      "kind": "public",
+      "city": "GÜMÜŞHANE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=gumushane",
+      "count": 11,
+      "sha256": "296a2c6cb2168b38e16322dd773cc6b55e0feba273edc4d43baaead3939a4ba0"
+    },
+    {
+      "kind": "private",
+      "city": "GÜMÜŞHANE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=gumushane",
+      "count": 3,
+      "sha256": "e8e233aeb9c42b4a367dfb6fc48e4516d233bb1d2b51d8afa8795c58c866022f"
+    },
+    {
+      "kind": "public",
+      "city": "KASTAMONU",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kastamonu",
+      "count": 7,
+      "sha256": "208fac8dff2120f7f13e0c038b5223c7f1689c27d1382820e92970e1ef4a2aac"
+    },
+    {
+      "kind": "private",
+      "city": "KASTAMONU",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kastamonu",
+      "count": 15,
+      "sha256": "08348f082572fffde29373126dcbfadfdd69ec3dcf7030cf21dfddc0983a34e0"
+    },
+    {
+      "kind": "public",
+      "city": "ORDU",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=ordu",
+      "count": 6,
+      "sha256": "ba53b467f9ebf24014ed8e0ca1fad80e52b2d2a72f931616aecbeeb222110e2d"
+    },
+    {
+      "kind": "private",
+      "city": "ORDU",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=ordu",
+      "count": 3,
+      "sha256": "e7a6115f4496797ba9af72a770b9ba6d1434bcaba010b10096410ca04303767f"
+    },
+    {
+      "kind": "public",
+      "city": "RİZE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=rize",
+      "count": 12,
+      "sha256": "6ae60bfeb4bce0c8b0e110cb0c49639d506d9f51f5c928a9504d779440f7605f"
+    },
+    {
+      "kind": "private",
+      "city": "RİZE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=rize",
+      "count": 5,
+      "sha256": "bb9d79cd15b42c9909ade37fb5a847dda08546af01f40711cd8351ba1a02ff1b"
+    },
+    {
+      "kind": "public",
+      "city": "SAMSUN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=samsun",
+      "count": 20,
+      "sha256": "6782cd29c03274ae0927ab12b8b01c907b2c9ddd499e9930deea78ecb8d64e9a"
+    },
+    {
+      "kind": "private",
+      "city": "SAMSUN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=samsun",
+      "count": 23,
+      "sha256": "6f1741cbae43fa16a8c1a944b985b84d4ca17a7162d60e192160bf8504b12138"
+    },
+    {
+      "kind": "public",
+      "city": "SİNOP",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=sinop",
+      "count": 8,
+      "sha256": "c9b6a9f24a76a8adbbff4519cf3fb8172517dab0efe6084dce377593c45ad360"
+    },
+    {
+      "kind": "private",
+      "city": "SİNOP",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=sinop",
+      "count": 6,
+      "sha256": "ac7e396892d79cb07e760fe996fc29ee5f0b9910a6e0689c56bff0d124fa2bb6"
+    },
+    {
+      "kind": "public",
+      "city": "TOKAT",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=tokat",
+      "count": 15,
+      "sha256": "d0d6d45ab43efd73f28b8fa99bb393bb1a8b330866019aff239475fca04d12d4"
+    },
+    {
+      "kind": "private",
+      "city": "TOKAT",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=tokat",
+      "count": 13,
+      "sha256": "f9ab578c0480ce24e348564d2ec1a754abe8beec93ac7904cc3e5c5780e96927"
+    },
+    {
+      "kind": "public",
+      "city": "TRABZON",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=trabzon",
+      "count": 20,
+      "sha256": "6c1727bcc461ab0efeab27a884156f8fd2fd3dd82d416ec6bb761170c978d104"
+    },
+    {
+      "kind": "private",
+      "city": "TRABZON",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=trabzon",
+      "count": 12,
+      "sha256": "94268f2fe57ef3292a684516a1587faf938cc70daac485444d9ee402b977effc"
+    },
+    {
+      "kind": "public",
+      "city": "ZONGULDAK",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=zonguldak",
+      "count": 13,
+      "sha256": "3e166cab2871f59d4c112f4de89dcdc82b56d925e5c4115f534e7ae86f75c850"
+    },
+    {
+      "kind": "private",
+      "city": "ZONGULDAK",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=zonguldak",
+      "count": 13,
+      "sha256": "87c7770d8f9d5ce874c8fc4202c9c4a4b361315ac0d39e8dc5df4e8d72002bb3"
+    },
+    {
+      "kind": "public",
+      "city": "BAYBURT",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bayburt",
+      "count": 3,
+      "sha256": "d71ed4cf1751982942c971bbed96ec27c4632762524d07c5b002877ad5ec7377"
+    },
+    {
+      "kind": "private",
+      "city": "BAYBURT",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bayburt",
+      "count": 1,
+      "sha256": "5b99c1dd690c02f05d825c07566d20502d4f488dc6eeef66a3ac7071c5fbebb6"
+    },
+    {
+      "kind": "public",
+      "city": "BARTIN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bartin",
+      "count": 4,
+      "sha256": "b4eac9cda11441ed8b2e832468331c76856f3e03406a4604e77c174ec14809dc"
+    },
+    {
+      "kind": "private",
+      "city": "BARTIN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bartin",
+      "count": 7,
+      "sha256": "f26b214be9f9e2ba3ebbe514e5aa459cf87f812752d81b8ab9276426868b57e5"
+    },
+    {
+      "kind": "public",
+      "city": "KARABÜK",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=karabuk",
+      "count": 10,
+      "sha256": "e2c6246475fca47d647e7ef847470efe0c33f0f3358e04bf12b0d32c850d9349"
+    },
+    {
+      "kind": "private",
+      "city": "KARABÜK",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=karabuk",
+      "count": 17,
+      "sha256": "343d750ddebba6d9890fed841260947b416d78a50b9244f317782246b9daefd8"
+    },
+    {
+      "kind": "public",
+      "city": "DÜZCE",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=duzce",
+      "count": 10,
+      "sha256": "4e5a9c8bc016c05b9d527f4f2f38a16824586bc588d53ba88255023b72c88aca"
+    },
+    {
+      "kind": "private",
+      "city": "DÜZCE",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=duzce",
+      "count": 7,
+      "sha256": "8dadfc370f7a3cae79e9b2c1b62759bfb7ce29ee8e7b8d9442d94027c6580eb5"
+    },
+    {
+      "kind": "public",
+      "city": "ADIYAMAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=adiyaman",
+      "count": 6,
+      "sha256": "6f204737c27a86a93471b868ca0755edf3ab691bd80d963533d46cc6d3a17559"
+    },
+    {
+      "kind": "private",
+      "city": "ADIYAMAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=adiyaman",
+      "count": 3,
+      "sha256": "8635713285b6add1dddddbb1f0e5a0b1db0e2b7c934d1c084f7d040af0b6e43e"
+    },
+    {
+      "kind": "public",
+      "city": "DİYARBAKIR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=diyarbakir",
+      "count": 4,
+      "sha256": "5c20917dc1a0860243488f9c554e602904a51c6e3e888a9860886dfd03b84f64"
+    },
+    {
+      "kind": "private",
+      "city": "DİYARBAKIR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=diyarbakir",
+      "count": 3,
+      "sha256": "e77fafd041824fc403c3b923edc3f597305b19d18693f12314589ced51b136b7"
+    },
+    {
+      "kind": "public",
+      "city": "GAZİANTEP",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=gaziantep",
+      "count": 12,
+      "sha256": "78efa0817fc5953c2b29d7a3ec50f78421ff0be90ba906935573af31adc28311"
+    },
+    {
+      "kind": "private",
+      "city": "GAZİANTEP",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=gaziantep",
+      "count": 11,
+      "sha256": "0355d18390e5a45be2b9b56da8c6b0036d77498d4309ad0e833e2371cb1fe783"
+    },
+    {
+      "kind": "public",
+      "city": "MARDİN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=mardin",
+      "count": 4,
+      "sha256": "4f74e9e83550335a0616078de26e483b00742d651f2b0a5b3a39a64f31580ec8"
+    },
+    {
+      "kind": "private",
+      "city": "MARDİN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=mardin",
+      "count": 4,
+      "sha256": "2b30ec61580a3519ff90f30fb7e32eaa2ee7b9a6d072541208faa6a720999500"
+    },
+    {
+      "kind": "public",
+      "city": "SİİRT",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=siirt",
+      "count": 5,
+      "sha256": "71d8a949edd498685afc924c0f6f907d1677952c18df08200006203d496b0352"
+    },
+    {
+      "kind": "private",
+      "city": "SİİRT",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=siirt",
+      "count": 2,
+      "sha256": "d20c261513b8d978b60a7236011821cd189df87031d7c6237a2da22df2626d03"
+    },
+    {
+      "kind": "public",
+      "city": "ŞANLIURFA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=sanliurfa",
+      "count": 9,
+      "sha256": "a2204cf54aff5561e03021052b62a564182e6055175c54ee91994a7b6b6e16ed"
+    },
+    {
+      "kind": "private",
+      "city": "ŞANLIURFA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=sanliurfa",
+      "count": 6,
+      "sha256": "f7fa4dc0b7f9d977fcca9749b9095bce0af9a388f680d3e2d349aff95e8ec374"
+    },
+    {
+      "kind": "public",
+      "city": "BATMAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=batman",
+      "count": 3,
+      "sha256": "0320af5916ab94b43db2cd0c1f0812015ca7171be1950e25690059dd2b987b4f"
+    },
+    {
+      "kind": "private",
+      "city": "BATMAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=batman",
+      "count": 1,
+      "sha256": "837cc59d9e8684b13bb612a84fb277ce6e7918c69b16eb310c699f097a6b227b"
+    },
+    {
+      "kind": "public",
+      "city": "ŞIRNAK",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=sirnak",
+      "count": 3,
+      "sha256": "39593a87d388c6bd14216127aa47b64cdfed987312d4b0957772f9398f599b83"
+    },
+    {
+      "kind": "private",
+      "city": "ŞIRNAK",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=sirnak",
+      "count": 0,
+      "sha256": "e703c7780717402bdc9b74a2b80ec80d79bef4d028a0f3b7d583822b79c24d8b"
+    },
+    {
+      "kind": "public",
+      "city": "KİLİS",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kilis",
+      "count": 6,
+      "sha256": "186f34080f5f0ab2185ee08f499c42c1a00b2898c449e99729bf1f016c1ea464"
+    },
+    {
+      "kind": "private",
+      "city": "KİLİS",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kilis",
+      "count": 0,
+      "sha256": "b519c22db0b6995a8b9f45ca63bd7953d7ca8c0cc00e0ec9da8e8d266979a463"
+    },
+    {
+      "kind": "public",
+      "city": "AĞRI",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=agri",
+      "count": 7,
+      "sha256": "87d6edb31c1966907d3c36d4e2fa192bc304c699021dfd6ef6054a553aad7f1e"
+    },
+    {
+      "kind": "private",
+      "city": "AĞRI",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=agri",
+      "count": 2,
+      "sha256": "860721c816b6f075a71e0eacb1007d885decfb20b175c19a56010ab433900f45"
+    },
+    {
+      "kind": "public",
+      "city": "BİNGÖL",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bingol",
+      "count": 6,
+      "sha256": "594b2a000324b6c1d266e2cf441c214b5aa44056d67d4162c05af3154f1f5a8d"
+    },
+    {
+      "kind": "private",
+      "city": "BİNGÖL",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bingol",
+      "count": 5,
+      "sha256": "a5cfd629eaa2671011dd5aa369513858d085b98c8a9461ccab348a5f85185416"
+    },
+    {
+      "kind": "public",
+      "city": "BİTLİS",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=bitlis",
+      "count": 6,
+      "sha256": "c653462d68913a74b07f4ed65b50a28c5727036c0cc52da1feaa1cdb6eecbaf6"
+    },
+    {
+      "kind": "private",
+      "city": "BİTLİS",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=bitlis",
+      "count": 3,
+      "sha256": "40483290b0be7904d305563bc379ecd395de16c6338ce8426dd77500500f2a94"
+    },
+    {
+      "kind": "public",
+      "city": "ELAZIĞ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=elazig",
+      "count": 7,
+      "sha256": "b51da4c32f8eb9b39f6b02aaf9f293c944bcaac8f1c13622681af3cc7f37dc16"
+    },
+    {
+      "kind": "private",
+      "city": "ELAZIĞ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=elazig",
+      "count": 10,
+      "sha256": "cdec8072c3d1831d6b24d311ef8b72d80ce363a40fa2b7d9f5c8f1ba582de419"
+    },
+    {
+      "kind": "public",
+      "city": "ERZİNCAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=erzincan",
+      "count": 13,
+      "sha256": "aa971a2046255abfbb2330c8ed434398fb98f472bc032852727ef15e9ac0979a"
+    },
+    {
+      "kind": "private",
+      "city": "ERZİNCAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=erzincan",
+      "count": 7,
+      "sha256": "4997685af757591bee1f5d5ec58a6834c82fbdf5dd2515f3e46f4fb13379f45a"
+    },
+    {
+      "kind": "public",
+      "city": "ERZURUM",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=erzurum",
+      "count": 18,
+      "sha256": "19ae8dcb614edc7f7b8018a45f2a84e19906a5758b72aa56ba37869272fc97f4"
+    },
+    {
+      "kind": "private",
+      "city": "ERZURUM",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=erzurum",
+      "count": 16,
+      "sha256": "5d2d4271fd7315156bff636dbd1ffc1d3f9c7d7a37568294c882870a61c9c9dd"
+    },
+    {
+      "kind": "public",
+      "city": "HAKKARİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=hakkari",
+      "count": 2,
+      "sha256": "368a08643956161b4bc0837a78d3437f5198c7277430052478f51237d0bc0606"
+    },
+    {
+      "kind": "private",
+      "city": "HAKKARİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=hakkari",
+      "count": 0,
+      "sha256": "f106a7cc5d72f940688ca6500de57e4caffb59bfa508377e17d621d581014267"
+    },
+    {
+      "kind": "public",
+      "city": "KARS",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kars",
+      "count": 9,
+      "sha256": "bf34285f333b35b92faa2706799df6fc4324687a1062cbea1d7d97db0db08721"
+    },
+    {
+      "kind": "private",
+      "city": "KARS",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kars",
+      "count": 3,
+      "sha256": "48eaa7b12d3447b3a1d8307252daed1db2c4d74a8c004a5b32439d84dae57866"
+    },
+    {
+      "kind": "public",
+      "city": "MALATYA",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=malatya",
+      "count": 6,
+      "sha256": "3b79e33ec1e27ba4ed1b1e08c3d2629886e53be1c0f47d1abaf0c2daf43078ca"
+    },
+    {
+      "kind": "private",
+      "city": "MALATYA",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=malatya",
+      "count": 8,
+      "sha256": "fb28d5077c7fb7fcc4cfdc8567317b213c17d54a51e749ba4283a2161f6a2463"
+    },
+    {
+      "kind": "public",
+      "city": "MUŞ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=mus",
+      "count": 6,
+      "sha256": "b7b5072340d595eb07a39d48f82429c3c1170c6beb6e3dff73e3bb3d7f4f8a53"
+    },
+    {
+      "kind": "private",
+      "city": "MUŞ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=mus",
+      "count": 2,
+      "sha256": "379a788e2b38d100ee36be8fca77c605c2149159298a871556f21cf81854e90b"
+    },
+    {
+      "kind": "public",
+      "city": "TUNCELİ",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=tunceli",
+      "count": 5,
+      "sha256": "b5c46a8824697ee5cc89497d78e884c8f8c3c9a23d09d7363bf584b014ee63e7"
+    },
+    {
+      "kind": "private",
+      "city": "TUNCELİ",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=tunceli",
+      "count": 0,
+      "sha256": "1f7af41df057c468670cfb38ad70ce6050a961cdfd31d15b5b328ab451eab4e0"
+    },
+    {
+      "kind": "public",
+      "city": "VAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=van",
+      "count": 8,
+      "sha256": "e04d227eed696b8805af4781a8684becde842896c78bf6486a6b3ab059bdea34"
+    },
+    {
+      "kind": "private",
+      "city": "VAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=van",
+      "count": 5,
+      "sha256": "bd578d53cad38a988127d65389510c62544f8afd5c23334dcbd92d1991ac4470"
+    },
+    {
+      "kind": "public",
+      "city": "ARDAHAN",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=ardahan",
+      "count": 4,
+      "sha256": "dc51d8dbdfe31ed75a9669da9d010fcecb7e4a08abb207512692f0688747ce30"
+    },
+    {
+      "kind": "private",
+      "city": "ARDAHAN",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=ardahan",
+      "count": 1,
+      "sha256": "4ee3383b471095cb79ffcd11da97468c898fe9a333f8fb54b764834232defde1"
+    },
+    {
+      "kind": "public",
+      "city": "IĞDIR",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=igdir",
+      "count": 3,
+      "sha256": "54f882f32abaf46b1ca40133bd97265f29f4ae62497b6ef9c8466528ec505cdd"
+    },
+    {
+      "kind": "private",
+      "city": "IĞDIR",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=igdir",
+      "count": 2,
+      "sha256": "2a6cfaeaaa098231c8ed92b742eee580ec9a61bf6ed45e432a435a2ab7c86ec4"
+    },
+    {
+      "kind": "public",
+      "city": "KIBRIS",
+      "url": "https://kygm.gsb.gov.tr/Ajax/gettesis.aspx?il=kibris",
+      "count": 6,
+      "sha256": "301fa97ad551eaf3f233aeff938e839a1627ee7996132bb17c8e61eb56dd7a1b"
+    },
+    {
+      "kind": "private",
+      "city": "KIBRIS",
+      "url": "https://ozelbarinmahizmetleri.gsb.gov.tr/Ajax/getozeltesis.aspx?il=kibris",
+      "count": 0,
+      "sha256": "e25551d9c060537f104083cb2d01a32b7e5fe98968105c54fc84639fcc9766aa"
+    }
+  ],
+  "gsbDetails": {
+    "responses": 2330,
+    "withMap": 2330,
+    "errors": []
+  },
+  "osm": {
+    "query": "[out:json][timeout:180];(\n      nwr[\"building\"=\"dormitory\"](34.0,25.0,43.0,45.0);\n      nwr[\"amenity\"=\"dormitory\"](34.0,25.0,43.0,45.0);\n      nwr[\"tourism\"~\"^(hotel|hostel|guest_house|apartment)$\"](34.0,25.0,43.0,45.0);\n    );out center tags;",
+    "snapshot": "2026-09-04T23:26:35Z",
+    "sha256": "43b5d84b4907cd2a82e026f579a93151791df25c2413e92cbe400cc939f07c42"
+  },
+  "geography": {
+    "provinceMetadata": "https://www.geoboundaries.org/api/current/gbOpen/TUR/ADM1/",
+    "provinceGeometry": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/TUR/ADM1/geoBoundaries-TUR-ADM1_simplified.geojson",
+    "cyprusBoundary": "https://www.openstreetmap.org/relation/2514541"
+  },
+  "reviewNotes": [
+    "GSB collection: 81 provinces plus Cyprus; public and private higher education directories.",
+    "Alasia website map points to RSTheme in Bangladesh; rejected. Published Dikmen address retained without invented coordinates.",
+    "Administrative and distance education office anchors excluded, except the named Cosmos contact centre retained without a residential-campus claim.",
+    "Housing name parser uses facility card boundaries; empty phone/fax fields cannot become facility names."
+  ]
+}

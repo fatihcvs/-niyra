@@ -33,7 +33,10 @@
     "validate:artifact": "bash scripts/validate-artifact.sh",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
-    "test:global-feed": "node tests/global-feed-runtime.mjs"
+    "test:global-feed": "node tests/global-feed-runtime.mjs",
+    "test:housing": "node --test tests/housing-catalog.test.mjs",
+    "test:housing:runtime": "node tests/housing-catalog-runtime.mjs",
+    "catalog:housing:build": "python -X utf8 scripts/campus-catalog/build-housing-catalog.py"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.5",

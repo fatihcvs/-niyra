@@ -1,5 +1,19 @@
 [
   {
+    "id": "campus-sourced-housing-directory",
+    "releasedAt": "2026-09-05T00:16:35+00:00",
+    "category": "Yeni özellik",
+    "area": "Kampüs",
+    "title": "Yurt ve konaklama rehberi açıldı",
+    "summary": "241 üniversite için 528 yerleşke ve referans noktasıyla eşleşen 7.672 kaynaklı yurt, apart, otel ve konukevi kaydı eklendi.",
+    "highlights": [
+      "Üniversite ve yerleşke seçerek devlet yurtlarını, özel yurtları ve diğer konaklama seçeneklerini inceleyebilirsin.",
+      "Yurt adı, adres ve öğrenci kabulü filtreleri; telefon, kaynak bilgisi ve haritada yol tarifi eklendi.",
+      "GSB, üniversite, işletme ve açık harita kayıtlarının kaynakları ayrı gösterilir. Bilinen konumlar için kuş uçuşu mesafe hesaplanır.",
+      "Konumu eksik yerleşkelerde üniversitenin listesi veya şehirdeki seçenekler kullanılabilir. Öğrenci kayıtları ve deneyimleri aynı bölümde korunur."
+    ]
+  },
+  {
     "id": "message-header-privacy-badge-removed",
     "releasedAt": "2026-09-04T23:17:53+00:00",
     "category": "İyileştirme",

@@ -1,0 +1,1741 @@
+{
+  "checkedAt": "2026-09-05",
+  "campuses": [
+    {
+      "id": "kktc-ada-kent-universitesi:official-bfcc1645",
+      "universityId": "kktc-ada-kent-universitesi",
+      "name": "Ada Kent Üniversitesi Kampüsü",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "latitude": 35.128464,
+      "longitude": 33.9251753,
+      "address": "Sakarya Mah. Kurtuluş Sokak No:21/A, Gazimağusa, Kuzey Kıbrıs",
+      "sourceUrl": "https://adakent.edu.tr/iletisim-5/",
+      "replaces": [
+        "kktc-ada-kent-universitesi:official-bfcc1645"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "kktc-altinbas-kibris-universitesi:official-7bcbd016",
+      "universityId": "kktc-altinbas-kibris-universitesi",
+      "name": "Altınbaş Kıbrıs Üniversitesi",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "latitude": 35.189560056825485,
+      "longitude": 33.357879076214616,
+      "address": "Şehit Kemal Ali Ömer Caddesi No:22, Yenişehir, Lefkoşa, Kuzey Kıbrıs",
+      "sourceUrl": "https://wpu.edu.tr/tr/bize-ulasin/",
+      "replaces": [
+        "kktc-altinbas-kibris-universitesi:official-7bcbd016"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "kktc-ankara-sosyal-bilimler-universitesi:official-8d318104",
+      "universityId": "kktc-ankara-sosyal-bilimler-universitesi",
+      "name": "ASBÜ Kuzey Kıbrıs Kampüsü",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "latitude": 35.2173512,
+      "longitude": 33.4249299,
+      "address": "Haspolat Kavşağı No:20, Lefkoşa, Kuzey Kıbrıs",
+      "sourceUrl": "https://kktc.asbu.edu.tr/tr/2026-yeni-kayit-rehberi",
+      "replaces": [
+        "kktc-ankara-sosyal-bilimler-universitesi:official-8d318104"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "kktc-kibris-amerikan-universitesi:official-8bf5eeaa",
+      "universityId": "kktc-kibris-amerikan-universitesi",
+      "name": "Kıbrıs Amerikan Üniversitesi Ana Kampüs",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "latitude": 35.2112762,
+      "longitude": 33.2518958,
+      "address": "Lefkoşa-Güzelyurt Anayolu, Alayköy, Lefkoşa, Kuzey Kıbrıs",
+      "sourceUrl": "https://auc.edu.tr/iletisim/",
+      "replaces": [
+        "kktc-kibris-amerikan-universitesi:official-8bf5eeaa"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "kktc-kibris-amerikan-universitesi:official-15220870",
+      "universityId": "kktc-kibris-amerikan-universitesi",
+      "name": "Kıbrıs Amerikan Üniversitesi GSF Kampüsü",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "latitude": 35.1753798,
+      "longitude": 33.3575557,
+      "address": "Şehit Salahi Şevket Sokak No:39, Arabahmet, Lefkoşa, Kuzey Kıbrıs",
+      "sourceUrl": "https://auc.edu.tr/iletisim/",
+      "replaces": [
+        "kktc-kibris-amerikan-universitesi:official-15220870"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "tr-istanbul-galata-universitesi:official-0560fd03",
+      "universityId": "tr-istanbul-galata-universitesi",
+      "name": "İstanbul Galata Üniversitesi Galata Yerleşkesi",
+      "city": "İstanbul",
+      "region": "Türkiye",
+      "latitude": 41.029577,
+      "longitude": 28.97284,
+      "address": "Evliya Çelebi Mahallesi, Meşrutiyet Caddesi No:62, Beyoğlu, İstanbul",
+      "sourceUrl": "https://www.galata.edu.tr/tr/yerleskeler",
+      "replaces": [
+        "tr-istanbul-galata-universitesi:official-0560fd03"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "tr-ozyegin-universitesi:official-7707c257",
+      "universityId": "tr-ozyegin-universitesi",
+      "name": "Özyeğin Üniversitesi Çekmeköy Kampüsü",
+      "city": "İstanbul",
+      "region": "Türkiye",
+      "latitude": 41.0298,
+      "longitude": 29.2592,
+      "address": "Nişantepe Mahallesi, Orman Sokak No:34-36, 34794 Çekmeköy, İstanbul",
+      "sourceUrl": "https://www.ozyegin.edu.tr/tr/ozyegin-universitesi",
+      "replaces": [
+        "tr-ozyegin-universitesi:official-7707c257"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "omu:way-181492918",
+      "universityId": "omu",
+      "name": "Kurupelit Yerleşkesi",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "latitude": 41.368467,
+      "longitude": 36.198362,
+      "address": "",
+      "sourceUrl": "https://www.openstreetmap.org/way/181492918",
+      "replaces": [
+        "omu:way-181492918"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "cy-american-university-of-beirut-mediterraneo:official-aa5c1d58",
+      "universityId": "cy-american-university-of-beirut-mediterraneo",
+      "name": "AUB Mediterraneo Campus",
+      "city": "Pafos",
+      "region": "Kıbrıs Cumhuriyeti",
+      "latitude": 34.767607,
+      "longitude": 32.4168455,
+      "address": "Apostolou Pavlou Avenue 51, 8046 Pafos, Cyprus",
+      "sourceUrl": "https://www.aubmed.ac.cy/Pages/timeline.aspx",
+      "replaces": [
+        "cy-american-university-of-beirut-mediterraneo:official-aa5c1d58"
+      ],
+      "priority": 20,
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/1228467670"
+    },
+    {
+      "id": "cy-american-university-of-cyprus-aucy:official-d5845715",
+      "universityId": "cy-american-university-of-cyprus-aucy",
+      "name": "American University of Cyprus Main Campus",
+      "city": "Larnaka",
+      "region": "Kıbrıs Cumhuriyeti",
+      "latitude": 34.9422134,
+      "longitude": 33.6440053,
+      "address": "52 Ammochostou Avenue, 6019 Larnaka, Cyprus",
+      "sourceUrl": "https://aucy.ac.cy/about-aucy/our-offices",
+      "replaces": [
+        "cy-american-university-of-cyprus-aucy:official-d5845715"
+      ],
+      "priority": 20,
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/993062056"
+    },
+    {
+      "id": "omu:guzel-sanatlar-yerleskesi",
+      "universityId": "omu",
+      "name": "Güzel Sanatlar Yerleşkesi",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "latitude": 41.32312008779498,
+      "longitude": 36.3150480665252,
+      "address": "",
+      "sourceUrl": "https://www.omu.edu.tr/tr/yerleskeler/guzel-sanatlar-yerleskesi",
+      "priority": 10
+    },
+    {
+      "id": "omu:mustafa-kemal-gunesdogdu-yerleskesi",
+      "universityId": "omu",
+      "name": "Mustafa Kemal Güneşdoğdu Yerleşkesi · Çarşamba",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "latitude": 41.20544647928129,
+      "longitude": 36.7093768154201,
+      "address": "",
+      "sourceUrl": "https://www.omu.edu.tr/tr/yerleskeler/mustafa-kemal-gunesdogdu-yerleskesi",
+      "priority": 10
+    },
+    {
+      "id": "omu:bafra-yerleskesi",
+      "universityId": "omu",
+      "name": "Bafra Yerleşkesi",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "latitude": 41.565702737129705,
+      "longitude": 35.87386008921848,
+      "address": "",
+      "sourceUrl": "https://www.omu.edu.tr/tr/yerleskeler/bafra-yerleskesi",
+      "priority": 10
+    },
+    {
+      "id": "tr-ahmet-yesevi-universitesi:turkistan",
+      "universityId": "tr-ahmet-yesevi-universitesi",
+      "name": "Türkistan Yerleşkesi · Kazakistan",
+      "city": "Türkistan",
+      "region": "Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "address": "Türkistan, Kazakistan",
+      "sourceUrl": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar"
+    },
+    {
+      "id": "tr-ahmet-yesevi-universitesi:kentav",
+      "universityId": "tr-ahmet-yesevi-universitesi",
+      "name": "Kentav Yerleşkesi · Kazakistan",
+      "city": "Kentav",
+      "region": "Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "address": "Kentav, Kazakistan",
+      "sourceUrl": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar"
+    }
+  ],
+  "places": [
+    {
+      "id": "editorial-ayu-turkistan-female",
+      "name": "Ahmet Yesevi Üniversitesi Türkistan Kız Yurdu",
+      "kind": "university_dorm",
+      "city": "Türkistan",
+      "region": "Kazakistan",
+      "address": "Türkistan Yerleşkesi, Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "Türkistan yurtlarında 4–6, Kentav yurtlarında 3–4 kişilik odalar açıklanıyor. Başvuru koşulları üniversitenin barınma sayfasında.",
+      "universityIds": [
+        "tr-ahmet-yesevi-universitesi"
+      ],
+      "campusIds": [
+        "tr-ahmet-yesevi-universitesi:turkistan"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-ayu-turkistan-male",
+      "name": "Ahmet Yesevi Üniversitesi Türkistan Erkek Yurdu",
+      "kind": "university_dorm",
+      "city": "Türkistan",
+      "region": "Kazakistan",
+      "address": "Türkistan Yerleşkesi, Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "Türkistan yurtlarında 4–6, Kentav yurtlarında 3–4 kişilik odalar açıklanıyor. Başvuru koşulları üniversitenin barınma sayfasında.",
+      "universityIds": [
+        "tr-ahmet-yesevi-universitesi"
+      ],
+      "campusIds": [
+        "tr-ahmet-yesevi-universitesi:turkistan"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-ayu-kentav-female",
+      "name": "Ahmet Yesevi Üniversitesi Kentav Kız Yurdu",
+      "kind": "university_dorm",
+      "city": "Kentav",
+      "region": "Kazakistan",
+      "address": "Kentav Yerleşkesi, Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "Türkistan yurtlarında 4–6, Kentav yurtlarında 3–4 kişilik odalar açıklanıyor. Başvuru koşulları üniversitenin barınma sayfasında.",
+      "universityIds": [
+        "tr-ahmet-yesevi-universitesi"
+      ],
+      "campusIds": [
+        "tr-ahmet-yesevi-universitesi:kentav"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-ayu-kentav-male",
+      "name": "Ahmet Yesevi Üniversitesi Kentav Erkek Yurdu",
+      "kind": "university_dorm",
+      "city": "Kentav",
+      "region": "Kazakistan",
+      "address": "Kentav Yerleşkesi, Kazakistan",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "Türkistan yurtlarında 4–6, Kentav yurtlarında 3–4 kişilik odalar açıklanıyor. Başvuru koşulları üniversitenin barınma sayfasında.",
+      "universityIds": [
+        "tr-ahmet-yesevi-universitesi"
+      ],
+      "campusIds": [
+        "tr-ahmet-yesevi-universitesi:kentav"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://ayu.edu.kz/birimler/tr/0-ahmet-yesevi-universitesi/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-omu-atakum-kiz",
+      "name": "OMÜ Atakum Kız Öğrenci Yurdu",
+      "kind": "university_dorm",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "address": "Mimar Sinan Mahallesi, Atakum, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "",
+      "website": "",
+      "capacity": 150,
+      "features": [
+        "Ortak mutfak",
+        "TV odası"
+      ],
+      "description": "Bir, iki, üç ve dört kişilik odalar; ortak mutfak ve dinlenme alanları bulunuyor.",
+      "universityIds": [
+        "omu"
+      ],
+      "campusIds": [
+        "omu:way-181492918",
+        "omu:guzel-sanatlar-yerleskesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://aday.omu.edu.tr/yurtlar.php",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-omu-gsf-erkek",
+      "name": "OMÜ Güzel Sanatlar Kampüsü Erkek Öğrenci Yurdu",
+      "kind": "university_dorm",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "address": "Güzel Sanatlar Kampüsü, Atakum, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "",
+      "website": "",
+      "capacity": 82,
+      "features": [
+        "Ortak mutfak",
+        "Çalışma odası"
+      ],
+      "description": "A ve B bloklarında 1–4 kişilik odalar, ortak mutfaklar ve çalışma odası bulunuyor.",
+      "universityIds": [
+        "omu"
+      ],
+      "campusIds": [
+        "omu:guzel-sanatlar-yerleskesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://aday.omu.edu.tr/yurtlar.php",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-omu-konukevi",
+      "name": "OMÜ Konukevi",
+      "kind": "guest_house",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "address": "OMÜ, Atakum, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": 44,
+      "features": [],
+      "description": "Üniversitenin sayfasında kamu personeline hizmet verdiği belirtiliyor. Öğrenci kabulünü ve uygunluğu kurumdan öğren.",
+      "universityIds": [],
+      "campusIds": [],
+      "source": {
+        "type": "university",
+        "url": "https://aday.omu.edu.tr/yurtlar.php",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-omu-carsamba-misafirhane",
+      "name": "Mustafa Kemal Güneşdoğdu Kampüsü Misafirhanesi",
+      "kind": "guest_house",
+      "city": "Samsun",
+      "region": "Türkiye",
+      "address": "Mustafa Kemal Güneşdoğdu Kampüsü, Çarşamba, Samsun",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "Üniversite personeli ve diğer kamu personeli için konaklama; öğrenci yurdu olarak değerlendirilmemeli.",
+      "universityIds": [
+        "omu"
+      ],
+      "campusIds": [
+        "omu:mustafa-kemal-gunesdogdu-yerleskesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://aday.omu.edu.tr/yurtlar.php",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-aub-anavargos",
+      "name": "Anavargos Dorm",
+      "kind": "university_dorm",
+      "city": "Pafos",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "Anavargos, Pafos",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [
+        "Wi-Fi",
+        "Ortak mutfak",
+        "Çalışma odası",
+        "Çamaşırhane",
+        "Üniversite servisi"
+      ],
+      "description": "Tek ve üç kişilik odalar; üniversitenin servis hizmeti bulunuyor.",
+      "universityIds": [
+        "cy-american-university-of-beirut-mediterraneo"
+      ],
+      "campusIds": [],
+      "source": {
+        "type": "university",
+        "url": "https://www.aubmed.ac.cy/Student-Life/Pages/Housing.aspx",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-rdu-gonyeli",
+      "name": "Rauf Denktaş Üniversitesi Gönyeli Yurdu",
+      "kind": "university_dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Gönyeli, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "+90 392 600 16 16",
+      "website": "",
+      "capacity": 36,
+      "features": [
+        "Wi-Fi",
+        "Klima",
+        "Üniversite servisi"
+      ],
+      "description": "Üniversitenin yayımladığı yurt broşüründe iki kişilik odalar ve servis belirtiliyor. Güncel kabul ve oda durumunu üniversiteden öğren.",
+      "universityIds": [
+        "kktc-rauf-denktas-universitesi"
+      ],
+      "campusIds": [],
+      "source": {
+        "type": "university",
+        "url": "https://rdu.edu.tr/wp-content/uploads/2022/05/Gonyeli-Dormitory.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-f44016b566",
+      "name": "Hacı Güllü Emiroğlu Yüksek Öğrenim Kız Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "ASBU Kuzey Kıbrıs Yerleşkesi yanı (50 - 70 mt) mesafe - Kampüs içerisinde, Haspolat, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "90 (533) 850 99 12",
+      "website": "https://drive.google.com/file/d/1kTPAPvoLMwhd-UejRzsnuf02464QuCjQ/view",
+      "capacity": null,
+      "features": [],
+      "description": "Üniversite sayfasının 1 Eylül 2026 notuna göre 40 yaş ve üzerindeki öğrenciler kabul edilmiyor.",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-f23ceccb9c",
+      "name": "TOBB Hala Sultan Yüksek Öğrenim Erkek Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "ASBU Kuzey Kıbrıs Yerleşkesi yanı (50 - 70 mt) mesafe - Kampüs içerisinde, Haspolat, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "90 (533) 850 99 12",
+      "website": "https://drive.google.com/file/d/1IJ8ArCCZx2Ob66L5XCs2PTg4BqvnVMAL/view",
+      "capacity": null,
+      "features": [],
+      "description": "Üniversite sayfasının 1 Eylül 2026 notuna göre 40 yaş ve üzerindeki öğrenciler kabul edilmiyor.",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-bbcc844650",
+      "name": "Campus Cyprus",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Dikmen/Lefkoşa, Lefkoşa/Dikmen, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "0548 888 69 65",
+      "website": "https://campuscyprus.com/",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-fcdd3c6ca0",
+      "name": "Egem Premium Dorm Kız Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Kargı Sokak No:15 Küçük Kaymaklı/Lefkoşa, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "90 (548) 890 54 76",
+      "website": "https://www.egemstudentdorm.com/",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-89e8206cea",
+      "name": "Yaz Kız Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Bolu Yolu Sokak, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "90 (542) 882 05 48",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-19af432ccf",
+      "name": "Royal Palace Gönyeli",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Büyük Fener Sokak, Gönyeli, Lefkoşa, Gönyeli, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (0548) 865 99 99",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-4d0066d3ce",
+      "name": "Gülhanım Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Yusuf Kaptan Sk No:5, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (533) 885 62 06",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-005f4ddec6",
+      "name": "Özyüksel Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Üner Ulutuğ Sokak No:6, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (548) 829 25 16",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-f81f81b612",
+      "name": "Dormita Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Vedia Barut Sokak, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (533) 881 90 00",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-8b57dccaaa",
+      "name": "Çınar Erkek Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Şehit Hüseyin Ruso Cad. Yavuz Selçuk Sk. No:7, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "90 (533) 836 79 06",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-b5b16adfa0",
+      "name": "City Dorm Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Şehit Mehmet Kemal Sokak, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (392) 227 73 22",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-2df84a03ec",
+      "name": "Anatolia Home Dormitory",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Şehit Mustafa A. Ruso Caddesi, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (548) 822 40 00",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-9f1e024f67",
+      "name": "Adadorm Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Şht. Özkan Mustafa Sokak No:50, Göçmenköy, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (542) 866 89 84",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-52235887ee",
+      "name": "Alpay Alirıza Öğrenci Rezidansı",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Şehit Özel Ali Sokak, Göçmenköy, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (533) 863 20 15",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-0607c20ea6",
+      "name": "Mavi Akdeniz Erkek Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Erdoğan Sonsal Sokak İş Koop Apartmanı Blok 3 No: 1, Taşkınköy, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "male",
+      "phone": "90 (542) 853 35 86",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-3ec8e452a5",
+      "name": "Dormi Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Ortaköy Mh Şehit Hüseyin Dildar Sokak, Sanayi Bölgesi, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (392) 225 6026",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-1ad148201c",
+      "name": "Ekin Adademir Öğrenci Yurtları",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Neşe Sk 9, Hamitköy, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (548) 845 20 00",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-4681c0c6cc",
+      "name": "Atılkan Plaza Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "İsmailbeyoğlu Cad No:111, Dumlupınar, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (542) 884 50 50",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-a39aaa7129",
+      "name": "Kıymet Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Atatürk Caddesi No:2, Gönyeli, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (542) 888 20 00",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-9b9d50d893",
+      "name": "Zaim Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Yener Sokak Benli Gıda Yanı, Gönyeli, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (542) 877 11 11",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-2ea39c59f8",
+      "name": "Yenikent Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Gönyeli Belediye Bulvarı, Doğu Sok. No:1-3, Gönyeli, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (392) 228 73 04",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-134a93c931",
+      "name": "Premium Park Kız Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Bedrettin Demirel Cad. Şehit Astsubay İdris Doğan Sk. No:2, Ortaköy, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "female",
+      "phone": "90 (392) 227 72 73",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-e8bf0c0f26",
+      "name": "Akdeniz Yurtları",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Bedrettin Demirel Caddesi Cevat Recep Apartmanı, Yenişehir, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (548) 842 15 71",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-asbu-c0f81f50d1",
+      "name": "Greenland Lefkoşa Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Lefkoşa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Ömer Debreli Sok. No:1, Küçük Kaymaklı, Lefkoşa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "90 (548) 836 26 32",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-ankara-sosyal-bilimler-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://kktc.asbu.edu.tr/index.php/tr/barinma-olanaklari",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-1",
+      "name": "DAÜ Akdeniz Yurdu",
+      "kind": "university_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-2",
+      "name": "DAÜ-2 Erkek Yurdu",
+      "kind": "university_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.1484022,
+      "longitude": 33.9066605,
+      "gender": "male",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/336906687",
+      "replaces": [
+        "osm-way-336906687"
+      ]
+    },
+    {
+      "id": "editorial-emu-3",
+      "name": "DAÜ-3 Yurdu",
+      "kind": "university_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.1488308,
+      "longitude": 33.9041149,
+      "gender": "mixed",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/977423994",
+      "replaces": [
+        "osm-way-977423994"
+      ]
+    },
+    {
+      "id": "editorial-emu-4",
+      "name": "DAÜ-4 Kız Yurdu",
+      "kind": "university_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.1488471,
+      "longitude": 33.9032727,
+      "gender": "female",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/977424002",
+      "replaces": [
+        "osm-way-977424002"
+      ]
+    },
+    {
+      "id": "editorial-emu-5",
+      "name": "Alfam Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-6",
+      "name": "Uğursal Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-7",
+      "name": "Marmara Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-8",
+      "name": "Longson Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-9",
+      "name": "Gold Home Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-10",
+      "name": "Ramen Öğrenci Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-11",
+      "name": "Prime Living Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-12",
+      "name": "Golden Plus Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.1400824,
+      "longitude": 33.9061693,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/786584243",
+      "replaces": [
+        "osm-way-786584243"
+      ]
+    },
+    {
+      "id": "editorial-emu-13",
+      "name": "Astra Plus Öğrenci Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.140506,
+      "longitude": 33.907125,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/786584241",
+      "replaces": [
+        "osm-way-786584241"
+      ]
+    },
+    {
+      "id": "editorial-emu-14",
+      "name": "Pop Art Öğrenci Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": 35.1393257,
+      "longitude": 33.9069061,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/719295353",
+      "replaces": [
+        "osm-way-719295353"
+      ]
+    },
+    {
+      "id": "editorial-emu-15",
+      "name": "Novel Centre Point Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-16",
+      "name": "Nural Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "editorial-emu-17",
+      "name": "Grand Aras Yurdu",
+      "kind": "private_dorm",
+      "city": "Gazimağusa",
+      "region": "Kuzey Kıbrıs",
+      "address": "Doğu Akdeniz Üniversitesi yurtlar bölgesi, Gazimağusa",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "",
+      "website": "",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [
+        "kktc-dogu-akdeniz-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://dormitories.emu.edu.tr/tr/yurtlar",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "cy-gov-3f155a2057",
+      "name": "Castelli Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "38 Ouzounian Street, 1010 Nicosia",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "+357 22 712 812",
+      "website": "https://www.castellihotel.com.cy",
+      "capacity": null,
+      "features": [],
+      "description": "Kıbrıs Cumhuriyeti’nin Haziran 2026 konaklama listesinde yer alıyor. Öğrenci yurdu değildir; oda ve konaklama koşullarını işletmeden öğren.",
+      "universityIds": [],
+      "source": {
+        "type": "government",
+        "url": "https://www.gov.cy/media/sites/26/2026/06/HOTELS_PANCYPRIAN_JUNE2026.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "cy-gov-eaf6543671",
+      "name": "Centrum Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "15 Pasikratous Street, Eleftherias Square, 1011 Nicosia",
+      "latitude": 35.1699953,
+      "longitude": 33.3614831,
+      "gender": "unknown",
+      "phone": "+357 22 456 444",
+      "website": "https://www.centrumhotel.net",
+      "capacity": null,
+      "features": [],
+      "description": "Kıbrıs Cumhuriyeti’nin Haziran 2026 konaklama listesinde yer alıyor. Öğrenci yurdu değildir; oda ve konaklama koşullarını işletmeden öğren.",
+      "universityIds": [],
+      "source": {
+        "type": "government",
+        "url": "https://www.gov.cy/media/sites/26/2026/06/HOTELS_PANCYPRIAN_JUNE2026.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/node/4096030983",
+      "replaces": [
+        "osm-node-4096030983"
+      ]
+    },
+    {
+      "id": "cy-gov-7d104c5595",
+      "name": "MAP Boutique Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "15 Stasinou Avenue, 1060 Nicosia",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "+357 22 444 999",
+      "website": "https://www.maphotel.com.cy",
+      "capacity": null,
+      "features": [],
+      "description": "Kıbrıs Cumhuriyeti’nin Haziran 2026 konaklama listesinde yer alıyor. Öğrenci yurdu değildir; oda ve konaklama koşullarını işletmeden öğren.",
+      "universityIds": [],
+      "source": {
+        "type": "government",
+        "url": "https://www.gov.cy/media/sites/26/2026/06/HOTELS_PANCYPRIAN_JUNE2026.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    },
+    {
+      "id": "cy-gov-2ffcd5b756",
+      "name": "Semeli Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "10 Petraki Yiallourou Street, 1077 Agioi Omologites, Nicosia",
+      "latitude": 35.1580701,
+      "longitude": 33.3706236,
+      "gender": "unknown",
+      "phone": "+357 22 452 121",
+      "website": "https://www.semelihotel.com.cy",
+      "capacity": null,
+      "features": [],
+      "description": "Kıbrıs Cumhuriyeti’nin Haziran 2026 konaklama listesinde yer alıyor. Öğrenci yurdu değildir; oda ve konaklama koşullarını işletmeden öğren.",
+      "universityIds": [],
+      "source": {
+        "type": "government",
+        "url": "https://www.gov.cy/media/sites/26/2026/06/HOTELS_PANCYPRIAN_JUNE2026.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/way/808783859",
+      "replaces": [
+        "osm-way-808783859"
+      ]
+    },
+    {
+      "id": "cy-gov-298a148791",
+      "name": "Altius Boutique Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "1 Achaion Street, 1101 Nicosia",
+      "latitude": 35.1687732,
+      "longitude": 33.3472409,
+      "gender": "unknown",
+      "phone": "+357 22 255 540",
+      "website": "https://www.altiushotel.com",
+      "capacity": null,
+      "features": [],
+      "description": "Kıbrıs Cumhuriyeti’nin Haziran 2026 konaklama listesinde yer alıyor. Öğrenci yurdu değildir; oda ve konaklama koşullarını işletmeden öğren.",
+      "universityIds": [],
+      "source": {
+        "type": "government",
+        "url": "https://www.gov.cy/media/sites/26/2026/06/HOTELS_PANCYPRIAN_JUNE2026.pdf",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/node/9721421260",
+      "replaces": [
+        "osm-node-9721421260"
+      ]
+    },
+    {
+      "id": "editorial-classic-hotel",
+      "name": "The Classic Hotel",
+      "kind": "hotel",
+      "city": "Nicosia",
+      "region": "Kıbrıs Cumhuriyeti",
+      "address": "94 Rigenis Street, 1010 Nicosia",
+      "latitude": 35.1730039,
+      "longitude": 33.3574955,
+      "gender": "unknown",
+      "phone": "+357 22 66 40 06",
+      "website": "https://classic.com.cy/",
+      "capacity": null,
+      "features": [],
+      "description": "",
+      "universityIds": [],
+      "source": {
+        "type": "operator",
+        "url": "https://classic.com.cy/contact-us/",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": "https://www.openstreetmap.org/node/4314201370",
+      "replaces": [
+        "osm-node-4314201370"
+      ]
+    },
+    {
+      "id": "editorial-aydindorm",
+      "name": "Uluslararası Aydın Öğrenci Yurdu",
+      "kind": "dorm",
+      "city": "Girne",
+      "region": "Kuzey Kıbrıs",
+      "address": "Arapköy, Girne, Kuzey Kıbrıs",
+      "latitude": null,
+      "longitude": null,
+      "gender": "unknown",
+      "phone": "+90 548 899 0484",
+      "website": "https://www.aydindorm.com",
+      "capacity": 142,
+      "features": [
+        "Ortak mutfak",
+        "Spor salonu",
+        "Çalışma odası",
+        "Üniversite servisi"
+      ],
+      "description": "Kıbrıs Aydın Üniversitesi’nin barınma sayfasında bir, iki ve üç kişilik odalar ile üniversiteye servis hizmeti açıklanıyor.",
+      "universityIds": [
+        "kktc-kibris-aydin-universitesi"
+      ],
+      "source": {
+        "type": "university",
+        "url": "https://aday.cau.edu.tr/yurt-ve-konaklama/",
+        "checkedAt": "2026-09-05"
+      },
+      "coordinateSourceUrl": ""
+    }
+  ],
+  "excludedPlaces": [
+    {
+      "id": "osm-way-690352612",
+      "canonicalId": "gsb-public-055112502",
+      "reason": "Same Munevver Ayasli student dormitory in Atakum; official and OSM map points differ by 925 m. Keep the GSB institution record once.",
+      "sourceUrls": [
+        "https://www.openstreetmap.org/way/690352612",
+        "https://kygm.gsb.gov.tr/ajax/tesispopup.aspx?id=055112502&il=samsun"
+      ],
+      "checkedAt": "2026-09-05"
+    }
+  ]
+}
