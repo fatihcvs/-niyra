@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-05
 
-204 kurum · 15,183 program · 12,473 programda ders kaydı · 2,710 programda ders listesi eksik.
-Toplam 1,412,959 program-ders kaydı. 182 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,516 programda ders kaydı · 2,667 programda ders listesi eksik.
+Toplam 1,419,142 program-ders kaydı. 182 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,269
+- Resmî program eşleşmesi eksik: 2,226
 - Okunabilir ders listesi bulunamadı: 378
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 25
@@ -199,7 +199,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Sivas Cumhuriyet Üniversitesi | 171 | 159 | 12 | 12,569 | 9 | [Kaynak 1](https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Süleyman Demirel Üniversitesi | 83 | 78 | 5 | 6,397 | 7 | [Kaynak 1](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Şırnak Üniversitesi | 50 | 49 | 1 | 3,036 | 10 | [Kaynak 1](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Tarsus Üniversitesi | 43 | 0 | 43 | 0 | 5 | Doğrulanmış giriş yok |
+| Tarsus Üniversitesi | 43 | 43 | 0 | 6,183 | 5 | Doğrulanmış giriş yok |
 | TED Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |
 | Tekirdağ Namık Kemal Üniversitesi | 122 | 116 | 6 | 8,516 | 15 | [Kaynak 1](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/2) · [Kaynak 2](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/3) |
 | TOBB Ekonomi ve Teknoloji Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |

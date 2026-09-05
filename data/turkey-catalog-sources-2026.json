@@ -2765,8 +2765,21 @@
     "status": "catalogue-checked"
   },
   "tr-tarsus-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://bologna.tarsus.edu.tr/tr/programlar/5367",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "58aa9be9a3f3bf78fdec75742a2d93ab0108bd5f4f07ecaec46b0a91f3328f66",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://bologna.tarsus.edu.tr/tr/programlar/5368",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6d4661ca2ee9749a4e389559b2e10c853b480284f8d5eb799d9bfd6559a33979",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-ted-universitesi": {
     "catalogs": [],

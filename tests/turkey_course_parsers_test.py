@@ -467,4 +467,26 @@ class CankayaCatalogTests(unittest.TestCase):
         with self.assertRaises(ValueError):programme_reference(raw,faculty,'bachelor','')
 
 
+class TarsusCatalogTests(unittest.TestCase):
+    def test_tarsus_directory_keeps_degree_and_direct_unit_scope(self):
+        from collect_turkey_tarsus_catalog import programme_items
+        rows=programme_items(html('''<ul><li><a><strong>TEKNİK BİLİMLER MESLEK YÜKSEKOKULU</strong></a><ul>
+          <li><a href="/tr/programlar/5367?programId=4460">KAYNAK TEKNOLOJİSİ PR</a></li></ul></li>
+          <li><a><strong>REKTÖRLÜK</strong></a><ul><li><a href="?programId=1">Üniversite Seçmeli</a></li></ul></li></ul>'''),
+          'https://bologna.tarsus.edu.tr/tr/programlar/5367','associate')
+        self.assertEqual(len(rows),1)
+        self.assertEqual((rows[0]['title'],rows[0]['sourceTitle'],rows[0]['unit'],rows[0]['degree'],rows[0]['officialProgramId']),
+          ('KAYNAK TEKNOLOJİSİ','KAYNAK TEKNOLOJİSİ PR','TEKNİK BİLİMLER MESLEK YÜKSEKOKULU','associate','4460'))
+
+    def test_tarsus_pr_suffix_requires_latest_active_main_plan_witness(self):
+        from collect_turkey_tarsus_catalog import current_plan_confirms
+        rows=[{'ID':4,'bolognaMufredatAktif':True,'mufredatTuruTxt':'Ana Müfredat',
+               'mufredatAdi':'KAYNAK TEKNOLOJİSİ PROGRAMI (2026-2027) DERS MÜFREDATI'},
+              {'ID':2,'bolognaMufredatAktif':True,'mufredatTuruTxt':'Ana Müfredat',
+               'mufredatAdi':'ESKİ PLAN'}]
+        self.assertTrue(current_plan_confirms(rows,'Kaynak Teknolojisi'))
+        self.assertFalse(current_plan_confirms(rows,'Otomotiv Teknolojisi'))
+        self.assertFalse(current_plan_confirms([{**rows[0],'bolognaMufredatAktif':False}],'Kaynak Teknolojisi'))
+
+
 if __name__=='__main__':unittest.main()

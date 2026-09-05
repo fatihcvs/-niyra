@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-eighth-expansion",
+    "releasedAt": "2026-09-05T19:22:00Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Tarsus Üniversitesinin 43 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.516’ya, program-ders kaydı sayısı 1.419.142’ye ulaştı.",
+    "highlights": [
+      "Tarsus Üniversitesinin 43 lisans ve ön lisans programına 6.183 resmî program-ders kaydı eklendi. Önceden yayımlanan program ve ders kayıtları korundu.",
+      "Resmî ön lisans ve lisans ağaçları ayrı okunur; program adı, derece ve akademik birim birlikte eşleştirilir. Eski veya güncel katalogda karşılığı olmayan programlar başka bölümlerin yerine geçirilmez.",
+      "Açık ders paketi arayüzündeki 2026-2027 seçimi ve her programın kendi müfredat etiketi korunur. Yalnız en güncel etkin ana plan kullanılır; alternatif yıllar birleştirilmez.",
+      "Kaynak ağacındaki yeni PR son eki yalnız programın kendi ana müfredat başlığı aynı alanı doğruladığında sadeleştirilir. Aynı kodla çelişen ders kayıtları yayımlanmaz.",
+      "188 kurumda ders kaydı, 183 kurumda doğrulanmış katalog girişi bulunur. 2.667 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-seventh-expansion",
     "releasedAt": "2026-09-05T19:01:58.7620638Z",
     "category": "İyileştirme",
