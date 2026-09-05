@@ -11,10 +11,11 @@ from parse_cyprus_html import parse_metu
 from parse_cyprus_extra import parse_itu
 from discover_turkey_courses import match as match_program
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu, parse_bilgi, parse_afsu
+from parse_turkey_continuation_courses import parse_agu, parse_izu
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py'])).hexdigest()[:12]
 
 
 def course_code(value):
@@ -156,6 +157,8 @@ def parse_combined(doc, family):
 def _parse_source(source):
     if source['status'] != 200: return [], []
     url = source['url']
+    if source.get('family') == 'agu':return parse_agu(soup(source),course_code,course_kind)
+    if source.get('family') == 'izu':return parse_izu(soup(source),course_code,course_kind)
     if 'katalog.ktu.edu.tr' in url:return parse_ktu(soup(source),course_code,course_kind,heading_period)
     if source.get('family') == 'bilgi':return parse_bilgi(soup(source),course_code,course_kind)
     if source.get('family') == 'afsu':return parse_afsu(read(CACHE/source['file']),course_code)

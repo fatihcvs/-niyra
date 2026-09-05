@@ -57,12 +57,18 @@ python scripts/academic-catalog/collect_turkey_afsu.py
 python scripts/academic-catalog/collect_turkey_language_labels.py
 python scripts/academic-catalog/collect_turkey_atilim.py
 python scripts/academic-catalog/collect_turkey_bau_yalova.py
+python scripts/academic-catalog/collect_turkey_continuation_catalogs.py
+python scripts/academic-catalog/collect_turkey_agu_izu.py
 python scripts/academic-catalog/collect_turkey_more_catalogs.py
 ```
 
-`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ, Bilgi, AFSÜ, Atılım, Bahçeşehir/Yalova, dil etiketi ve web müfredat sonuçlarını aynı manifestte birleştirir. Çankırı Karatekin'in kamuya açık Rebis dizini ve ders yanıtları da bu toplayıcıdadır. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
+`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ, Bilgi, AFSÜ, Atılım, Bahçeşehir/Yalova, Kültür/Ankara Medipol/UBYS devam taraması, AGÜ/İZÜ, dil etiketi ve web müfredat sonuçlarını aynı manifestte birleştirir. İlk taramada devam toplayıcısından önce de bir kez çalıştırılmalıdır; Altınbaş eşleşmeleri bu dizinin yayımlanmış bağlantılarını kullanır. Çankırı Karatekin'in kamuya açık Rebis dizini ve ders yanıtları da bu toplayıcıdadır. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
 
 Bilgi'de yalnız anonim dil tercihi kullanılır; hesap veya kalıcı çerez gerekmez. Sınıf numarası ve dönem birlikte değerlendirilir; seçmeli havuz başlıkları ders sayılmaz. Atılım ve Bahçeşehir'de resmî dil listeleri, katalogdaki kısaltılmamış program adlarıyla eşleştirilir. `TR/EN` karma dil etiketi ve ikinci öğretim ayrımı korunur. AFSÜ'de web istemcisinin kullandığı açık dizin ve dönem API'leri izlenir; yıllık derslerde yarıyıl uydurulmaz. AFSÜ'nün `2026-2026` gibi dönem etiketleri kaynakta yayımlandığı biçimde tutulur; bitiş yılı tahmin edilmez.
+
+Kültür'de gerçek bölüm sayfasından **Program Ders Planı**, Ankara Medipol'de kamuya açık lisans/ön lisans listesinden **ProgramDersPlani** sekmesi izlenir. UBYS etiketlerinin yalnız tam normal/ikinci öğretim son eki sadeleştirilir; eski plan, dil ve kampüs farkları korunur. Kampüs adı ancak aynı akademik birimde açıkça tekrarlandığında bölüm adından ayrılır.
+
+AGÜ'de [resmî program dizini](https://cat.agu.edu.tr/Department), bölümün lisans yeterlilik beyanı ve [öğretim dili açıklaması](https://ydyo-en.agu.edu.tr/why_emi) birlikte kullanılır. Hazırlık/negatif yarıyıl blokları ve aktarım seçmelisi yer tutucuları dışarıda kalır. İZÜ'de [tüm programlar tablosunun](https://www.izu.edu.tr/icerik/tum-programlar) yalnız lisans sütunu izlenir; ders sekmesindeki açık `lang/bot/abn` parametreleri, sitenin yayımladığı istemci koduna göre kullanılır. İki kurumda da seçili müfredat etiketi kaynakta olduğu gibi saklanır; kontrol tarihinden dönem üretilmez.
 
 ```text
 python scripts/academic-catalog/build_turkey_catalog_sources.py

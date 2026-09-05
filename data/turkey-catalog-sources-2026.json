@@ -1,7 +1,14 @@
 {
   "tr-abdullah-gul-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://cat.agu.edu.tr/Department",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "28db65272b12ac04813044a57bc8f6d5c01f0e120b5e1545461292d5bee2bbc2",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-acibadem-mehmet-ali-aydinlar-universitesi": {
     "catalogs": [
@@ -180,10 +187,10 @@
         "evidence": "matched-programme-directory"
       },
       {
-        "url": "https://auects.altinbas.edu.tr/",
+        "url": "https://auects.altinbas.edu.tr/web/Ects/DegreePrograms?D=O",
         "checkedAt": "2026-09-05",
-        "sourceHash": "a4d4d18a94eb45d399b2613ebf04abcfd0494fdabd80659a686a69062b76395c",
-        "evidence": "catalogue-navigation"
+        "sourceHash": "ebe75e66a6d912a81c2598d2e8152440a736c60e450f284940ff70f18cafc92d",
+        "evidence": "matched-programme-directory"
       }
     ],
     "status": "catalogue-checked"
@@ -257,8 +264,21 @@
     "status": "catalogue-checked"
   },
   "tr-ankara-medipol-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://mebis.ankaramedipol.edu.tr/ProgramBilgi/ProgramListesi?derece=Lisans&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0d036bba163b53603a4feacea142e1535cab1d7d80646ac65bbe6702184c2672",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://mebis.ankaramedipol.edu.tr/ProgramBilgi/ProgramListesi?derece=OnLisans&lang=tr",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "e3cc4ad2eeeeb32d950244aa6ef36a060e8f4776cd34b41011e8d4be9b1ca74e",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-ankara-muzik-ve-guzel-sanatlar-universitesi": {
     "catalogs": [
@@ -1407,8 +1427,21 @@
     "status": "catalogue-checked"
   },
   "tr-istanbul-kultur-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://akademikpaket.iku.edu.tr/TR/ects.php?p=1&r=0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "18ae7c632c8c6e7422472ec819dc382fb21614bbfb3dbc7883e7b48df967d6d6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://akademikpaket.iku.edu.tr/TR/ects.php?p=3&r=0",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "5380b4a1344c946f0a8985dfc38fb9000ccc768990b8652458c1dfbdf6754b9b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-istanbul-medeniyet-universitesi": {
     "catalogs": [
@@ -1502,8 +1535,15 @@
     "status": "catalogue-checked"
   },
   "tr-istanbul-sabahattin-zaim-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.izu.edu.tr/icerik/tum-programlar",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7f78e4940633aeb21fbc3fbf1a21f6b57038ede7c8e62ad967c838af1e10d336",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-istanbul-saglik-ve-teknoloji-universitesi": {
     "catalogs": [
@@ -2194,8 +2234,15 @@
     "status": "catalogue-checked"
   },
   "tr-munzur-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ubys.munzur.edu.tr/AIS/OutcomeBasedLearning/Home/Index",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "ab9cc4283ce02d48583dde62c3220adba9a8c0cfc87e3890f43298ef835bb8aa",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-mus-alparslan-universitesi": {
     "catalogs": [

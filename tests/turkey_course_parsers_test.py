@@ -188,4 +188,53 @@ class CourseParsers(unittest.TestCase):
         self.assertEqual(expand_language('PSİKOLOJİ (EN/TR)'),'PSİKOLOJİ (EN/TR)')
         self.assertEqual(expand_language('AŞÇILIK (TR) (İÖ)'),'AŞÇILIK (İÖ)')
 
+    def test_ubys_teaching_suffix_keeps_language_and_evening_identity(self):
+        from collect_turkey_continuation_catalogs import normalize_ubys_label
+        self.assertEqual(normalize_ubys_label('Psikoloji (İngilizce) Birinci Öğretim Lisans Anadal Programı', 'İnsan Bilimleri Fakültesi'),
+            ('Psikoloji (İngilizce)', 'İnsan Bilimleri Fakültesi'))
+        self.assertEqual(normalize_ubys_label('Sosyoloji İkinci Öğretim Lisans Anadal Programı', 'Edebiyat Fakültesi'),
+            ('Sosyoloji (İÖ)', 'Edebiyat Fakültesi'))
+        self.assertEqual(normalize_ubys_label('Makine Birinci Öğretim Ön Lisans Anadal Programı eskisi', 'MYO'),
+            ('Makine Birinci Öğretim Ön Lisans Anadal Programı eskisi', 'MYO'))
+
+    def test_ubys_campus_suffix_requires_the_same_named_unit(self):
+        from collect_turkey_continuation_catalogs import normalize_ubys_label
+        self.assertEqual(normalize_ubys_label('Bilgisayar Programcılığı(ÇEMİŞGEZEK) Birinci Öğretim Ön Lisans Anadal Programı', 'Çemişgezek Meslek Yüksekokulu Müdürlüğü'),
+            ('Bilgisayar Programcılığı', 'Çemişgezek Meslek Yüksekokulu'))
+        self.assertEqual(normalize_ubys_label('Bilgisayar Programcılığı(PERTEK)', 'Çemişgezek Meslek Yüksekokulu'),
+            ('Bilgisayar Programcılığı(PERTEK)', 'Çemişgezek Meslek Yüksekokulu'))
+
+
+class ContinuationParsersTest(unittest.TestCase):
+    def test_agu_negative_preparation_term_and_elective_slots_are_excluded(self):
+        from parse_turkey_continuation_courses import parse_agu
+        from parse_turkey_courses import course_kind
+        rows,_=parse_agu(html('''<table id="grdBolognaDersler">
+          <tr><td>-1.Semester Course Plan</td></tr>
+          <tr><th>Course Code</th><th>Course Name</th><th>Compulsory/Elective</th></tr>
+          <tr><td>PREPX101</td><td>English For Travel</td><td>Elective</td></tr>
+          <tr><td>1.Semester Course Plan</td></tr>
+          <tr><th>Course Code</th><th>Course Name</th><th>Compulsory/Elective</th></tr>
+          <tr><td>COMP103</td><td>Art of Computing</td><td>Compulsory</td></tr>
+          <tr><td>XEG101</td><td>General Transfer Elective I</td><td>Elective</td></tr>
+          <tr><td>0.Semester Course Plan</td></tr>
+          <tr><th>Course Code</th><th>Course Name</th><th>Compulsory/Elective</th></tr>
+          <tr><td>PREP100</td><td>Preparation</td><td>Compulsory</td></tr>
+          </table>'''),course_code,course_kind)
+        self.assertEqual(rows,[{'code':'COMP103','name':'Art of Computing','semester':1,'kind':'required'}])
+
+    def test_izu_named_electives_are_retained_and_unknown_kind_is_not_inferred(self):
+        from parse_turkey_continuation_courses import parse_izu
+        from parse_turkey_courses import course_kind
+        rows,_=parse_izu(html('''<table class="table"><thead>
+          <tr><th colspan="3">7. Yarıyıl Seçmeli Dersler</th></tr>
+          <tr><th>KODU</th><th>ADI</th><th>TÜRÜ</th></tr></thead><tbody>
+          <tr><td>BIM 437</td><td>Bilgisayar ve Ağ Güvenliği</td><td>Bölüm Seçmeli</td></tr>
+          <tr><td>BLS 001</td><td>Bölüm Seçmeli Ders</td><td>Bölüm Seçmeli</td></tr>
+          <tr><td>BIM 499</td><td>Bitirme Projesi</td><td>Bitirme Çalışması</td></tr>
+          </tbody></table>'''),course_code,course_kind)
+        self.assertEqual(rows,[{'code':'BIM437','name':'Bilgisayar ve Ağ Güvenliği','semester':7,'kind':'elective'},
+            {'code':'BIM499','name':'Bitirme Projesi','semester':7,'kind':None}])
+
+
 if __name__=='__main__':unittest.main()

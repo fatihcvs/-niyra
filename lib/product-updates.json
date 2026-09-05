@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-third-expansion",
+    "releasedAt": "2026-09-05T07:28:39+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "278 programın ders kataloğu daha eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 11.591’e, program-ders kaydı sayısı 1.310.167’ye ulaştı.",
+    "highlights": [
+      "Abdullah Gül, Ankara Medipol, İstanbul Kültür, İstanbul Sabahattin Zaim ve Munzur üniversitelerinin kaynaklı ders listeleri eklendi; Altınbaş ve Kastamonu kapsamı genişletildi.",
+      "Bu pakette yedi kurumda 278 programa 35.705 ders kaydı eklendi. Sayılar seçmeli havuzlar dahil program içindeki kayıtlardır; ülke genelinde tekil ders sayısı değildir.",
+      "AGÜ hazırlık blokları ve seçmeli ders yer tutucuları gerçek lisans derslerine karışmaz. İZÜ ders planları resmî lisans sekmesinden okunur; açık yarıyıl, ders türü ve seçili müfredat etiketi korunur.",
+      "170 kurum için kontrol edilmiş resmî katalog girişleri kullanılabilir. Program eşleştirmesinde öğretim dili, ikinci öğretim ve kampüs ayrımı korunur.",
+      "3.592 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; boş veya erişilemeyen kaynaklar tamamlanmış sayılmaz. Üniversite bazındaki durum owner panelinde görünür."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-second-expansion",
     "releasedAt": "2026-09-05T06:42:19+00:00",
     "category": "İyileştirme",
