@@ -4,8 +4,11 @@ import { getOfficialAcademicProgram } from "./academic-catalog";
 export type OfficialCourseCatalogItem = {
   code: string;
   name: string;
-  semester: number;
-  kind: "required" | "elective";
+  semester: number | null;
+  offeredSemesters?: number[];
+  year?: number;
+  kind: "required" | "elective" | null;
+  sourcePage?: number;
 };
 
 export type OfficialCourseProgram = {
@@ -15,6 +18,8 @@ export type OfficialCourseProgram = {
   authority: string;
   sourceUrl: string;
   verifiedAt: string;
+  coverage?: "partial" | "complete";
+  sourceHash?: string;
   courses: OfficialCourseCatalogItem[];
 };
 

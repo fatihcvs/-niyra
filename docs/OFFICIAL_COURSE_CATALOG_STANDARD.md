@@ -7,12 +7,14 @@
 - Kampira üniversite kimliği ve resmî program kimliği
 - Program adıyla birebir eşleşen kurum kaynağı
 - Kaynak kurum, doğrudan kaynak URL'si ve son kontrol tarihi
-- Her ders için resmî ders kodu, ders adı, dönem ve zorunlu/seçmeli türü
+- Her ders için resmî ders kodu ve ders adı; yayımlanan dönem ve zorunlu/seçmeli türü. Kaynakta belirtilmeyen dönem veya tür `null` tutulur ve kullanıcıya belirtilmediği gösterilir.
 - Aynı program içinde benzersiz ders kodu
 
 ## Ürün davranışı
 
-- Yapılandırılmış veri varsa öğrencinin sınıfına karşılık gelen iki dönem varsayılan olarak gösterilir.
+- Yapılandırılmış veri varsa öğrencinin sınıfına karşılık gelen dönemler varsayılan olarak gösterilir. Kaynakta yıl açıkça yayımlanmışsa yaz dönemi gibi farklılıklar için bu yıl kullanılır; aksi halde iki dönem/yıl eşleştirmesi yapılır. 5. ve 6. sınıflar desteklenir.
+- Birden fazla dönemde yayımlanan aynı ders `offeredSemesters` alanını korur. Dönemi bilinmeyen dersler tüm dönemler görünümünde yer alır.
+- Kısmen aktarılan program `coverage: partial` taşır. Başka uzmanlık yollarının zorunlu dersleri aynı plan gibi birleştirilmez; belirsiz çoklu planlarda yalnız ortak dersler aktarılır.
 - Öğrenci tüm dönemleri açabilir ve kod veya adla arama yapabilir.
 - En az 3, en fazla 8 ders seçilebilir.
 - Ders listesi eksikse veya seçmeli ders dönemsel olarak değişmişse manuel ekleme her zaman kullanılabilir.

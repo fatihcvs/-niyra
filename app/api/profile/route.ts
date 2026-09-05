@@ -307,7 +307,7 @@ export async function PUT(request: Request) {
     const rawCourses = Array.isArray(payload.customCourses) ? payload.customCourses : [];
     const cleanedCourses = rawCourses.map((course) => ({
       code: cleanAcademicText(course?.code, 20).toLocaleUpperCase("tr-TR"),
-      name: cleanAcademicText(course?.name, 100),
+      name: cleanAcademicText(course?.name, 200),
     }));
 
     if (officialUnit && officialProgram && officialProgram.unitId === officialUnit.id) {

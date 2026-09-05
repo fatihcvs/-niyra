@@ -17,6 +17,7 @@ const logoCatalog = JSON.parse(await readFile(path.join(ROOT, "data", "universit
 const osm = JSON.parse(await readFile(path.join(CACHE_DIR, "osm-places.json"), "utf8"));
 const officialSources = JSON.parse(await readFile(path.join(ROOT, "data", "campus-place-official-sources-2026.json"), "utf8"));
 const librarySources = JSON.parse(await readFile(path.join(ROOT, "data", "campus-library-official-sources-2026.json"), "utf8"));
+const cyprusPlaces = JSON.parse(await readFile(path.join(ROOT, "data", "cyprus-campus-places-2026.json"), "utf8"));
 const officialGeocodes = JSON.parse(await readFile(path.join(CACHE_DIR, "nominatim-official-places.json"), "utf8"));
 const wikidataEntities = JSON.parse(await readFile(path.join(CACHE_DIR, "wikidata-university-entities.json"), "utf8"));
 
@@ -341,13 +342,16 @@ for (const record of [...officialSources.records, ...librarySources.records]) {
   coverageItem.places += 1;
 }
 
-const coveredUniversities = coverage.filter((item) => item.places > 0).length;
+const cyprusUniversityIds = new Set(cyprusPlaces.coverage.map((item) => item.universityId));
+const retained = places.filter((place) => !cyprusUniversityIds.has(place.universityId) || place.source.type !== "openstreetmap");
+places.splice(0, places.length, ...retained, ...cyprusPlaces.places);
+const coveredUniversities = new Set(places.map((place) => place.universityId)).size;
 const openStreetMapPlaceCount = places.filter((place) => place.source.type === "openstreetmap").length;
 const officialPlaceCount = places.filter((place) => place.source.type === "official-university").length;
 const coordinateKnownCount = places.filter((place) => place.latitude !== null && place.longitude !== null).length;
 const payload = {
   meta: {
-    version: "2026.3",
+    version: "2026.4",
     updatedAt: places.reduce((latest, place) => place.source.checkedAt > latest ? place.source.checkedAt : latest, CHECKED_AT),
     universityCount: universities.length,
     coveredUniversityCount: coveredUniversities,
@@ -356,7 +360,10 @@ const payload = {
     officialPlaceCount,
     coordinateKnownCount,
     radiusMeters: NEARBY_RADIUS_METERS,
-    methodology: "OpenStreetMap university/campus records were matched by official domain, Wikidata ID, exact name, or high-confidence name similarity. Up to 40 nearby named places were selected within 1.5 km with balanced coverage across buildings, libraries, food, study, social, sports, health, transport, and daily-needs categories. Institutions without a confident map anchor were covered by addresses published on official university or public higher-education pages; coordinates are omitted when an exact source could not be verified.",
+    areaRadiusMeters: cyprusPlaces.areaRadiusMeters,
+    cyprusNearbyUniversityCount: cyprusPlaces.coverage.filter((item) => item.nearbyPlaces > 0).length,
+    cyprusAreaCount: cyprusPlaces.places.filter((item) => item.category === "area").length,
+    methodology: "OpenStreetMap university/campus records were matched by official domain, Wikidata ID, exact name, or high-confidence name similarity. Nearby named places are within 1.5 km, with balanced categories. Cyprus uses reviewed campus coordinates and geographic boundary checks, up to 100 records per university; neighbourhood and settlement centres are within 5 km. Distances are straight-line to the source point, not routes or area boundaries. Unknown campus coordinates remain unknown.",
     attribution: "© OpenStreetMap contributors",
     license: "ODbL 1.0",
     licenseUrl: "https://www.openstreetmap.org/copyright",

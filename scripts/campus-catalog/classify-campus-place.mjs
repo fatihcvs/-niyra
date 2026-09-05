@@ -1,6 +1,7 @@
 // The service offered by a place takes precedence over the type of its building.
 export function categoryFor(element, campusAnchor = false) {
   const tags = element.tags ?? {};
+  if (["suburb", "neighbourhood", "quarter", "town", "village"].includes(tags.place)) return "area";
   if (tags.amenity === "library" || tags.building === "library") return "library";
   if (campusAnchor) return "building";
   if (["college", "research_institute"].includes(tags.amenity)

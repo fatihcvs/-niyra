@@ -19,7 +19,7 @@ type Suggestion = Record<string, unknown> & { type: "place" | "event"; day: stri
 type GuideResponse = { places?: Place[]; events?: CampusEvent[]; suggestion?: Suggestion | null; error?: string };
 type Tab = "places" | "events" | "housing" | "daily";
 
-const placeCategories = [["building", "Binalar"], ["library", "Kütüphane"], ["food", "Yeme-içme"], ["study", "Çalışma"], ["sports", "Spor"], ["social", "Sosyal"], ["transport", "Ulaşım"], ["health", "Sağlık"], ["housing", "Yurt & konaklama"], ["other", "Diğer"]] as const;
+const placeCategories = [["area", "Mahalle ve bölgeler"], ["building", "Binalar"], ["library", "Kütüphane"], ["food", "Yeme-içme"], ["study", "Çalışma"], ["sports", "Spor"], ["social", "Sosyal"], ["transport", "Ulaşım"], ["health", "Sağlık"], ["housing", "Yurt & konaklama"], ["other", "Diğer"]] as const;
 const eventCategories = [["academic", "Akademik"], ["social", "Sosyal"], ["sports", "Spor"], ["culture", "Kültür-sanat"], ["career", "Kariyer"], ["volunteering", "Gönüllülük"], ["other", "Diğer"]] as const;
 const accessibilityOptions = [["step-free", "Basamaksız erişim"], ["elevator", "Asansör"], ["accessible-toilet", "Erişilebilir tuvalet"], ["quiet", "Sessiz alan"], ["power", "Priz"], ["wifi", "Wi-Fi"]] as const;
 const placeCategoryNames = Object.fromEntries(placeCategories) as Record<string, string>;

@@ -14,7 +14,7 @@ import {
 import { getCuratedCampusPlaces } from "../../../lib/campus-place-catalog";
 import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
-const placeCategories = new Set(["building", "library", "food", "study", "sports", "social", "transport", "health", "housing", "other"]);
+const placeCategories = new Set(["building", "library", "food", "study", "sports", "social", "transport", "health", "housing", "other", "area"]);
 const eventCategories = new Set(["academic", "social", "sports", "culture", "career", "volunteering", "other"]);
 const accessibilityOptions = new Set(["step-free", "elevator", "accessible-toilet", "quiet", "power", "wifi"]);
 

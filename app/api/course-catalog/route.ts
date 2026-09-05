@@ -35,6 +35,7 @@ export async function GET(request: Request) {
       authority: courseProgramme.authority,
       sourceUrl: courseProgramme.sourceUrl,
       verifiedAt: courseProgramme.verifiedAt,
+      coverage: courseProgramme.coverage ?? "complete",
       catalogVersion: officialCourseCatalogMeta.version,
       courses: courseProgramme.courses,
       limitations: officialCourseCatalogMeta.limitations,

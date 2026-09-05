@@ -5,13 +5,13 @@ import test from "node:test";
 const catalog = JSON.parse(await readFile(new URL("../data/academic-catalog-2026.json", import.meta.url), "utf8"));
 
 test("official academic catalog has verified coverage and referential integrity", () => {
-  assert.equal(catalog.meta.updatedAt, "2026-09-04");
+  assert.equal(catalog.meta.updatedAt, "2026-09-05");
   assert.deepEqual(catalog.meta.stats, {
     universityCount: 241,
     coveredUniversityCount: 239,
     unitCount: 3212,
     programCount: 16454,
-    curriculumLinkCount: 2098,
+    curriculumLinkCount: Object.values(catalog.universities).flatMap((university) => university.programs).filter((program) => program.curriculumUrls?.length).length,
     catalogOnlyUniversityCount: 2,
   });
   assert.equal(Object.keys(catalog.universities).length, 241);

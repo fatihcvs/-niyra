@@ -27,9 +27,17 @@ test("every structured course keeps usable and internally unique curriculum meta
     const keys = new Set();
     for (const course of programme.courses) {
       assert.ok(course.code.trim().length >= 2);
-      assert.ok(course.name.trim().length >= 2);
-      assert.ok(Number.isInteger(course.semester) && course.semester >= 1 && course.semester <= 12);
-      assert.ok(["required", "elective"].includes(course.kind));
+      assert.ok(course.name.trim().length >= 2 && course.name.length <= 200);
+      assert.ok(course.semester === null || (Number.isInteger(course.semester) && course.semester >= 1 && course.semester <= 12));
+      assert.ok(["required", "elective", null].includes(course.kind));
+      if (course.year !== undefined) assert.ok(Number.isInteger(course.year) && course.year >= 1 && course.year <= 6);
+      if (course.sourcePage !== undefined) assert.ok(Number.isInteger(course.sourcePage) && course.sourcePage > 0);
+      if (course.offeredSemesters !== undefined) {
+        assert.equal(course.semester, null);
+        assert.ok(course.offeredSemesters.length > 1);
+        assert.deepEqual(course.offeredSemesters, [...new Set(course.offeredSemesters)].sort((a, b) => a - b));
+        assert.ok(course.offeredSemesters.every((period) => Number.isInteger(period) && period >= 1 && period <= 12));
+      }
       const key = course.code.trim().toLocaleUpperCase("tr-TR");
       assert.ok(!keys.has(key), `${programme.programId}: duplicate ${key}`);
       keys.add(key);

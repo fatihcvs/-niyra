@@ -39,6 +39,7 @@ import { CampusMarketWorkspace, type CampusMarketTab } from "./campus-market";
 import { LibraryOccupancyWorkspace } from "./library-occupancy";
 import { DirectMessagesWorkspace, type DirectMessageRecipient } from "./direct-messages";
 import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty, RefreshButton } from "./workspace-ui";
+import { courseMatchesYear, courseScheduleLabel, type CourseSchedule } from "../lib/course-catalog-display";
 import { SavedWorkspace } from "./saved-workspace";
 import { workspaceFromSearch, workspaceRoutes } from "../lib/workspace-navigation";
 import { ProfileContent } from "./profile-content";
@@ -1254,11 +1255,9 @@ type CatalogPayload = {
   error?: string;
 };
 
-type CourseCatalogItem = {
+type CourseCatalogItem = CourseSchedule & {
   code: string;
   name: string;
-  semester: number;
-  kind: "required" | "elective";
 };
 
 type CourseCatalogPayload = {
@@ -1266,6 +1265,7 @@ type CourseCatalogPayload = {
   authority?: string;
   sourceUrl?: string;
   verifiedAt?: string;
+  coverage?: "partial" | "complete";
   courses: CourseCatalogItem[];
   limitations?: string;
   error?: string;
@@ -1357,10 +1357,10 @@ function AcademicOnboarding({
     .map((course) => ({ code: course.code.trim(), name: course.name.trim() }))
     .filter((course) => course.code && course.name);
   const selectedCourseCodes = new Set(validCustomCourses.map((course) => normalizeCourseCode(course.code)));
-  const recommendedSemesters = classYear >= 1 && classYear <= 4 ? [classYear * 2 - 1, classYear * 2] : [];
+  const recommendedSemesters = classYear >= 1 && classYear <= 6 ? [classYear * 2 - 1, classYear * 2] : [];
   const normalizedCourseQuery = courseQuery.trim().toLocaleLowerCase("tr-TR");
   const visibleCourseOptions = (courseCatalog?.courses ?? []).filter((course) => {
-    const matchesPeriod = courseSemesterFilter === "all" || recommendedSemesters.includes(course.semester);
+    const matchesPeriod = courseSemesterFilter === "all" || courseMatchesYear(course, classYear);
     const matchesQuery = !normalizedCourseQuery || `${course.code} ${course.name}`.toLocaleLowerCase("tr-TR").includes(normalizedCourseQuery);
     return matchesPeriod && matchesQuery;
   });
@@ -1746,11 +1746,11 @@ function AcademicOnboarding({
                 <div className="official-course-grid">
                   {visibleCourseOptions.map((course) => {
                     const selected = selectedCourseCodes.has(normalizeCourseCode(course.code));
-                    return <button className={selected ? "selected" : ""} type="button" aria-pressed={selected} onClick={() => toggleCatalogCourse(course)} key={`${course.semester}-${course.code}`}><span><small>{course.code}</small><strong>{course.name}</strong><em>{course.semester}. dönem · {course.kind === "required" ? "Zorunlu" : "Seçmeli"}</em></span><i>{selected ? <Icon name="check" size={15}/> : <Icon name="plus" size={15}/>}</i></button>;
+                    return <button className={selected ? "selected" : ""} type="button" aria-pressed={selected} onClick={() => toggleCatalogCourse(course)} key={course.code}><span><small>{course.code}</small><strong>{course.name}</strong><em>{courseScheduleLabel(course)}</em></span><i>{selected ? <Icon name="check" size={15}/> : <Icon name="plus" size={15}/>}</i></button>;
                   })}
                 </div>
                 {visibleCourseOptions.length === 0 && <p className="official-course-empty">Bu filtreyle eşleşen ders yok. Tüm dönemleri açabilir veya dersi elle ekleyebilirsin.</p>}
-                <footer><Icon name="check" size={15}/><span>{courseCatalog.verifiedAt} tarihinde resmî program sayfasından kontrol edildi. Dönemsel seçmeliler değişebileceği için listede olmayan dersini elle ekleyebilirsin.</span></footer>
+                <footer><Icon name="check" size={15}/><span>{courseCatalog.verifiedAt} tarihinde resmî kaynaktan kontrol edildi. {courseCatalog.coverage === "partial" && "Kaynakta okunabilen dersler listelenir; belirtilmeyen dönem ve ders türleri tahmin edilmez. "}Listede olmayan dersini elle ekleyebilirsin.</span></footer>
               </section>}
               {!courseCatalogLoading && !courseCatalog?.available && <div className="course-catalog-unavailable"><Icon name="file" size={18}/><span><strong>Bu programın ders listesi henüz yapılandırılmadı.</strong><small>{courseCatalogError || "Resmî bağlantı mevcutsa yukarıdan kontrol edebilir; derslerini aşağıya elle ekleyebilirsin."}</small></span></div>}
               {validCustomCourses.length > 0 && <div className="selected-course-tray"><span>Seçtiklerin</span><div>{validCustomCourses.map((course) => <button type="button" onClick={() => setCustomCourses((current) => current.filter((item) => normalizeCourseCode(item.code) !== normalizeCourseCode(course.code)))} key={`${course.code}-${course.name}`}>{course.code}<Icon name="close" size={12}/></button>)}</div></div>}
@@ -1758,7 +1758,7 @@ function AcademicOnboarding({
               {manualCourseEntry && <div className="custom-course-list">
                 {customCourses.map((course, index) => course.source !== "catalog" && <div className="custom-course-row" key={index}>
                   <label><span>Ders kodu</span><input value={course.code} onChange={(event) => updateCustomCourse(index, "code", event.target.value)} maxLength={20} aria-invalid={Boolean(course.name.trim()) && !course.code.trim()} aria-describedby="onboarding-requirement" placeholder="BİL 101"/></label>
-                  <label><span>Ders adı</span><input value={course.name} onChange={(event) => updateCustomCourse(index, "name", event.target.value)} maxLength={100} aria-invalid={Boolean(course.code.trim()) && !course.name.trim()} aria-describedby="onboarding-requirement" placeholder="Programlamaya Giriş"/></label>
+                  <label><span>Ders adı</span><input value={course.name} onChange={(event) => updateCustomCourse(index, "name", event.target.value)} maxLength={200} aria-invalid={Boolean(course.code.trim()) && !course.name.trim()} aria-describedby="onboarding-requirement" placeholder="Programlamaya Giriş"/></label>
                   <button type="button" onClick={() => setCustomCourses((current) => current.filter((_, courseIndex) => courseIndex !== index))} aria-label={`${index + 1}. dersi kaldır`}><Icon name="trash" size={16}/></button>
                 </div>)}
                 {validCustomCourses.length < 8 && <button className="custom-course-add" type="button" onClick={() => setCustomCourses((current) => [...current, { code: "", name: "", source: "manual" }])}><Icon name="plus" size={15}/> Başka ders ekle</button>}

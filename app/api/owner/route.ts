@@ -1,5 +1,6 @@
 import { hashPassword } from "../../../lib/app-auth";
 import { ADMIN_FEATURE_REGISTRY } from "../../../lib/admin-registry";
+import cyprusCoverage from "../../../data/cyprus-catalog-coverage-2026.json";
 import { getOfficialCourseCoverage, officialCourseCatalogMeta } from "../../../lib/official-course-catalog";
 import { getPlatformSettings, savePlatformSettings, type PlatformSettings } from "../../../lib/platform-settings";
 import { cleanText, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
@@ -95,6 +96,9 @@ export async function GET(request: Request) {
         storage: FILES ? "configured" : "unavailable",
         courseCatalogPrograms: courseCoverage.length,
         courseCatalogCourses: courseCount,
+        courseCatalogPartialPrograms: courseCoverage.filter((programme) => programme.coverage === "partial").length,
+        cyprusCatalogPrograms: cyprusCoverage.universities.reduce((total, university) => total + university.programCount, 0),
+        cyprusCatalogStructuredPrograms: cyprusCoverage.universities.reduce((total, university) => total + university.structuredProgramCount, 0),
         courseCatalogUpdatedAt: officialCourseCatalogMeta.updatedAt,
         generatedAt: new Date().toISOString(),
       },

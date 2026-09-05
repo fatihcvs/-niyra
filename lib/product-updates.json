@@ -1,5 +1,19 @@
 [
   {
+    "id": "cyprus-sourced-courses-and-neighbourhoods",
+    "releasedAt": "2026-09-05T01:59:57+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog ve Kampüs",
+    "title": "Kıbrıs programlarına ders listeleri ve yakın bölgeler eklendi",
+    "summary": "Kıbrıs’taki 784 program için 20.933 kaynaklı ders kaydı ve 33 üniversite çevresinde 2.609 mekân/bölge kaydı eklendi.",
+    "highlights": [
+      "Ders kodu veya adıyla arama, sınıfa göre filtreleme ve 5–6. sınıf seçimi kullanılabilir. Uzun ders adları kayıtta korunur.",
+      "Kaynakta bulunmayan dönem veya zorunlu/seçmeli bilgisi belirtilmemiş olarak görünür; elle ders ekleme kullanılabilir.",
+      "Mahalle ve bölgeler filtresi 209 yerleşim kaydını gösterir. Mesafeler bölge merkezine kuş uçuşudur.",
+      "Owner panelinde kısmi müfredat ve Kıbrıs program kapsamı görünür. 487 programın yapılandırılmış ders listesi hâlâ eksiktir; eklenen listeler tam müfredat garantisi taşımaz."
+    ]
+  },
+  {
     "id": "campus-library-visibility-fix",
     "releasedAt": "2026-09-05T00:33:02+00:00",
     "category": "Düzeltme",

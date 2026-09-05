@@ -744,6 +744,13 @@ function OwnerOverview({
           <strong>
             {number.format(Number(system.courseCatalogCourses ?? 0))}
           </strong>
+          <span>Kısmi müfredat</span>
+          <strong>{number.format(Number(system.courseCatalogPartialPrograms ?? 0))} program</strong>
+          <span>Kıbrıs ders kapsamı</span>
+          <strong>
+            {number.format(Number(system.cyprusCatalogStructuredPrograms ?? 0))} / {number.format(Number(system.cyprusCatalogPrograms ?? 0))} program
+          </strong>
+          <small>Kısmi müfredatlarda bazı dersler, dönemler veya ders türleri kaynakta bulunmayabilir.</small>
           <small>
             Kampira v{String(system.version ?? "—")} · katalog{" "}
             {String(system.courseCatalogUpdatedAt ?? "—")}

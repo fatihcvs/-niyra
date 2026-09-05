@@ -172,8 +172,12 @@ function fixture(t) {
     "../../../lib/staff-auth": staff,
     "../../../lib/admin-registry": registry,
     "../../../lib/app-auth": {},
+    "../../../data/cyprus-catalog-coverage-2026.json": { default: { universities: [
+      { programCount: 5, structuredProgramCount: 2 },
+      { programCount: 3, structuredProgramCount: 1 },
+    ] } },
     "../../../lib/official-course-catalog": {
-      getOfficialCourseCoverage: () => [],
+      getOfficialCourseCoverage: () => [{ coverage: "partial", courses: [{ code: "CS101" }] }],
       officialCourseCatalogMeta: { updatedAt: "test" },
     },
     "../../../lib/platform-settings": { getPlatformSettings: async () => ({}) },
@@ -200,6 +204,9 @@ test("owner dashboard SQL includes hidden communities, events and the full first
   const data = await response.json();
   assert.equal(data.metrics.communities_hidden, 1);
   assert.equal(data.metrics.community_events_hidden, 1);
+  assert.equal(data.system.courseCatalogPartialPrograms, 1);
+  assert.equal(data.system.cyprusCatalogPrograms, 8);
+  assert.equal(data.system.cyprusCatalogStructuredPrograms, 3);
   const day = f.database
     .prepare("SELECT date('now','-6 days') AS day")
     .get().day;
