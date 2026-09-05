@@ -10,7 +10,7 @@ from parse_cyprus_courses import clean, fold, merge_courses
 from parse_cyprus_html import parse_metu
 from parse_cyprus_extra import parse_itu
 from discover_turkey_courses import match as match_program
-from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu
+from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu, parse_bilgi, parse_afsu
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
@@ -157,6 +157,8 @@ def _parse_source(source):
     if source['status'] != 200: return [], []
     url = source['url']
     if 'katalog.ktu.edu.tr' in url:return parse_ktu(soup(source),course_code,course_kind,heading_period)
+    if source.get('family') == 'bilgi':return parse_bilgi(soup(source),course_code,course_kind)
+    if source.get('family') == 'afsu':return parse_afsu(read(CACHE/source['file']),course_code)
     if 'ebp.igdir.edu.tr' in url:return parse_igdir(soup(source),parse_tables)
     if source.get('family')=='subu':return parse_subu(read(CACHE/source['file']),course_code,course_kind,heading_period)
     if 'truva.baskent.edu.tr' in url:return parse_baskent(soup(source),course_code)

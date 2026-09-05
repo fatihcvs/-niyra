@@ -52,10 +52,17 @@ python scripts/academic-catalog/collect_turkey_erciyes.py
 python scripts/academic-catalog/collect_turkey_subu.py
 python scripts/academic-catalog/collect_turkey_ktu_ikcu.py
 python scripts/academic-catalog/collect_turkey_web_curricula.py
+python scripts/academic-catalog/collect_turkey_bilgi.py
+python scripts/academic-catalog/collect_turkey_afsu.py
+python scripts/academic-catalog/collect_turkey_language_labels.py
+python scripts/academic-catalog/collect_turkey_atilim.py
+python scripts/academic-catalog/collect_turkey_bau_yalova.py
 python scripts/academic-catalog/collect_turkey_more_catalogs.py
 ```
 
-`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ ve web müfredat sonuçlarını aynı manifestte birleştirir. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
+`collect_turkey_more_catalogs.py` en son çalıştırılır: Erciyes, SUBÜ, KTÜ/İKÇÜ, Bilgi, AFSÜ, Atılım, Bahçeşehir/Yalova, dil etiketi ve web müfredat sonuçlarını aynı manifestte birleştirir. Çankırı Karatekin'in kamuya açık Rebis dizini ve ders yanıtları da bu toplayıcıdadır. Önceki plan toplayıcısı, depodaki önceki taramaların yerel önbelleğini mevcutsa kullanır; bulunmayan yanıtları tamamlanmış saymaz.
+
+Bilgi'de yalnız anonim dil tercihi kullanılır; hesap veya kalıcı çerez gerekmez. Sınıf numarası ve dönem birlikte değerlendirilir; seçmeli havuz başlıkları ders sayılmaz. Atılım ve Bahçeşehir'de resmî dil listeleri, katalogdaki kısaltılmamış program adlarıyla eşleştirilir. `TR/EN` karma dil etiketi ve ikinci öğretim ayrımı korunur. AFSÜ'de web istemcisinin kullandığı açık dizin ve dönem API'leri izlenir; yıllık derslerde yarıyıl uydurulmaz. AFSÜ'nün `2026-2026` gibi dönem etiketleri kaynakta yayımlandığı biçimde tutulur; bitiş yılı tahmin edilmez.
 
 ```text
 python scripts/academic-catalog/build_turkey_catalog_sources.py

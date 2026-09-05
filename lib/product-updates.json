@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-second-expansion",
+    "releasedAt": "2026-09-05T06:42:19+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "511 programın ders kataloğu daha eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 11.313’e, program-ders kaydı sayısı 1.274.462’ye ulaştı.",
+    "highlights": [
+      "Çankırı Karatekin, İstanbul Bilgi, Afyonkarahisar Sağlık Bilimleri, Atılım, Bahçeşehir ve Yalova üniversitelerinin kaynaklı ders listeleri eklendi.",
+      "Beykent ve diğer kurumlarda resmî Türkçe/İngilizce etiketleri eşleştirilerek eksik kalan programlar tamamlandı; öğretim dili ve ikinci öğretim ayrımı korunur.",
+      "Bu pakette 16 kurumda 511 program için 112.850 ders kaydı eklendi. Sayılar, kaynakta sunulan seçmeli havuzlar dahil program içindeki kayıtlardır; tekil ders sayısı değildir.",
+      "165 kurum için kontrol edilmiş resmî katalog girişleri kullanılabilir. Kaynakta yayımlanan müfredat dönemi varsa ders listesinde gösterilir.",
+      "3.870 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; üniversite bazındaki durum ve eksik nedenleri owner panelinde görünür."
+    ]
+  },
+  {
     "id": "turkey-sourced-course-catalogs-and-nearby-areas",
     "releasedAt": "2026-09-05T05:37:30+00:00",
     "category": "İyileştirme",

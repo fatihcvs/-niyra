@@ -156,4 +156,36 @@ class CourseParsers(unittest.TestCase):
           <tr><td><a href="course.aspx?dbid=3">YZT2002</a></td><td>Programlama II</td><td>5</td><td>3+2</td><td>Zorunlu</td><td>Türkçe</td></tr></table>'''),course_code,course_kind,heading_period)
         self.assertEqual([(r['semester'],r['kind']) for r in rows],[(3,'required'),(None,'elective'),(4,'required')])
 
+    def test_bilgi_class_year_and_term_are_combined_and_group_rows_excluded(self):
+        from parse_turkey_late_courses import parse_bilgi
+        from parse_turkey_courses import course_kind
+        rows,_=parse_bilgi(html('''<div><label>Sınıf : 3 | Dönem : 2 - Yazılım Geliştirme</label></div>
+          <table><tbody>
+          <tr><td><a href="/Course/Detail?catalog_courseId=1">YZG 302</a></td><td>İşletim Sistemleri</td><td>Zorunlu</td><td>3+2</td><td>6</td></tr>
+          <tr><td>.........</td><td>YZG Seçmeli Listesi</td><td>Seçmeli</td><td>0+0</td><td>6</td></tr>
+          <tr><td><a href="/Course/Detail?catalog_courseId=2">YZG 399</a></td><td>Robotik</td><td>Seçmeli</td><td>3+0</td><td>6</td></tr>
+          </tbody></table>
+          <div>Seçmeli Dersler</div><table><tbody><tr><td><a href="/Course/Detail?catalog_courseId=3">YZG 499</a></td><td>Belirsiz dönem</td><td>Seçmeli</td><td>3+0</td><td>6</td></tr></tbody></table>'''),course_code,course_kind)
+        self.assertEqual([(r['code'],r['semester'],r['kind']) for r in rows],[('YZG302',6,'required'),('YZG399',6,'elective')])
+
+    def test_afsu_retains_nested_electives_and_annual_courses(self):
+        from parse_turkey_late_courses import parse_afsu
+        rows,_=parse_afsu([{'sinif':'S3','yariYil':None,'ders':[
+            {'id':'annual','dersKod':'TIP300','adi':'Klinik Bilimler','dersSecimTipi':'ZORUNLU'}]},
+            {'sinif':None,'yariYil':'YY4','ders':[
+                {'id':None,'adi':None,'dersKod':None,'dersResponseList':[
+                    {'id':'elective','dersKod':'ECZ200','adi':'Eczacılık Tarihi','dersSecimTipi':'SECMELI'}]},
+                {'id':'common','dersKod':'OSD101','adi':'Hijyen','dersSecimTipi':'ALAN_DISI'},
+                {'id':'common2','dersKod':'OSD101','adi':'Hijyen','dersSecimTipi':'ALAN_DISI'}]}],course_code)
+        self.assertEqual(rows,[{'code':'TIP300','name':'Klinik Bilimler','semester':None,'year':3,'kind':'required'},
+            {'code':'ECZ200','name':'Eczacılık Tarihi','semester':4,'kind':'elective'},
+            {'code':'OSD101','name':'Hijyen','semester':4,'kind':'elective'}])
+
+    def test_language_abbreviations_preserve_english_mixed_and_evening_modes(self):
+        from collect_turkey_language_labels import expand_language
+        self.assertEqual(expand_language('PSİKOLOJİ (TR)'),'PSİKOLOJİ')
+        self.assertEqual(expand_language('PSİKOLOJİ (EN)'),'PSİKOLOJİ (İngilizce)')
+        self.assertEqual(expand_language('PSİKOLOJİ (EN/TR)'),'PSİKOLOJİ (EN/TR)')
+        self.assertEqual(expand_language('AŞÇILIK (TR) (İÖ)'),'AŞÇILIK (İÖ)')
+
 if __name__=='__main__':unittest.main()

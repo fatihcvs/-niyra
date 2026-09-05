@@ -16,6 +16,7 @@ ROOTS={
  'tr-tekirdag-namik-kemal-universitesi':[('bachelor','https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/2'),('associate','https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/3')],
  'tr-nigde-omer-halisdemir-universitesi':[('bachelor','https://www.ohu.edu.tr/akts/bilgipaketi/lisans'),('associate','https://www.ohu.edu.tr/akts/bilgipaketi/onlisans')],
  'tr-recep-tayyip-erdogan-universitesi':[('bachelor','https://bologna2.erdogan.edu.tr/tr/programlar/5368'),('associate','https://bologna2.erdogan.edu.tr/tr/programlar/5367')],
+ 'tr-cankiri-karatekin-universitesi':[('bachelor','https://cakubologna.karatekin.edu.tr/tr/programlar/5368'),('associate','https://cakubologna.karatekin.edu.tr/tr/programlar/5367')],
  'tr-isparta-uygulamali-bilimler-universitesi':[(None,'https://akts.isparta.edu.tr/Public/EctsIndex.aspx')],
  'tr-sakarya-universitesi':[(None,'https://ebs.sakarya.edu.tr/')],
  'tr-yeditepe-universitesi':[('bachelor','https://akts.yeditepe.edu.tr/tr/Ects/DegreePrograms?D=L'),('associate','https://akts.yeditepe.edu.tr/tr/Ects/DegreePrograms?D=O')],
@@ -87,7 +88,7 @@ def directory(uid, roots, university):
    elif 'ohu.' in url and a.get('id')=='lnkDersler':
     row=a.find_parent('tr');title=clean(row.select_one('td').get_text())
     h=a.find_parent('table').find_previous('label');unit=clean(h.get_text()) if h else None;course=urljoin(url,href)
-   elif 'erdogan.' in url and '?programId=' in href:
+   elif urlparse(url).hostname in {'bologna2.erdogan.edu.tr','cakubologna.karatekin.edu.tr'} and '?programId=' in href:
     parent=a.find_parent('ul').parent;h=parent.find('span',recursive=False) or parent.find('a',recursive=False)
     unit=clean(h.get_text()) if h else None;course=urljoin(url,href)
    elif '/Ects/ProgramDetail?' in href:
@@ -143,7 +144,7 @@ def erdogan_courses(item):
 
 def collect(item):
  if item.get('family')=='isparta':s=isparta_courses(item)
- elif 'bologna2.erdogan.edu.tr' in item['courseUrl']:s=erdogan_courses(item)
+ elif urlparse(item['courseUrl']).hostname in {'bologna2.erdogan.edu.tr','cakubologna.karatekin.edu.tr'}:s=erdogan_courses(item)
  else:s=fetch(item['courseUrl'])
  return {**s,'programs':[item]}
 
@@ -174,6 +175,21 @@ def main():
  if (CACHE/'web-curricula-courses.json').exists():output+=read(CACHE/'web-curricula-courses.json')
  if (CACHE/'web-curricula-directories.json').exists():
   directories+=read(CACHE/'web-curricula-directories.json');write(CACHE/'more-directories.json',directories)
+ if (CACHE/'bilgi-courses.json').exists():output+=read(CACHE/'bilgi-courses.json')
+ if (CACHE/'bilgi-directories.json').exists():
+  directories+=read(CACHE/'bilgi-directories.json');write(CACHE/'more-directories.json',directories)
+ if (CACHE/'afsu-courses.json').exists():output+=read(CACHE/'afsu-courses.json')
+ if (CACHE/'afsu-directories.json').exists():
+  directories+=read(CACHE/'afsu-directories.json');write(CACHE/'more-directories.json',directories)
+ if (CACHE/'language-label-courses.json').exists():output+=read(CACHE/'language-label-courses.json')
+ if (CACHE/'language-label-directories.json').exists():
+  directories+=read(CACHE/'language-label-directories.json');write(CACHE/'more-directories.json',directories)
+ if (CACHE/'atilim-courses.json').exists():output+=read(CACHE/'atilim-courses.json')
+ if (CACHE/'atilim-directories.json').exists():
+  directories+=read(CACHE/'atilim-directories.json');write(CACHE/'more-directories.json',directories)
+ if (CACHE/'bau-yalova-courses.json').exists():output+=read(CACHE/'bau-yalova-courses.json')
+ if (CACHE/'bau-yalova-directories.json').exists():
+  directories+=read(CACHE/'bau-yalova-directories.json');write(CACHE/'more-directories.json',directories)
  write(CACHE/'more-courses.json',output)
 
 if __name__=='__main__':main()

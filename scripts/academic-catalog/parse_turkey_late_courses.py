@@ -89,3 +89,44 @@ def parse_ktu(doc, code, kind, period):
             if identifier and 2<=len(name)<=200 and not is_placeholder(name):
                 output.append({'code':identifier,'name':name,'semester':term,'kind':kind(values[4])})
     return merge_courses(output)
+
+
+def parse_bilgi(doc, code, kind):
+    """A numbered term restarts each class year; elective group labels are not courses."""
+    output=[]
+    for table in doc.select('table'):
+        if table.select('table'):continue
+        heading=table.find_previous_sibling('div')
+        label=fold(heading.get_text(' ',strip=True)) if heading else ''
+        period=re.search(r'\b(?:sinif|level)\s*:\s*([1-6])\s*\|\s*(?:donem|semester)\s*:\s*([12])\b',label)
+        if not period:continue
+        term=(int(period[1])-1)*2+int(period[2])
+        for row in table.select('tbody > tr'):
+            cells=row.find_all('td',recursive=False)
+            if len(cells)!=5 or not cells[0].select_one('a[href*="/Course/Detail?"]'):continue
+            identifier=code(cells[0].get_text());name=clean(cells[1].get_text(' ',strip=True))
+            if identifier and 2<=len(name)<=200 and not is_placeholder(name):
+                output.append({'code':identifier,'name':name,'semester':term,'kind':kind(cells[2].get_text())})
+    return merge_courses(output)
+
+
+def parse_afsu(groups, code):
+    """Retain actual nested courses, with the source's annual or semester group."""
+    output=[]
+    def visit(row,term,year,depth=0):
+        if depth>12:raise ValueError('Unexpected curriculum nesting')
+        identifier=code(row.get('dersKod') or '');name=clean(row.get('adi'))
+        if row.get('id') and identifier and 2<=len(name)<=200 and not is_placeholder(name):
+            record={'code':identifier,'name':name,'semester':term,
+                'kind':{'ZORUNLU':'required','SECMELI':'elective','ALAN_DISI':'elective'}.get(row.get('dersSecimTipi'))}
+            if year:record['year']=year
+            output.append(record)
+        for child in (row.get('childDersList') or [])+(row.get('dersResponseList') or []):
+            visit(child,term,year,depth+1)
+    for group in groups:
+        annual=re.fullmatch(r'S([1-6])',group.get('sinif') or '')
+        semester=re.fullmatch(r'YY([1-9]|1[0-2])',group.get('yariYil') or '')
+        term=int(semester[1]) if semester and not group.get('sinif') else None
+        year=int(annual[1]) if annual else None
+        for row in group.get('ders') or []:visit(row,term,year)
+    return merge_courses(output)
