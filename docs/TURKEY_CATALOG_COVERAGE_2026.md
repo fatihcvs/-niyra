@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-05
 
-204 kurum · 15,183 program · 12,568 programda ders kaydı · 2,615 programda ders listesi eksik.
-Toplam 1,420,925 program-ders kaydı. 185 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,589 programda ders kaydı · 2,594 programda ders listesi eksik.
+Toplam 1,421,740 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,171
-- Okunabilir ders listesi bulunamadı: 378
+- Resmî program eşleşmesi eksik: 2,149
+- Okunabilir ders listesi bulunamadı: 379
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -200,7 +200,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Süleyman Demirel Üniversitesi | 83 | 78 | 5 | 6,397 | 7 | [Kaynak 1](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Şırnak Üniversitesi | 50 | 49 | 1 | 3,036 | 10 | [Kaynak 1](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Tarsus Üniversitesi | 43 | 43 | 0 | 6,183 | 5 | [Kaynak 1](https://bologna.tarsus.edu.tr/tr/programlar/5367) · [Kaynak 2](https://bologna.tarsus.edu.tr/tr/programlar/5368) |
-| TED Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |
+| TED Üniversitesi | 22 | 21 | 1 | 815 | 5 | [Kaynak 1](https://www.tedu.edu.tr/akademik) |
 | Tekirdağ Namık Kemal Üniversitesi | 122 | 116 | 6 | 8,516 | 15 | [Kaynak 1](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/2) · [Kaynak 2](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/3) |
 | TOBB Ekonomi ve Teknoloji Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |
 | Tokat Gaziosmanpaşa Üniversitesi | 150 | 149 | 1 | 12,538 | 10 | [Kaynak 1](https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

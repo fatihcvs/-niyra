@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-eleventh-expansion",
+    "releasedAt": "2026-09-05T23:32:54Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "TED Üniversitesinin 21 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.589’a, program-ders kaydı sayısı 1.421.740’a ulaştı.",
+    "highlights": [
+      "TED Üniversitesinin 21 lisans programına 815 resmî program-ders kaydı eklendi. Önceden yayımlanan program ve ders kayıtları korundu.",
+      "Resmî akademik dizin, bölüm alan adı, güncel öğretim programı sayfası ve sayfanın yayımladığı tekil program kimliği birlikte doğrulanır; program adı, lisans derecesi, fakülte ve İngilizce öğretim ayrımı korunur.",
+      "Sekiz yarıyıl tablosu gerçek tarayıcıda yakalanır. Yalnız gerçek ders kodları aktarılır; bölüm seçmelisi, serbest seçmeli ve dönem toplamı yer tutucuları dışarıda kalır. Resmî -O ve -N ders kodları korunur.",
+      "Farklı plan yılları birleştirilmez. Psikoloji bölümünün güncel PDF'sinde kullanılabilir karakter eşlemesi bulunmadığından bozuk ders adları yayımlanmadı ve bu program eksik bırakıldı.",
+      "191 kurumda ders kaydı, 186 kurumda doğrulanmış katalog girişi bulunur. 2.594 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-tenth-expansion",
     "releasedAt": "2026-09-05T21:51:22Z",
     "category": "İyileştirme",

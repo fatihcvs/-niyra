@@ -2796,8 +2796,15 @@
     "status": "catalogue-checked"
   },
   "tr-ted-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.tedu.edu.tr/akademik",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "bea2efe63e479706284481727abe5027306c50f82c7110b1f049149af3ff1235",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-tekirdag-namik-kemal-universitesi": {
     "catalogs": [

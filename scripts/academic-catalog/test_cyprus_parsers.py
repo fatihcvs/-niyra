@@ -1,6 +1,8 @@
 """Offline regressions for ambiguities seen in the official source tables."""
 import unittest
 from parse_cyprus_courses import code, kind, merge_courses, parse_document, period
+from parse_turkey_courses import course_code, heading_period
+from parse_turkey_tedu_courses import parse_tedu
 
 
 def document(rows, text=''):
@@ -70,6 +72,35 @@ class CurriculumParsing(unittest.TestCase):
             {'code': 'COM411', 'name': 'Networks', 'semester': 7, 'kind': 'elective'}])
         self.assertIsNone(courses[0]['semester'])
         self.assertEqual(courses[0]['offeredSemesters'], [6, 7])
+
+    def test_tedu_tables_require_semesters_and_reject_placeholders(self):
+        courses, conflicts = parse_tedu({'tables': [
+            {'heading': 'Yarıyıl 1', 'rows': [
+                {'code': 'ENG 101', 'title': 'Akademik İngilizce'},
+                {'code': 'PSCG SEC', 'title': 'Alan Eğitimi Seçmeli'}]},
+            {'heading': 'Toplam', 'rows': [{'code': 'PSCG 999', 'title': 'Toplam'}]}
+        ]}, course_code, heading_period)
+        self.assertEqual(courses, [
+            {'code': 'ENG101', 'name': 'Akademik İngilizce', 'semester': 1, 'kind': None}])
+        self.assertEqual(conflicts, [])
+
+    def test_tedu_expands_only_explicit_alternative_codes(self):
+        courses, _ = parse_tedu({'tables': [{'heading': 'Semester 2', 'rows': [
+            {'code': 'TUR 101/150', 'title': 'Türkçe'},
+            {'code': 'HIST 101 / HIST 150', 'title': 'Türkiye Cumhuriyeti Tarihi'},
+            {'code': 'ELL 212-N', 'title': 'Kültür Çalışmaları'},
+            {'code': 'TUR / ENG 101', 'title': 'Ambiguous alternative'}
+        ]}]}, course_code, heading_period)
+        self.assertEqual([course['code'] for course in courses],
+                         ['TUR101', 'TUR150', 'HIST101', 'HIST150', 'ELL212-N'])
+
+    def test_tedu_conflicting_duplicate_fails_closed(self):
+        courses, conflicts = parse_tedu({'tables': [
+            {'heading': 'Yarıyıl 1', 'rows': [{'code': 'CMPE 101', 'title': 'Bilgisayara Giriş'}]},
+            {'heading': 'Yarıyıl 2', 'rows': [{'code': 'CMPE 101', 'title': 'Programlama'}]}
+        ]}, course_code, heading_period)
+        self.assertEqual(courses, [])
+        self.assertEqual(conflicts, ['CMPE101'])
 
 
 if __name__ == '__main__':
