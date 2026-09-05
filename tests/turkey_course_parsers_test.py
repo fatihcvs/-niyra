@@ -489,4 +489,45 @@ class TarsusCatalogTests(unittest.TestCase):
         self.assertFalse(current_plan_confirms([{**rows[0],'bolognaMufredatAktif':False}],'Kaynak Teknolojisi'))
 
 
+class IsikCatalogTests(unittest.TestCase):
+    def test_isik_uses_only_the_explicit_current_accordion(self):
+        from parse_turkey_isik_courses import parse_isik
+        doc=html('''<div class="accordion-item"><h2 class="accordion-header">Program - 2026</h2><div>
+          <table><tr><th>1. Semester</th></tr><tr><th>Slot Code</th><th>Slot Name</th></tr>
+          <tr><td>COMP1111</td><td>Programming</td></tr></table></div></div>
+          <div class="accordion-item"><h2 class="accordion-header">Program - 2021</h2><div>
+          <table><tr><th>1. Semester</th></tr><tr><th>Slot Code</th><th>Slot Name</th></tr>
+          <tr><td>OLD1111</td><td>Old Plan</td></tr></table></div></div>''')
+        rows,issues=parse_isik(doc,'Program - 2026',course_code,course_kind,heading_period)
+        self.assertEqual(issues,[])
+        self.assertEqual(rows,[{'code':'COMP1111','name':'Programming','semester':1,'kind':None}])
+        self.assertEqual(parse_isik(doc,None,course_code,course_kind,heading_period)[1],
+                         ['isik-curriculum-selection-required'])
+        self.assertEqual(parse_isik(doc,'Program - 2030',course_code,course_kind,heading_period)[1],
+                         ['isik-curriculum-selection-not-found'])
+
+    def test_isik_pdf_keeps_paired_terms_and_only_real_elective_codes(self):
+        from parse_turkey_isik_courses import parse_isik_pdf_tables
+        tables=[[['1. YEAR / 1. Semester / Fall',None,None,None,None,None,
+                  '1. YEAR / 2. Semester / Spring',None,None,None,None,None],
+                 ['Code','Course Name','T+U+L','Credit','ECTS','Type','Kodu','Code','T+U+L','Credit','ECTS','Type'],
+                 ['INAR1125','Representation Techniques','','','','','INAR1126','Introduction to Project','','','','']],
+                [['Electives',None,None,None,None],['Code','Course Name','T+U+L','Credit','ECTS'],
+                 ['INAR2501','Digital Representation Techniques','','',''],
+                 ['INAR_AE_I','Area Elective','','','']]]
+        rows,issues=parse_isik_pdf_tables(tables,course_code,heading_period)
+        self.assertEqual(issues,[])
+        self.assertEqual(rows,[
+          {'code':'INAR1125','name':'Representation Techniques','semester':1,'kind':None},
+          {'code':'INAR1126','name':'Introduction to Project','semester':2,'kind':None},
+          {'code':'INAR2501','name':'Digital Representation Techniques','semester':None,'kind':'elective'}])
+
+    def test_parser_cache_identity_includes_selected_curriculum(self):
+        from parse_turkey_courses import parse_identity
+        source={'file':'same.body','url':'https://example.edu/program','family':'isik'}
+        first=parse_identity({**source,'selection':{'label':'Plan 2026'}})
+        second=parse_identity({**source,'selection':{'label':'Plan 2024'}})
+        self.assertNotEqual(first,second)
+
+
 if __name__=='__main__':unittest.main()

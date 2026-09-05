@@ -17,10 +17,11 @@ from parse_turkey_kion_courses import parse_kion
 from parse_turkey_pdf_courses import parse_pdf
 from parse_turkey_cag_courses import parse_cag
 from parse_turkey_cankaya_courses import parse_cankaya
+from parse_turkey_isik_courses import parse_isik, parse_isik_pdf
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py'])).hexdigest()[:12]
 
 
 def course_code(value):
@@ -164,6 +165,8 @@ def _parse_source(source):
     if source.get('selectionError'):return [], [source['selectionError']]
     url = source['url']
     if source.get('family')=='cankaya':return parse_cankaya(read(CACHE/source['file']),course_code)
+    if source.get('family')=='isik':return parse_isik(soup(source), source.get('selection', {}).get('label'), course_code, course_kind, heading_period)
+    if source.get('family')=='isik-pdf':return parse_isik_pdf(CACHE/source['file'], course_code, heading_period)
     if source.get('family')=='cag':return parse_cag(soup(source),course_code,course_kind)
     if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
     if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)
@@ -257,13 +260,20 @@ def _parse_source(source):
 
 def parse_source(source):
     if source['status'] != 200:return [], []
-    file = CACHE / (source['file'] + '.' + PARSER_VERSION + '.parsed.json')
+    file = CACHE / (source['file'] + '.' + PARSER_VERSION + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
         result=read(file)
         return result['courses'],result['conflicts']
     courses,conflicts=_parse_source(source)
     write(file,{'courses':courses,'conflicts':conflicts})
     return courses,conflicts
+
+
+def parse_identity(source):
+    value = json.dumps({'file': source['file'], 'url': source['url'],
+                        'family': source.get('family'), 'selection': source.get('selection')},
+                       ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
 def main():
@@ -278,11 +288,21 @@ def main():
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
-    pool = ProcessPoolExecutor(max_workers=4)
-    pending = {s['file']:s for s in sources if s['status']==200}
-    pending = {key:pool.submit(parse_source,s) for key,s in pending.items()}
+    pending = {parse_identity(s):s for s in sources if s['status']==200}
+    pending_items = list(pending.items())
+    # Submitting the whole national catalogue at once retains thousands of
+    # futures and decoded source bodies. Bounded batches keep full parser-version
+    # rebuilds within production workstation memory while still using workers.
+    with ProcessPoolExecutor(max_workers=4) as pool:
+        for offset in range(0, len(pending_items), 128):
+            batch = pending_items[offset:offset + 128]
+            futures = [pool.submit(parse_source, source) for _, source in batch]
+            for future in futures:
+                future.result()
+            if offset == 0 or offset + len(batch) == len(pending_items) or (offset + len(batch)) % 1024 == 0:
+                print('parse cache', offset + len(batch), '/', len(pending_items), flush=True)
     for number, source in enumerate(sources,1):
-        courses, conflicts = pending[source['file']].result() if source['status']==200 else ([],[])
+        courses, conflicts = parse_source(source) if source['status']==200 else ([],[])
         if conflicts: issues.append({'url': source['url'], 'conflicts': conflicts})
         if len(courses) < 3: continue
         if len({r['programId'] for r in source['programs']})>1 and any(not r.get('degree') for r in source['programs']):
@@ -311,7 +331,6 @@ def main():
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)
-    pool.shutdown()
     write(CACHE / 'turkey-course-candidates.json', records)
     write(CACHE / 'parser-issues.json', issues)
     assert all(hashlib.sha256((CACHE/name).read_bytes()).hexdigest()==value for name,value in inputs.items()), 'Research inputs changed during parsing; run again.'

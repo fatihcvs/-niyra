@@ -1305,8 +1305,15 @@
     "status": "catalogue-checked"
   },
   "tr-isik-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.isikun.edu.tr/ogrenci/bolumler",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "7c471cbf3329d92cfda3f61948e21f141f7c2b1fbf32f0a3a94eb026c4b40b4b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-ibn-haldun-universitesi": {
     "catalogs": [

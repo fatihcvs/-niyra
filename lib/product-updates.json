@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-ninth-expansion",
+    "releasedAt": "2026-09-05T20:41:46Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Işık Üniversitesinin 32 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.548’e, program-ders kaydı sayısı 1.420.226’ya ulaştı.",
+    "highlights": [
+      "Işık Üniversitesinin 21 lisans ve 11 ön lisans programına 1.084 resmî program-ders kaydı eklendi. Önceden yayımlanan program ve ders kayıtları korundu.",
+      "Resmî bölüm dizini ile program sayfaları birlikte doğrulanır; program adı, derece, akademik birim ve İngilizce dil ayrımı korunur.",
+      "Bir sayfada birden fazla müfredat bulunduğunda yalnız açıkça seçilen güncel bölüm okunur. Alternatif yıllar birleştirilmez ve aynı sayfadaki farklı seçimler ayrıştırma önbelleğinde ayrı tutulur.",
+      "İç Mimarlık ve Çevre Tasarımı (İngilizce) programının güncel 2026-2027 PDF'sindeki yan yana dönemler ayrı işlendi. Kodlu ders tablosu yayımlanmayan İnşaat Teknolojisi programı doldurulmuş sayılmadı.",
+      "189 kurumda ders kaydı, 184 kurumda doğrulanmış katalog girişi bulunur. 2.635 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-eighth-expansion",
     "releasedAt": "2026-09-05T19:22:00Z",
     "category": "İyileştirme",
