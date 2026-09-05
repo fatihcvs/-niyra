@@ -66,6 +66,7 @@ python scripts/academic-catalog/collect_turkey_kion_catalogs.py
 python scripts/academic-catalog/collect_turkey_recovered_ubys.py
 python scripts/academic-catalog/collect_turkey_nisantasi_catalog.py
 python scripts/academic-catalog/collect_turkey_piri_catalog.py
+python scripts/academic-catalog/collect_turkey_cag_catalog.py
 python scripts/academic-catalog/collect_turkey_more_catalogs.py
 ```
 
@@ -101,6 +102,8 @@ EBP ağaçlarında gerçek program yaprağı, üstteki bölüm başlığıyla de
 Piri Reis'te fakülte/program sayfasının yayımladığı PDF bağlantısı ve PDF'nin program başlığı birlikte doğrulanır. Program dili, belge çevirisinden değil [resmî MYO listesi](https://dmyo.pirireis.edu.tr/hakkimizda/bolum-ve-programlar/) veya [öğretim dili açıklamasından](https://aday.pirireis.edu.tr/sikca-sorulan-sorular/) alınır. Yan yana iki dönem tablosunun sütunları ayrı izlenir; yalnız solda devam eden seçmeli havuza sağdaki dönem taşınmaz. Tablo üzerindeki açık Romen yarıyıl başlıkları okunur. Ders kodundaki dipnot yıldızı kaldırılır; bilinmeyen ders türü tahmin edilmez. Bilgisayar Mühendisliğinde kaynak bağlantısının 2024–2025 ve sonrası etiketi korunur; ayrı seçmeli PDF'leri aktarılmadığından bu liste de kısmi kapsamdadır.
 
 ## Uygulama ve doğrulama
+
+Çağ Üniversitesi için [resmî bilgi paketi](https://www.cag.edu.tr/tr/hizmetler-bilgi-paketi) üzerinden fakülte menülerinin gerçek program ve ders planı bağlantıları izlenir. İngilizce program eşleştirmeleri programın dil tablosu veya [kurumun açık program listesi](https://www.cag.edu.tr/tr/adaylara-bilgi-sikca-sorulan-sorular) ile doğrulanır. MYO menüsündeki yalnız IACBE/TYÇ akreditasyon açıklaması ad eşleştirmesinden ayrılır; öğretim dili ve derece korunur. Ders adları kendi bağlantılarından okunur; kategori, öğretim üyesi ve indirme etiketleri ada karışmaz. Yarıyıl ve zorunlu/seçmeli türü kartın açık başlıklarından alınır. Yönetim Bilişim Sistemleri planındaki `MIS XXX` ve `-` kodları gerçek ders kodu sayılmaz. Bu programın yapılandırılmış ders listesi eksik kalır; diğer yeni listeler de seçmeli havuzların tamamını kapsadığı doğrulanmadığından kısmi kapsamdadır.
 
 `data/course-catalog-index-2026.json` yalnız program özetlerini tutar. Dersler `data/course-catalog/<universityId>.json` dosyalarına ayrılır ve sunucuda seçilen üniversite için yüklenir. Bellek önbelleği dört üniversiteyle sınırlıdır. Bütün ders verisi istemci JavaScript'ine gönderilmez. Bölüm seçimi, önceki boş katalog yanıtının tarayıcı önbelleğinde kalmaması için yeniden doğrulama ister.
 

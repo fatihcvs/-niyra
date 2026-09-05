@@ -352,6 +352,37 @@ class ContinuationParsersTest(unittest.TestCase):
 
 
 class PdfCourseTableTests(unittest.TestCase):
+    def test_cag_course_titles_exclude_categories_and_preserve_explicit_term_and_kind(self):
+        from parse_turkey_cag_courses import parse_cag
+        rows,_=parse_cag(html('''<div class="page-lead-content-inner"><div class="card">
+          <div class="card-header">İkinci Yıl, Üçüncü Yarıyıl</div>
+          <table><thead><tr><th>Ders Kodu</th><th></th><th></th><th>Ders</th><th>Dersin Şekli</th></tr></thead>
+          <tbody><tr><td>HUK-201</td><td><a>Öğretim üyesi</a></td><td><a>Ders içeriği</a></td>
+          <td><a title="Ders hakkında">Borçlar Hukuku</a><small>Uzmanlık-Alan Dersleri</small></td><td>Zorunlu</td></tr>
+          <tr><td>HUK-299</td><td></td><td></td><td><a title="Ders hakkında">Hukuk Tarihi</a></td><td>Seçmeli</td></tr>
+          <tr><td>SEC-301</td><td></td><td></td><td><a title="Ders hakkında">Seçmeli Ders I</a></td><td>Seçmeli</td></tr>
+          </tbody></table></div></div>'''),course_code,course_kind)
+        self.assertEqual(rows,[{'code':'HUK-201','name':'Borçlar Hukuku','semester':3,'kind':'required'},
+                               {'code':'HUK-299','name':'Hukuk Tarihi','semester':3,'kind':'elective'}])
+
+    def test_cag_never_infers_a_semester_or_accepts_placeholder_codes(self):
+        from parse_turkey_cag_courses import parse_cag
+        table='''<table><thead><tr><th>Ders Kodu</th><th>Ders</th><th>Dersin Şekli</th></tr></thead><tbody>
+          <tr><td>{code}</td><td><a title="Ders hakkında">İşletme</a></td><td>Zorunlu</td></tr></tbody></table>'''
+        doc='<div class="page-lead-content-inner"><div class="card"><div class="card-header">Hazırlık</div>'+table.format(code='PREP-101')+'</div>'
+        doc+='<div class="card"><div class="card-header">Birinci Yıl, Birinci Yarıyıl</div>'+table.format(code='MIS XXX')+'</div></div>'
+        self.assertEqual(parse_cag(html(doc),course_code,course_kind)[0],[])
+
+    def test_cag_menu_retains_faculty_and_programme_scope(self):
+        from collect_turkey_cag_catalog import entries
+        result=entries(html('''<div class="page-lead-header"><h1>Meslek Yüksekokulu</h1></div>
+          <ul id="sidemenu"><li><a>Dış Ticaret Programı ( IACBE Akreditasyonu-TYÇ)</a><ul>
+          <li><a href="/tr/profile">Program Tanımı</a></li><li><a href="/tr/plan">Ders Planı</a></li></ul></li>
+          <li><a>Yönetim</a><ul><li><a href="/tr/unrelated">Ders Planı</a></li></ul></li></ul>'''),'https://www.cag.edu.tr/tr/department')
+        self.assertEqual(len(result),1)
+        self.assertEqual((result[0]['title'],result[0]['unit'],result[0]['degree']),('Dış Ticaret Programı','Meslek Yüksekokulu','associate'))
+        self.assertEqual(result[0]['courseUrl'],'https://www.cag.edu.tr/tr/plan')
+
     def test_repeated_leaf_caption_keeps_qualifiers_and_duplicate_routes_require_published_witness(self):
         from collect_turkey_ecatalogs import leaf_programme_title,unique_or_published
         self.assertEqual(leaf_programme_title('Hemşirelik','Hemşirelik Hemşirelik'),'Hemşirelik')

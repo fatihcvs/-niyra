@@ -1649,42 +1649,14 @@
       "universityId": "tr-cag-universitesi",
       "name": "Çağ Üniversitesi",
       "programCount": 15,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
+      "structuredProgramCount": 14,
+      "courseCount": 444,
+      "linkedProgramCount": 14,
       "missingProgramIds": [
-        "program-osym-201050386",
-        "program-osym-201050395",
-        "program-osym-201050730",
-        "program-osym-201050562",
-        "program-osym-201050668",
-        "program-osym-201050695",
-        "program-osym-201050605",
-        "program-osym-201010245",
-        "program-osym-201010148",
-        "program-osym-201010642",
-        "program-osym-201010175",
-        "program-osym-201050719",
-        "program-osym-201000101",
-        "program-osym-201010536",
-        "program-osym-201050717"
+        "program-osym-201000101"
       ],
       "missingReasons": {
-        "program-osym-201050386": "programme-source-not-matched",
-        "program-osym-201050395": "programme-source-not-matched",
-        "program-osym-201050730": "programme-source-not-matched",
-        "program-osym-201050562": "programme-source-not-matched",
-        "program-osym-201050668": "programme-source-not-matched",
-        "program-osym-201050695": "programme-source-not-matched",
-        "program-osym-201050605": "programme-source-not-matched",
-        "program-osym-201010245": "programme-source-not-matched",
-        "program-osym-201010148": "programme-source-not-matched",
-        "program-osym-201010642": "programme-source-not-matched",
-        "program-osym-201010175": "programme-source-not-matched",
-        "program-osym-201050719": "programme-source-not-matched",
-        "program-osym-201000101": "programme-source-not-matched",
-        "program-osym-201010536": "programme-source-not-matched",
-        "program-osym-201050717": "programme-source-not-matched"
+        "program-osym-201000101": "programme-source-not-matched"
       }
     },
     {
@@ -7991,8 +7963,8 @@
     }
   ],
   "research": {
-    "sourceCount": 14303,
-    "parserVersion": "fa490f8f3ce7",
+    "sourceCount": 14317,
+    "parserVersion": "41b7237c55c1",
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
       "hydrated.json": "640bf67937d9cac9b2984bd53161756f70c9ff34f5d6b56b07a2dc7b7bbd6371",
@@ -8003,7 +7975,7 @@
       "previous-plan-courses.json": "ae93312b75ccbe210afa8340140c1c2a5751d7f7cd960f45fcedd0b46759ec51",
       "refined-courses.json": "2636059927a14bda29b4da326d213469996c328994ade4cee40d4493a1fbd392",
       "institution-courses.json": "c83f4ff985f96cb870396aa039aa261abfd8d55912b5603169a69d55bac414c9",
-      "more-courses.json": "b09ecdf0a49dbfd08400539c05fdad79bb03af7bb4463fb946b3d7205ffc6127",
+      "more-courses.json": "a880a9804c594b112cec67803547b6ba607bf0d155035d477e6952791f8b230f",
       "expanded-courses.json": "f5285bdb928071a5fabe40bc415ab542ef87ac923be26c02c8d0cfa1f30a6518",
       "kocaeli-courses.json": "97df95bb21727a21f9053b1eb3510d5112698575b7ac2459d22bb8d4ac57ac08",
       "istanbul-courses.json": "b44ab029d935bb342323d241331fe37c7bf4e46e8fe6203a6103d39f99cb1e6e",

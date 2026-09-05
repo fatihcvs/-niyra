@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-sixth-expansion",
+    "releasedAt": "2026-09-05T17:35:29.923757+00:00",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Çağ Üniversitesinin 14 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.407’ye, program-ders kaydı sayısı 1.403.524’e ulaştı.",
+    "highlights": [
+      "Çağ Üniversitesinin 14 lisans ve ön lisans programına resmî kaynaklı 444 program-ders kaydı eklendi. Önceden yayımlanan program ve ders kayıtları korundu.",
+      "Hukuk, Psikoloji, İngilizce Mütercim ve Tercümanlık, uluslararası işletme, finans, ilişkiler ve lojistik programları ile yedi ön lisans programının ders planları kullanılabilir.",
+      "Ders adlarına kategori, öğretim üyesi veya dosya indirme metni karışmaz. Açık yarıyıl ve zorunlu/seçmeli türü korunur; İngilizce programlar kurumsal dil bilgisiyle eşleştirilir.",
+      "Çağ Yönetim Bilişim Sistemleri planında gerçek ders kodları henüz yayımlanmadığından bu programın yapılandırılmış listesi eksik kalır. Yer tutucu kodlardan ders oluşturulmaz.",
+      "185 kurumda ders kaydı, 180 kurumda doğrulanmış katalog girişi bulunur. 2.776 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-fifth-expansion",
     "releasedAt": "2026-09-05T16:49:38.306219+00:00",
     "category": "İyileştirme",

@@ -722,8 +722,21 @@
     "status": "catalogue-checked"
   },
   "tr-cag-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.cag.edu.tr/tr/hukuk-program-tanimi-2",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "fa8caf004ded27b9c33487955460b29d929d413835355dc08c82b4bafb07ed27",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.cag.edu.tr/tr/turk-dili-ve-edebiyati-program-tanimi",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b7c5a2670b899aa6c02d2c68f76f955cbb1d415454092da985dcf9a39ac233d9",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-canakkale-onsekiz-mart-universitesi": {
     "catalogs": [
@@ -1552,9 +1565,9 @@
         "evidence": "matched-programme-directory"
       },
       {
-        "url": "https://ebp.nisantasi.edu.tr/DereceProgramlari/1",
+        "url": "https://ebp.nisantasi.edu.tr/dereceprogramlari/1",
         "checkedAt": "2026-09-05",
-        "sourceHash": "7027bf38e361f31d23d11c0fd5fadfa70c47f7571a1c90b3c38552e6d0451730",
+        "sourceHash": "f53808b3b38b60cafdf1538e8d4f67822793a71525f602adb33441d0fb6938ec",
         "evidence": "matched-programme-directory"
       }
     ],
@@ -1805,7 +1818,7 @@
         "evidence": "matched-programme-directory"
       },
       {
-        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/1?lang=tr-TR",
+        "url": "https://ebp.tinaztepe.edu.tr/DereceProgramlari/1",
         "checkedAt": "2026-09-05",
         "sourceHash": "4c9979dadb932b4c76ba4de314363b519854bc405356471f2e8abf0487f1beeb",
         "evidence": "matched-programme-directory"
@@ -2430,9 +2443,9 @@
   "omu": {
     "catalogs": [
       {
-        "url": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?kultur=tr-TR&Mod=1",
+        "url": "https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR",
         "checkedAt": "2026-09-05",
-        "sourceHash": "148d1436c20bff53d8db340c47077481e99ca36da252dfd5f2446456e0b25945",
+        "sourceHash": "f7e48a6804de803da5b635523f1cd330d4e4373b83d4cc7c58097de20721c6cf",
         "evidence": "matched-programme-directory"
       }
     ],
