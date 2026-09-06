@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twentieth-expansion",
+    "releasedAt": "2026-09-06T17:26:14Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "İstanbul Üniversitesi-Cerrahpaşa'nın 92 programı tamamlandı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.015’e, program-ders kaydı sayısı 1.455.825’e ulaştı.",
+    "highlights": [
+      "İstanbul Üniversitesi-Cerrahpaşa'nın eksik 32 programına 921 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 60’tan 92’ye, toplam kayıt 4.208’den 5.129’a çıktı; güncel programların tamamı yapılandırıldı.",
+      "Resmî EBS dizinindeki program adı, derece ve akademik birim her kayıtta doğrulandı. HTML'de görünmeyen tablolar, aynı resmî sayfanın kullandığı açık yazdırma servisine ait program başlığı, fakülte, birim kimliği ve yıl alanlarıyla eşleştirildi.",
+      "27 ön lisans programında sayfanın seçtiği 2026 3+1 modeli korundu. Farklı modeller ve yıllar birleştirilmedi; kaynakta yalnız birkaç dönem yayımlanmışsa kapsam olduğu gibi kısmi bırakıldı.",
+      "Türkçe ve İngilizce Veteriner programlarının 2026 planı boş olduğu için en son dolu 2025 planı kullanıldı; daha yeni boş yanıtların istekleri ve SHA-256 özetleri seçim kanıtında tutuldu.",
+      "Almanca, Fransızca ve İngilizce Öğretmenliği için resmî Eğitim Dili alanı ÖSYM adındaki dil etiketiyle birebir doğrulandı. 193 kurumda ders kaydı, 188 kurumda doğrulanmış katalog girişi bulunur; 2.168 programın yapılandırılmış ders listesi hâlâ eksiktir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-nineteenth-expansion",
     "releasedAt": "2026-09-06T16:07:20Z",
     "category": "İyileştirme",

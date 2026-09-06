@@ -3683,77 +3683,11 @@
       "universityId": "tr-istanbul-universitesi-cerrahpasa",
       "name": "İstanbul Üniversitesi-Cerrahpaşa",
       "programCount": 92,
-      "structuredProgramCount": 60,
-      "courseCount": 4208,
-      "linkedProgramCount": 60,
-      "missingProgramIds": [
-        "program-osym-111690694",
-        "program-osym-111650484",
-        "program-osym-111690695",
-        "program-osym-111690608",
-        "program-osym-111690696",
-        "program-osym-111690698",
-        "program-osym-111650175",
-        "program-osym-111690699",
-        "program-osym-111690700",
-        "program-osym-111650545",
-        "program-osym-111690697",
-        "program-osym-111650078",
-        "program-osym-111650599",
-        "program-osym-111651031",
-        "program-osym-111650712",
-        "program-osym-111650103",
-        "program-osym-111650633",
-        "program-osym-111650615",
-        "program-osym-111610864",
-        "program-osym-111690749",
-        "program-osym-111650236",
-        "program-osym-111690459",
-        "program-osym-111650678",
-        "program-osym-111650378",
-        "program-osym-111690756",
-        "program-osym-111650687",
-        "program-osym-111650996",
-        "program-osym-111610397",
-        "program-osym-111610422",
-        "program-osym-111610449",
-        "program-osym-111650845",
-        "program-osym-111650854"
-      ],
-      "missingReasons": {
-        "program-osym-111690694": "no-readable-curriculum",
-        "program-osym-111650484": "no-readable-curriculum",
-        "program-osym-111690695": "no-readable-curriculum",
-        "program-osym-111690608": "no-readable-curriculum",
-        "program-osym-111690696": "no-readable-curriculum",
-        "program-osym-111690698": "no-readable-curriculum",
-        "program-osym-111650175": "no-readable-curriculum",
-        "program-osym-111690699": "no-readable-curriculum",
-        "program-osym-111690700": "no-readable-curriculum",
-        "program-osym-111650545": "no-readable-curriculum",
-        "program-osym-111690697": "no-readable-curriculum",
-        "program-osym-111650078": "no-readable-curriculum",
-        "program-osym-111650599": "no-readable-curriculum",
-        "program-osym-111651031": "no-readable-curriculum",
-        "program-osym-111650712": "no-readable-curriculum",
-        "program-osym-111650103": "no-readable-curriculum",
-        "program-osym-111650633": "no-readable-curriculum",
-        "program-osym-111650615": "no-readable-curriculum",
-        "program-osym-111610864": "no-readable-curriculum",
-        "program-osym-111690749": "no-readable-curriculum",
-        "program-osym-111650236": "no-readable-curriculum",
-        "program-osym-111690459": "no-readable-curriculum",
-        "program-osym-111650678": "no-readable-curriculum",
-        "program-osym-111650378": "no-readable-curriculum",
-        "program-osym-111690756": "no-readable-curriculum",
-        "program-osym-111650687": "no-readable-curriculum",
-        "program-osym-111650996": "no-readable-curriculum",
-        "program-osym-111610397": "programme-source-not-matched",
-        "program-osym-111610422": "programme-source-not-matched",
-        "program-osym-111610449": "programme-source-not-matched",
-        "program-osym-111650845": "no-readable-curriculum",
-        "program-osym-111650854": "no-readable-curriculum"
-      }
+      "structuredProgramCount": 92,
+      "courseCount": 5129,
+      "linkedProgramCount": 92,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-istanbul-yeni-yuzyil-universitesi",
@@ -6801,8 +6735,8 @@
     }
   ],
   "research": {
-    "sourceCount": 14921,
-    "parserVersion": "b588a1841c6b",
+    "sourceCount": 14953,
+    "parserVersion": "7b71773b2518",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -6811,7 +6745,8 @@
       "yasar": "0014493218d9",
       "rumeli-2026": "b9beb2b93a5b",
       "iste-2026": "e7fe25a4cdb5",
-      "halic-2026": "b588a1841c6b"
+      "halic-2026": "7b71773b2518",
+      "iuc-print": "7b71773b2518"
     },
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
@@ -6833,7 +6768,8 @@
       "yasar-courses.json": "043fef86237a795d5d2382dad0cce5978df9300857d1ea809195d930a230a38d",
       "rumeli-courses.json": "46a1e32ae029e2b8a209618abe0b53f0f19e1638f4f3b29d37968d00df59a994",
       "iste-courses.json": "a0fa2c5e609247a76568a8296ac540d6bf73d920b7527769593721468eae5de9",
-      "halic-courses.json": "df18317a31db3a8b5809c87673aabe1557c6b12d847a0d8495dc76cbcdaa411c"
+      "halic-courses.json": "df18317a31db3a8b5809c87673aabe1557c6b12d847a0d8495dc76cbcdaa411c",
+      "iuc-courses.json": "1d60e09df09a846c6e6f015d0a05c95e64c495c7c3604a019814abf0c71ad9a9"
     }
   }
 }

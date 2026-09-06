@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,983 programda ders kaydı · 2,200 programda ders listesi eksik.
-Toplam 1,454,904 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,015 programda ders kaydı · 2,168 programda ders listesi eksik.
+Toplam 1,455,825 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,882
-- Okunabilir ders listesi bulunamadı: 252
+- Resmî program eşleşmesi eksik: 1,879
+- Okunabilir ders listesi bulunamadı: 223
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -128,7 +128,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İstanbul Ticaret Üniversitesi | 33 | 28 | 5 | 2,682 | 10 | [Kaynak 1](https://obs.ticaret.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ticaret.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Topkapı Üniversitesi | 88 | 86 | 2 | 7,815 | 0 | [Kaynak 1](https://ois.topkapi.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_14/ln/tr) · [Kaynak 2](https://ois.topkapi.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_17/ln/tr) |
 | İstanbul Üniversitesi | 137 | 109 | 28 | 7,671 | 15 | [Kaynak 1](https://ebs.istanbul.edu.tr/home/lisans) |
-| İstanbul Üniversitesi-Cerrahpaşa | 92 | 60 | 32 | 4,208 | 25 | [Kaynak 1](https://ebs.iuc.edu.tr/home/lisans) · [Kaynak 2](https://ebs.iuc.edu.tr/home/onlisans) |
+| İstanbul Üniversitesi-Cerrahpaşa | 92 | 92 | 0 | 5,129 | 25 | [Kaynak 1](https://ebs.iuc.edu.tr/home/lisans) · [Kaynak 2](https://ebs.iuc.edu.tr/home/onlisans) |
 | İstanbul Yeni Yüzyıl Üniversitesi | 44 | 39 | 5 | 1,690 | 5 | [Kaynak 1](https://obs.yeniyuzyil.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.yeniyuzyil.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstinye Üniversitesi | 78 | 78 | 0 | 27,163 | 5 | [Kaynak 1](https://ects.istinye.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr) · [Kaynak 2](https://ects.istinye.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr) · [Kaynak 3](https://akts.istinye.edu.tr/) |
 | İzmir Bakırçay Üniversitesi | 20 | 16 | 4 | 1,005 | 5 | [Kaynak 1](https://ubys.bakircay.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |

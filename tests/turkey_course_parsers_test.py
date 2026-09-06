@@ -567,4 +567,42 @@ class OzyeginCatalogTests(unittest.TestCase):
         self.assertEqual(issues,['CS101'])
 
 
+class IucCatalogTests(unittest.TestCase):
+    def test_print_json_keeps_official_alphanumeric_codes_terms_and_conflicts(self):
+        from parse_turkey_iuc_courses import parse_iuc_print
+        document={'Object':{'YariyilTabloList':[
+          {'MufDersList':[
+            {'DersKodu':'MBSE00A1','DersAdi':'Eğitim Tarihi','Yariyil':1,'Tip':'Zorunlu'},
+            {'DersKodu':'CODE101','DersAdi':'Programlama','Yariyil':1,'Tip':'Zorunlu'},
+            {'DersKodu':'BAD101','DersAdi':'Birinci Ad','Yariyil':1,'Tip':'Seçmeli'},
+            {'DersKodu':'HAVUZ','DersAdi':'Kodsuz Havuz','Yariyil':1,'Tip':'Seçmeli'}]},
+          {'MufDersList':[
+            {'DersKodu':'CODE101','DersAdi':'Programlama','Yariyil':2,'Tip':'Zorunlu'},
+            {'DersKodu':'BAD101','DersAdi':'Başka Ad','Yariyil':2,'Tip':'Seçmeli'}]},
+        ]}}
+        rows,issues=parse_iuc_print(document,course_kind)
+        self.assertEqual(issues,['BAD101'])
+        self.assertEqual(rows,[
+          {'code':'MBSE00A1','name':'Eğitim Tarihi','semester':1,'kind':'required'},
+          {'code':'CODE101','name':'Programlama','semester':None,'kind':'required',
+           'offeredSemesters':[1,2]},
+        ])
+
+    def test_iuc_targets_are_unique_and_fallback_is_limited_to_empty_current_plans(self):
+        from collect_turkey_iuc_catalog import (EXACT_TARGET_IDS, FALLBACK_YEARS,
+                                                LANGUAGE_ALIASES, _language_value,
+                                                _selected_url)
+        self.assertEqual(len(EXACT_TARGET_IDS),29)
+        self.assertEqual(len(set(EXACT_TARGET_IDS)|set(LANGUAGE_ALIASES)),32)
+        self.assertEqual(FALLBACK_YEARS,{
+          'program-osym-111610864':2025,
+          'program-osym-111690749':2025,
+        })
+        url=_selected_url('https://ebs.iuc.edu.tr/home/dersprogram/?id=x&yil=2026&model=3%2b1',2025)
+        self.assertIn('yil=2025',url)
+        self.assertIn('model=3%2B1',url)
+        self.assertEqual(_language_value(html('<table><tr><td>Eğitim Dili</td><td>Fransızca</td></tr></table>')),
+                         ['Fransızca'])
+
+
 if __name__=='__main__':unittest.main()
