@@ -18,7 +18,7 @@ test("community hub ships a complete discovery and participation journey", async
     assert.match(workspace, new RegExp(capability));
   }
   assert.match(workspace, /aria-modal="true"/);
-  assert.match(workspace, /openDialogs\.at\(-1\)/);
+  assert.match(workspace, /useAppLayer/);
   assert.match(styles, /@media\(max-width:780px\)/);
   assert.match(styles, /html\[data-theme="dark"\]/);
 });

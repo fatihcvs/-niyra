@@ -19,6 +19,7 @@ type NoteAccess = {
   id: string;
   owner_email: string;
   title: string;
+  owner_status: string;
 };
 
 type NoteCommentRow = {
@@ -52,11 +53,13 @@ function serializeComment(row: NoteCommentRow, viewerEmail: string) {
 
 async function findAccessibleNote(db: D1Database, viewerEmail: string, universityId: string, noteId: string) {
   return db.prepare(
-    `SELECT n.id, n.owner_email, n.title
+    `SELECT n.id, n.owner_email, n.title, owner.status AS owner_status
      FROM notes n
-     JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
-     WHERE n.id = ? AND n.status = 'published' AND n.deleted_at IS NULL
-       AND owner_profile.university_id = ?
+     JOIN users owner ON owner.email = n.owner_email
+     LEFT JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+     WHERE n.id = ? AND n.deleted_at IS NULL
+       AND ((owner.status = 'active' AND n.status = 'published') OR (owner.status = 'deleted' AND n.status = 'rejected'))
+       AND CASE WHEN owner.status = 'deleted' THEN n.erased_university_id ELSE owner_profile.university_id END = ?
        AND NOT EXISTS (
          SELECT 1 FROM user_blocks b
          WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email)
@@ -119,13 +122,18 @@ export async function POST(request: Request) {
     if (!profile) return Response.json({ error: "Yorum yapmadan önce akademik profilini tamamlamalısın." }, { status: 409 });
     const note = await findAccessibleNote(DB, identity.email, profile.university_id, noteId);
     if (!note) return Response.json({ error: "Not bulunamadı." }, { status: 404 });
+    if (note.owner_status === "deleted") return Response.json({ error: "Silinen notun mevcut yorumları yalnızca okunabilir." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, "note-comment", 20, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 
     const id = crypto.randomUUID();
-    await DB.prepare(
-      `INSERT INTO note_comments (id, note_id, author_email, content) VALUES (?, ?, ?, ?)`,
-    ).bind(id, noteId, identity.email, rawContent).run();
+    const created = await DB.prepare(
+      `INSERT INTO note_comments (id, note_id, author_email, content)
+       SELECT ?, n.id, ?, ? FROM notes n JOIN users owner ON owner.email = n.owner_email
+       WHERE n.id = ? AND n.status = 'published' AND n.deleted_at IS NULL AND owner.status = 'active'
+         AND EXISTS (SELECT 1 FROM users actor WHERE actor.email = ? AND actor.status = 'active')`,
+    ).bind(id, identity.email, rawContent, noteId, identity.email).run();
+    if (!created.meta.changes) return Response.json({ error: "Not veya hesabın durumu değişti. Yorum gönderilmedi." }, { status: 409 });
     const row = await DB.prepare(
       `SELECT nc.id, u.public_id AS author_id, nc.author_email, u.display_name AS author_name,
               nc.content, nc.created_at, nc.updated_at,

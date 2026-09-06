@@ -1,4 +1,4 @@
-import { asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
 import {
@@ -152,14 +152,13 @@ export async function GET() {
         followerCount: sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followingEmail} = ${users.email})`,
         followingCount: sql<number>`(SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.followerEmail} = ${users.email})`,
         avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
-        bannerUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'banner' LIMIT 1)`,
       })
       .from(studentProfiles)
       .innerJoin(users, eq(studentProfiles.userEmail, users.email))
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
       .innerJoin(faculties, eq(departments.facultyId, faculties.id))
-      .where(eq(studentProfiles.userEmail, identity.email))
+      .where(and(eq(studentProfiles.userEmail, identity.email), eq(users.status, "active")))
       .limit(1);
 
     if (!profile) {
@@ -193,7 +192,6 @@ export async function GET() {
         ...profile,
         links: parseProfileLinks(profile.linksJson),
         avatarUrl: profileMediaUrl(profile.publicId, "avatar", profile.avatarUpdatedAt),
-        bannerUrl: profileMediaUrl(profile.publicId, "banner", profile.bannerUpdatedAt),
         postCount: Number(profile.postCount),
         followerCount: Number(profile.followerCount),
         followingCount: Number(profile.followingCount),
@@ -245,13 +243,13 @@ export async function PUT(request: Request) {
     try {
       const { env } = await import("cloudflare:workers");
       const d1 = env.DB;
-      const profile = await d1.prepare("SELECT 1 AS found FROM student_profiles WHERE user_email = ? AND onboarding_completed = 1 LIMIT 1").bind(identity.email).first();
+      const profile = await d1.prepare("SELECT 1 AS found FROM student_profiles sp JOIN users u ON u.email = sp.user_email WHERE sp.user_email = ? AND sp.onboarding_completed = 1 AND u.status = 'active' LIMIT 1").bind(identity.email).first();
       if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
       const conflict = await d1.prepare("SELECT 1 AS found FROM users WHERE handle = ? COLLATE NOCASE AND email <> ? LIMIT 1").bind(handle, identity.email).first();
       if (conflict) return Response.json({ error: "Bu kullanıcı adı başka bir öğrenci tarafından kullanılıyor." }, { status: 409 });
 
       await d1.batch([
-        d1.prepare("UPDATE users SET display_name = ?, handle = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?").bind(displayName, handle, identity.email),
+        d1.prepare("UPDATE users SET display_name = ?, handle = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ? AND status = 'active'").bind(displayName, handle, identity.email),
         d1.prepare("UPDATE student_profiles SET bio = ?, links_json = ?, updated_at = CURRENT_TIMESTAMP WHERE user_email = ?").bind(bio, JSON.stringify(cleanedLinks.links), identity.email),
         d1.prepare("INSERT INTO product_events (id, user_email, name, properties_json) VALUES (?, ?, 'profile.details_updated', ?)").bind(crypto.randomUUID(), identity.email, JSON.stringify({ linkCount: cleanedLinks.links.length, hasBio: Boolean(bio) })),
       ]);
@@ -367,15 +365,11 @@ export async function PUT(request: Request) {
     const statements = [
       d1
         .prepare(
-          `INSERT INTO users (email, public_id, display_name, handle)
-           VALUES (?, ?, ?, ?)
-           ON CONFLICT(email) DO UPDATE SET
-             public_id = COALESCE(users.public_id, excluded.public_id),
-             display_name = excluded.display_name,
-             handle = COALESCE(NULLIF(users.handle, ''), excluded.handle),
-             updated_at = CURRENT_TIMESTAMP`,
+          `UPDATE users SET public_id = COALESCE(public_id, ?), display_name = ?,
+             handle = COALESCE(NULLIF(handle, ''), ?), updated_at = CURRENT_TIMESTAMP
+           WHERE email = ? AND status = 'active'`,
         )
-        .bind(identity.email, publicIdCandidate, displayName, handle),
+        .bind(publicIdCandidate, displayName, handle, identity.email),
       d1
         .prepare(
           `INSERT INTO universities (id, name, short_name, city)

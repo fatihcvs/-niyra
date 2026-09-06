@@ -1,5 +1,5 @@
+import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
 import {
-  audit,
   cleanText,
   enforceRateLimit,
   getRuntime,
@@ -173,6 +173,7 @@ export async function POST(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     if (action === "place" && category === "housing" && !(await getBooleanPlatformSetting(DB, "housingContributionsOpen"))) {
       return Response.json({ error: "Yurt ve konaklama katkıları owner tarafından geçici olarak durduruldu." }, { status: 503 });
     }
@@ -182,12 +183,10 @@ export async function POST(request: Request) {
       const duplicate = await DB.prepare(`SELECT id FROM campus_places WHERE university_id = ? AND status = 'active' AND lower(name) = lower(?) LIMIT 1`).bind(profile.university_id, name).first();
       if (duplicate) return Response.json({ error: "Bu adla aktif bir kampüs noktası zaten var." }, { status: 409 });
       const id = crypto.randomUUID();
-      await DB.prepare(
-        `INSERT INTO campus_places
+      await actor.run(`INSERT INTO campus_places
          (id, university_id, creator_email, name, category, description, address, latitude, longitude, accessibility_json, opening_hours)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(id, profile.university_id, identity.email, name, category, description, address, latitude, longitude, JSON.stringify(accessibility), openingHours).run();
-      await audit(DB, identity.email, "campus-place.created", "place", id, { category, coordinatesKnown: latitude !== null });
+         SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [id, profile.university_id, identity.email, name, category, description, address, latitude, longitude, JSON.stringify(accessibility), openingHours]);
+      await actor.audit("campus-place.created", "place", id, { category, coordinatesKnown: latitude !== null });
       return Response.json({ place: { id, name, category } }, { status: 201 });
     }
     if (placeId) {
@@ -195,13 +194,12 @@ export async function POST(request: Request) {
       if (!place) return Response.json({ error: "Etkinlik mekânı kampüsünde bulunamadı." }, { status: 404 });
     }
     const id = crypto.randomUUID();
-    await DB.prepare(
-      `INSERT INTO campus_events (id, university_id, creator_email, place_id, title, description, category, starts_at, ends_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).bind(id, profile.university_id, identity.email, placeId || null, name, description, category, startsAt, endsAt).run();
-    await audit(DB, identity.email, "campus-event.created", "event", id, { category, placeId: placeId || null });
+    await actor.run(`INSERT INTO campus_events (id, university_id, creator_email, place_id, title, description, category, starts_at, ends_at)
+       SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [id, profile.university_id, identity.email, placeId || null, name, description, category, startsAt, endsAt]);
+    await actor.audit("campus-event.created", "event", id, { category, placeId: placeId || null });
     return Response.json({ event: { id, title: name, category, startsAt } }, { status: 201 });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Kampüs rehberi kaydı şu anda oluşturulamadı.");
   }
 }
@@ -221,28 +219,28 @@ export async function PATCH(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     if (action === "confirm") {
       const place = await DB.prepare(`SELECT id FROM campus_places WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`).bind(id, profile.university_id).first();
       if (!place) return Response.json({ error: "Kampüs noktası bulunamadı." }, { status: 404 });
-      await DB.prepare(
-        `INSERT INTO campus_place_confirmations (place_id, user_email, state) VALUES (?, ?, ?)
-         ON CONFLICT(place_id, user_email) DO UPDATE SET state = excluded.state, updated_at = CURRENT_TIMESTAMP`,
-      ).bind(id, identity.email, state).run();
+      await actor.run(`INSERT INTO campus_place_confirmations (place_id, user_email, state) SELECT ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}
+         ON CONFLICT(place_id, user_email) DO UPDATE SET state = excluded.state, updated_at = CURRENT_TIMESTAMP`, [id, identity.email, state]);
       const counts = await DB.prepare(
         `SELECT SUM(CASE WHEN state = 'current' THEN 1 ELSE 0 END) AS current_count,
                 SUM(CASE WHEN state = 'needs-update' THEN 1 ELSE 0 END) AS needs_update_count
          FROM campus_place_confirmations WHERE place_id = ?`,
       ).bind(id).first<{ current_count: number | null; needs_update_count: number | null }>();
-      if (Number(counts?.current_count ?? 0) >= 2) await DB.prepare(`UPDATE campus_places SET verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(id).run();
-      await audit(DB, identity.email, "campus-place.confirmed", "place", id, { state });
+      if (Number(counts?.current_count ?? 0) >= 2) await actor.run(`UPDATE campus_places SET verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND ${ACTIVE_ACTOR_SQL}`, [id]);
+      await actor.audit("campus-place.confirmed", "place", id, { state });
       return Response.json({ state, currentCount: Number(counts?.current_count ?? 0), needsUpdateCount: Number(counts?.needs_update_count ?? 0) });
     }
     const table = action === "archive-place" ? "campus_places" : "campus_events";
-    const archived = await DB.prepare(`UPDATE ${table} SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND university_id = ? AND creator_email = ? AND status = 'active' RETURNING id`).bind(id, profile.university_id, identity.email).first();
+    const archived = await actor.first(`UPDATE ${table} SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND university_id = ? AND creator_email = ? AND status = 'active' AND ${ACTIVE_ACTOR_SQL} RETURNING id`, [id, profile.university_id, identity.email]);
     if (!archived) return Response.json({ error: "Arşivlenebilecek kayıt bulunamadı." }, { status: 404 });
-    await audit(DB, identity.email, action === "archive-place" ? "campus-place.archived" : "campus-event.archived", action === "archive-place" ? "place" : "event", id);
+    await actor.audit(action === "archive-place" ? "campus-place.archived" : "campus-event.archived", action === "archive-place" ? "place" : "event", id);
     return Response.json({ archived: true });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Kampüs rehberi şu anda güncellenemedi.");
   }
 }

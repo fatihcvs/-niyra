@@ -67,8 +67,10 @@ export async function DELETE(request: Request) {
   try {
     const { DB } = await getRuntime();
     await deleteSession(DB, request.headers);
-  } catch {
-    // The local cookie is still cleared if the session store is temporarily unavailable.
+  } catch (error) {
+    // Keep the cookie so revocation can be retried; clearing it here would strand
+    // an active device subscription while incorrectly reporting a successful logout.
+    return unavailableResponse(error, "Çıkış doğrulanamadı. Bağlantını kontrol edip yeniden dene.");
   }
   return Response.json(
     { signedOut: true },

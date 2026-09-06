@@ -1,0 +1,117 @@
+/* Secondary social workspaces share the feed's type, surfaces and controls. */
+html[data-theme] .workspace-view :is(.listing-card,.price-card,.library-area-card) h2,
+html[data-theme] .workspace-view :is(.campus-place-list,.campus-event-list,.market-message-list) h2 {
+  color:var(--ink);
+  font-size:17px;
+  font-weight:700;
+  line-height:1.4;
+  letter-spacing:-.25px;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+html[data-theme] .workspace-view .social-match-card>header a,
+html[data-theme] .workspace-view .pulse-card>header strong {
+  color:var(--ink);
+  font-size:15px;
+  font-weight:700;
+  line-height:1.4;
+}
+html[data-theme] .workspace-view .library-area-card>header { flex-wrap:wrap; }
+html[data-theme] .workspace-view .library-area-card>header>div { flex:1 1 140px; }
+html[data-theme] .workspace-view .library-area-card>header>b { max-width:100%; font-size:12px; line-height:1.4; }
+
+/* Legacy empty states keep their real actions, using the common visual language. */
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) {
+  min-width:0;
+  min-height:240px;
+  margin-top:16px;
+  padding:38px 24px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--card);
+  color:var(--muted);
+  box-shadow:none;
+}
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty)>span {
+  margin-bottom:10px;
+  color:var(--brand);
+  font-size:12px;
+  line-height:1.4;
+  font-weight:650;
+  letter-spacing:.035em;
+}
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) strong {
+  max-width:440px;
+  color:var(--ink);
+  font-size:20px;
+  line-height:1.35;
+  font-weight:700;
+  letter-spacing:-.4px;
+  text-wrap:balance;
+}
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) p {
+  max-width:410px;
+  margin:10px 0 0;
+  color:var(--text-body);
+  font-size:15px;
+  line-height:1.65;
+}
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty)>button {
+  min-height:44px;
+  margin-top:20px;
+  padding:10px 16px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:var(--brand-solid);
+  color:#fff;
+  font-size:14px;
+  font-weight:650;
+  line-height:1.4;
+  box-shadow:none;
+}
+html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty)>button:hover { background:var(--brand-dark); }
+
+/* A suggestion is another piece of campus content, with no large hero treatment. */
+
+/* Keep every live metric visible in a compact, quiet summary. */
+html[data-theme] .workspace-view .library-live-summary { gap:10px; }
+html[data-theme] .workspace-view .library-live-summary article { min-width:0; min-height:92px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--card); box-shadow:none; }
+html[data-theme] .workspace-view .library-live-summary span { color:var(--muted); font-size:12px; line-height:1.4; font-weight:650; letter-spacing:0; }
+html[data-theme] .workspace-view .library-live-summary strong { margin-top:7px; color:var(--ink); font-size:26px; line-height:1.1; font-weight:750; letter-spacing:-.5px; font-variant-numeric:tabular-nums; }
+html[data-theme] .workspace-view .library-live-summary small { margin-top:6px; color:var(--muted); font-size:12px; line-height:1.45; }
+html[data-theme] .workspace-view .library-estimate { background:var(--surface-interactive); border-color:var(--line); }
+html[data-theme] .workspace-view .library-estimate>div { min-width:0; }
+html[data-theme] .workspace-view .library-estimate>div+div { border-color:var(--line); }
+html[data-theme] .workspace-view .library-estimate span { color:var(--muted); font-size:12px; line-height:1.45; letter-spacing:0; }
+html[data-theme] .workspace-view .library-estimate strong { color:var(--ink); font-size:18px; font-variant-numeric:tabular-nums; }
+html[data-theme] .workspace-view .library-estimate small { color:var(--text-body); font-size:12px; line-height:1.5; }
+
+/* Interest selection and card actions remain comfortable on touch screens. */
+html[data-theme] .workspace-view .social-chip-grid { gap:8px; }
+html[data-theme] .workspace-view .social-chip-grid button { min-height:44px; padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text-body); font-size:13px; line-height:1.4; font-weight:600; box-shadow:none; }
+html[data-theme] .workspace-view .social-chip-grid button.active { border-color:transparent; background:var(--brand-soft); color:var(--brand); }
+html[data-theme] .workspace-view .social-chip-grid button:hover { border-color:color-mix(in srgb,var(--brand) 35%,var(--line)); }
+html[data-theme] .workspace-view .social-section-heading { flex-wrap:wrap; gap:8px; }
+html[data-theme] .workspace-view .social-section-heading h2 { color:var(--ink); font-size:17px; line-height:1.4; }
+html[data-theme] .workspace-view .social-section-heading small { color:var(--muted); font-size:12px; line-height:1.5; }
+html[data-theme] .workspace-view :is(.social-match-card,.listing-card,.price-card,.library-area-card,.pulse-card) :is(button,select) { min-width:44px; min-height:44px; font-size:13px; line-height:1.4; }
+html[data-theme] .workspace-view .social-match-card>footer>button { padding:10px 13px; border-radius:12px; background:var(--brand-solid); color:#fff; box-shadow:none; }
+html[data-theme] .workspace-view .social-match-card>footer>button:hover:not(:disabled) { background:var(--brand-dark); }
+html[data-theme] .workspace-view .social-match-card>footer>button:disabled { background:var(--surface-interactive); color:var(--muted); }
+html[data-theme] .workspace-view :is(.social-match-card,.library-area-card)>footer { flex-wrap:wrap; align-items:center; }
+
+@media (max-width:780px) {
+  html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) { min-height:220px; padding:30px 20px; }
+  html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) strong { font-size:19px; }
+  html[data-theme] .workspace-view :is(.pulse-empty,.social-empty,.market-empty,.library-live-empty,.campus-guide-empty) p { font-size:14px; }
+  html[data-theme] .workspace-view .library-live-summary { grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+  html[data-theme] .workspace-view .library-live-summary article { min-height:0; padding:12px 9px; align-content:start; border-radius:12px; }
+  html[data-theme] .workspace-view .library-live-summary span { font-size:12px; letter-spacing:0; }
+  html[data-theme] .workspace-view .library-live-summary strong { font-size:24px; }
+  html[data-theme] .workspace-view .library-live-summary small { font-size:12px; }
+  html[data-theme] .workspace-view :is(.social-match-card,.listing-card,.price-card,.library-area-card,.pulse-card) select { font-size:16px; }
+  .workspace-context-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:20px; }
+  .workspace-context-links button { min-height:44px; padding:10px 5px; border-radius:12px; text-align:center; }
+  .workspace-context-links strong { font-size:12px; font-weight:600; line-height:1.4; }
+  .workspace-context-links small { display:none; }
+}

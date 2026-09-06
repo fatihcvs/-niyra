@@ -1,0 +1,60 @@
+{
+  "recordedAtUtc": "2026-09-05T14:43:00.499588+00:00",
+  "scope": "local native JavaScript export and typed tests only",
+  "node": "v26.7.0",
+  "versions": {
+    "expo": "57.0.20",
+    "react-native": "0.86.3",
+    "react": "19.2.3",
+    "typescript": "6.0.3"
+  },
+  "checks": {
+    "unitTests": {
+      "command": "npm test",
+      "passed": 13,
+      "failed": 0,
+      "transport": "synthetic mock responses; no live credentials or network writes"
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    "scopedEslint": {
+      "exitCode": 0
+    },
+    "androidMetroExport": {
+      "command": "npm run export:android",
+      "exitCode": 0,
+      "moduleCount": 599,
+      "bundle": "dist/android/_expo/static/js/android/index-933ebf40f8affbb3dc9efaadb785c535.hbc",
+      "bytes": 1499786,
+      "sha256": "462e48076b608a6a54b5952b367370299ac11fee2b1c6fd63574a71bebe969d3"
+    }
+  },
+  "sourceSha256": {
+    "App.tsx": "9c85f582e1a572fa53ba04a12e06666c315b5227a8fad5b78eb8c18d26d32ff7",
+    "src/api.ts": "52d0620a49d631409b73cbc3151a91abdb5b9d31d3e1d6dfcbff33edc0dab528",
+    "src/session-state.ts": "eada620516e7ceb851b0e46c71f5880a2953ecacf9bcbbd9805fb73e828bed13",
+    "tests/api.test.mjs": "ccce03b78618739ae91a00e308e1b05e09ef76eae0d567a52846f2d5fcb71fff",
+    "tests/session-state.test.mjs": "cd21790ff3d3e905f52c91ebcd5e5c9d62aabec90958608bd7014131c626bf64",
+    "package-lock.json": "7c13e8aee08864518486283adb499500ce038173ad03dcb878018e3ea827b099"
+  },
+  "dependencyAudit": {
+    "moderate": 10,
+    "high": 0,
+    "critical": 0,
+    "path": "Expo config/CLI -> xcode -> uuid",
+    "forceMajorDowngradeApplied": false
+  },
+  "acceptanceEvidence": {
+    "nativeCookieLogin": false,
+    "privateNativeMedia": false,
+    "physicalDevice": false,
+    "androidSdkLicenseAcceptance": false,
+    "gradleBuild": false,
+    "apkAab": false,
+    "productionMutation": false,
+    "deployment": false,
+    "nativeArchitectureSelected": false
+  }
+}

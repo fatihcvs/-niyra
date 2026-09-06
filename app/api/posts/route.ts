@@ -17,7 +17,8 @@ import {
 import { audit, enforceRateLimit, getRuntime, rateLimitResponse } from "../../../lib/server-api";
 import { profileMediaUrl } from "../../../lib/profile";
 import { sameOriginRequest } from "../../../lib/app-auth";
-import { hydratePostMedia, POST_VIDEO_MAX_BYTES, PostMediaValidationError, postMediaUrl, validatePostMedia } from "../../../lib/post-media";
+import { hydratePostMedia, POST_MEDIA_TOTAL_MAX_BYTES, PostMediaValidationError, postMediaUrl, validatePostMediaFiles } from "../../../lib/post-media";
+import { findPostPublication, hashPostPayload, parsePostIdempotencyKey, PostIdempotencyError, postPublicationResponse, publishPost, readPostPublication, reservePostPublication, retryPostCleanup } from "../../../lib/post-idempotency";
 
 type PostPayload = {
   audience?: "campus" | "platform";
@@ -33,6 +34,7 @@ type PostRow = {
   audience: "campus" | "platform";
   id: string;
   authorId: string | null;
+  authorStatus: string;
   content: string;
   createdAt: string;
   updatedAt: string;
@@ -96,13 +98,14 @@ function postFields(viewerEmail: string, rank: ReturnType<typeof feedRank>) {
   return {
     id: posts.id,
     audience: posts.audience,
-    authorId: users.publicId,
+    authorId: sql<string | null>`CASE WHEN ${users.status} = 'deleted' THEN NULL ELSE ${users.publicId} END`,
+    authorStatus: users.status,
     content: posts.content,
     createdAt: posts.createdAt,
     updatedAt: posts.updatedAt,
     displayName: users.displayName,
     universityName: universities.name,
-    departmentName: departments.name,
+    departmentName: sql<string>`COALESCE(${departments.name}, '')`,
     courseCode: courses.code,
     likeCount: sql<number>`(SELECT COUNT(*) FROM ${postLikes} WHERE ${postLikes.postId} = ${posts.id})`,
     commentCount: sql<number>`(SELECT COUNT(*) FROM ${postComments} WHERE ${postComments.postId} = ${posts.id} AND ${postComments.deletedAt} IS NULL)`,
@@ -118,6 +121,7 @@ function serializePost(row: PostRow) {
     id: row.id,
     audience: row.audience,
     authorId: row.authorId ?? undefined,
+    erased: row.authorStatus === "deleted",
     name: row.displayName,
     initials: initials(row.displayName),
     avatarClass: "avatar-violet",
@@ -187,11 +191,11 @@ async function readLatestPosts(
     .select(postFields(viewerEmail, rank))
     .from(posts)
     .innerJoin(users, eq(posts.authorEmail, users.email))
-    .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
-    .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-    .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
+    .leftJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
+    .innerJoin(universities, sql`${universities.id} = CASE WHEN ${users.status} = 'deleted' THEN ${posts.erasedUniversityId} ELSE ${studentProfiles.universityId} END`)
+    .leftJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
-    .where(and(isNull(posts.deletedAt), eq(users.status, "active"), audienceVisibility, scopeVisibility, feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
+    .where(and(isNull(posts.deletedAt), sql`${users.status} IN ('active', 'deleted')`, audienceVisibility, scopeVisibility, feedVisibility, safetyVisibility, communityVisibility, cursorVisibility))
     .orderBy(desc(rank), desc(posts.createdAt), desc(posts.id))
     .limit(PAGE_SIZE + 1);
 
@@ -216,14 +220,14 @@ async function readSharedPost(viewerEmail: string, viewerUniversityId: string, p
     .select(postFields(viewerEmail, rank))
     .from(posts)
     .innerJoin(users, eq(posts.authorEmail, users.email))
-    .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
-    .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
-    .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
+    .leftJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
+    .innerJoin(universities, sql`${universities.id} = CASE WHEN ${users.status} = 'deleted' THEN ${posts.erasedUniversityId} ELSE ${studentProfiles.universityId} END`)
+    .leftJoin(departments, eq(studentProfiles.departmentId, departments.id))
     .leftJoin(courses, eq(posts.courseId, courses.id))
     .where(and(
       eq(posts.id, postId),
       isNull(posts.deletedAt),
-      eq(users.status, "active"),
+      sql`${users.status} IN ('active', 'deleted')`,
       sql<boolean>`(${universities.id} = ${viewerUniversityId} OR (${posts.audience} = 'platform' AND ${posts.communityId} IS NULL AND ${posts.courseId} IS NULL))`,
       sql<boolean>`NOT EXISTS (
         SELECT 1 FROM user_blocks b
@@ -306,30 +310,30 @@ export async function POST(request: Request) {
   if (!identity) return signInResponse();
 
   let payload: PostPayload;
-  let mediaFile: File | null = null;
+  let mediaFiles: File[] = [];
   try {
     if (request.headers.get("content-type")?.toLowerCase().startsWith("multipart/form-data")) {
       const bodySize = Number(request.headers.get("content-length"));
-      if (bodySize > POST_VIDEO_MAX_BYTES + 64 * 1024) {
-        return Response.json({ error: "Paylaşım dosyası en fazla 20 MB olabilir." }, { status: 413 });
+      if (bodySize > POST_MEDIA_TOTAL_MAX_BYTES + 64 * 1024) {
+        return Response.json({ error: "Paylaşım dosyalarının toplamı en fazla 20 MB olabilir." }, { status: 413 });
       }
       const formData = await request.formData();
       const files = formData.getAll("media");
-      if (files.length > 1 || (files.length === 1 && !(files[0] instanceof File))) {
-        return Response.json({ error: "Her gönderiye bir görsel veya video ekleyebilirsin." }, { status: 400 });
+      if (files.length > 4 || files.some((file) => !(file instanceof File))) {
+        return Response.json({ error: "En fazla 4 fotoğraf veya tek video ekleyebilirsin." }, { status: 400 });
       }
-      mediaFile = files[0] instanceof File ? files[0] : null;
+      mediaFiles = files as File[];
       payload = { audience: (formData.get("audience") ?? undefined) as PostPayload["audience"], content: formData.get("content") as string | undefined, courseId: formData.get("courseId") as string | null };
     } else {
       payload = (await request.json()) as PostPayload;
     }
-    if (!payload || typeof payload !== "object") throw new Error("Invalid post payload");
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("Invalid post payload");
   } catch {
     return Response.json({ error: "Geçerli bir gönderi bilgisi gönderilmedi." }, { status: 400 });
   }
 
   const content = typeof payload.content === "string" ? payload.content.trim() : "";
-  if ((!content && !mediaFile) || content.length > 1200) {
+  if ((!content && !mediaFiles.length) || content.length > 1200) {
     return Response.json(
       { error: "Bir yazı, görsel veya video eklemelisin. Yazı en fazla 1200 karakter olabilir." },
       { status: 400 },
@@ -347,10 +351,22 @@ export async function POST(request: Request) {
     return Response.json({ error: "Ders çevresi paylaşımları kampüs içinde kalır. Genel Akış için ders seçimini kaldır." }, { status: 400 });
   }
 
-  let uploadedKey = "";
-  let committed = false;
   try {
     const { DB, FILES } = await getRuntime();
+    const key = parsePostIdempotencyKey(request.headers.get("Idempotency-Key"));
+    const attachments = await validatePostMediaFiles(mediaFiles);
+    const requestedCourseId = typeof payload.courseId === "string" ? payload.courseId.trim() : "";
+    const publishPayload = { content, audience, courseId: requestedCourseId || null, attachment: attachments[0] ?? null, attachments };
+    const hash = await hashPostPayload(publishPayload);
+    const previous = key !== null ? await findPostPublication(DB, identity.email, key, hash) : null;
+    if (previous) {
+      const completed = await readPostPublication(DB, previous);
+      if (completed !== null) {
+        await retryPostCleanup(DB, FILES, previous);
+        return postPublicationResponse(completed, true);
+      }
+    }
+    // Completed retries do not consume quota or depend on later course/profile changes.
     const limit = await enforceRateLimit(DB, identity.email, "post-create", 30, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const db = await getDb();
@@ -366,22 +382,20 @@ export async function POST(request: Request) {
       .innerJoin(universities, eq(studentProfiles.universityId, universities.id))
       .innerJoin(departments, eq(studentProfiles.departmentId, departments.id))
       .where(
-        and(eq(studentProfiles.userEmail, identity.email), eq(studentProfiles.onboardingCompleted, true)),
+        and(eq(studentProfiles.userEmail, identity.email), eq(studentProfiles.onboardingCompleted, true), eq(users.status, "active")),
       )
       .limit(1);
 
-    if (!profile) {
+    if (!profile?.authorId) {
       return Response.json(
         { error: "Gönderi paylaşmadan önce akademik profilini tamamlamalısın." },
         { status: 409 },
       );
     }
 
-    const attachment = mediaFile ? await validatePostMedia(mediaFile) : null;
-    if (attachment && !FILES) throw new Error("R2 binding FILES is unavailable");
+    if (attachments.length && !FILES) throw new Error("R2 binding FILES is unavailable");
 
     let selectedCourse: { id: string; code: string } | null = null;
-    const requestedCourseId = typeof payload.courseId === "string" ? payload.courseId.trim() : "";
     if (requestedCourseId) {
       const [course] = await db
         .select({ id: courses.id, code: courses.code })
@@ -404,30 +418,10 @@ export async function POST(request: Request) {
       selectedCourse = course;
     }
 
-    const id = crypto.randomUUID();
-    const mediaId = attachment ? crypto.randomUUID() : "";
-    const createdAt = new Date().toISOString().replace("T", " ").replace("Z", "");
-    const statements = [DB.prepare(
-      "INSERT INTO posts (id, author_email, course_id, audience, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    ).bind(id, identity.email, selectedCourse?.id ?? null, audience, content, createdAt, createdAt)];
-    if (attachment && FILES) {
-      uploadedKey = `posts/${id}/${mediaId}.${attachment.storedExtension}`;
-      await FILES.put(uploadedKey, attachment.bytes, { httpMetadata: { contentType: attachment.contentType } });
-      statements.push(DB.prepare(
-        `INSERT INTO post_media (id, post_id, kind, object_key, original_file_name, content_type, byte_size)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(mediaId, id, attachment.kind, uploadedKey, attachment.fileName, attachment.contentType, attachment.bytes.byteLength));
-    }
-    statements.push(DB.prepare(
-      "INSERT INTO audit_logs (id, actor_email, action, entity_type, entity_id, detail) VALUES (?, ?, ?, ?, ?, ?)",
-    ).bind(crypto.randomUUID(), identity.email, "post.created", "post", id, JSON.stringify({ audience, courseId: selectedCourse?.id ?? null, mediaKind: attachment?.kind ?? null })));
-    // D1 batch is transactional: publish post, attachment and audit together.
-    await DB.batch(statements);
-    committed = true;
+    const publication = previous ?? await reservePostPublication(DB, identity.email, key, hash, profile.authorId);
     const displayName = identity.fullName ?? identity.displayName;
 
-    return Response.json(
-      {
+    return await publishPost(DB, FILES, publication, profile.authorId, publishPayload, (id, _mediaId, createdAt, mediaIds) => ({
         post: {
           id,
           audience,
@@ -441,23 +435,17 @@ export async function POST(request: Request) {
           time: relativeTime(createdAt),
           course: selectedCourse?.code ?? "GENEL",
           text: content,
-          media: attachment ? [{ id: mediaId, kind: attachment.kind, url: postMediaUrl(mediaId), contentType: attachment.contentType, fileName: attachment.fileName }] : [],
+          media: attachments.map((attachment, index) => ({ id: mediaIds[index], kind: attachment.kind, url: postMediaUrl(mediaIds[index]), contentType: attachment.contentType, fileName: attachment.fileName,
+            ...(attachment.width && attachment.height ? { width: attachment.width, height: attachment.height } : {}) })),
           likes: 0,
           comments: 0,
           liked: false,
           saved: false,
           edited: false,
         },
-      },
-      { status: 201 },
-    );
+      }));
   } catch (error) {
-    if (uploadedKey && !committed) {
-      try {
-        const { FILES } = await getRuntime();
-        await FILES?.delete(uploadedKey);
-      } catch { /* Preserve the original failure; no post was published. */ }
-    }
+    if (error instanceof PostIdempotencyError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
     if (error instanceof PostMediaValidationError) return Response.json({ error: error.message }, { status: error.status });
     return postError(error);
   }

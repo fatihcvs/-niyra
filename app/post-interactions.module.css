@@ -1,0 +1,38 @@
+.overlay { position:fixed; inset:0; z-index:220; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--overlay-backdrop,rgba(0,0,0,.52)); }
+.dialog { box-sizing:border-box; width:min(100%,440px); max-height:calc(100dvh - 48px); overflow:auto; overscroll-behavior:contain; padding:20px; border:1px solid var(--line); border-radius:20px; background:var(--surface-raised); color:var(--ink); box-shadow:var(--shadow-popover); }
+.dialog:focus { outline:none; }
+.dialog header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.dialog h2 { margin:0; font-size:18px; line-height:1.3; }
+.dialog button { min-height:48px; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:var(--surface-interactive); color:var(--ink); font:inherit; font-weight:600; cursor:pointer; }
+.dialog header button { min-width:48px; display:grid; place-items:center; }
+.dialog button:disabled { opacity:.5; cursor:default; }
+.actions { display:grid; gap:8px; }
+.actions button { display:flex; align-items:center; gap:12px; text-align:left; }
+.dialog .danger { color:var(--danger,#d14354); }
+.dialog label { display:grid; gap:8px; font-size:14px; font-weight:600; }
+.dialog form { display:grid; gap:16px; }
+.dialog select,.dialog textarea { box-sizing:border-box; width:100%; min-width:0; min-height:48px; border:1px solid var(--line); border-radius:12px; padding:12px; background:var(--surface-interactive); color:var(--ink); font:inherit; font-size:16px; }
+.dialog textarea { resize:vertical; }
+.dialog footer { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+.dialog p { margin:8px 0; line-height:1.55; overflow-wrap:anywhere; }
+.dialog button:focus-visible,.dialog textarea:focus-visible,.dialog select:focus-visible { outline:2px solid var(--brand-solid); outline-offset:3px; }
+.post :global(.post-edit-box textarea) { font-size:16px; }
+.post :global(.post-edit-box button) { min-height:48px; }
+.post :global(.post-edit-box>div) { flex-wrap:wrap; }
+.post :global(.quick-comment) { grid-template-columns:auto minmax(0,1fr) 48px; }
+.post :global(.quick-comment input) { box-sizing:border-box; min-width:0; min-height:48px; font-size:16px; }
+.post :global(.quick-comment button),.post :global(.comment-list article>button) { width:48px; height:48px; min-width:48px; }
+.post .focusedComment { padding:12px; border:1px solid var(--brand-solid); border-radius:14px; background:var(--brand-soft,var(--surface-interactive)); scroll-margin:20px; }
+.post .focusedComment:focus { outline:2px solid var(--brand-solid); outline-offset:2px; }
+.focusedLabel { display:block; margin-bottom:8px; color:var(--brand-solid); font-size:12px; font-weight:700; }
+.post .commentShare { display:flex; align-items:center; gap:6px; min-width:48px; min-height:48px; border:0; padding:8px 0; background:transparent; color:var(--muted); font:inherit; font-size:12px; cursor:pointer; }
+.post .commentShare:focus-visible { outline:2px solid var(--brand-solid); outline-offset:2px; border-radius:6px; }
+@media(max-width:780px) {
+  .overlay { padding:0; align-items:flex-end; top:var(--app-viewport-top,0px); bottom:auto; height:var(--app-viewport-height,100dvh); }
+  .dialog { width:100%; max-height:calc(var(--app-viewport-height,100dvh) - max(12px,env(safe-area-inset-top))); border-radius:22px 22px 0 0; border-bottom:0; padding:20px 16px max(16px,env(safe-area-inset-bottom)); }
+}
+
+@keyframes panelEnter { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@media(prefers-reduced-motion:no-preference) {
+  :global(html:not([data-reduce-motion="true"])) .dialog { animation:panelEnter var(--motion-surface,220ms) var(--ease-out,ease-out); }
+}

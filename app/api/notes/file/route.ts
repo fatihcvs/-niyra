@@ -7,10 +7,8 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../../lib/server-api";
-
-function safeDownloadName(value: string) {
-  return value.replace(/[\r\n"\\/]/g, "_").slice(0, 140) || "kampira-notu";
-}
+import { fileContentDisposition } from "../../../../lib/file-response";
+import { getActiveSessionContext } from "../../../../lib/app-auth";
 
 export async function GET(request: Request) {
   const identity = await requireIdentity();
@@ -23,6 +21,13 @@ export async function GET(request: Request) {
 
   try {
     const { DB, FILES } = await getRuntime();
+    if (request.headers.has("X-Account-Context")) {
+      const session = await getActiveSessionContext(DB, request.headers);
+      if (!session || session.email !== identity.email) return signInResponse("Not dosyasını açmak için tekrar giriş yapmalısın.");
+      if (request.headers.get("X-Account-Context") !== session.publicId) {
+        return Response.json({ error: "Hesabın değişti. Dosyayı yeniden açabilirsin.", code: "FILE_ACCOUNT_CHANGED" }, { status: 409, headers: { "cache-control": "private, no-store" } });
+      }
+    }
     if (!FILES) throw new Error("R2 binding FILES is unavailable");
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
@@ -61,7 +66,7 @@ export async function GET(request: Request) {
     object.writeHttpMetadata(headers);
     headers.set("content-type", note.content_type);
     headers.set("content-length", String(object.size || note.byte_size));
-    headers.set("content-disposition", `${download ? "attachment" : "inline"}; filename="${safeDownloadName(note.original_file_name)}"`);
+    headers.set("content-disposition", fileContentDisposition(download ? "attachment" : "inline", note.original_file_name, "kampira-notu"));
     headers.set("cache-control", "private, no-store");
     headers.set("x-content-type-options", "nosniff");
     return new Response(object.body, { headers });

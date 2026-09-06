@@ -10,6 +10,7 @@ const directory = new URL("drizzle/", root);
 const migrations = await Promise.all((await readdir(directory)).filter((name) => /^\d+.*\.sql$/.test(name)).sort().map((name) => readFile(new URL(name, directory), "utf8")));
 async function compiled(path) { return ts.transpileModule(await readFile(new URL(path, root), "utf8"), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText; }
 const serverCode = await compiled("lib/server-api.ts"), routeCode = await compiled("app/api/safety/route.ts");
+const activeActorCode = await compiled("lib/active-actor.ts");
 function load(code, dependencies) {
   const exports = {};
   runInNewContext(code, { exports, Response, URL, crypto, require(name) { assert.ok(name in dependencies, name); return dependencies[name]; } });
@@ -26,13 +27,13 @@ function fixture(t) {
   }, batch: (statements) => Promise.all(statements.map((statement) => statement.run())) };
   let identity = "viewer@test.local";
   const server = load(serverCode, { "../app/chatgpt-auth": { getChatGPTUser: async () => identity ? { email: identity } : null } });
-  const route = load(routeCode, { "../../../lib/server-api": { ...server, getRuntime: async () => ({ DB }), enforceRateLimit: async () => ({ allowed: true }), audit: async () => {} } });
+  const route = load(routeCode, { "../../../lib/active-actor": load(activeActorCode, {}), "../../../lib/server-api": { ...server, getRuntime: async () => ({ DB }), enforceRateLimit: async () => ({ allowed: true }), audit: async () => {} } });
   database.exec("INSERT INTO universities (id,name,short_name,city) VALUES ('campus','University','UNI','City'),('outside','Other','OTH','City'); INSERT INTO departments (id,name) VALUES ('dept','Engineering');");
   for (const [id, university] of [["viewer", "campus"], ["peer", "campus"], ["outside", "outside"]]) {
     database.prepare("INSERT INTO users (email,public_id,display_name,handle) VALUES (?,?,?,?)").run(`${id}@test.local`, id, id, id);
     database.prepare("INSERT INTO student_profiles (user_email,university_id,department_id,class_year) VALUES (?,?,'dept',1)").run(`${id}@test.local`, university);
   }
-  return { database, signOut() { identity = null; }, async request(payload) { return route.POST(new Request("https://campus.test/api/safety", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) })); } };
+  return { database, signOut() { identity = null; }, asUser(id) { identity = `${id}@test.local`; }, async request(payload) { return route.POST(new Request("https://campus.test/api/safety", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) })); } };
 }
 
 for (const action of ["block", "mute"]) test(`${action} removal is idempotent, including after a campus transfer`, async (t) => {
@@ -68,4 +69,23 @@ test("blocking removes both follow directions and never modifies other users' re
   assert.equal(f.database.prepare("SELECT COUNT(*) AS count FROM user_follows").get().count, 0);
   await f.request({ action: "block", targetId: "peer", active: false });
   assert.equal(f.database.prepare("SELECT blocker_email FROM user_blocks").get().blocker_email, "peer@test.local");
+});
+
+test("a private-message report records only the selected received message for its actual reporter; own, nonparticipant and wrong-campus targets are rejected", async (t) => {
+  const f = fixture(t);
+  f.database.exec("INSERT INTO users (email,public_id,display_name,handle) VALUES ('intruder@test.local','intruder','Synthetic intruder','intruder'); INSERT INTO student_profiles (user_email,university_id,department_id,class_year) VALUES ('intruder@test.local','campus','dept',1); INSERT INTO direct_conversations (id,university_id,member_one_email,member_two_email) VALUES ('thread','campus','peer@test.local','viewer@test.local'); INSERT INTO direct_messages (id,conversation_id,sender_email,body) VALUES ('received','thread','peer@test.local','[SYNTHETIC] selected evidence'),('own','thread','viewer@test.local','[SYNTHETIC] excluded own message'),('unselected','thread','peer@test.local','[SYNTHETIC] excluded thread history');");
+  const payload = { action: "report", entityType: "direct-message", entityId: "received", reason: "privacy", details: "[SYNTHETIC] Explicit report" };
+  assert.equal((await f.request({ ...payload, entityId: "own" })).status, 404);
+  f.asUser("intruder"); assert.equal((await f.request(payload)).status, 404, "same-campus nonparticipant cannot report or read evidence");
+  f.asUser("outside"); assert.equal((await f.request(payload)).status, 404);
+  f.asUser("viewer");
+  const result = await f.request(payload); assert.equal(result.status, 201);
+  const response = await result.json(); assert.equal(typeof response.report.id, "string");
+  const saved = f.database.prepare("SELECT * FROM content_reports WHERE id=?").get(response.report.id);
+  assert.equal(saved.reporter_email, "viewer@test.local"); assert.equal(saved.entity_id, "received"); assert.equal(saved.entity_type, "direct-message");
+  const evidence = JSON.parse(saved.evidence_json);
+  assert.equal(evidence.id, "received"); assert.equal(evidence.body, "[SYNTHETIC] selected evidence");
+  assert.doesNotMatch(saved.evidence_json, /excluded/);
+  assert.equal((await f.request(payload)).status, 409); assert.equal(f.database.prepare("SELECT COUNT(*) AS count FROM content_reports").get().count, 1);
+  f.signOut(); assert.equal((await f.request({ ...payload, entityId: "unselected" })).status, 401);
 });

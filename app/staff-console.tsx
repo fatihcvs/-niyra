@@ -16,6 +16,7 @@ import Link from "next/link";
 import { MODERATABLE_ENTITY_TYPES } from "../lib/admin-registry";
 import { PRODUCT_UPDATES } from "../lib/product-updates";
 import { CourseCatalogCoverage } from "./course-catalog-coverage";
+import { AccountDeletionReview } from "./account-deletion-review";
 import styles from "./staff-console.module.css";
 import {
   StaffDialog,
@@ -62,6 +63,7 @@ const ownerTabs = [
   ["admins", "Admin yönetimi", "♙"],
   ["settings", "Sistem ayarları", "⚙"],
   ["audit", "İşlem günlüğü", "≡"],
+  ["account-deletion", "Hesap silme talepleri", "♙"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
 
@@ -70,6 +72,7 @@ const adminTabs = [
   ["reports", "Şikâyet kuyruğu", "!"],
   ["content", "İçerik denetimi", "▦"],
   ["users", "Kullanıcılar", "♙"],
+  ["account-deletion", "Hesap silme talepleri", "♙"],
   ["decisions", "Karar geçmişi", "≡"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
@@ -655,6 +658,7 @@ function OwnerContent({
   onNavigate,
   onDirtyChange,
 }: ContentProps) {
+  if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "admins")
     return <OwnerAdmins data={data} reload={reload} setMessage={setMessage} />;
   if (tab === "settings")
@@ -1420,6 +1424,7 @@ function AdminContent({
   setMessage,
   onNavigate,
 }: ContentProps) {
+  if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "reports")
     return <ReportQueue data={data} reload={reload} setMessage={setMessage} />;
   if (tab === "content")
@@ -2754,6 +2759,7 @@ function StaffNavIcon({ section }: { section: string }) {
     content: SquaresFour,
     users: Users,
     decisions: ClockCounterClockwise,
+    "account-deletion": Users,
   };
   const Icon = icons[section as keyof typeof icons] ?? House;
   return <Icon size={19} aria-hidden="true" />;

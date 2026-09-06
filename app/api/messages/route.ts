@@ -1,11 +1,10 @@
 import { sameOriginRequest } from "../../../lib/app-auth";
 import { profileMediaUrl } from "../../../lib/profile";
+import { ACTIVE_ACTOR_SQL, ActiveActorError, activeActor } from "../../../lib/active-actor";
 import {
-  audit,
   cleanText,
   enforceRateLimit,
   getRuntime,
-  notify,
   rateLimitResponse,
   relativeTime,
   requireIdentity,
@@ -56,8 +55,9 @@ async function conversationForMember(db: D1Database, id: string, email: string, 
     `SELECT id, university_id, member_one_email, member_two_email
      FROM direct_conversations
      WHERE id = ? AND university_id = ? AND (member_one_email = ? OR member_two_email = ?)
+       AND EXISTS (SELECT 1 FROM users actor WHERE actor.email = ? AND actor.status = 'active')
      LIMIT 1`,
-  ).bind(id, universityId, email, email).first<ConversationMember>();
+  ).bind(id, universityId, email, email, email).first<ConversationMember>();
 }
 
 async function isBlocked(db: D1Database, leftEmail: string, rightEmail: string) {
@@ -172,8 +172,8 @@ export async function GET(request: Request) {
          WHERE (c.member_one_email = ? OR c.member_two_email = ?)
            AND m.sender_email <> ? AND m.read_at IS NULL AND m.deleted_at IS NULL
            AND c.university_id = ?
-           AND EXISTS (SELECT 1 FROM student_profiles current_one WHERE current_one.user_email = c.member_one_email AND current_one.university_id = c.university_id)
-           AND EXISTS (SELECT 1 FROM student_profiles current_two WHERE current_two.user_email = c.member_two_email AND current_two.university_id = c.university_id)
+           AND EXISTS (SELECT 1 FROM users current_one LEFT JOIN student_profiles one_profile ON one_profile.user_email = current_one.email WHERE current_one.email = c.member_one_email AND (current_one.status = 'deleted' OR (current_one.status = 'active' AND one_profile.university_id = c.university_id)))
+           AND EXISTS (SELECT 1 FROM users current_two LEFT JOIN student_profiles two_profile ON two_profile.user_email = current_two.email WHERE current_two.email = c.member_two_email AND (current_two.status = 'deleted' OR (current_two.status = 'active' AND two_profile.university_id = c.university_id)))
            AND NOT EXISTS (
              SELECT 1 FROM user_blocks b
              WHERE (b.blocker_email = c.member_one_email AND b.blocked_email = c.member_two_email)
@@ -183,9 +183,16 @@ export async function GET(request: Request) {
       return jsonNoStore({ unreadCount: Number(row?.count ?? 0) });
     }
 
+    const messageId = cleanText(url.searchParams.get("messageId"), 80);
+    let conversationId = cleanText(url.searchParams.get("conversationId"), 80);
+    if (messageId) {
+      const target = await DB.prepare(`SELECT conversation_id FROM direct_messages WHERE id = ? AND deleted_at IS NULL LIMIT 1`).bind(messageId).first<{ conversation_id: string }>();
+      if (!target || (conversationId && target.conversation_id !== conversationId)) return jsonNoStore({ error: "Mesaj bulunamadı veya bu mesaja erişim iznin yok." }, { status: 404 });
+      conversationId = target.conversation_id;
+    }
     const rows = await DB.prepare(
       `SELECT c.id, c.updated_at, c.last_message_at,
-              u.public_id, u.display_name, u.handle, un.short_name AS university_short_name,
+              u.public_id, u.display_name, u.handle, u.status AS peer_status, un.short_name AS university_short_name,
               d.name AS department_name, pm.updated_at AS avatar_updated_at,
               lm.body AS last_body, lm.attachment_snapshot AS last_attachment_snapshot,
               lm.sender_email AS last_sender_email, lm.created_at AS last_created_at,
@@ -194,9 +201,9 @@ export async function GET(request: Request) {
                  AND unread.read_at IS NULL AND unread.deleted_at IS NULL) AS unread_count
        FROM direct_conversations c
        JOIN users u ON u.email = CASE WHEN c.member_one_email = ? THEN c.member_two_email ELSE c.member_one_email END
-       JOIN student_profiles sp ON sp.user_email = u.email
-       JOIN universities un ON un.id = sp.university_id
-       JOIN departments d ON d.id = sp.department_id
+       LEFT JOIN student_profiles sp ON sp.user_email = u.email
+       LEFT JOIN universities un ON un.id = sp.university_id
+       LEFT JOIN departments d ON d.id = sp.department_id
        LEFT JOIN profile_media pm ON pm.user_email = u.email AND pm.kind = 'avatar'
        LEFT JOIN direct_messages lm ON lm.id = (
          SELECT newest.id FROM direct_messages newest
@@ -204,15 +211,15 @@ export async function GET(request: Request) {
          ORDER BY newest.created_at DESC, newest.id DESC LIMIT 1
        )
        WHERE (c.member_one_email = ? OR c.member_two_email = ?)
-         AND c.university_id = ? AND sp.university_id = ?
+         AND c.university_id = ? AND (u.status = 'deleted' OR (u.status = 'active' AND sp.university_id = ?))
          AND NOT EXISTS (
            SELECT 1 FROM user_blocks b
            WHERE (b.blocker_email = c.member_one_email AND b.blocked_email = c.member_two_email)
               OR (b.blocker_email = c.member_two_email AND b.blocked_email = c.member_one_email)
          )
-       ORDER BY COALESCE(c.last_message_at, c.updated_at) DESC LIMIT 100`,
-    ).bind(identity.email, identity.email, identity.email, identity.email, profile.university_id, profile.university_id).all<{
-      id: string; updated_at: string; last_message_at: string | null; public_id: string; display_name: string; handle: string;
+       ORDER BY CASE WHEN c.id = ? THEN 0 ELSE 1 END, COALESCE(c.last_message_at, c.updated_at) DESC LIMIT 100`,
+    ).bind(identity.email, identity.email, identity.email, identity.email, profile.university_id, profile.university_id, conversationId).all<{
+      id: string; updated_at: string; last_message_at: string | null; public_id: string | null; display_name: string; handle: string; peer_status: string;
       university_short_name: string; department_name: string; avatar_updated_at: string | null; last_body: string | null;
       last_attachment_snapshot: string | null; last_sender_email: string | null; last_created_at: string | null; unread_count: number;
     }>();
@@ -220,7 +227,8 @@ export async function GET(request: Request) {
       const attachment = safeSnapshot(row.last_attachment_snapshot);
       return {
         id: row.id,
-        person: {
+        readOnly: row.peer_status === "deleted",
+        person: row.peer_status === "deleted" ? { publicId: null, displayName: "Silinmiş hesap", handle: "", universityShortName: "", departmentName: "", avatarUrl: null, deleted: true } : {
           publicId: row.public_id,
           displayName: row.display_name,
           handle: row.handle,
@@ -235,25 +243,36 @@ export async function GET(request: Request) {
       };
     });
 
-    const conversationId = cleanText(url.searchParams.get("conversationId"), 80);
+    const before = cleanText(url.searchParams.get("before"), 80);
+    let olderCursor: string | null = null;
     let messages: Array<Record<string, unknown>> = [];
+    let linkedMessage: { id: string; body: string; own: boolean; createdAt: string } | undefined;
     if (conversationId) {
       const conversation = await conversationForMember(DB, conversationId, identity.email, profile.university_id);
       if (!conversation) return jsonNoStore({ error: "Konuşma bulunamadı." }, { status: 404 });
       const otherEmail = conversation.member_one_email === identity.email ? conversation.member_two_email : conversation.member_one_email;
-      const currentPeer = await DB.prepare(`SELECT 1 AS found FROM student_profiles WHERE user_email = ? AND university_id = ? LIMIT 1`).bind(otherEmail, profile.university_id).first();
+      const currentPeer = await DB.prepare(`SELECT u.status FROM users u LEFT JOIN student_profiles sp ON sp.user_email = u.email WHERE u.email = ? AND (u.status = 'deleted' OR (u.status = 'active' AND sp.university_id = ?)) LIMIT 1`).bind(otherEmail, profile.university_id).first<{ status: string }>();
       if (!currentPeer) return jsonNoStore({ error: "Bu konuşma artık aynı kampüste değil." }, { status: 403 });
       if (await isBlocked(DB, identity.email, otherEmail)) return jsonNoStore({ error: "Bu konuşma kullanılamıyor." }, { status: 403 });
+      if (messageId) {
+        const linked = await DB.prepare(`SELECT id, body, sender_email, attachment_snapshot, created_at FROM direct_messages WHERE id = ? AND conversation_id = ? AND deleted_at IS NULL LIMIT 1`).bind(messageId, conversationId).first<{ id: string; body: string; sender_email: string; attachment_snapshot: string; created_at: string }>();
+        if (!linked) return jsonNoStore({ error: "Mesaj bulunamadı veya bu mesaja erişim iznin yok." }, { status: 404 });
+        linkedMessage = { id: linked.id, body: linked.body || safeSnapshot(linked.attachment_snapshot)?.title || "Paylaşılan içerik", own: linked.sender_email === identity.email, createdAt: linked.created_at };
+      }
       const messageRows = await DB.prepare(
         `SELECT id, sender_email, body, attachment_type, attachment_id, attachment_snapshot,
                 read_at, deleted_at, created_at
-         FROM (SELECT * FROM direct_messages WHERE conversation_id = ? ORDER BY created_at DESC, id DESC LIMIT 100)
+         FROM (SELECT * FROM direct_messages WHERE conversation_id = ?
+           AND (? = '' OR (created_at, id) < (SELECT created_at, id FROM direct_messages WHERE id = ? AND conversation_id = ?))
+           ORDER BY created_at DESC, id DESC LIMIT 101)
          ORDER BY created_at ASC, id ASC`,
-      ).bind(conversationId).all<{
+      ).bind(conversationId, before, before, conversationId).all<{
         id: string; sender_email: string; body: string; attachment_type: string | null; attachment_id: string | null;
         attachment_snapshot: string; read_at: string | null; deleted_at: string | null; created_at: string;
       }>();
-      messages = messageRows.results.map((row) => ({
+      const rows = messageRows.results.slice(-100);
+      olderCursor = messageRows.results.length > 100 ? rows[0].id : null;
+      messages = rows.map((row) => ({
         id: row.id,
         own: row.sender_email === identity.email,
         body: row.deleted_at ? "Bu mesaj moderasyon tarafından kaldırıldı." : row.body,
@@ -263,13 +282,14 @@ export async function GET(request: Request) {
         read: Boolean(row.read_at),
         removed: Boolean(row.deleted_at),
         time: relativeTime(row.created_at),
+        createdAt: row.created_at,
       }));
     }
 
     const shareables = url.searchParams.get("includeShareables") === "1"
       ? await listShareables(DB, identity.email, profile.university_id)
       : undefined;
-    return jsonNoStore({ conversations, messages, shareables, viewerId: profile.public_id });
+    return jsonNoStore({ conversations, messages, olderCursor, shareables, viewerId: profile.public_id, ...(conversationId ? { conversationId } : {}), ...(linkedMessage ? { linkedMessage } : {}) });
   } catch (error) {
     return unavailableResponse(error, "Mesajlarına şu anda ulaşılamıyor.");
   }
@@ -288,8 +308,11 @@ export async function POST(request: Request) {
     if (!profile) return jsonNoStore({ error: "Mesajlaşmadan önce akademik profilini tamamlamalısın." }, { status: 409 });
     const limit = await enforceRateLimit(DB, identity.email, "direct-message-send", 120, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+    const actor = activeActor(DB, identity.email, profile.public_id);
 
     const body = cleanText(payload.body, 2000);
+    const clientMessageKey = payload.clientMessageKey == null ? null : cleanText(payload.clientMessageKey, 100);
+    if (clientMessageKey !== null && (typeof payload.clientMessageKey !== "string" || payload.clientMessageKey.length > 100 || !/^[a-zA-Z0-9_-]{16,100}$/.test(clientMessageKey))) return jsonNoStore({ error: "Mesaj gönderim anahtarı geçerli değil." }, { status: 400 });
     const attachmentType = cleanText((payload.attachment as Record<string, unknown> | undefined)?.type, 20) as AttachmentType;
     const attachmentId = cleanText((payload.attachment as Record<string, unknown> | undefined)?.id, 80);
     if (!body && !attachmentId) return jsonNoStore({ error: "Bir mesaj yaz veya eklediğin içeriklerden birini seç." }, { status: 400 });
@@ -306,66 +329,97 @@ export async function POST(request: Request) {
     let otherEmail = conversation
       ? (conversation.member_one_email === identity.email ? conversation.member_two_email : conversation.member_one_email)
       : "";
+    let otherPublicId = "";
     if (!conversation) {
       const recipientId = cleanText(payload.recipientId, 80);
       const recipient = await DB.prepare(
-        `SELECT u.email FROM users u JOIN student_profiles sp ON sp.user_email = u.email
+        `SELECT u.email, u.public_id FROM users u JOIN student_profiles sp ON sp.user_email = u.email
          WHERE u.public_id = ? AND u.email <> ? AND u.status = 'active'
            AND sp.university_id = ? AND sp.onboarding_completed = 1 LIMIT 1`,
-      ).bind(recipientId, identity.email, profile.university_id).first<{ email: string }>();
+      ).bind(recipientId, identity.email, profile.university_id).first<{ email: string; public_id: string }>();
       if (!recipient) return jsonNoStore({ error: "Mesaj gönderilecek öğrenci bulunamadı." }, { status: 404 });
       otherEmail = recipient.email;
+      otherPublicId = recipient.public_id;
       if (await isBlocked(DB, identity.email, otherEmail)) return jsonNoStore({ error: "Bu öğrenciyle mesajlaşamazsın." }, { status: 403 });
-      const newConversationLimit = await enforceRateLimit(DB, identity.email, "direct-conversation-create", 20, 86400);
-      if (!newConversationLimit.allowed) return rateLimitResponse(newConversationLimit.retryAfter);
       const [memberOne, memberTwo] = identity.email < otherEmail ? [identity.email, otherEmail] : [otherEmail, identity.email];
-      conversationId = crypto.randomUUID();
-      await DB.prepare(
-        `INSERT INTO direct_conversations
-         (id, university_id, member_one_email, member_two_email) VALUES (?, ?, ?, ?)
-         ON CONFLICT(member_one_email, member_two_email)
-         DO UPDATE SET university_id = excluded.university_id, updated_at = CURRENT_TIMESTAMP`,
-      ).bind(conversationId, profile.university_id, memberOne, memberTwo).run();
-      conversation = await DB.prepare(
+      const findPair = () => DB.prepare(
         `SELECT id, university_id, member_one_email, member_two_email FROM direct_conversations
          WHERE member_one_email = ? AND member_two_email = ? AND university_id = ? LIMIT 1`,
       ).bind(memberOne, memberTwo, profile.university_id).first<ConversationMember>();
-      if (!conversation) return jsonNoStore({ error: "Konuşma başlatılamadı." }, { status: 503 });
+      conversation = await findPair();
+      if (!conversation) {
+        const newConversationLimit = await enforceRateLimit(DB, identity.email, "direct-conversation-create", 20, 86400);
+        if (!newConversationLimit.allowed) return rateLimitResponse(newConversationLimit.retryAfter);
+        conversationId = crypto.randomUUID();
+        await DB.prepare(
+          `INSERT INTO direct_conversations
+           (id, university_id, member_one_email, member_two_email) SELECT ?, ?, ?, ?
+           WHERE EXISTS (SELECT 1 FROM users one JOIN student_profiles sp1 ON sp1.user_email = one.email WHERE one.email = ? AND one.public_id = ? AND one.status = 'active' AND sp1.university_id = ?)
+             AND EXISTS (SELECT 1 FROM users two JOIN student_profiles sp2 ON sp2.user_email = two.email WHERE two.email = ? AND two.public_id = ? AND two.status = 'active' AND sp2.university_id = ?)
+           ON CONFLICT(member_one_email, member_two_email)
+           DO UPDATE SET university_id = excluded.university_id, updated_at = CURRENT_TIMESTAMP`,
+        ).bind(conversationId, profile.university_id, memberOne, memberTwo, identity.email, profile.public_id, profile.university_id, otherEmail, otherPublicId, profile.university_id).run();
+        conversation = await findPair();
+      }
+      if (!conversation) return jsonNoStore({ error: "Konuşmanın erişimi değişti. Güncel durumu kontrol et." }, { status: 409 });
       conversationId = conversation.id;
     }
-    const currentPeer = await DB.prepare(`SELECT 1 AS found FROM student_profiles WHERE user_email = ? AND university_id = ? LIMIT 1`).bind(otherEmail, profile.university_id).first();
-    if (!currentPeer) return jsonNoStore({ error: "Bu öğrenci artık aynı kampüste değil." }, { status: 403 });
+    const currentPeer = await DB.prepare(`SELECT u.public_id FROM users u JOIN student_profiles sp ON sp.user_email = u.email WHERE u.email = ? AND u.status = 'active' AND sp.university_id = ? LIMIT 1`).bind(otherEmail, profile.university_id).first<{ public_id: string }>();
+    if (!currentPeer || (otherPublicId && currentPeer.public_id !== otherPublicId)) return jsonNoStore({ error: "Bu öğrenci artık aynı kampüste değil." }, { status: 403 });
+    otherPublicId = currentPeer.public_id;
     if (await isBlocked(DB, identity.email, otherEmail)) return jsonNoStore({ error: "Bu öğrenciyle mesajlaşamazsın." }, { status: 403 });
 
+    type StoredMessage = { id: string; conversation_id: string; body: string; attachment_type: string | null; attachment_id: string | null; attachment_snapshot: string; read_at: string | null; deleted_at: string | null; created_at: string };
+    const previousMessage = () => DB.prepare(`SELECT id, conversation_id, body, attachment_type, attachment_id, attachment_snapshot, read_at, deleted_at, created_at FROM direct_messages WHERE sender_email = ? AND client_message_key = ? LIMIT 1`).bind(identity.email, clientMessageKey).first<StoredMessage>();
+    const replay = (stored: StoredMessage) => {
+      if (stored.conversation_id !== conversationId || stored.body !== body || stored.attachment_type !== (snapshot ? attachmentType : null) || stored.attachment_id !== (snapshot ? attachmentId : null)) return jsonNoStore({ error: "Bu gönderim anahtarı başka bir mesaj için kullanıldı." }, { status: 409 });
+      return jsonNoStore({ conversationId: stored.conversation_id, message: { id: stored.id, own: true, body: stored.deleted_at ? "Bu mesaj moderasyon tarafından kaldırıldı." : stored.body, attachmentType: stored.deleted_at ? null : stored.attachment_type, attachmentId: stored.deleted_at ? null : stored.attachment_id, attachment: stored.deleted_at ? null : safeSnapshot(stored.attachment_snapshot), read: Boolean(stored.read_at), removed: Boolean(stored.deleted_at), time: relativeTime(stored.created_at), createdAt: stored.created_at } });
+    };
+    const previous = clientMessageKey ? await previousMessage() : null;
+    if (previous) return replay(previous);
     const messageId = crypto.randomUUID();
     const sentAt = new Date().toISOString();
     await DB.batch([
       DB.prepare(
         `INSERT INTO direct_messages
-         (id, conversation_id, sender_email, body, attachment_type, attachment_id, attachment_snapshot, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(messageId, conversationId, identity.email, body, snapshot ? attachmentType : null, snapshot ? attachmentId : null, JSON.stringify(snapshot ?? {}), sentAt, sentAt),
+         (id, conversation_id, sender_email, body, attachment_type, attachment_id, attachment_snapshot, created_at, updated_at, client_message_key)
+         SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+         WHERE EXISTS (SELECT 1 FROM direct_conversations c
+           JOIN users actor ON actor.email = ? AND actor.public_id = ? AND actor.status = 'active'
+           JOIN student_profiles actor_profile ON actor_profile.user_email = actor.email AND actor_profile.university_id = c.university_id
+           JOIN users peer ON peer.email = ? AND peer.public_id = ? AND peer.status = 'active'
+           JOIN student_profiles peer_profile ON peer_profile.user_email = peer.email AND peer_profile.university_id = c.university_id
+           WHERE c.id = ? AND c.university_id = ? AND (c.member_one_email = actor.email OR c.member_two_email = actor.email)
+             AND (c.member_one_email = peer.email OR c.member_two_email = peer.email)
+             AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = actor.email AND b.blocked_email = peer.email) OR (b.blocker_email = peer.email AND b.blocked_email = actor.email)))
+         ON CONFLICT(sender_email, client_message_key) WHERE client_message_key IS NOT NULL DO NOTHING`,
+      ).bind(messageId, conversationId, identity.email, body, snapshot ? attachmentType : null, snapshot ? attachmentId : null, JSON.stringify(snapshot ?? {}), sentAt, sentAt, clientMessageKey, identity.email, profile.public_id, otherEmail, otherPublicId, conversationId, profile.university_id),
       DB.prepare(
-        `UPDATE direct_conversations SET last_message_at = ?, updated_at = ? WHERE id = ?`,
-      ).bind(sentAt, sentAt, conversationId),
+        `UPDATE direct_conversations SET last_message_at = ?, updated_at = ? WHERE id = ? AND EXISTS (SELECT 1 FROM direct_messages WHERE id = ?)`,
+      ).bind(sentAt, sentAt, conversationId, messageId),
     ]);
+    // A concurrent retry can pass the first read; the unique index remains authoritative.
+    if (clientMessageKey) {
+      const stored = await previousMessage();
+      if (stored && stored.id !== messageId) return replay(stored);
+    }
+    const created = await DB.prepare("SELECT id FROM direct_messages WHERE id = ? AND sender_email = ?").bind(messageId, identity.email).first();
+    if (!created) return jsonNoStore({ error: "Konuşmanın erişimi değişti. Güncel durumu kontrol et." }, { status: 409 });
     await Promise.all([
-      audit(DB, identity.email, "direct-message.sent", "direct-message", messageId, { conversationId, attachmentType: snapshot ? attachmentType : null }),
-      notify(DB, {
-        userEmail: otherEmail,
-        actorEmail: identity.email,
-        kind: "direct-message",
-        title: `${profile.display_name} sana mesaj gönderdi`,
-        body: body || snapshot?.title || "Paylaşılan içerik",
-        entityType: "direct-message",
-        entityId: messageId,
-      }),
+      actor.audit("direct-message.sent", "direct-message", messageId, { conversationId, attachmentType: snapshot ? attachmentType : null }),
+      actor.run(`INSERT INTO notifications (id, user_email, actor_email, kind, title, body, entity_type, entity_id)
+        SELECT ?, ?, ?, 'direct-message', ?, ?, 'direct-message', ?
+        WHERE EXISTS (SELECT 1 FROM users recipient WHERE recipient.email = ? AND recipient.public_id = ? AND recipient.status = 'active')
+          AND EXISTS (SELECT 1 FROM direct_messages WHERE id = ? AND sender_email = ?)
+          AND ${ACTIVE_ACTOR_SQL}`,
+      [crypto.randomUUID(), otherEmail, identity.email, `${profile.display_name} sana mesaj gönderdi`, body || snapshot?.title || "Paylaşılan içerik", messageId, otherEmail, otherPublicId, messageId, identity.email]),
     ]);
     return jsonNoStore({
       conversationId,
-      message: { id: messageId, own: true, body, attachmentType: snapshot ? attachmentType : null, attachmentId: snapshot ? attachmentId : null, attachment: snapshot, read: false, removed: false, time: "şimdi" },
+      message: { id: messageId, own: true, body, attachmentType: snapshot ? attachmentType : null, attachmentId: snapshot ? attachmentId : null, attachment: snapshot, read: false, removed: false, time: "şimdi", createdAt: sentAt },
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof ActiveActorError) return jsonNoStore({ error: error.message }, { status: 409 });
     return unavailableResponse(error, "Mesaj şu anda gönderilemedi.");
   }
 }
@@ -385,12 +439,21 @@ export async function PATCH(request: Request) {
     if (!profile) return jsonNoStore({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
     const conversation = await conversationForMember(DB, conversationId, identity.email, profile.university_id);
     if (!conversation) return jsonNoStore({ error: "Konuşma bulunamadı." }, { status: 404 });
+    const otherEmail = conversation.member_one_email === identity.email ? conversation.member_two_email : conversation.member_one_email;
+    if (await isBlocked(DB, identity.email, otherEmail)) return jsonNoStore({ error: "Bu konuşma kullanılamıyor." }, { status: 403 });
     await DB.prepare(
       `UPDATE direct_messages SET read_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
-       WHERE conversation_id = ? AND sender_email <> ? AND read_at IS NULL AND deleted_at IS NULL`,
-    ).bind(conversationId, identity.email).run();
+       WHERE conversation_id = ? AND sender_email <> ? AND read_at IS NULL AND deleted_at IS NULL
+         AND EXISTS (SELECT 1 FROM users actor JOIN student_profiles sp ON sp.user_email = actor.email
+           JOIN direct_conversations c ON c.id = direct_messages.conversation_id
+           WHERE actor.email = ? AND actor.public_id = ? AND actor.status = 'active' AND sp.university_id = c.university_id
+             AND c.university_id = ? AND (c.member_one_email = actor.email OR c.member_two_email = actor.email))`,
+    ).bind(conversationId, identity.email, identity.email, profile.public_id, profile.university_id).run();
+    await activeActor(DB, identity.email, profile.public_id).first(`SELECT 1 AS active WHERE ${ACTIVE_ACTOR_SQL}`);
+    if (!await conversationForMember(DB, conversationId, identity.email, profile.university_id)) return jsonNoStore({ error: "Konuşmanın erişimi değişti." }, { status: 409 });
     return jsonNoStore({ read: true });
   } catch (error) {
+    if (error instanceof ActiveActorError) return jsonNoStore({ error: error.message }, { status: 409 });
     return unavailableResponse(error, "Okundu bilgisi şu anda kaydedilemedi.");
   }
 }

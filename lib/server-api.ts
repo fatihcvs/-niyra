@@ -56,7 +56,7 @@ export async function requireProfile(db: D1Database, email: string) {
               u.display_name, u.handle
        FROM student_profiles sp
        JOIN users u ON u.email = sp.user_email
-       WHERE sp.user_email = ? AND sp.onboarding_completed = 1
+       WHERE sp.user_email = ? AND sp.onboarding_completed = 1 AND u.status = 'active'
        LIMIT 1`,
     )
     .bind(email)

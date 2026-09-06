@@ -7,9 +7,11 @@ import {
 } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { audit, enforceRateLimit, getRuntime, notify, rateLimitResponse } from "../../../lib/server-api";
+import { sameOriginRequest } from "../../../lib/app-auth";
 
 type FollowPayload = {
   targetId?: string;
+  active?: boolean;
 };
 
 function followError(error: unknown) {
@@ -34,6 +36,7 @@ export async function POST(request: Request) {
       { status: 401 },
     );
   }
+  if (!sameOriginRequest(request)) return Response.json({ error: "Bu kaynaktan takip isteği kabul edilmiyor." }, { status: 403 });
 
   let payload: FollowPayload;
   try {
@@ -42,8 +45,11 @@ export async function POST(request: Request) {
     return Response.json({ error: "Geçerli bir öğrenci bilgisi gönderilmedi." }, { status: 400 });
   }
 
-  const targetId = payload.targetId?.trim() ?? "";
-  if (!targetId) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload) || typeof payload.targetId !== "string" || ("active" in payload && typeof payload.active !== "boolean")) {
+    return Response.json({ error: "Geçerli bir öğrenci ve takip durumu gönderilmedi." }, { status: 400 });
+  }
+  const targetId = payload.targetId.trim();
+  if (!targetId || targetId.length > 80) {
     return Response.json({ error: "Takip edilecek öğrenci zorunludur." }, { status: 400 });
   }
 
@@ -57,7 +63,7 @@ export async function POST(request: Request) {
         .select({ email: users.email, displayName: users.displayName, universityId: studentProfiles.universityId })
         .from(users)
         .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-        .where(eq(users.email, identity.email))
+        .where(and(eq(users.email, identity.email), eq(users.status, "active"), eq(studentProfiles.onboardingCompleted, true)))
         .limit(1),
       db
         .select({ email: users.email, universityId: studentProfiles.universityId })
@@ -93,20 +99,24 @@ export async function POST(request: Request) {
       )
       .limit(1);
 
-    if (existing) {
-      await db
+    const active = payload.active ?? !existing;
+    let changed = false;
+    if (!active) {
+      const removed = await db
         .delete(userFollows)
         .where(
           and(
             eq(userFollows.followerEmail, actor.email),
             eq(userFollows.followingEmail, target.email),
           ),
-        );
+        ).returning({ email: userFollows.followerEmail });
+      changed = removed.length > 0;
     } else {
-      await db.insert(userFollows).values({
+      const inserted = await db.insert(userFollows).values({
         followerEmail: actor.email,
         followingEmail: target.email,
-      });
+      }).onConflictDoNothing().returning({ email: userFollows.followerEmail });
+      changed = inserted.length > 0;
     }
 
     const [total] = await db
@@ -114,12 +124,15 @@ export async function POST(request: Request) {
       .from(userFollows)
       .where(eq(userFollows.followingEmail, target.email));
 
-    await audit(DB, identity.email, existing ? "user.unfollowed" : "user.followed", "user", targetId);
-    if (!existing) await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} seni takip etmeye başladı`, entityType: "user", entityId: targetId });
+    const [viewerTotal] = await db.select({ value: count() }).from(userFollows).where(eq(userFollows.followerEmail, actor.email));
+    if (changed) await audit(DB, identity.email, active ? "user.followed" : "user.unfollowed", "user", targetId);
+    if (changed && active) await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} seni takip etmeye başladı`, entityType: "user", entityId: targetId });
 
     return Response.json({
-      active: !existing,
+      targetId,
+      active,
       followerCount: Number(total.value),
+      viewerFollowingCount: Number(viewerTotal.value),
     });
   } catch (error) {
     return followError(error);

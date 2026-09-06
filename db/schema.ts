@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { foreignKey, index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable(
   "users",
@@ -106,6 +106,8 @@ export const profileMedia = sqliteTable(
     originalFileName: text("original_file_name").notNull(),
     contentType: text("content_type").notNull(),
     byteSize: integer("byte_size").notNull(),
+    width: integer("width"),
+    height: integer("height"),
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
@@ -299,6 +301,83 @@ export const marketplaceListings = sqliteTable(
   ],
 );
 
+// Operation receipts survive target deletion so retries cannot recreate a removed listing.
+export const marketWriteRequests = sqliteTable(
+  "market_write_requests",
+  {
+    ownerEmail: text("owner_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    idempotencyKey: text("idempotency_key").notNull(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    action: text("action").notNull(),
+    payloadHash: text("payload_hash").notNull(),
+    targetId: text("target_id").notNull(),
+    responseJson: text("response_json").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    primaryKey({ columns: [table.ownerEmail, table.idempotencyKey] }),
+    index("market_write_requests_target_idx").on(table.action, table.targetId),
+  ],
+);
+
+export const marketMediaRequests = sqliteTable(
+  "market_media_requests",
+  {
+    ownerEmail: text("owner_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    idempotencyKey: text("idempotency_key").notNull(),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    listingId: text("listing_id").notNull(),
+    payloadHash: text("payload_hash").notNull(),
+    currentAttemptId: text("current_attempt_id"),
+    committedAttemptId: text("committed_attempt_id"),
+    responseJson: text("response_json"),
+    endedAt: text("ended_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [primaryKey({ columns: [table.ownerEmail, table.idempotencyKey] }), index("market_media_requests_listing_idx").on(table.listingId)],
+);
+
+export const marketMediaAttempts = sqliteTable(
+  "market_media_attempts",
+  {
+    id: text("id").primaryKey(),
+    ownerEmail: text("owner_email").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    putsSettled: integer("puts_settled").notNull().default(0),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    foreignKey({ columns: [table.ownerEmail, table.idempotencyKey], foreignColumns: [marketMediaRequests.ownerEmail, marketMediaRequests.idempotencyKey] }).onDelete("cascade"),
+    index("market_media_attempts_request_idx").on(table.ownerEmail, table.idempotencyKey),
+  ],
+);
+
+export const marketMediaAttemptObjects = sqliteTable(
+  "market_media_attempt_objects",
+  {
+    imageId: text("image_id").primaryKey(),
+    attemptId: text("attempt_id").notNull().references(() => marketMediaAttempts.id, { onDelete: "cascade" }),
+    ordinal: integer("ordinal").notNull(),
+    objectKey: text("object_key").notNull().unique(),
+    cleanedAt: text("cleaned_at"),
+  },
+  (table) => [uniqueIndex("market_media_attempt_objects_attempt_ordinal_unique").on(table.attemptId, table.ordinal)],
+);
+
+export const marketMediaTombstones = sqliteTable(
+  "market_media_tombstones",
+  {
+    imageId: text("image_id").primaryKey(),
+    ownerEmail: text("owner_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+    universityId: text("university_id").notNull().references(() => universities.id),
+    listingId: text("listing_id").notNull(),
+    objectKey: text("object_key").notNull().unique(),
+    cleanedAt: text("cleaned_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("market_media_tombstones_cleanup_idx").on(table.ownerEmail, table.universityId, table.cleanedAt)],
+);
+
 export const marketplaceListingImages = sqliteTable(
   "marketplace_listing_images",
   {
@@ -401,6 +480,7 @@ export const posts = sqliteTable(
     authorEmail: text("author_email")
       .notNull()
       .references(() => users.email, { onDelete: "cascade" }),
+    erasedUniversityId: text("erased_university_id").references(() => universities.id),
     courseId: text("course_id").references(() => courses.id),
     communityId: text("community_id"),
     content: text("content").notNull(),
@@ -427,10 +507,14 @@ export const postMedia = sqliteTable(
     originalFileName: text("original_file_name").notNull(),
     contentType: text("content_type").notNull(),
     byteSize: integer("byte_size").notNull(),
+    width: integer("width"),
+    height: integer("height"),
+    ordinal: integer("ordinal").notNull().default(0),
     createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     index("post_media_post_kind_idx").on(table.postId, table.kind),
+    index("post_media_post_order_idx").on(table.postId, table.ordinal, table.createdAt, table.id),
     uniqueIndex("post_media_object_key_unique").on(table.objectKey),
   ],
 );
@@ -560,6 +644,7 @@ export const notes = sqliteTable(
     ownerEmail: text("owner_email")
       .notNull()
       .references(() => users.email, { onDelete: "cascade" }),
+    erasedUniversityId: text("erased_university_id").references(() => universities.id),
     courseId: text("course_id")
       .notNull()
       .references(() => courses.id),
@@ -586,7 +671,7 @@ export const notes = sqliteTable(
     index("notes_course_status_created_idx").on(table.courseId, table.status, table.createdAt),
     index("notes_exam_course_year_idx").on(table.noteType, table.courseId, table.examYear, table.status),
     index("notes_owner_created_idx").on(table.ownerEmail, table.createdAt),
-    uniqueIndex("notes_object_key_unique").on(table.objectKey),
+    uniqueIndex("notes_object_key_unique").on(table.objectKey).where(sql`${table.objectKey} != ''`),
   ],
 );
 
@@ -776,6 +861,46 @@ export const notifications = sqliteTable(
   (table) => [index("notifications_user_read_created_idx").on(table.userEmail, table.readAt, table.createdAt)],
 );
 
+export const pushSubscriptions = sqliteTable("push_subscriptions", {
+  id: text("id").primaryKey(),
+  ownerEmail: text("owner_email").notNull().references(() => users.email, { onDelete: "cascade" }),
+  sessionHash: text("session_hash").notNull().references(() => userSessions.tokenHash, { onDelete: "cascade" }),
+  deviceId: text("device_id").notNull(),
+  kind: text("kind").notNull(),
+  endpointHash: text("endpoint_hash").notNull().unique(),
+  endpoint: text("endpoint"),
+  p256dh: text("p256dh"),
+  auth: text("auth"),
+  token: text("token"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [
+  uniqueIndex("push_subscriptions_owner_session_device_unique").on(table.ownerEmail, table.sessionHash, table.deviceId),
+  index("push_subscriptions_owner_session_idx").on(table.ownerEmail, table.sessionHash),
+]);
+
+export const pushDeviceRevocations = sqliteTable("push_device_revocations", {
+  sessionHash: text("session_hash").notNull().references(() => userSessions.tokenHash, { onDelete: "cascade" }),
+  deviceId: text("device_id").notNull(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [primaryKey({ columns: [table.sessionHash, table.deviceId] })]);
+
+export const pushDeliveries = sqliteTable("push_deliveries", {
+  id: text("id").primaryKey(),
+  notificationId: text("notification_id").notNull().references(() => notifications.id, { onDelete: "cascade" }),
+  subscriptionId: text("subscription_id").notNull().references(() => pushSubscriptions.id, { onDelete: "cascade" }),
+  state: text("state").notNull().default("pending"),
+  attempts: integer("attempts").notNull().default(0),
+  nextAttemptMs: integer("next_attempt_ms").notNull().default(sql`(unixepoch() * 1000)`),
+  expiresMs: integer("expires_ms").notNull().default(sql`((unixepoch() + 86400) * 1000)`),
+  leaseToken: text("lease_token"),
+  leaseUntilMs: integer("lease_until_ms"),
+  lastStatus: integer("last_status"),
+  finishedMs: integer("finished_ms"),
+}, (table) => [
+  uniqueIndex("push_deliveries_notification_subscription_unique").on(table.notificationId, table.subscriptionId),
+  index("push_deliveries_due_idx").on(table.state, table.nextAttemptMs, table.leaseUntilMs),
+]);
+
 export const notificationPreferences = sqliteTable("notification_preferences", {
   userEmail: text("user_email").primaryKey().references(() => users.email, { onDelete: "cascade" }),
   interactions: integer("interactions", { mode: "boolean" }).notNull().default(true),
@@ -962,3 +1087,32 @@ export const staffAuditLogs = sqliteTable(
     index("staff_audit_action_created_idx").on(table.action, table.createdAt),
   ],
 );
+
+export const accountErasureJobs = sqliteTable("account_erasure_jobs", {
+  id: text("id").primaryKey(), sourceRequestId: text("source_request_id").notNull().unique(),
+  state: text("state").notNull().default("queued"), leaseToken: text("lease_token"), leaseUntilMs: integer("lease_until_ms"),
+  attempts: integer("attempts").notNull().default(0), removedObjectCount: integer("removed_object_count").notNull().default(0),
+  removedRowCount: integer("removed_row_count").notNull().default(0), preservedContainerCount: integer("preserved_container_count").notNull().default(0),
+  lastErrorCode: text("last_error_code"), createdAt: text("created_at").notNull(), updatedAt: text("updated_at").notNull(), completedAt: text("completed_at"),
+});
+export const accountErasureSubjects = sqliteTable("account_erasure_subjects", {
+  jobId: text("job_id").primaryKey().references(() => accountErasureJobs.id, { onDelete: "cascade" }),
+  userEmail: text("user_email").notNull().unique(), tombstoneEmail: text("tombstone_email").notNull().unique(),
+  scanCursor: text("scan_cursor"), scanComplete: integer("scan_complete").notNull().default(0),
+  scrubTable: integer("scrub_table").notNull().default(0), scrubCursor: text("scrub_cursor"), scrubComplete: integer("scrub_complete").notNull().default(0),
+});
+export const accountErasureObjects = sqliteTable("account_erasure_objects", {
+  jobId: text("job_id").notNull().references(() => accountErasureJobs.id, { onDelete: "cascade" }),
+  objectKey: text("object_key").notNull(), kind: text("kind").notNull(), state: text("state").notNull(), evidenceKind: text("evidence_kind").notNull(),
+  attempts: integer("attempts").notNull().default(0), lastErrorCode: text("last_error_code"), deletedAt: text("deleted_at"),
+}, table => [primaryKey({ columns: [table.jobId, table.objectKey] }), index("account_erasure_objects_pending_idx").on(table.jobId, table.state)]);
+export const accountErasureEntities = sqliteTable("account_erasure_entities", {
+  jobId: text("job_id").notNull().references(() => accountErasureJobs.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), entityId: text("entity_id").notNull(),
+}, table => [primaryKey({ columns: [table.jobId, table.kind, table.entityId] })]);
+export const mediaUploadOperations = sqliteTable("media_upload_operations", {
+  id: text("id").primaryKey(), ownerEmail: text("owner_email").notNull(), objectKey: text("object_key").notNull().unique(),
+  ownerPublicId: text("owner_public_id").notNull(),
+  kind: text("kind").notNull(), state: text("state").notNull().default("putting"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), settledAt: text("settled_at"),
+}, table => [index("media_upload_operations_owner_state_idx").on(table.ownerEmail, table.state)]);

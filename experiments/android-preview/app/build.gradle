@@ -1,0 +1,90 @@
+plugins { id 'com.android.application' }
+
+def suppliedOrigin = providers.gradleProperty('previewOrigin').orNull
+if (!suppliedOrigin) throw new GradleException('Supply -PpreviewOrigin=http://192.168.0.4:5173 (or an explicitly selected HTTPS origin).')
+def originUri = new URI(suppliedOrigin)
+def scheme = originUri.scheme?.toLowerCase(Locale.ROOT)
+def host = originUri.host?.toLowerCase(Locale.ROOT)
+if (!(scheme in ['http', 'https']) || !host || !(host ==~ /[a-z0-9.-]+/) || originUri.rawUserInfo || originUri.rawQuery || originUri.rawFragment || !(originUri.rawPath in ['', '/']) || originUri.port < -1 || originUri.port == 0 || originUri.port > 65535) {
+    throw new GradleException('previewOrigin must be one origin without credentials, path, query, or fragment.')
+}
+def octets = host.tokenize('.')
+def ipv4 = octets.size() == 4 && octets.every { it ==~ /\d{1,3}/ && it.toInteger() <= 255 }
+def privateHost = ipv4 && (octets[0].toInteger() in [10, 127] || (octets[0] == '192' && octets[1] == '168') || (octets[0] == '172' && octets[1].toInteger() >= 16 && octets[1].toInteger() <= 31))
+if (scheme == 'http' && !privateHost) throw new GradleException('HTTP is allowed only for an explicitly selected private/loopback IPv4 preview host.')
+def origin = "${scheme}://${host}${originUri.port == -1 ? '' : ':' + originUri.port}"
+
+android {
+    namespace 'app.kampira.preview'
+    compileSdk 36
+    buildToolsVersion '36.0.0'
+    defaultConfig {
+        applicationId 'app.kampira.preview'
+        minSdk 23
+        targetSdk 36
+        versionCode 4
+        versionName '0.4-debug-preview'
+        buildConfigField 'String', 'PREVIEW_ORIGIN', '"' + origin + '"'
+        buildConfigField 'boolean', 'RELEASE_READY', 'false'
+        buildConfigField 'boolean', 'FIREBASE_CONFIGURED', providers.gradleProperty('firebaseConfig').isPresent().toString()
+    }
+    buildFeatures { buildConfig true }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    buildTypes { debug { debuggable true; minifyEnabled false } }
+    sourceSets.debug.res.srcDir(layout.buildDirectory.dir('generated/preview-res'))
+    lint { abortOnError true }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'androidx.work:work-runtime:2.11.2'
+    implementation 'com.google.firebase:firebase-messaging:25.0.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.json:json:20240303'
+}
+
+// Only an explicitly supplied, ignored config file enters generated build resources.
+// No provider config or server credential belongs in this source tree.
+def generatePreviewFirebaseConfig = tasks.register('generatePreviewFirebaseConfig') {
+    def configPath = providers.gradleProperty('firebaseConfig')
+    if (configPath.isPresent()) inputs.file(configPath.get())
+    inputs.property('configured', configPath.isPresent())
+    def output = layout.buildDirectory.file('generated/preview-res/values/firebase.xml')
+    outputs.file(output)
+    doLast {
+        def target = output.get().asFile
+        target.parentFile.mkdirs()
+        def entries = [:]
+        if (configPath.isPresent()) {
+            def config = new groovy.json.JsonSlurper().parse(new File(configPath.get()))
+            def client = config.client.find { it.client_info.android_client_info.package_name == 'app.kampira.preview' }
+            if (!client || !config.project_info.project_id || !client.api_key[0].current_key) throw new GradleException('Firebase config must match app.kampira.preview.')
+            entries = [google_app_id:client.client_info.mobilesdk_app_id, google_api_key:client.api_key[0].current_key, gcm_defaultSenderId:config.project_info.project_number, project_id:config.project_info.project_id]
+            if (entries.values().any { !(it instanceof String) || !(it ==~ /[A-Za-z0-9_:\-.]+/) }) throw new GradleException('Invalid Firebase config fields.')
+        }
+        target.text = '<?xml version="1.0" encoding="utf-8"?><resources>' + entries.collect { key, value -> "<string name=\"${key}\" translatable=\"false\">${value}</string>" }.join('') + '</resources>'
+    }
+}
+tasks.configureEach { task -> if (task.name == 'preDebugBuild') task.dependsOn(generatePreviewFirebaseConfig) }
+androidComponents {
+    beforeVariants(selector().all()) { variant -> if (variant.buildType != 'debug') variant.enable = false }
+}
+def generatePreviewNetworkConfig = tasks.register('generatePreviewNetworkConfig') {
+    inputs.property('previewOrigin', origin)
+    def output = layout.buildDirectory.file('generated/preview-res/xml/preview_network_security_config.xml')
+    outputs.file(output)
+    doLast {
+        def target = output.get().asFile
+        target.parentFile.mkdirs()
+        target.text = """<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <base-config cleartextTrafficPermitted="false" />
+  <domain-config cleartextTrafficPermitted="${scheme == 'http'}">
+    <domain includeSubdomains="false">${host}</domain>
+  </domain-config>
+</network-security-config>
+"""
+    }
+}
+tasks.configureEach { task -> if (task.name == 'preDebugBuild') task.dependsOn(generatePreviewNetworkConfig) }

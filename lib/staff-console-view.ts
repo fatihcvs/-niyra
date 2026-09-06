@@ -1,7 +1,7 @@
 export type StaffRecord = Record<string, unknown>;
 export const staffSections = {
-  owner: ["overview", "admins", "settings", "audit", "updates"],
-  admin: ["overview", "reports", "content", "users", "decisions", "updates"],
+  owner: ["overview", "admins", "settings", "audit", "account-deletion", "updates"],
+  admin: ["overview", "reports", "content", "users", "account-deletion", "decisions", "updates"],
 } as const;
 
 export function staffTabFromSearch(mode: "owner" | "admin", search: string) {
@@ -67,6 +67,7 @@ export function staffEntity(value: unknown) {
     price: "Fiyat",
     "direct-message": "Özel mesaj",
     user: "Kullanıcı",
+    "account-deletion-request": "Hesap silme talebi",
     meetup: "Buluşma isteği",
     staff: "Yönetici",
     platform: "Platform",
@@ -106,6 +107,7 @@ export function auditAction(value: unknown) {
     "moderation.content_restore": "İçerik geri getirildi",
     "user.suspended": "Hesap askıya alındı",
     "user.active": "Hesap yeniden açıldı",
+    "account.deletion_review_started": "Hesap silme talebi incelemeye alındı",
   };
   return Object.hasOwn(labels, key) ? labels[key] : key;
 }

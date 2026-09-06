@@ -33,13 +33,15 @@ test("message workspace provides responsive threads and content sharing", async 
     source("../app/direct-messages.module.css"),
     source("../app/page.tsx"),
   ]);
-  assert.match(workspace, /Kime mesaj göndereceksin/);
+  assert.match(workspace, /aria-labelledby="new-message-title"/);
+  assert.match(workspace, /id="new-message-title">Yeni mesaj/);
   assert.match(workspace, /Eklediklerim/);
   for (const label of ["Not", "Kütüphane", "Etkinlik", "Mekân", "İlan"]) assert.match(workspace, new RegExp(label));
-  assert.match(workspace, /entityType: "direct-message"/);
+  assert.match(workspace, /MessageContextActions/);
   assert.match(styles, /@media\(max-width:780px\)/);
   assert.match(styles, /safe-area-inset-bottom/);
-  assert.match(styles, /data-theme="dark"/);
+  assert.match(styles, /var\(--card\)/);
+  assert.match(styles, /var\(--ink\)/);
   assert.match(page, /label: "Mesajlar"/);
   assert.match(page, /messageUnreadCount/);
   assert.match(page, /Mesaj gönder/);

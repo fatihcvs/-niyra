@@ -70,13 +70,22 @@ export async function createSession(db: D1Database, email: string, request: Requ
   const token = bytesToBase64Url(randomBytes(32));
   const tokenHash = await sha256(token);
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000).toISOString();
-  await db
-    .prepare(
+  const insert = db.prepare(
       `INSERT INTO user_sessions (token_hash, user_email, expires_at)
-       VALUES (?, ?, ?)`,
+       SELECT ?, email, ? FROM users WHERE email = ? AND status = 'active'`,
     )
-    .bind(tokenHash, email, expiresAt)
-    .run();
+    .bind(tokenHash, expiresAt, email);
+  const previousToken = readSessionToken(request.headers);
+  if (previousToken) {
+    // Replacing this browser's account also revokes session-bound device subscriptions.
+    // Both changes commit together, so a failed login cannot silently revoke its old session.
+    await db.batch([
+      insert,
+      db.prepare("DELETE FROM user_sessions WHERE token_hash = ? AND EXISTS (SELECT 1 FROM user_sessions WHERE token_hash = ?)").bind(await sha256(previousToken), tokenHash),
+    ]);
+  } else await insert.run();
+  const created = await db.prepare("SELECT 1 AS found FROM user_sessions s JOIN users u ON u.email = s.user_email WHERE s.token_hash = ? AND u.status = 'active'").bind(tokenHash).first();
+  if (!created) throw new Error("Active account required for session creation");
   return {
     cookie: serializeSessionCookie(token, request, SESSION_MAX_AGE_SECONDS),
     expiresAt,
@@ -108,6 +117,18 @@ export async function getSessionIdentity(db: D1Database, headers: HeaderReader):
     .first<{ email: string; display_name: string }>();
   if (!row) return null;
   return { email: row.email, displayName: row.display_name, fullName: row.display_name };
+}
+
+/** Server-only device binding; never return tokenHash in an API response. */
+export async function getActiveSessionContext(db: D1Database, headers: HeaderReader) {
+  const token = readSessionToken(headers);
+  if (!token) return null;
+  const tokenHash = await sha256(token);
+  const row = await db.prepare(`SELECT u.email, u.public_id FROM user_sessions s
+    JOIN users u ON u.email = s.user_email
+    WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active'
+    LIMIT 1`).bind(tokenHash).first<{ email: string; public_id: string }>();
+  return row ? { email: row.email, publicId: row.public_id, tokenHash } : null;
 }
 
 export async function authRateLimitKey(request: Request, email: string) {

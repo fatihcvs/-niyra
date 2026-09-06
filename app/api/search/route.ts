@@ -1,3 +1,4 @@
+import { searchableSql, searchPattern } from "../../../lib/search-query";
 import {
   cleanText,
   getRuntime,
@@ -14,9 +15,9 @@ export async function GET(request: Request) {
   if (!identity) return signInResponse("Arama yapmak için giriş yapmalısın.");
   const url = new URL(request.url);
   const scope = url.searchParams.get("scope") === "platform" ? "platform" : "campus";
-  const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
-  if (query.length < 2) return Response.json({ query, people: [], courses: [], posts: [], notes: [], communities: [] });
-  const like = `%${query}%`;
+  const query = cleanText(url.searchParams.get("q"), 80).normalize("NFC").toLocaleLowerCase("tr-TR");
+  if (query.length < 2) return Response.json({ query, scope, people: [], courses: [], posts: [], notes: [], communities: [] }, { headers: { "cache-control": "no-store" } });
+  const like = searchPattern(query);
 
   try {
     const { DB } = await getRuntime();
@@ -29,13 +30,13 @@ export async function GET(request: Request) {
          FROM users u
          JOIN student_profiles sp ON sp.user_email = u.email
          JOIN departments d ON d.id = sp.department_id
-         JOIN faculties f ON f.id = d.faculty_id
+         LEFT JOIN faculties f ON f.id = d.faculty_id
          WHERE u.email <> ? AND u.status = 'active' AND sp.onboarding_completed = 1
            AND (sp.university_id = ? OR (? = 'platform' AND EXISTS (
              SELECT 1 FROM posts public_post WHERE public_post.author_email = u.email AND public_post.deleted_at IS NULL
                AND public_post.audience = 'platform' AND public_post.community_id IS NULL AND public_post.course_id IS NULL
            )))
-           AND LOWER(u.display_name || ' ' || u.handle || ' ' || d.name || ' ' || f.name) LIKE ?
+           AND ${searchableSql("u.display_name || ' ' || u.handle || ' ' || d.name || ' ' || COALESCE(f.name, '')")} LIKE ? ESCAPE '\\'
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = u.email) OR (b.blocker_email = u.email AND b.blocked_email = ?))
          ORDER BY u.display_name LIMIT 6`,
       ).bind(identity.email, profile.university_id, scope, like, identity.email, identity.email).all(),
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
          FROM courses c JOIN departments d ON d.id = c.department_id
          JOIN student_courses sc ON sc.course_id = c.id
          JOIN student_profiles sp ON sp.user_email = sc.user_email
-         WHERE sp.university_id = ? AND LOWER(c.code || ' ' || c.name || ' ' || d.name) LIKE ?
+         WHERE sp.university_id = ? AND ${searchableSql("c.code || ' ' || c.name || ' ' || d.name")} LIKE ? ESCAPE '\\'
          ORDER BY c.code LIMIT 6`,
       ).bind(profile.university_id, like).all(),
       DB.prepare(
@@ -55,7 +56,7 @@ export async function GET(request: Request) {
          WHERE p.deleted_at IS NULL AND u.status = 'active'
            AND ((? = 'campus' AND author_profile.university_id = ?)
              OR (? = 'platform' AND p.audience = 'platform' AND p.community_id IS NULL AND p.course_id IS NULL))
-           AND LOWER(p.content || ' ' || COALESCE(c.code, '') || ' ' || u.display_name) LIKE ?
+           AND ${searchableSql("p.content || ' ' || COALESCE(c.code, '') || ' ' || u.display_name")} LIKE ? ESCAPE '\\'
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = p.author_email) OR (b.blocker_email = p.author_email AND b.blocked_email = ?))
            AND NOT EXISTS (SELECT 1 FROM user_mutes m WHERE m.muter_email = ? AND m.muted_email = p.author_email)
            AND (p.community_id IS NULL OR EXISTS (
@@ -74,8 +75,8 @@ export async function GET(request: Request) {
                 (SELECT COUNT(*) FROM note_views nv WHERE nv.note_id = n.id) AS view_count
          FROM notes n JOIN courses c ON c.id = n.course_id JOIN users u ON u.email = n.owner_email
          JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
-         WHERE n.status = 'published' AND n.deleted_at IS NULL AND owner_profile.university_id = ?
-           AND LOWER(n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name) LIKE ?
+         WHERE u.status = 'active' AND n.status = 'published' AND n.deleted_at IS NULL AND owner_profile.university_id = ?
+           AND ${searchableSql("n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name")} LIKE ? ESCAPE '\\'
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
          ORDER BY n.created_at DESC LIMIT 6`,
       ).bind(profile.university_id, like, identity.email, identity.email).all<{ id: string; title: string; description: string; tags_json: string; created_at: string; course_code: string; owner_name: string; view_count: number }>(),
@@ -83,16 +84,16 @@ export async function GET(request: Request) {
         `SELECT c.id, c.name, c.description, c.category, c.slug,
                 (SELECT COUNT(*) FROM community_members cm WHERE cm.community_id = c.id AND cm.status = 'active') AS member_count
          FROM communities c
-         JOIN student_profiles creator_profile ON creator_profile.user_email = c.creator_email
-         WHERE c.status = 'active' AND creator_profile.university_id = ?
-           AND LOWER(c.name || ' ' || c.description || ' ' || c.category) LIKE ?
+         WHERE c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ?
+           AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
+           AND ${searchableSql("c.name || ' ' || c.description || ' ' || c.category")} LIKE ? ESCAPE '\\'
          ORDER BY member_count DESC, c.created_at DESC LIMIT 6`,
-      ).bind(profile.university_id, like).all(),
+      ).bind(profile.university_id, identity.email, like).all(),
     ]);
 
     await DB.prepare(`INSERT INTO product_events (id, user_email, name, properties_json) VALUES (?, ?, 'search.completed', ?)`)
       .bind(crypto.randomUUID(), identity.email, JSON.stringify({ queryLength: query.length, resultCount: people.results.length + courses.results.length + posts.results.length + notes.results.length + communities.results.length }))
-      .run();
+      .run().catch(() => undefined);
     return Response.json({
       query, scope,
       people: people.results,
@@ -100,7 +101,7 @@ export async function GET(request: Request) {
       posts: posts.results.map((post) => ({ ...post, time: relativeTime(post.created_at) })),
       notes: notes.results.map((note) => ({ ...note, tags: parseJsonArray(note.tags_json), time: relativeTime(note.created_at), view_count: Number(note.view_count) })),
       communities: communities.results,
-    });
+    }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     return unavailableResponse(error, "Arama sonuçlarına şu anda ulaşılamıyor.");
   }

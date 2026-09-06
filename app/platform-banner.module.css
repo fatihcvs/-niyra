@@ -1,1 +1,5 @@
-.banner{position:relative;z-index:1000;min-height:42px;padding:9px 18px;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg,#27244f,#4f45bd);color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.4;text-align:center}.banner strong{color:#c9c4ff;font-size:11px;letter-spacing:.08em;text-transform:uppercase}.banner span{color:rgba(255,255,255,.86)}@media(max-width:600px){.banner{align-items:flex-start;flex-direction:column;gap:3px;text-align:left}}
+.banner { position:relative; z-index:40; min-height:48px; padding:11px 24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px 12px; border-bottom:1px solid color-mix(in srgb,var(--brand) 20%,var(--line)); background:var(--brand-soft); color:var(--ink); font:inherit; font-size:14px; line-height:1.5; text-align:center; }
+.banner strong { display:inline-flex; align-items:center; gap:7px; color:var(--brand); font-size:12px; font-weight:700; }
+.banner strong::before { content:""; width:6px; height:6px; flex:0 0 auto; border-radius:50%; background:currentColor; }
+.banner span { color:var(--text-body,var(--muted)); overflow-wrap:anywhere; }
+@media(max-width:600px) { .banner { align-items:flex-start; flex-direction:column; gap:4px; padding:12px 18px; font-size:13px; text-align:left; } }

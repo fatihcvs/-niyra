@@ -1,0 +1,4 @@
+.status { display:grid; gap:10px; margin:12px 0; color:var(--ink); font-size:.875rem; }
+.status>div { display:flex; justify-content:space-between; gap:12px; }
+.status progress { width:100%; height:5px; accent-color:var(--brand-solid); }
+.status button { justify-self:start; min-height:48px; padding:8px 0; border:0; background:transparent; color:var(--ink); text-decoration:underline; text-underline-offset:4px; cursor:pointer; }

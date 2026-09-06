@@ -1,0 +1,12 @@
+.panel { position:fixed; z-index:1000; right:8px; bottom:calc(80px + env(safe-area-inset-bottom,0px)); width:min(370px,calc(100vw - 16px)); border:1px solid var(--line,#555); border-radius:12px; background:var(--card,#17181c); color:var(--ink,#f5f5f7); font-size:13px; box-shadow:0 6px 24px #0003; }
+.panel[inert], :global([inert]) .panel { visibility:hidden; }
+.panel summary { min-height:44px; padding:12px; cursor:pointer; font-weight:650; }
+.content { padding:0 12px 12px; max-height:65dvh; overflow:auto; }
+.content p { margin:8px 0; line-height:1.5; }
+.actions { display:flex; flex-wrap:wrap; gap:6px; }
+.actions button { min-height:44px; padding:8px 10px; border:1px solid var(--line,#555); border-radius:8px; background:var(--surface-interactive,#222328); color:inherit; font:inherit; cursor:pointer; }
+.actions button:disabled { opacity:.5; cursor:default; }
+.content dl { margin:10px 0; }
+.content dl div { display:flex; justify-content:space-between; gap:8px; }
+.content dd { margin:0; }
+.content pre { padding:8px; overflow:auto; max-height:180px; border:1px solid var(--line,#555); font-size:11px; }

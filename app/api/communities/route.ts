@@ -1,11 +1,11 @@
+import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
+import { searchableSql, searchPattern } from "../../../lib/search-query";
 import { sameOriginRequest } from "../../../lib/app-auth";
 import { profileMediaUrl } from "../../../lib/profile";
 import {
-  audit,
   cleanText,
   enforceRateLimit,
   getRuntime,
-  notify,
   rateLimitResponse,
   relativeTime,
   requireIdentity,
@@ -138,6 +138,8 @@ export async function GET(request: Request) {
   if (!identity) return signInResponse("Toplulukları görmek için giriş yapmalısın.");
   const url = new URL(request.url);
   const id = cleanText(url.searchParams.get("id"), 80);
+  const memberQuery = cleanText(url.searchParams.get("memberQ"), 80);
+  const memberLike = memberQuery ? searchPattern(memberQuery) : "";
   const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
   const mine = url.searchParams.get("mine") === "1" ? 1 : 0;
   const requestedCategory = cleanText(url.searchParams.get("category"), 30);
@@ -151,8 +153,9 @@ export async function GET(request: Request) {
     if (id) {
       const community = await DB
         .prepare(`${baseSelect()} WHERE c.id = ? AND c.moderation_status = 'active' AND c.university_id = ?
+          AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
           AND (c.status = 'active' OR (cm.status = 'active' AND cm.role IN ('founder','admin','moderator'))) LIMIT 1`)
-        .bind(identity.email, id, profile.university_id)
+        .bind(identity.email, id, profile.university_id, identity.email)
         .first<CommunityRow>();
       if (!community) return Response.json({ error: "Topluluk bulunamadı." }, { status: 404 });
       const serialized = serialize(community);
@@ -166,11 +169,13 @@ export async function GET(request: Request) {
              JOIN users u ON u.email = cm.user_email
              LEFT JOIN student_profiles sp ON sp.user_email = u.email
              LEFT JOIN departments d ON d.id = sp.department_id
-             WHERE cm.community_id = ? AND (cm.status = 'active' OR ? = 1)
+             WHERE cm.community_id = ? AND (cm.status = 'active' OR ? = 1) AND u.status = 'active' AND sp.university_id = ?
+               AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = u.email) OR (b.blocker_email = u.email AND b.blocked_email = ?))
+               AND (? = '' OR ${searchableSql("u.display_name || ' ' || u.handle || ' ' || COALESCE(d.name, '')")} LIKE ? ESCAPE '\\')
              ORDER BY CASE cm.status WHEN 'pending' THEN 0 ELSE 1 END,
                       CASE cm.role WHEN 'founder' THEN 0 WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END,
                       cm.created_at LIMIT 120`,
-          ).bind(id, serialized.canManage ? 1 : 0).all<MemberRow>()
+          ).bind(id, serialized.canManage ? 1 : 0, profile.university_id, identity.email, identity.email, memberLike, memberLike).all<MemberRow>()
         : { results: [] as MemberRow[] };
       const bans = serialized.canManage
         ? await DB.prepare(
@@ -182,20 +187,21 @@ export async function GET(request: Request) {
       return Response.json({ community: serialized, members: members.results.map(serializeMember), bans: bans.results });
     }
 
-    const like = query ? `%${query}%` : "";
+    const like = query ? searchPattern(query) : "";
     const order = sort === "new"
       ? "c.created_at DESC"
       : sort === "members"
         ? "member_count DESC, last_activity_at DESC"
         : "CASE WHEN cm.status = 'active' THEN 0 ELSE 1 END, CASE WHEN c.course_id IN (SELECT sc.course_id FROM student_courses sc WHERE sc.user_email = ?) THEN 0 ELSE 1 END, last_activity_at DESC, member_count DESC";
-    const bindings: Array<string | number> = [identity.email, profile.university_id, mine, category, category, like, like];
+    const bindings: Array<string | number> = [identity.email, profile.university_id, identity.email, mine, category, category, like, like];
     if (!['new', 'members'].includes(sort)) bindings.push(identity.email);
     const rows = await DB
       .prepare(`${baseSelect()}
         WHERE c.status = 'active' AND c.moderation_status = 'active' AND c.university_id = ?
+          AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
           AND (? = 0 OR cm.status = 'active')
           AND (? = '' OR c.category = ?)
-          AND (? = '' OR LOWER(c.name || ' ' || c.description || ' ' || c.category || ' ' || COALESCE(cr.code, '')) LIKE ?)
+          AND (? = '' OR ${searchableSql("c.name || ' ' || c.description || ' ' || c.category || ' ' || COALESCE(cr.code, '')")} LIKE ? ESCAPE '\\' )
         ORDER BY ${order} LIMIT 60`)
       .bind(...bindings)
       .all<CommunityRow>();
@@ -204,9 +210,11 @@ export async function GET(request: Request) {
         SUM(CASE WHEN datetime(c.created_at) >= datetime('now', '-7 days') THEN 1 ELSE 0 END) AS new_this_week,
         SUM(CASE WHEN EXISTS (SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active') THEN 1 ELSE 0 END) AS joined,
         (SELECT COUNT(*) FROM community_events ce JOIN communities cx ON cx.id = ce.community_id
-          WHERE cx.university_id = ? AND cx.status = 'active' AND cx.moderation_status = 'active' AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now')) AS upcoming_events
-       FROM communities c WHERE c.university_id = ? AND c.status = 'active' AND c.moderation_status = 'active'`,
-    ).bind(identity.email, profile.university_id, profile.university_id).first<Record<string, number>>();
+          WHERE cx.university_id = ? AND cx.status = 'active' AND cx.moderation_status = 'active' AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now')
+            AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = cx.id AND cb.user_email = ?)) AS upcoming_events
+       FROM communities c WHERE c.university_id = ? AND c.status = 'active' AND c.moderation_status = 'active'
+         AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)` ,
+    ).bind(identity.email, profile.university_id, identity.email, profile.university_id, identity.email).first<Record<string, number>>();
     return Response.json({ communities: rows.results.map(serialize), stats: { total: Number(stats?.total ?? 0), joined: Number(stats?.joined ?? 0), newThisWeek: Number(stats?.new_this_week ?? 0), upcomingEvents: Number(stats?.upcoming_events ?? 0) } });
   } catch (error) {
     return unavailableResponse(error, "Topluluklara şu anda ulaşılamıyor.");
@@ -238,6 +246,7 @@ export async function POST(request: Request) {
     if (!(await getBooleanPlatformSetting(DB, "communityCreationOpen"))) return Response.json({ error: "Yeni topluluk oluşturma owner tarafından geçici olarak durduruldu." }, { status: 503 });
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Topluluk kurmadan önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     const limit = await enforceRateLimit(DB, identity.email, "community-create", 3, 86400);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     if (courseId) {
@@ -247,16 +256,17 @@ export async function POST(request: Request) {
     const id = crypto.randomUUID();
     const slug = `${slugify(name)}-${id.slice(0, 6)}`;
     const now = new Date().toISOString();
-    await DB.batch([
-      DB.prepare(`INSERT INTO communities (id, creator_email, university_id, course_id, name, slug, description, category, join_policy, rules, last_activity_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, identity.email, profile.university_id, courseId, name, slug, description, category, joinPolicy, rules, now),
-      DB.prepare(`INSERT INTO community_members (community_id, user_email, role, status) VALUES (?, ?, 'founder', 'active')`).bind(id, identity.email),
-      DB.prepare(`INSERT INTO community_audit_logs (id, community_id, actor_email, action, detail) VALUES (?, ?, ?, 'community.created', ?)`).bind(crypto.randomUUID(), id, identity.email, JSON.stringify({ joinPolicy, category })),
+    await actor.batch([
+      actor.statement(`INSERT INTO communities (id, creator_email, university_id, course_id, name, slug, description, category, join_policy, rules, last_activity_at) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [id, identity.email, profile.university_id, courseId, name, slug, description, category, joinPolicy, rules, now]),
+      actor.statement(`INSERT INTO community_members (community_id, user_email, role, status) SELECT ?, ?, 'founder', 'active' WHERE ${ACTIVE_ACTOR_SQL}`, [id, identity.email]),
+      actor.statement(`INSERT INTO community_audit_logs (id, community_id, actor_email, action, detail) SELECT ?, ?, ?, 'community.created', ? WHERE ${ACTIVE_ACTOR_SQL}`, [crypto.randomUUID(), id, identity.email, JSON.stringify({ joinPolicy, category })]),
     ]);
-    await audit(DB, identity.email, "community.created", "community", id, { joinPolicy, category });
+    await actor.audit("community.created", "community", id, { joinPolicy, category });
     const response = await GET(new Request(`${new URL(request.url).origin}/api/communities?id=${id}`, { headers: request.headers }));
     const body = await response.json();
     return Response.json(body, { status: 201 });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Topluluk şu anda kurulamadı.");
   }
 }
@@ -279,6 +289,7 @@ export async function PATCH(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     const limit = await enforceRateLimit(DB, identity.email, "community-action", 100, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
     const community = await DB.prepare(`SELECT c.id, c.name, c.creator_email, c.join_policy, c.status FROM communities c WHERE c.id = ? AND c.university_id = ? AND c.moderation_status = 'active' LIMIT 1`).bind(id, profile.university_id).first<{ id: string; name: string; creator_email: string; join_policy: string; status: string }>();
@@ -290,23 +301,23 @@ export async function PATCH(request: Request) {
       const banned = await DB.prepare(`SELECT 1 FROM community_bans WHERE community_id = ? AND user_email = ? LIMIT 1`).bind(id, identity.email).first();
       if (banned) return Response.json({ error: "Bu topluluğa katılımın sınırlandırılmış." }, { status: 403 });
       const nextStatus = community.join_policy === "request" ? "pending" : "active";
-      await DB.prepare(`INSERT INTO community_members (community_id, user_email, role, status) VALUES (?, ?, 'member', ?) ON CONFLICT(community_id, user_email) DO UPDATE SET role = CASE WHEN community_members.role = 'founder' THEN 'founder' ELSE 'member' END, status = excluded.status, updated_at = CURRENT_TIMESTAMP`).bind(id, identity.email, nextStatus).run();
-      await audit(DB, identity.email, `community.${nextStatus === "pending" ? "join_requested" : "joined"}`, "community", id);
-      if (nextStatus === "pending") await notify(DB, { userEmail: community.creator_email, actorEmail: identity.email, kind: "community", title: `${community.name} için yeni katılım isteği`, entityType: "community", entityId: id });
+      await actor.run(`INSERT INTO community_members (community_id, user_email, role, status) SELECT ?, ?, 'member', ? WHERE ${ACTIVE_ACTOR_SQL} ON CONFLICT(community_id, user_email) DO UPDATE SET role = CASE WHEN community_members.role = 'founder' THEN 'founder' ELSE 'member' END, status = excluded.status, updated_at = CURRENT_TIMESTAMP`, [id, identity.email, nextStatus]);
+      await actor.audit(`community.${nextStatus === "pending" ? "join_requested" : "joined"}`, "community", id);
+      if (nextStatus === "pending") await actor.notify({ userEmail: community.creator_email, kind: "community", title: `${community.name} için yeni katılım isteği`, entityType: "community", entityId: id });
       return Response.json({ joined: nextStatus === "active", pending: nextStatus === "pending", status: nextStatus });
     }
 
     if (action === "leave") {
       if (membership?.role === "founder") return Response.json({ error: "Kurucu topluluktan ayrılamaz." }, { status: 409 });
-      await DB.prepare(`DELETE FROM community_members WHERE community_id = ? AND user_email = ?`).bind(id, identity.email).run();
-      await audit(DB, identity.email, "community.left", "community", id);
+      await actor.run(`DELETE FROM community_members WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [id, identity.email]);
+      await actor.audit("community.left", "community", id);
       return Response.json({ joined: false, pending: false, status: null });
     }
 
     if (action === "notification") {
       const level = cleanText(payload.level, 20);
       if (!membership || membership.status !== "active" || !["all", "announcements", "mute"].includes(level)) return Response.json({ error: "Bildirim tercihi geçerli değil." }, { status: 400 });
-      await DB.prepare(`UPDATE community_members SET notification_level = ?, updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ?`).bind(level, id, identity.email).run();
+      await actor.run(`UPDATE community_members SET notification_level = ?, updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [level, id, identity.email]);
       return Response.json({ level });
     }
 
@@ -315,9 +326,9 @@ export async function PATCH(request: Request) {
     if (["archive", "restore"].includes(action)) {
       if (!['founder', 'admin'].includes(membership.role)) return Response.json({ error: "Topluluğu yalnızca kurucu veya yönetici arşivleyebilir." }, { status: 403 });
       const nextStatus = action === "archive" ? "archived" : "active";
-      await DB.prepare(`UPDATE communities SET status = ?, archived_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND moderation_status = 'active'`).bind(nextStatus, nextStatus === "archived" ? new Date().toISOString() : null, id).run();
-      await DB.prepare(`INSERT INTO community_audit_logs (id, community_id, actor_email, action) VALUES (?, ?, ?, ?)`).bind(crypto.randomUUID(), id, identity.email, `community.${action}`).run();
-      await audit(DB, identity.email, `community.${action}`, "community", id);
+      await actor.run(`UPDATE communities SET status = ?, archived_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND moderation_status = 'active' AND ${ACTIVE_ACTOR_SQL}`, [nextStatus, nextStatus === "archived" ? new Date().toISOString() : null, id]);
+      await actor.run(`INSERT INTO community_audit_logs (id, community_id, actor_email, action) SELECT ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [crypto.randomUUID(), id, identity.email, `community.${action}`]);
+      await actor.audit(`community.${action}`, "community", id);
       return Response.json({ status: nextStatus });
     }
 
@@ -327,8 +338,8 @@ export async function PATCH(request: Request) {
       const rules = cleanText(payload.rules, 800);
       const joinPolicy = cleanText(payload.joinPolicy, 20);
       if (description.length < 12 || !['open', 'request'].includes(joinPolicy)) return Response.json({ error: "Topluluk bilgileri geçerli değil." }, { status: 400 });
-      await DB.prepare(`UPDATE communities SET description = ?, rules = ?, join_policy = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(description, rules, joinPolicy, id).run();
-      await audit(DB, identity.email, "community.updated", "community", id, { joinPolicy });
+      await actor.run(`UPDATE communities SET description = ?, rules = ?, join_policy = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND ${ACTIVE_ACTOR_SQL}`, [description, rules, joinPolicy, id]);
+      await actor.audit("community.updated", "community", id, { joinPolicy });
       return Response.json({ updated: true });
     }
 
@@ -338,8 +349,8 @@ export async function PATCH(request: Request) {
 
     if (action === "unban") {
       if (!['founder', 'admin'].includes(membership.role)) return Response.json({ error: "Yasağı yalnızca kurucu veya yönetici kaldırabilir." }, { status: 403 });
-      await DB.prepare(`DELETE FROM community_bans WHERE community_id = ? AND user_email = ?`).bind(id, target.email).run();
-      await audit(DB, identity.email, "community.member.unbanned", "community", id, { targetId });
+      await actor.run(`DELETE FROM community_bans WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [id, target.email]);
+      await actor.audit("community.member.unbanned", "community", id, { targetId });
       return Response.json({ updated: true });
     }
 
@@ -351,28 +362,29 @@ export async function PATCH(request: Request) {
 
     if (action === "approve") {
       if (targetMembership.status !== "pending") return Response.json({ error: "Bekleyen katılım isteği bulunamadı." }, { status: 409 });
-      await DB.prepare(`UPDATE community_members SET status = 'active', role = 'member', updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ?`).bind(id, target.email).run();
-      await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "community", title: `${community.name} katılım isteğin kabul edildi`, entityType: "community", entityId: id });
+      await actor.run(`UPDATE community_members SET status = 'active', role = 'member', updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [id, target.email]);
+      await actor.notify({ userEmail: target.email, kind: "community", title: `${community.name} katılım isteğin kabul edildi`, entityType: "community", entityId: id });
     } else if (action === "reject" || action === "remove") {
       if (action === "reject" && targetMembership.status !== "pending") return Response.json({ error: "Bekleyen katılım isteği bulunamadı." }, { status: 409 });
-      await DB.prepare(`DELETE FROM community_members WHERE community_id = ? AND user_email = ?`).bind(id, target.email).run();
-      if (action === "remove") await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "community", title: `${community.name} topluluğundaki üyeliğin sona erdi`, entityType: "community", entityId: id });
+      await actor.run(`DELETE FROM community_members WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [id, target.email]);
+      if (action === "remove") await actor.notify({ userEmail: target.email, kind: "community", title: `${community.name} topluluğundaki üyeliğin sona erdi`, entityType: "community", entityId: id });
     } else if (action === "ban") {
       const reason = cleanText(payload.reason, 300);
-      await DB.batch([
-        DB.prepare(`INSERT INTO community_bans (community_id, user_email, banned_by_email, reason) VALUES (?, ?, ?, ?) ON CONFLICT(community_id, user_email) DO UPDATE SET banned_by_email = excluded.banned_by_email, reason = excluded.reason, created_at = CURRENT_TIMESTAMP`).bind(id, target.email, identity.email, reason),
-        DB.prepare(`DELETE FROM community_members WHERE community_id = ? AND user_email = ?`).bind(id, target.email),
+      await actor.batch([
+        actor.statement(`INSERT INTO community_bans (community_id, user_email, banned_by_email, reason) SELECT ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL} ON CONFLICT(community_id, user_email) DO UPDATE SET banned_by_email = excluded.banned_by_email, reason = excluded.reason, created_at = CURRENT_TIMESTAMP`, [id, target.email, identity.email, reason]),
+        actor.statement(`DELETE FROM community_members WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [id, target.email]),
       ]);
-      await notify(DB, { userEmail: target.email, actorEmail: identity.email, kind: "community", title: `${community.name} topluluğuna erişimin sınırlandırıldı`, entityType: "community", entityId: id });
+      await actor.notify({ userEmail: target.email, kind: "community", title: `${community.name} topluluğuna erişimin sınırlandırıldı`, entityType: "community", entityId: id });
     } else if (action === "role") {
       if (!['founder', 'admin'].includes(membership.role) || !['member', 'moderator', 'admin'].includes(role)) return Response.json({ error: "Rol değişikliği geçerli değil." }, { status: 400 });
       if (membership.role !== "founder" && (targetMembership.role === "admin" || role === "admin")) return Response.json({ error: "Yönetici rolünü yalnızca kurucu değiştirebilir." }, { status: 403 });
-      await DB.prepare(`UPDATE community_members SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ?`).bind(role, id, target.email).run();
+      await actor.run(`UPDATE community_members SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE community_id = ? AND user_email = ? AND ${ACTIVE_ACTOR_SQL}`, [role, id, target.email]);
     }
-    await DB.prepare(`INSERT INTO community_audit_logs (id, community_id, actor_email, action, target_email, detail) VALUES (?, ?, ?, ?, ?, ?)`).bind(crypto.randomUUID(), id, identity.email, `member.${action}`, target.email, JSON.stringify({ role })).run();
-    await audit(DB, identity.email, `community.member.${action}`, "community", id, { targetId, role });
+    await actor.run(`INSERT INTO community_audit_logs (id, community_id, actor_email, action, target_email, detail) SELECT ?, ?, ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [crypto.randomUUID(), id, identity.email, `member.${action}`, target.email, JSON.stringify({ role })]);
+    await actor.audit(`community.member.${action}`, "community", id, { targetId, role });
     return Response.json({ updated: true });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Topluluk işlemi şu anda tamamlanamadı.");
   }
 }

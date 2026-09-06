@@ -22,12 +22,12 @@ test("notes has a dedicated past-exam experience with required metadata", async 
 
 test("student housing supports safe anonymous experience sharing and moderation", async () => {
   const [workspace, route, admin, registry] = await Promise.all([
-    source("../app/campus-guide.tsx"),
+    Promise.all([source("../app/campus-guide.tsx"), source("../app/housing-community.tsx")]).then((parts) => parts.join("\n")),
     source("../app/api/housing/route.ts"),
     source("../app/api/admin/route.ts"),
     source("../lib/admin-registry.ts"),
   ]);
-  assert.match(workspace, /Yurtlar ve konaklama/);
+  assert.match(workspace, /<strong>Konaklama<\/strong>/);
   assert.match(workspace, /Güvenli karar ver/);
   assert.match(workspace, /name="anonymous"/);
   assert.match(route, /category = 'housing'/);

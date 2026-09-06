@@ -1,0 +1,39 @@
+{
+  "tool": {
+    "sharp": "0.34.5",
+    "vips": "8.17.3"
+  },
+  "source": {
+    "path": "/kampira-mark.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 528222,
+    "sha256": "5f1bcb8309c9d9420b5c0cb8cf80a1990eea790d38028333cb8e76801108aa13",
+    "alpha": true,
+    "colourSpace": "srgb",
+    "iccBytes": 0
+  },
+  "operation": "aspect-preserving Lanczos3 downscale; metadata and transparency retained",
+  "outputs": [
+    {
+      "path": "/brand/kampira-mark-128.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11379,
+      "sha256": "b194b440313e8e75bdce672b3f749c0b48abdfb4da8a5f5f5c44b247fb741846",
+      "alpha": true,
+      "colourSpace": "srgb",
+      "iccBytes": 0
+    },
+    {
+      "path": "/brand/kampira-mark-256.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 31190,
+      "sha256": "8111acdc0a48f5b06c479fa2a1b24a80d57f93d52cf1483e6e4a8d976c0c45a0",
+      "alpha": true,
+      "colourSpace": "srgb",
+      "iccBytes": 0
+    }
+  ]
+}

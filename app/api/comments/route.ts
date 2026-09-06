@@ -62,13 +62,13 @@ async function canUseComments(viewerEmail: string, postId: string) {
       .select({ email: users.email, universityId: studentProfiles.universityId })
       .from(users)
       .innerJoin(studentProfiles, eq(users.email, studentProfiles.userEmail))
-      .where(eq(users.email, viewerEmail))
+      .where(and(eq(users.email, viewerEmail), eq(users.status, "active")))
       .limit(1),
     db
-      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId, audience: posts.audience, courseId: posts.courseId, universityId: studentProfiles.universityId })
+      .select({ id: posts.id, authorEmail: posts.authorEmail, communityId: posts.communityId, audience: posts.audience, courseId: posts.courseId, universityId: sql<string>`CASE WHEN ${users.status} = 'deleted' THEN ${posts.erasedUniversityId} ELSE ${studentProfiles.universityId} END` })
       .from(posts)
-      .innerJoin(users, and(eq(users.email, posts.authorEmail), eq(users.status, "active")))
-      .innerJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
+      .innerJoin(users, and(eq(users.email, posts.authorEmail), sql`${users.status} IN ('active', 'deleted')`))
+      .leftJoin(studentProfiles, eq(posts.authorEmail, studentProfiles.userEmail))
       .where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
       .limit(1),
   ]);
@@ -98,12 +98,21 @@ export async function GET(request: Request) {
   const identity = await getChatGPTUser();
   if (!identity) return signInResponse();
 
-  const postId = new URL(request.url).searchParams.get("postId")?.trim() ?? "";
-  if (!postId || postId.length > 80) {
+  const params = new URL(request.url).searchParams;
+  let postId = params.get("postId")?.trim() ?? "";
+  const commentId = params.get("commentId")?.trim() ?? "";
+  if ((!postId && !commentId) || [postId, commentId].some((id) => id.length > 80 || /[\u0000-\u001f\u007f]/.test(id))) {
     return Response.json({ error: "Gönderi zorunludur." }, { status: 400 });
   }
 
   try {
+    if (commentId) {
+      const db = await getDb();
+      const [parent] = await db.select({ postId: postComments.postId }).from(postComments)
+        .where(and(eq(postComments.id, commentId), isNull(postComments.deletedAt))).limit(1);
+      if (!parent || (postId && parent.postId !== postId)) return Response.json({ error: "Yorum bulunamadı veya erişim iznin yok." }, { status: 404 });
+      postId = parent.postId;
+    }
     const access = await canUseComments(identity.email, postId);
     if (!access.viewer) {
       return Response.json(
@@ -113,7 +122,7 @@ export async function GET(request: Request) {
     }
     if (!access.post) return Response.json({ error: "Gönderi bulunamadı." }, { status: 404 });
 
-    const rows = await access.db
+    const commentQuery = () => access.db
       .select({
         id: postComments.id,
         authorId: users.publicId,
@@ -125,8 +134,8 @@ export async function GET(request: Request) {
         avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
       })
       .from(postComments)
-      .innerJoin(users, eq(postComments.authorEmail, users.email))
-      .where(and(
+      .innerJoin(users, and(eq(postComments.authorEmail, users.email), eq(users.status, "active")));
+    const visibleComment = and(
         eq(postComments.postId, postId),
         isNull(postComments.deletedAt),
         sql<boolean>`NOT EXISTS (
@@ -134,15 +143,13 @@ export async function GET(request: Request) {
           WHERE (b.blocker_email = ${identity.email} AND b.blocked_email = ${postComments.authorEmail})
              OR (b.blocker_email = ${postComments.authorEmail} AND b.blocked_email = ${identity.email})
         )`,
-      ))
+      );
+    const rows = await commentQuery().where(visibleComment)
       .orderBy(desc(postComments.createdAt), desc(postComments.id))
       .limit(COMMENT_PAGE_SIZE + 1);
 
     const hasMore = rows.length > COMMENT_PAGE_SIZE;
-    const comments = rows
-      .slice(0, COMMENT_PAGE_SIZE)
-      .reverse()
-      .map((row) => ({
+    const serialize = (row: typeof rows[number]) => ({
         id: row.id,
         authorId: row.authorId ?? undefined,
         authorName: row.authorName,
@@ -152,7 +159,14 @@ export async function GET(request: Request) {
         time: relativeTime(row.createdAt),
         edited: row.updatedAt !== row.createdAt,
         own: row.authorEmail === identity.email,
-      }));
+      });
+    const comments = rows.slice(0, COMMENT_PAGE_SIZE).reverse().map(serialize);
+
+    if (commentId) {
+      const target = rows.find((row) => row.id === commentId) ?? (await commentQuery().where(and(visibleComment, eq(postComments.id, commentId))).limit(1))[0];
+      if (!target) return Response.json({ error: "Yorum bulunamadı veya erişim iznin yok." }, { status: 404 });
+      return Response.json({ postId, comment: serialize(target), comments, hasMore }, { headers: { "cache-control": "private, no-store" } });
+    }
 
     return Response.json({ comments, hasMore });
   } catch (error) {

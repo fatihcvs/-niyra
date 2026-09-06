@@ -191,11 +191,11 @@ export async function POST(request: Request) {
       const reason = cleanText(payload.reason, 500);
       if (!id || !["active", "suspended"].includes(status)) return Response.json({ error: "Kullanıcı durumu geçerli değil." }, { status: 400 });
       if (status === "suspended" && reason.length < 5) return Response.json({ error: "Askıya alma nedeni en az 5 karakter olmalı." }, { status: 400 });
-      const user = await DB.prepare(`SELECT email, public_id FROM users WHERE public_id = ? LIMIT 1`).bind(id).first<{ email: string; public_id: string }>();
+      const user = await DB.prepare(`SELECT email, public_id FROM users WHERE public_id = ? AND status IN ('active', 'suspended') LIMIT 1`).bind(id).first<{ email: string; public_id: string }>();
       if (!user) return Response.json({ error: "Kullanıcı bulunamadı." }, { status: 404 });
       await DB.batch([
         DB.prepare(
-          `UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ?`,
+          `UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ? AND status IN ('active', 'suspended')`,
         ).bind(status, status === "suspended" ? new Date().toISOString() : null, status === "suspended" ? reason : null, id),
         ...(status === "suspended" ? [DB.prepare(`DELETE FROM user_sessions WHERE user_email = ?`).bind(user.email)] : []),
       ]);
@@ -226,7 +226,7 @@ async function applyModerationState(db: D1Database, entityType: ModeratableEntit
     event: db.prepare(`UPDATE campus_events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     price: db.prepare(`UPDATE campus_price_reports SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? "hidden" : "active", id),
     "direct-message": db.prepare(`UPDATE direct_messages SET deleted_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(hidden ? new Date().toISOString() : null, id),
-    user: db.prepare(`UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ?`).bind(hidden ? "suspended" : "active", hidden ? new Date().toISOString() : null, hidden ? reason : null, id),
+    user: db.prepare(`UPDATE users SET status = ?, suspended_at = ?, suspended_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE public_id = ? AND status IN ('active', 'suspended')`).bind(hidden ? "suspended" : "active", hidden ? new Date().toISOString() : null, hidden ? reason : null, id),
   };
   const result = await statements[entityType].run();
   if (entityType === "user" && hidden) {

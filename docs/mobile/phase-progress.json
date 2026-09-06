@@ -1,0 +1,1876 @@
+{
+  "updated": "2026-09-06",
+  "branch": "codex/cyprus-catalog-expansion",
+  "baselineHead": "408b52b2d9d25b393790346a3f5af70d0ec8f317",
+  "scope": "15 faz / 105 görev. Görev metinleri ve başlangıç kapsamı değişmedi; verified-local yalnız yerel belge/kod/davranış kanıtıdır. Hiçbir fazın genel, cihaz, öğrenci veya mağaza kabulü tamamlandı sayılmaz.",
+  "tasks": [
+    {
+      "id": "F00-01",
+      "task": "Mevcut branch, commit, çalışma kopyası ve eşzamanlı ders katalog çalışmasını kaydet; uygulama dosyalarının sahipliğini ayır; mevcut işlerin üzerine yazılmasını önle.",
+      "status": "verified-local",
+      "evidence": "exports/mobile-quality-implementation-2026-09-05/initial-head.txt; exports/mobile-quality-implementation-2026-09-05/initial-git-status.txt",
+      "note": "Branch/HEAD ve kirli çalışma kopyası başlangıcı kaydedildi; dosya sahiplikleri alt görevlerle ayrıldı. Bu commit sonrası ortak, yayımlanmamış değişiklikler sürüyor.",
+      "evidenceRefs": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "F00-02",
+      "task": "15 bölümün ana/detay/form/boş/yükleniyor/hata durumlarını envanterle. Girişsiz, yeni öğrenci, aktif öğrenci ve görevli rollerini ayrı listele.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "15 bölüm, rol/erişim, gerçek eylem/katman ve empty/loading/error durumları kod temelli envanterlendi; bu bir belge kabulüdür, 15 ekranın cihaz testi değildir.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F00-03",
+      "task": "İzole test verisi hazırla: boş hesap, dolu profil, uzun Türkçe isim, 200 gönderilik liste, farklı oranlarda fotoğraf/video, 100 mesaj, kaynak eksikliği ve ağ hatası. Medya hakları belli olsun.",
+      "status": "partial",
+      "evidence": "docs/mobile/F00_TEST_DATA.md; scripts/mobile-quality/fixtures.mjs; tests/mobile-quality-fixtures.test.mjs",
+      "note": "Deterministik 200 gönderi/100 mesaj, uç Türkçe metin ve bellek içi gerçek profil GET testi var. Oynatılabilir video ve mevcut fotoğrafların hak provenansı açık.",
+      "evidenceRefs": [
+        "fixtures"
+      ]
+    },
+    {
+      "id": "F00-04",
+      "task": "İki gerçek Android cihaz seç: daha sınırlı 60 Hz cihaz ve orta sınıf 90/120 Hz cihaz. OS, RAM, ekran, gezinme modu ve klavye sürümünü kaydet.",
+      "status": "external",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F03_TABLET_PREVIEW_STATUS.md; experiments/android-preview/README.md; outputs/android-preview/source-checks.json",
+      "note": "Kullanıcı Galaxy Tab A11 seçti; son ADB listesinde yetkili SM_X130 görüldü. Uzak özellik/ekran komutu otomatik onay denetiminde reddedildi. İkinci cihaz ve OS/RAM/IME/yenileme matrisi yok.",
+      "evidenceRefs": [
+        "android",
+        "tabletPreview"
+      ]
+    },
+    {
+      "id": "F00-05",
+      "task": "Aynı görevleri Kampira ve kurulmuş rakip Android sürümlerinde incele; sürüm/tarih/ülke/hesap durumunu kaydet. Rakipte görünmeyen akışı “erişilemedi” olarak işaretle.",
+      "status": "external",
+      "evidence": "docs/MOBILE_APP_QUALITY_ROADMAP.md",
+      "note": "Resmî kaynak araştırması mevcut; kurulu rakip Android sürümü ve gerçek cihaz karşılaştırması yapılmadı.",
+      "evidenceRefs": [
+        "research"
+      ]
+    },
+    {
+      "id": "F00-06",
+      "task": "Dokunma, ekran hazır oluşu, scroll/geri, frame takılması ve web metriklerini ayrı ölç. Debug araçlarının gecikmesini uygulama gecikmesi sayma.",
+      "status": "partial",
+      "evidence": "docs/MOBILE_APP_QUALITY_ROADMAP.md; docs/mobile/F00_WEB_MEASUREMENT.md; tests/web-performance-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/web-metrics-gallery-session.json",
+      "note": "Development opt-in collector/panel gerçek tarayıcıda 24 örnekle doğrulandı. Event Timing/LoAF/longtask/screen-pending/history-scroll ayrıdır; 7 ölçüm ve 4 viewport testi geçer. Bu kayıt INP, native frame/bellek veya üretim tabanı değildir.",
+      "evidenceRefs": [
+        "research",
+        "webMetrics"
+      ]
+    },
+    {
+      "id": "F00-07",
+      "task": "Her soruna kayıt aç: adımlar, beklenen/gerçek sonuç, ekran/cihaz, kanıt, önem, ilgili faz ve yeniden test. Bu araştırmadaki kod risklerini doğrulanmış hatalardan ayır.",
+      "status": "partial",
+      "evidence": "docs/MOBILE_APP_QUALITY_ROADMAP.md; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json",
+      "note": "Q01–Q15 ve seçili yeniden test kayıtları var; geometri ilk 12 satırda sınırlı snapshot, son 3 oturum sonrası yüzey. Tüm bulguların adım/cihaz/önem/fix-retest kaydı kapanmadı.",
+      "evidenceRefs": [
+        "research",
+        "cua",
+        "navigation",
+        "finalLocal"
+      ]
+    },
+    {
+      "id": "F01-01",
+      "task": "Mevcut Akış–Keşfet–Paylaş–Mesajlar–Profil düzenini başlangıç olarak al; Paylaş'ın hedef değil eylem olduğunu sözleşmeye yaz. Öğrenci görevleriyle sıralamayı doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Paylaş hedef değil eylem olarak tanımlı; beşli sıra kodda korunuyor. Yönlendirmesiz öğrenci doğrulaması yapılmadı.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F01-02",
+      "task": "Akış → gönderi → yorum → kişi → mesaj; arama → ders → not; topluluk → ilgili içerik zincirlerini çiz. Her zincirde dönüş konumunu tanımla.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Altı ana öğrenci görevi, hedef zinciri ve dönüş sözleşmesi yazıldı; gerçek öğrenci oturumu sonucu değildir.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F01-03",
+      "task": "Her ekrana tek başlık ve en fazla bir ana işlem ata. Bildirim, eşleşme tercihleri, not yükleme ve mekân önerisinin farklı anlamlarını koru.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs",
+      "note": "15 bölümün gerçek başlık/ana eylem sahibi belirlendi; ayrı oluşturma, tercih ve bildirim anlamları sözleşmede korunuyor.",
+      "evidenceRefs": [
+        "contract",
+        "header"
+      ]
+    },
+    {
+      "id": "F01-04",
+      "task": "Boş, dolu, arama boş, filtre boş, bağlantı hatası ve kısmi hata için gerekli kontrolleri tek tek seç. İçerik yokken kullanışsız filtre/sekme yoğunluğunu azalt.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "İlk kullanım, içerik, arama/filtre boşu ve hata kontrolleri bölüm bazında seçilip belgelendi; bütün ekranların görsel uygulanma kabulü ayrı.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F01-05",
+      "task": "Keşfet'teki kampüs araçlarını sıklık ve bağlama göre grupla; Ders/Topluluk/Kişi ilişkilerini modelle. Kullanım verisi olmadan yeni sıralamayı kesin kabul etme.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Yedi kampüs aracının girişleri ve ders/topluluk/kişi ilişkileri tanımlı. Sıklık verisi ve öğrenci gözlemi olmadan nihai sıralama kabul edilmedi.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F01-06",
+      "task": "Modal, alt ekran, dış bağlantı, deep link ve oturum süresi dolması için geri davranış haritası oluştur. Taslak varken çıkış kuralları bütün formlarda aynı olsun.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Modal/detay, dış link, deep link, oturum sonlanması ve taslak çıkış davranış haritası yazıldı. Bütün formların cihaz uygulaması tamamlandı anlamına gelmez.",
+      "evidenceRefs": [
+        "contract"
+      ]
+    },
+    {
+      "id": "F01-07",
+      "task": "Ana görevler için açıklama yapmadan kullanılabilen düşük ayrıntılı tıklanabilir akış hazırla; öğrenci gözlemiyle yanlış yol ve geri dönüş sorunlarını kaydet.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs",
+      "note": "Tıklanabilir development galerisi ve gerçek uygulama akışları var; altı görev için yönlendirmesiz öğrenci gözlemi/yanlış yol kaydı yok.",
+      "evidenceRefs": [
+        "contract",
+        "design"
+      ]
+    },
+    {
+      "id": "F02-01",
+      "task": "Aynı gerçekçi test içeriğiyle en fazla iki özgün görsel yön hazırla. Akış, profil ve mesajdan oluşan aynı ekran setini kullan; yalnız güzel bir açılış ekranıyla karar verme.",
+      "status": "partial",
+      "evidence": "exports/mobile-quality-implementation-2026-09-05/direction-a.png; exports/mobile-quality-implementation-2026-09-05/direction-b.png; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs",
+      "note": "İki akış yönü ve Yön A gerçek bileşen galerisi hazır. A/B için aynı profil+mesaj ekran seti ve nihai karşılaştırma bütünü tamamlanmadı.",
+      "evidenceRefs": [
+        "directions",
+        "design"
+      ]
+    },
+    {
+      "id": "F02-02",
+      "task": "Seçilen yönde açık/koyu nötr yüzeyler, mor vurgu, metin hiyerarşisi, boşluk, ayırıcı, köşe, avatar ve medya oranı tokenlarını tanımla.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css",
+      "note": "Açık/koyu yüzey, mor metin/dolgu ayrımı, font, boşluk, köşe, avatar ve medya kullanım kuralları gerçek CSS kaynaklarıyla belgelendi; global CSS temizliği değildir.",
+      "evidenceRefs": [
+        "design",
+        "primitives"
+      ]
+    },
+    {
+      "id": "F02-03",
+      "task": "Bütün ikon anlamlarını envanterle; Phosphor karşılıkları, ağırlık, optik boyut, seçili/kapalı/devre dışı durum ve erişilebilir etiketleri belirle. Logo kullanımını ayrı tut.",
+      "status": "partial",
+      "evidence": "app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F13_MARK_ASSETS.md; docs/mobile/F13_MARK_ASSETS.json; tests/brand-mark-assets.test.mjs",
+      "note": "Ortak Phosphor icon/Avatar/KampiraMark ve temel durumlar mevcut; bütün ikon anlamları/optik boyutları/etiketleri için tamamlanmış envanter ve ekran matrisi yok.",
+      "evidenceRefs": [
+        "primitives",
+        "brand"
+      ]
+    },
+    {
+      "id": "F02-04",
+      "task": "Üst/alt bar, arama, sekme, filtre, gönderi, konuşma, kaynak satırı, menü, sheet ve tam ekran form için durumları gösteren bileşen sayfaları hazırla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs",
+      "note": "Gerçek FeedPost, üst/alt bar, composer, arama/header ve empty örnekleri galeride; mesaj/profil sunum adaptörüdür. Tüm source row/sheet/dialog durumları gerçek workspace kabulüyle tamamlanmadı.",
+      "evidenceRefs": [
+        "design",
+        "header"
+      ]
+    },
+    {
+      "id": "F02-05",
+      "task": "Basma, beğeni/kaydetme, sekme, geri, sheet, klavye ve yükleme için hareket akışları hazırla. Hızlı tekrar, iptal, ters yön ve azaltılmış hareket alternatifini göster.",
+      "status": "partial",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; app/interaction-motion.css; app/use-screen-motion.ts; tests/screen-motion.test.mjs; tests/mobile-viewport-runtime.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs",
+      "note": "Ortak basma/state/surface hareket tokenları, yön geçişi ve reduced-motion yolları var. Tüm hızlı tekrar/iptal/ters yön/klavye senaryoları görsel ve cihaz olarak kapalı değil.",
+      "evidenceRefs": [
+        "design",
+        "motion",
+        "layers"
+      ]
+    },
+    {
+      "id": "F02-06",
+      "task": "Seçilen tasarımı 320/360/390/430 px, uzun metin, boş/dolu/hata ve iki temada kontrol et. Masaüstü karşılığını en az 820 ve 1440 px'de göster.",
+      "status": "partial",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-geometry-matrix.json; exports/mobile-quality-implementation-2026-09-05/verified-campus-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-filter-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json",
+      "note": "Sentetik galerinin 16 seçili CUA geometri satırında yatay taşma yok; 320/360/390/430/780/781/820/1440 genişliklerden örnekler var. theme istenen değerdir; hydration sonrası gerçek tema/medya ve bütün ekran×genişlik×tema matrisi tamamlanmadı.",
+      "evidenceRefs": [
+        "design",
+        "cua",
+        "galleryGeometry",
+        "finalCua"
+      ]
+    },
+    {
+      "id": "F02-07",
+      "task": "Referans ile Kampira'yı aynı görev/durumda birlikte değerlendir; okunurluk, içerik önceliği, görsel tutarlılık ve kullanım açıklığına göre seçimi kaydet.",
+      "status": "partial",
+      "evidence": "exports/mobile-quality-implementation-2026-09-05/direction-a.png; exports/mobile-quality-implementation-2026-09-05/direction-b.png; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png",
+      "note": "Yön A referansı ve feed hiyerarşisi ana çalışmada yan yana incelendi; aynı görev/durumda profil+mesaj dahil nihai insan kabulü kaydedilmedi.",
+      "evidenceRefs": [
+        "directions",
+        "design",
+        "cua"
+      ]
+    },
+    {
+      "id": "F03-01",
+      "task": "Mevcut API/oturum/özel medya sözleşmelerini ve Android araç gereksinimlerini çıkar. Tipleri sunucuya bağımlı koddan ayır; test origin'i, SDK/JDK/ADB ve sürüm kaydını hazırla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "JDK/CLI/ADB hazırlığına ek bağımsız Expo57/RN0.86 scout typed API ve auth/medya sözleşmesi hazır; 13 test, typecheck/lint/Metro geçerli. SDK36/lisans ve gerçek native cookie/Image taşıması açık.",
+      "evidenceRefs": [
+        "android",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F03-02",
+      "task": "F04'ün yalnız kritik gezinme düzeltmesini içeren küçük web/TWA ve Expo örneği hazırla. TWA testinde test imzası/DAL doğrulaması yap; aynı API/veri/işlev ve release'e yakın koşulları kullan.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "Web/TWA hazırlığı yanında runnable Expo scout ve 599 modül/1499786-byte Hermes export var. İmzalı TWA/DAL ve aynı gerçek API/cihaz koşulunda karşılaştırma yok; Metro export APK/AAB değildir.",
+      "evidenceRefs": [
+        "android",
+        "links",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F03-03",
+      "task": "Giriş, oturum yeniden açılışı, 401, logout, özel medya ve hesap değişimi denemelerini gerçek test API'sinde çalıştır. Başarısız auth için güvenlik kontrollerini gevşetme.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json",
+      "note": "İzole yerel derlenmiş Worker/D1/R2 üzerinde normal kayıt/onboarding, gerçek browser UI login, logout401, yeniden giriş ve farklı kampüs özel medya reddi geçti. Native WebView/Expo oturum taşıması ve fiziksel cihaz kanıtı yok.",
+      "evidenceRefs": [
+        "android",
+        "messages",
+        "profile",
+        "nativeScout",
+        "actualBrowser"
+      ]
+    },
+    {
+      "id": "F03-04",
+      "task": "Akış–profil–geri–taslak–mesaj zincirini iki cihazda ölç; ekran konumu, klavye, sistem geri ve soğuk/sıcak deep link'i karşılaştır.",
+      "status": "external",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "İki fiziksel cihazda web/TWA–Expo karşılaştırması, soğuk/sıcak deep link ve klavye/Back ölçümü yok.",
+      "evidenceRefs": [
+        "android",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F03-05",
+      "task": "Fotoğraf seç/çek, önizle, iptal et, yüklemeyi kes, uygulamayı arka plana al ve geri aç senaryolarını dene; taslağın kontrollü korunmasını değerlendir.",
+      "status": "external",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "Gerçek cihaz kamera/galeri, arka plan ve süreç yeniden oluşumu denenmedi; tarayıcı File cache veya jsdom bunu doğrulamaz.",
+      "evidenceRefs": [
+        "android",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F03-06",
+      "task": "Bakım maliyeti, paylaşılabilir kod, yayın araçları, offline/push sınırları ve ekip yetkinliğini kaydet. API geriye uyumluluğu, desteklenen en eski istemci ve Capacitor/Compose'u gerektirecek koşulları yaz.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "Native auth/medya ve mevcut backend uyumu, varsayılan kapalı publish/Image probe, local dependency audit ve process belleği sınırları belgeli. Ölçümlü bakım/legacy client karşılaştırması ve nihai alternatif karar kaydı açık.",
+      "evidenceRefs": [
+        "android",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F03-07",
+      "task": "Mimari karar kaydı çıkar: ölçüm tabloları, seçilen yol, reddedilen seçeneklerin gerekçesi, açık riskler, rollback ve web/native kapsamı. Ürün sahibiyle karar kapısını tamamla.",
+      "status": "pending",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/MOBILE_APP_QUALITY_ROADMAP.md; experiments/mobile-native-spike/DELIVERY.md; experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md; experiments/mobile-native-spike/README.md; experiments/mobile-native-spike/evidence/local-checks.json",
+      "note": "Sınırlı native scout yerel olarak teslim edildi; gerçek cihaz/TWA karşılaştırma tablosu ve ürün sahibi ADR karar kapısı hâlâ eksik. Native mimari seçilmedi.",
+      "evidenceRefs": [
+        "android",
+        "research",
+        "nativeScout"
+      ]
+    },
+    {
+      "id": "F04-01",
+      "task": "Gönderi yazarı, bildirim ve arama bağlantılarını ortak iç hedef çözücüye geçir. Web'de gerçek href, yeni sekme, Ctrl/Meta ve orta tıklama korunurken normal dokunmada belge yenilenmesin.",
+      "status": "verified-local",
+      "evidence": "lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; app/feed-post.tsx; tests/design-lab-runtime.test.mjs; app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts",
+      "note": "Gerçek href ve modifier davranışını koruyan ortak iç hedef çözücü/AppLink; gönderi yazarı, bildirim ve arama geçişleri bağlı. Yerel resolver/gerçek DOM callback kanıtı; cihaz gecikme ölçümü değil.",
+      "evidenceRefs": [
+        "links",
+        "feed",
+        "search"
+      ]
+    },
+    {
+      "id": "F04-02",
+      "task": "Profil ve arama isteklerinde iptal/son istek/kimlik koruması kur; eski yanıt yeni hedefin ekranına yazılmasın.",
+      "status": "verified-local",
+      "evidence": "lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts",
+      "note": "Profil generation/target ve arama abort/son istek/owner sınırı var; geciken A yanıtının B'yi değiştirmemesi ve abort'u yok sayan arama yanıtı testli.",
+      "evidenceRefs": [
+        "links",
+        "search"
+      ]
+    },
+    {
+      "id": "F04-03",
+      "task": "Oturum bootstrap'ını ekran verisinden ayır. Ekran ve sorgu anahtarlı cache kullan; kullanıcı değişiminde özel veriyi temizle; geri dönüşte mevcut içeriği gereksiz boşaltma.",
+      "status": "partial",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; docs/mobile/F04_NAVIGATION_STATUS.md; app/course-hub.tsx; tests/course-hub-runtime.test.mjs; tests/course-hub.test.mjs; docs/mobile/F04_SCOPED_SESSION_REQUESTS.md; lib/authenticated-fetch.ts; app/use-authenticated-fetch.ts; tests/authenticated-fetch.test.mjs; tests/workspace-session-runtime.test.mjs",
+      "note": "Owner scoped authenticatedFetch: aktif401 expiry, eski owner/abort yanıtı elenir; alt sayfa/helper29/29. Home12fetch ve ProfileEditor, owner/session provider key bağlandı. Tüm cache invalidation ve gerçek çok sekme/giriş kabulü açık.",
+      "evidenceRefs": [
+        "profile",
+        "messages",
+        "scroll",
+        "courseHub",
+        "scopedSession"
+      ]
+    },
+    {
+      "id": "F04-04",
+      "task": "Akış, profil, not ve arama için sekme/filtre/yüklenmiş sayfa/scroll konumunu koru. Asenkron içerik hazır olmadan konumu kısa placeholder'a sıkıştırma.",
+      "status": "in-progress",
+      "evidence": "tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json",
+      "note": "Akış ve profil/notes/search seçim-cache temeli mevcut. Tek CUA örneğinde tıklama öncesi 2107, gerçek push/kayıt 1984, Back 1984: kaydedilen konum korunuyor. Tüm async kaynak ve 20 dönüş zinciri kabulü açık.",
+      "evidenceRefs": [
+        "scroll",
+        "profile",
+        "notes",
+        "search",
+        "navigation"
+      ]
+    },
+    {
+      "id": "F04-05",
+      "task": "Ortak katman yığını kur: klavye, modal/form, detay ve ana hedef. Not yükleme, profil düzenleme, bildirme ve kampüs formlarının sistem geri davranışını bağla.",
+      "status": "partial",
+      "evidence": "app/use-app-layer.ts; tests/app-layer-runtime.test.mjs; docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs; docs/mobile/F05_FILTERS_STATUS.md; app/workspace-filters.module.css; tests/workspace-filters-runtime.test.mjs; tests/media-layer-regressions-runtime.test.mjs; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; app/course-hub.tsx; tests/course-hub-runtime.test.mjs; tests/course-hub.test.mjs; docs/mobile/F04_SCOPED_SESSION_REQUESTS.md; lib/authenticated-fetch.ts; app/use-authenticated-fetch.ts; tests/authenticated-fetch.test.mjs; tests/workspace-session-runtime.test.mjs; tests/app-layer-dynamic-isolation.test.mjs; exports/mobile-quality-continuation-2026-09-05/notes-filter-dynamic-isolation.json; docs/mobile/F11_NOTES_FLOW.md; tests/notes-interactions-runtime.test.mjs; tests/note-actions-state-api.test.mjs; app/use-scoped-requests.ts; exports/mobile-quality-continuation-2026-09-05/notes-detail-320-light.json; exports/mobile-quality-continuation-2026-09-05/notes-list-390-dark-after.png; docs/mobile/F07_RELATIONSHIPS.md; tests/profile-relationships-runtime.test.mjs; tests/profile-relationships-api.test.mjs; tests/follow-handler-runtime.test.mjs; exports/mobile-quality-continuation-2026-09-05/profile-relationships-320-light.json; docs/mobile/F11_HOUSING_FLOW.md; tests/housing-flow-runtime.test.mjs; tests/housing-experiences-api.test.mjs",
+      "note": "Ortak Back/Forward, focus/inert ve busy sistem Back testli. Galeride filtre değişince yeni kart/chip izolasyonu düzeltildi ve 320 koyu CUA ile tekrar doğrulandı. Gerçek Notes, ilişki listeleri ve konaklama katmanları bağlandı; fiziksel IME ve tüm katman matrisi açık.",
+      "evidenceRefs": [
+        "layers",
+        "campus",
+        "communities",
+        "notes",
+        "safety",
+        "filters",
+        "mediaRegression",
+        "navigation",
+        "courseHub",
+        "scopedSession",
+        "dynamicIsolation",
+        "notesFlow",
+        "relationships",
+        "housingFlow"
+      ]
+    },
+    {
+      "id": "F04-06",
+      "task": "Silinmiş/yetkisiz/hedefi bulunamayan deep link ve dış kaynak için açıklama ve geri yolu tanımla. Kampüs/ders bağlamını URL ve gezinme durumunda koru.",
+      "status": "partial",
+      "evidence": "lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; docs/mobile/F04_NAVIGATION_STATUS.md; app/course-hub.tsx; tests/course-hub-runtime.test.mjs; tests/course-hub.test.mjs; docs/mobile/F04_CONTENT_TARGETS.md; docs/mobile/F11_CONTENT_DETAILS.md; tests/content-target-runtime.test.mjs; tests/message-target-runtime.test.mjs; tests/campus-content-api.test.mjs; tests/campus-content-runtime.test.mjs; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json; docs/mobile/FINAL_VERIFICATION_2026-09-06.md",
+      "note": "Yorum kimliğinden ilk20 dışı hedef, yeni bildirim ve kopyalanabilir yorum URLsi; silinmiş/yetkisiz/owner ve20turBackForward gerçekDOM/API testli. Son gerçekbrowser bildirimi/odağı/silinmeyi de doğruladı. Genel buluşma hedefi ve cihaz kabulü açık.",
+      "evidenceRefs": [
+        "links",
+        "profile",
+        "messages",
+        "notes",
+        "courseHub",
+        "contentTargets",
+        "actualBrowser",
+        "codeContinuation"
+      ]
+    },
+    {
+      "id": "F04-07",
+      "task": "Hızlı A→B→geri, istek sırası tersliği, 20 tur ileri/geri, yenileme ve hesap değişimi regresyonlarını gerçek davranış testleriyle doğrula.",
+      "status": "partial",
+      "evidence": "lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json; docs/mobile/F11_NOTES_FLOW.md; tests/notes-interactions-runtime.test.mjs; tests/note-actions-state-api.test.mjs; app/use-scoped-requests.ts; exports/mobile-quality-continuation-2026-09-05/notes-detail-320-light.json; exports/mobile-quality-continuation-2026-09-05/notes-list-390-dark-after.png; docs/mobile/F07_RELATIONSHIPS.md; tests/profile-relationships-runtime.test.mjs; tests/profile-relationships-api.test.mjs; tests/follow-handler-runtime.test.mjs; exports/mobile-quality-continuation-2026-09-05/profile-relationships-320-light.json; docs/mobile/F11_HOUSING_FLOW.md; tests/housing-flow-runtime.test.mjs; tests/housing-experiences-api.test.mjs",
+      "note": "Ters istek sırası, remount, Back/Forward ve owner değişimi gerçek davranış testleriyle genişletildi. Notes hedef taslakları ve geç mutation snapshot, takip authoritative sayaçları, konaklama A/B cevapları korumalı. 20 tur bütün zincir, yenileme ve fiziksel cihaz matrisi kapanmadı.",
+      "evidenceRefs": [
+        "links",
+        "scroll",
+        "profile",
+        "messages",
+        "search",
+        "navigation",
+        "finalLocal",
+        "notesFlow",
+        "relationships",
+        "housingFlow"
+      ]
+    },
+    {
+      "id": "F05-01",
+      "task": "Tasarım tokenları ve açık route yetenekleri tanımla. Ekran kimliğini görünen metinden, eylem önceliğini CSS sınıfından çıkarmayı bırak.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F05_SHARED_COMPONENTS.md; tests/ui-primitives-runtime.test.mjs; tests/ui-contract-inventory.test.mjs; exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json",
+      "note": "Typed WorkspaceScreenId/capability kaydı bütün route kimliklerini kapsar. Header görünür başlıktan yetenek veya CSS sınıfından işlem önceliği çıkarmaz; descriptor sahibi callbackleri korunur. Kayıt ve gerçek Header DOM testleri geçer. Fiziksel cihaz kabulü değildir.",
+      "evidenceRefs": [
+        "header",
+        "primitives",
+        "contract",
+        "sharedContracts"
+      ]
+    },
+    {
+      "id": "F05-02",
+      "task": "TopBar için leading/title/primaryAction/secondaryActions sözleşmesi kur. Gerçek child callback'leri koru; shell sabit sahte eylem haritası kullanmasın; boş menü oluşturulmasın.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs",
+      "note": "Gerçek child callback, context Back, tek mobil başlık sahipliği, uzun CTA, dolu Diğer ve desktop uyumluluğu: 8 React DOM testi. Profil titleAs p API'si hero h1 tekrarını önler.",
+      "evidenceRefs": [
+        "header",
+        "layers"
+      ]
+    },
+    {
+      "id": "F05-03",
+      "task": "IconButton, NavItem, Badge, Avatar ve temel düğmelerin anlam, durum, odak ve hedef boyutlarını birleştir. Uzun CTA'ları küçük ekranda erişilebilir kısa/ikonlu biçime geçir.",
+      "status": "partial",
+      "evidence": "app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; docs/mobile/F13_MARK_ASSETS.md; docs/mobile/F13_MARK_ASSETS.json; tests/brand-mark-assets.test.mjs; docs/mobile/F05_CSS_OWNERSHIP.md; tests/mobile-css-ownership.test.mjs; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json; docs/mobile/F05_SHARED_COMPONENTS.md; tests/ui-primitives-runtime.test.mjs; tests/ui-contract-inventory.test.mjs; exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json",
+      "note": "Button/IconButton/Badge ve Header/Search caller geçişi var; ölçülen ortak kontroller48px. NavItem/Avatar ve bütün özel menüler henüz tek primitive kullanmaz; bütün ekran erişilebilirlik kabulü açık.",
+      "evidenceRefs": [
+        "primitives",
+        "header",
+        "brand",
+        "cssOwnership",
+        "sharedContracts"
+      ]
+    },
+    {
+      "id": "F05-04",
+      "task": "SearchField, Tabs, FilterSheet, sonuç özeti ve filtre temizlemeyi birleştir. Uygula/iptal ve kapalı filtrede aktif seçimin görünmesi açık olsun.",
+      "status": "partial",
+      "evidence": "docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; docs/mobile/F05_FILTERS_STATUS.md; app/workspace-filters.module.css; tests/workspace-filters-runtime.test.mjs; docs/mobile/F05_SHARED_COMPONENTS.md; tests/ui-primitives-runtime.test.mjs; tests/ui-contract-inventory.test.mjs; exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json",
+      "note": "Controlled Tabs klavye/RTL/manual seçim ve dış değer/focus testleriyle eklendi. Search/FilterSheet mevcut. Bütün caller, aktif filtre özeti ve reset/tema/viewport matrisi genel kabulü açık.",
+      "evidenceRefs": [
+        "header",
+        "search",
+        "notes",
+        "filters",
+        "sharedContracts"
+      ]
+    },
+    {
+      "id": "F05-05",
+      "task": "Sheet, Dialog, Toast, InlineError, EmptyState ve Skeleton sözleşmelerini kur. Focus, kapanış, tekrar deneme ve azaltılmış hareket durumlarını dahil et.",
+      "status": "verified-local",
+      "evidence": "app/use-app-layer.ts; tests/app-layer-runtime.test.mjs; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F05_FILTERS_STATUS.md; app/workspace-filters.module.css; tests/workspace-filters-runtime.test.mjs; docs/mobile/F05_SHARED_COMPONENTS.md; tests/ui-primitives-runtime.test.mjs; tests/ui-contract-inventory.test.mjs; exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json; docs/mobile/F11_MARKET_RECOVERY.md; tests/market-recovery-runtime.test.mjs; tests/market-images-recovery-api.test.mjs",
+      "note": "Sheet/Dialog/Toast/InlineError/EmptyState/Skeleton sözleşmeleri; focus, Back/Forward, retry, busy, timeout ve reduced-motion testlidir. Ortak hedef33/33, gerçek kontrollerin galeri matrisi8/8; Pazar Sheet footer kapanışı da regresyon testlidir.",
+      "evidenceRefs": [
+        "layers",
+        "header",
+        "campus",
+        "design",
+        "filters",
+        "sharedContracts",
+        "marketRecovery"
+      ]
+    },
+    {
+      "id": "F05-06",
+      "task": "Web sürdürülüyorsa Notlar → Topluluklar → Kampüs ile kademeli CSS sahipliği taşıması yap; yalnız taşınan kuralları kaldır. Native seçilirse aynı tasarım anlamlarını native bileşenlerle uygula.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; docs/mobile/F05_CSS_OWNERSHIP.md; tests/mobile-css-ownership.test.mjs; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json; docs/mobile/F05_WORKSPACE_CSS.md; tests/workspace-css-ownership.test.mjs",
+      "note": "Notlar ve Kampüs kuralları ayrı sahiplerine taşındı; Topluluklar module sahibi korundu ve yalnız kesin ezilmiş tekrarlar kaldırıldı. 17 yeni cascade/ownership testi 7 genişlik x 2 tema ve taşınmayan kural dizilerini doğrular. Sonraki Notes kart/overlay görsel değişikliği eşdeğerlikten ayrı belgelenir; tam piksel/cihaz matrisi değildir.",
+      "evidenceRefs": [
+        "header",
+        "primitives",
+        "campus",
+        "cssOwnership",
+        "finalLocal",
+        "workspaceCss"
+      ]
+    },
+    {
+      "id": "F05-07",
+      "task": "Bileşen galerisi ve üç pilot ekranı dar/geniş, açık/koyu, büyük yazı ve klavye durumlarında kontrol et; sticky başlığın atası hareket ettirilmesin.",
+      "status": "partial",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/interaction-motion.css; app/use-screen-motion.ts; tests/screen-motion.test.mjs; tests/mobile-viewport-runtime.test.mjs; docs/mobile/F05_FILTERS_STATUS.md; app/workspace-filters.module.css; tests/workspace-filters-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/gallery-geometry-matrix.json; docs/mobile/F05_CSS_OWNERSHIP.md; tests/mobile-css-ownership.test.mjs; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json; exports/mobile-quality-implementation-2026-09-05/verified-campus-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-filter-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-feed-390-dark.png",
+      "note": "16 seçili galeri geometri satırı ve son hydrated pilot görüntüleri;320px canlı reduced-motion scrollauto/tek tekrar,305/305 ve5nav var. Bütün tema/genişlik/büyük yazı/IME/sticky matrisi açık.",
+      "evidenceRefs": [
+        "design",
+        "cua",
+        "header",
+        "motion",
+        "filters",
+        "galleryGeometry",
+        "cssOwnership",
+        "finalCua"
+      ]
+    },
+    {
+      "id": "F06-01",
+      "task": "Gönderi kimliği, zaman/kampüs bağlamı, metin ve eylem sırasını tasarıma taşı; uzun isimlerin düğmeleri sıkıştırmasını önle.",
+      "status": "partial",
+      "evidence": "app/feed-post.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png",
+      "note": "Gerçek FeedPost çıkarıldı, kimlik/meta/medya/48px eylem hiyerarşisi galeride incelendi. Uzun isim ve bütün metin/medya durumlarında sıkışma matrisi tamamlanmadı.",
+      "evidenceRefs": [
+        "feed",
+        "design",
+        "cua"
+      ]
+    },
+    {
+      "id": "F06-02",
+      "task": "Metin, tek/çok fotoğraf ve video düzenlerini gerçek oranlarla tanımla. Medya yerini yüklenmeden ayır; küçük görseli zorla büyüterek kalite algısı yaratma.",
+      "status": "partial",
+      "evidence": "docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; app/feed-post.tsx; tests/design-lab-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/local-migrations.json; exports/mobile-quality-implementation-2026-09-05/local-migration-0025.json",
+      "note": "Gerçek dosyadan yönlü görsel boyutları, nullable API alanları ve medya renderer/viewer mevcut; 0025 yalnız yerelde uygulandı. Bütün oranlar/çoklu medya/küçük görsel ilk paint CUA kabulü açık.",
+      "evidenceRefs": [
+        "media",
+        "feed",
+        "migrations"
+      ]
+    },
+    {
+      "id": "F06-03",
+      "task": "Sonraki sayfa, yenileme, yeni gönderi işareti ve cache dönüşünü kur; yeni içerik gelirken okunan gönderi ve konum değişmesin.",
+      "status": "partial",
+      "evidence": "tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; app/feed-post.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; docs/mobile/F06_FEED_REFRESH.md; tests/feed-refresh-runtime.test.mjs",
+      "note": "Görünür Akışta 45 sn var/yok kontrolü, sıfır-yükseklik yeni paylaşım işareti, yeni GET ile bilinçli refresh, 20 sn sınır ve iki sayfa/cursor korunması 18/18 odaklı testle doğrulandı. Gerçek hesapta yeni içerik işaretinin bütün scroll/tema zinciri kabulü açık.",
+      "evidenceRefs": [
+        "scroll",
+        "feed",
+        "publish",
+        "navigation",
+        "feedRefresh"
+      ]
+    },
+    {
+      "id": "F06-04",
+      "task": "Beğeni/kaydetme için hemen geri bildirim ve sunucu hatasında anlaşılır geri alma yap; çift dokunma ve çoklu istekte sayı tutarlılığını koru.",
+      "status": "verified-local",
+      "evidence": "app/feed-post.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F06_POST_INTERACTIONS.md; tests/feed-post-runtime.test.mjs; tests/post-actions-state-api.test.mjs",
+      "note": "Gerçek FeedPost çift tık/ref kilidi, optimistic rollback, owner/target/body/timeout sınırı ve alan bazlı sunucu snapshot uyumu testli. Like/save active:boolean tekrarları gerçek SQLite route testinde aynı kalır; eşzamanlı kopya bildirim çoğaltmaz. Kaydedilen kart sunucu doğrulamasından sonra kaldırılır. Yerel kabul; fiziksel cihaz kabulü değil.",
+      "evidenceRefs": [
+        "feed",
+        "design",
+        "profile",
+        "postInteractions"
+      ]
+    },
+    {
+      "id": "F06-05",
+      "task": "Medya görüntüleyicisi, kaydırma, geri, video oynat/duraklat ve ekran dışına çıkış davranışını tamamla. Ses ve otomatik oynatma kararı ürün tercihine bağlı olsun.",
+      "status": "in-progress",
+      "evidence": "docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; tests/media-layer-regressions-runtime.test.mjs",
+      "note": "İlk nested ProfileContent/Gallery koşusu 0/3 ile gerçek hataları doğruladı; root düzeltmeleri ve iki ek Back/Forward/removal senaryosu sonrası 5/5, scoped ESLint exit0. Beş yerel regresyon kapandı; gerçek native top-layer, cihaz ve tüm medya matrisi açık.",
+      "evidenceRefs": [
+        "media",
+        "layers",
+        "cua",
+        "mediaRegression",
+        "navigation"
+      ]
+    },
+    {
+      "id": "F06-06",
+      "task": "Yükleniyor, desteklenmeyen medya, erişim kaldırılmış içerik ve ağ hatasını ayır. Tek medyanın hatası bütün gönderi metnini kapatmasın.",
+      "status": "partial",
+      "evidence": "docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Bağımsız medya hata/retry, cached broken/1px image ve profil thumbnail fallback mevcut. Bütün erişim kaldırma/ağ/desteklenmeyen dosya UI ayrımları ve gerçek decoder matrisi açık.",
+      "evidenceRefs": [
+        "media",
+        "messages"
+      ]
+    },
+    {
+      "id": "F06-07",
+      "task": "200 gönderi ve karışık medya ile uzun kaydırma, bellek, hızlı geri ve tekrar açma ölç; gerekliyse liste sanallaştırma ve medya yaşam döngüsünü optimize et.",
+      "status": "partial",
+      "evidence": "docs/mobile/F00_TEST_DATA.md; scripts/mobile-quality/fixtures.mjs; tests/mobile-quality-fixtures.test.mjs; docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; docs/mobile/F13_MARK_ASSETS.md; docs/mobile/F13_MARK_ASSETS.json; tests/brand-mark-assets.test.mjs; docs/mobile/F13_LAYER_LISTENERS.md; tests/app-layer-runtime.test.mjs; docs/mobile/F00_WEB_MEASUREMENT.md; tests/web-performance-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/web-metrics-gallery-session.json",
+      "note": "200 gönderi fixture, görünmez/background video pause ve küçük mark byte optimizasyonu var. Karışık gerçek medyada uzun scroll/bellek/frame ölçümü veya sanallaştırma gerekliliği kanıtlanmadı. 200 hiç açılmamış katmanda 0/0 global dinleyici; ilk açılış/Back/Forward/unmount matrisi testli. Bu 200 medya gönderisinin native FPS/bellek ölçümü değildir.",
+      "evidenceRefs": [
+        "fixtures",
+        "media",
+        "brand",
+        "layerListeners",
+        "webMetrics"
+      ]
+    },
+    {
+      "id": "F07-01",
+      "task": "Kendi profilinde kimlik/düzenleme, başkasında takip/mesaj önceliğini ayır. Akademik ayrıntıyı okunabilir özet ve detay olarak düzenle.",
+      "status": "partial",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs",
+      "note": "Kendi profil düzenleme ve başkasında takip/mesaj eylemleri korunuyor; toolbar handle/p ve hero tek h1 sözleşmesi hazır. Akademik detay/uzun biyografi tam mobil kabulü açık.",
+      "evidenceRefs": [
+        "profile",
+        "header",
+        "safety"
+      ]
+    },
+    {
+      "id": "F07-02",
+      "task": "Boş ve dolu profil için farklı içerik hiyerarşisi kur; sıfır öğeli medya kontrollerinin gerekli olup olmadığını belirle; ek bölümleri anlaşılır adla aç.",
+      "status": "partial",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs",
+      "note": "Mobil ana sekmeler/ek bölüm seçimi, sade boş metin ve thumbnail fallback var. Sıfır/dolu tüm profil durumlarında kontrol yoğunluğu ve görsel kabul bitmedi.",
+      "evidenceRefs": [
+        "profile",
+        "messages",
+        "design"
+      ]
+    },
+    {
+      "id": "F07-03",
+      "task": "Gönderi/medya/not/topluluk sekmesi, pagination ve geri dönüş konumunu koru; doğru kullanıcı ve içerik anahtarıyla yükle.",
+      "status": "partial",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; docs/mobile/F04_CONTENT_TARGETS.md; docs/mobile/F11_CONTENT_DETAILS.md; tests/content-target-runtime.test.mjs; tests/message-target-runtime.test.mjs; tests/campus-content-api.test.mjs; tests/campus-content-runtime.test.mjs; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json",
+      "note": "Profil not ve topluluk kartları gerçek içerik URLlerini açar. Not mutasyonu/topluluk ayarı owner cache invalidation ve hedef dönüşü testli; seçili profil-not Back/Forward gerçek browser geçti. Genel scroll ve tüm mutation invalidation/cihaz kabulü açık.",
+      "evidenceRefs": [
+        "profile",
+        "scroll",
+        "contentTargets",
+        "actualBrowser"
+      ]
+    },
+    {
+      "id": "F07-04",
+      "task": "Takip/takipten çık, takipçi listesi, engellenmiş ve erişimi sınırlı profil durumlarını tamamla; sayılar ve eylemler sunucuyla tutarlı olsun.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs; lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; docs/mobile/F07_RELATIONSHIPS.md; tests/profile-relationships-runtime.test.mjs; tests/profile-relationships-api.test.mjs; tests/follow-handler-runtime.test.mjs; exports/mobile-quality-continuation-2026-09-05/profile-relationships-320-light.json",
+      "note": "Gerçek takipçi/takip edilen API ve liste, Türkçe arama,40 cursor/200 cache, privacy/block fences, desired follow retry ve sunucu sayaçları tamamlandı. Yeni17 API/DOM + Home3 test ve320 açık galeri Back/Forward/Ece arama kanıtı var. Gerçek hesap/cihaz ve uzaktan push kabulü değildir.",
+      "evidenceRefs": [
+        "profile",
+        "safety",
+        "links",
+        "relationships"
+      ]
+    },
+    {
+      "id": "F07-05",
+      "task": "Gönderi ayrıntısı ve yorum yazma/yanıtlama akışını düzenle; klavye açılınca bağlam ile gönderme kontrolü görünür kalsın.",
+      "status": "partial",
+      "evidence": "app/feed-post.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; docs/mobile/F06_POST_INTERACTIONS.md; tests/feed-post-runtime.test.mjs; tests/post-actions-state-api.test.mjs",
+      "note": "Gerçek quick comment ve owner eylemleri korunuyor; medya detay katmanı var. Ayrı gönderi/yorum yanıtlama zinciri ve IME açıkken bağlam/gönderme kabulü tamamlanmadı. Gönderi seçenek/rapor/silme paneli, 48px yorum kontrolleri, taslak/owner ve kaldırılan kart sonrası odak düzeltildi; gerçek cihaz/IME ve tüm yorum detay matrisi açık.",
+      "evidenceRefs": [
+        "feed",
+        "design",
+        "media",
+        "postInteractions"
+      ]
+    },
+    {
+      "id": "F07-06",
+      "task": "Yorum/gönderi paylaşımı, bildirme ve sahip menülerini bağlama taşı; kopyalanan bağlantı doğru içeriğe ulaşsın.",
+      "status": "partial",
+      "evidence": "app/feed-post.tsx; tests/design-lab-runtime.test.mjs; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs; lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; docs/mobile/F06_POST_INTERACTIONS.md; tests/feed-post-runtime.test.mjs; tests/post-actions-state-api.test.mjs",
+      "note": "Paylaş/owner/report işlemleri gerçek bağlamda; galeri preview gerçek API/native eylem çalıştırmıyor. Yorum deep link/kopyalanan hedef ve tüm menüler için uçtan uca kabul açık. Gönderi seçenek/rapor/silme paneli, 48px yorum kontrolleri, taslak/owner ve kaldırılan kart sonrası odak düzeltildi; gerçek cihaz/IME ve tüm yorum detay matrisi açık.",
+      "evidenceRefs": [
+        "feed",
+        "safety",
+        "links",
+        "design",
+        "postInteractions"
+      ]
+    },
+    {
+      "id": "F07-07",
+      "task": "Uzun biyografi, sıfır/dolu medya, silinmiş gönderi, 401 ve hızlı profil değişimini test et; profile dönüşte akış konumunu doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; tests/media-layer-regressions-runtime.test.mjs; docs/mobile/F04_NAVIGATION_STATUS.md; docs/mobile/F04_SCOPED_SESSION_REQUESTS.md; lib/authenticated-fetch.ts; app/use-authenticated-fetch.ts; tests/authenticated-fetch.test.mjs; tests/workspace-session-runtime.test.mjs; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json",
+      "note": "Owner/target401/403/404,cursor,thumbnail veProfileEditor4test; seçili editör/medyaBack-inert CUA var. Tüm uzun/dolu/silinmiş profil/scroll veAndroid matrisi açık.",
+      "evidenceRefs": [
+        "profile",
+        "links",
+        "messages",
+        "scroll",
+        "mediaRegression",
+        "scopedSession",
+        "finalLocal"
+      ]
+    },
+    {
+      "id": "F08-01",
+      "task": "Alt çubuktan tek dokunmayla oluşturmayı aç; kimlik, hedef kitle, metin ve medya seçeneklerini sade hiyerarşide göster.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css",
+      "note": "Alt gezinmenin Paylaş callback'i gerçek tam ekran composer'ı açıyor; kimlik/kitle/metin/medya kontrolleri gerçek React DOM galerisinde testli. Yayın veya cihaz kabulü değil.",
+      "evidenceRefs": [
+        "design",
+        "primitives"
+      ]
+    },
+    {
+      "id": "F08-02",
+      "task": "Fotoğraf/video seçme, kaldırma, sıra değiştirme, oran ve önizleme durumlarını tasarla; desteklenmeyen boyut/tür için düzeltilebilir açıklama göster.",
+      "status": "partial",
+      "evidence": "docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; docs/mobile/F08_MULTI_MEDIA.md; tests/composer-media-runtime.test.mjs; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json",
+      "note": "Dört fotoğraf veya tek video; sıra/kaldırma/limit ve taslak koruması gerçek DOM testli. Gerçek browserda iki fotoğraf seçme/sıra değişimi/yayımla201/yenileme ve sunucu sırası geçti. Gerçek Android sağlayıcı ve bütün oran kabulü açık.",
+      "evidenceRefs": [
+        "design",
+        "primitives",
+        "publish",
+        "multiMedia",
+        "actualBrowser"
+      ]
+    },
+    {
+      "id": "F08-03",
+      "task": "Metin ve medya taslağını hesap bazlı koru; çıkış, sistem geri, uygulama arka planı ve süreç yeniden açılışında neyin geri kazanılacağını tanımla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts; docs/mobile/F08_DURABLE_DRAFTS.md; app/use-publish-draft.ts; app/publish-draft-notice.tsx; lib/publish-draft-store.ts; lib/publish-upload.ts; tests/publish-draft-runtime.test.mjs; tests/publish-draft-store.test.mjs; tests/publish-upload.test.mjs; docs/mobile/F08_MULTI_MEDIA.md; tests/composer-media-runtime.test.mjs",
+      "note": "Sıralı File dizisi schema2 taslakta saklanır, schema1 korunur. Hesap/TTL/kota/değişmez deneme ve Home geri yükleme testli. Android süreç yeniden oluşumu ve çok sekme kabulü açık.",
+      "evidenceRefs": [
+        "publish",
+        "scroll",
+        "durablePublish",
+        "multiMedia"
+      ]
+    },
+    {
+      "id": "F08-04",
+      "task": "Yükleme ilerlemesi, iptal, başarısız parça, tekrar deneme ve tekilleştirilmiş gönderim kur. Aynı gönderi bağlantı geri geldiğinde iki kez oluşmasın.",
+      "status": "partial",
+      "evidence": "docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; exports/mobile-quality-implementation-2026-09-05/local-migrations.json; exports/mobile-quality-implementation-2026-09-05/local-migration-0025.json; docs/mobile/F08_DURABLE_DRAFTS.md; app/use-publish-draft.ts; app/publish-draft-notice.tsx; lib/publish-draft-store.ts; lib/publish-upload.ts; tests/publish-draft-runtime.test.mjs; tests/publish-draft-store.test.mjs; tests/publish-upload.test.mjs; docs/mobile/F08_MULTI_MEDIA.md; tests/composer-media-runtime.test.mjs; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json",
+      "note": "Çoklu medya transaction, sıra duyarlı hash, tek dosya eski hash/replay, kayıp onay ve nesne temizliği testli. Hedef73/73; gerçek browser iki fotoğraf yazma/okuma geçti. Zayıf ağ/uçak modu/cihaz kabulü açık.",
+      "evidenceRefs": [
+        "publish",
+        "migrations",
+        "durablePublish",
+        "multiMedia",
+        "actualBrowser"
+      ]
+    },
+    {
+      "id": "F08-05",
+      "task": "Başarıdan sonra gönderiyi doğru akışta görünür kıl; hedef kitle ve sunucu durumunu koru. Sadece animasyon oynadığı için başarılı gösterme.",
+      "status": "partial",
+      "evidence": "docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; app/feed-post.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F08_DURABLE_DRAFTS.md; app/use-publish-draft.ts; app/publish-draft-notice.tsx; lib/publish-draft-store.ts; lib/publish-upload.ts; tests/publish-draft-runtime.test.mjs; tests/publish-draft-store.test.mjs; tests/publish-upload.test.mjs; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json",
+      "note": "Publish runtime7 senaryo; replayonayında postcount kör artırılmaz, sunucu profili yenilenir. Gerçek post.id/kalıcıclear/cache uzlaştırması var; tüm gerçek ağ/hedef akış browser kabulü açık.",
+      "evidenceRefs": [
+        "publish",
+        "feed",
+        "profile",
+        "durablePublish",
+        "finalLocal"
+      ]
+    },
+    {
+      "id": "F08-06",
+      "task": "Galeri/kamera iznini ihtiyaç anında iste; ret ve seçimden vazgeçme kullanılabilir kalsın. Metin yazma için medya iznini zorunlu tutma.",
+      "status": "partial",
+      "evidence": "app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs",
+      "note": "Medya seçici yalnız kullanıcı eylemiyle açılır; metin için medya gerekmez. Fiziksel Android kamera/galeri izin ret/iptal akışı test edilmedi.",
+      "evidenceRefs": [
+        "primitives",
+        "design"
+      ]
+    },
+    {
+      "id": "F08-07",
+      "task": "Büyük medya, yavaş ağ, uçak modu, 401, düşük depolama ve geri dönüşü izole gerçek API'de test et; taslağın kaybolmadığını kanıtla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; docs/mobile/F08_DURABLE_DRAFTS.md; app/use-publish-draft.ts; app/publish-draft-notice.tsx; lib/publish-draft-store.ts; lib/publish-upload.ts; tests/publish-draft-runtime.test.mjs; tests/publish-draft-store.test.mjs; tests/publish-upload.test.mjs",
+      "note": "Fresh SQLite/R2 API ve gerçek Home handler + fake IndexedDB transaction + kontrollü XHR ile 401, quota, stale response, terminal410, aynı key retry testli. 51/51 grubu gerçek browser disk/yavaş ağ/uçak modu/büyük dosya/Android zinciri değildir.",
+      "evidenceRefs": [
+        "publish",
+        "durablePublish"
+      ]
+    },
+    {
+      "id": "F09-01",
+      "task": "Boş liste, yeni mesaj başlangıcı, boş sorgu ve sonuç bulunamama metinlerini ayır; mevcut sade başlık ve tek ana eylemi koru.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Boş liste, boş yeni-mesaj sorgusu ve sonuç bulunamaması ayrıldı; boş sorgu API çağırmıyor. Gerçek component testi ve tek başlık korunumu mevcut.",
+      "evidenceRefs": [
+        "messages"
+      ]
+    },
+    {
+      "id": "F09-02",
+      "task": "Konuşma satırında kimlik, son mesaj, zaman ve okunmamış durumunu netleştir; uzun metin/isim ve silinmiş kullanıcı durumunu tasarla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Konuşma kimliği/önizleme/zaman/unread görünümü ve bounded liste cache'i var. Uzun/silinmiş kişi durumlarının iki tema ve cihaz görsel matrisi tamamlanmadı.",
+      "evidenceRefs": [
+        "messages"
+      ]
+    },
+    {
+      "id": "F09-03",
+      "task": "Konuşma detayında klavye, son mesaja inme, geçmiş yükleme ve yeni mesaj geldiğinde konumu koruma davranışlarını tamamla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; tests/feed-history-restoration.test.mjs; tests/scroll-restoration.test.mjs; tests/workspace-state.test.mjs; lib/workspace-state.ts; lib/scroll-restoration.ts",
+      "note": "100'lük API sayfaları, 250 eş-zamanlı timestamp cursor testi ve okuma konumu algoritması var. Native klavye/inset, background dönüş ve gerçek uzun mesaj viewport zıplama kabulü açık.",
+      "evidenceRefs": [
+        "messages",
+        "scroll"
+      ]
+    },
+    {
+      "id": "F09-04",
+      "task": "Mevcut polling yerine/yanında gerekli teslim yaklaşımını ölçerek seç; gönderiliyor/gönderildi/başarısız durumlarını gerçek backend kanıtıyla üret. Okundu bilgisi desteklenmiyorsa uydurma.",
+      "status": "partial",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Gerçek POST pending/confirmed/failure ve backend read_at kullanılıyor; gizli sayfada polling duruyor. 6/25sn polling korunuyor, ölçüme dayalı yeni teslim seçimi veya push yok.",
+      "evidenceRefs": [
+        "messages"
+      ]
+    },
+    {
+      "id": "F09-05",
+      "task": "Mesaj taslağı, yeniden gönderme, bağlantı kopması ve tekilleştirme kur; oturum değişiminde özel taslağı veya konuşmayı başka hesaba taşıma.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Owner kapsamlı mesaj/ek taslağı, değişmeyen içerikte aynı anahtarlı retry, DB unique sınırı, çift tık ve hesap/late-response izolasyonu yerel gerçek route/state testlerinde doğrulandı. Kalıcı/native teslim garantisi değil.",
+      "evidenceRefs": [
+        "messages"
+      ]
+    },
+    {
+      "id": "F09-06",
+      "task": "Mesaj ve kişi menülerinde kopyala/bildir/engelle gibi mevcut işlevleri bağlamsal göster; uzun basmanın erişilebilir alternatifini sun.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs; docs/mobile/F09_CONTEXT_ACTIONS.md; tests/message-context-actions-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/dm-context-browser.json",
+      "note": "Mesaj/kişi bağlamında kopyala, kontrollü rapor ve doğrulanmış engel/engel kaldırma mevcut API ile bağlı. 48–52px görünür alternatif, taslak/Back/Forward, cache/send/401/body/20sn sınırları 43/43 odak grubunda doğrulandı. Ortak bileşen galeri CUA 390/320 ölçümü ve Back/Forward geçti; gerçek hesap/Android kabulü ayrı açık.",
+      "evidenceRefs": [
+        "messages",
+        "safety",
+        "dmContext"
+      ]
+    },
+    {
+      "id": "F09-07",
+      "task": "İki izole hesap ve gerçek cihazlarla alım/gönderim/geri/klavye/arka plan testleri yap; 100 mesaj geçmişinde zıplama ve yinelenme olmamasını doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F00_TEST_DATA.md; scripts/mobile-quality/fixtures.mjs; tests/mobile-quality-fixtures.test.mjs",
+      "note": "İki sentetik hesapla fresh bellek SQLite'da gerçek alım/gönderim/read ve 250 cursor testi var; yerel CUA taslak-only kontrolü yapıldı. İki gerçek Android cihaz/arka plan teslim kabulü yok.",
+      "evidenceRefs": [
+        "messages",
+        "fixtures"
+      ]
+    },
+    {
+      "id": "F10-01",
+      "task": "Kişi/ders/not/topluluk aramasında tek sorgu, anlaşılır kapsam ve sonuç grupları kullan; sorgu ve scroll geri dönüşte korunsun.",
+      "status": "partial",
+      "evidence": "app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts; docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Kişi/ders/not/topluluk için ortak sorgu/kapsam, owner cache ve remount restore testli. Gerçek sonuçtan dönüşte scroll ve bütün kapsam gruplarının CUA kabulü açık.",
+      "evidenceRefs": [
+        "search",
+        "contract"
+      ]
+    },
+    {
+      "id": "F10-02",
+      "task": "Kampüsüm alanında mevcut araç erişimini korurken gerçek ders/topluluk/etkinlik bağlantılarını öne çıkar; veri yoksa sahte popülerlik üretme.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; app/ui-icon.tsx; app/social-primitives.tsx; app/mobile-app.tsx; app/social-design.css",
+      "note": "Yedi mevcut kampüs aracı bulunabilir; gerçek ders/topluluk/üye href'leri bağlı, sahte popülerlik yok. Kullanım sıklığına göre ders/etkinlik keşif düzeninin öğrenci kabulü açık.",
+      "evidenceRefs": [
+        "contract",
+        "communities",
+        "primitives"
+      ]
+    },
+    {
+      "id": "F10-03",
+      "task": "Arama isteklerini sıralı kabul et; yavaş ağ, eski yanıt, boş sonuç ve seçili filtreyi temizleme durumlarını tamamla.",
+      "status": "verified-local",
+      "evidence": "app/unified-search.tsx; tests/unified-search-runtime.test.mjs; app/api/search/route.ts",
+      "note": "Unified search 4 gerçek DOM testi: abort'u yok sayan eski yanıt, query/scope/owner cache, working retry/malformed success, 401 ve hesap ayrımı. Cihaz performans ölçümü değil.",
+      "evidenceRefs": [
+        "search"
+      ]
+    },
+    {
+      "id": "F10-04",
+      "task": "Topluluk keşfi/üyelik/oluşturma başlıklarını ortak sistemle kur; boş Diğer menüsünü kaldır; oluşturma callback ve çok adımlı durumunu koru.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs",
+      "note": "Ortak başlık ve boş Diğer düzeltmesi; gerçek üç adımlı create callback, Back taslak/owner izolasyonu, çift submit/error/success akışı 16 testlik F10 grupta doğrulandı.",
+      "evidenceRefs": [
+        "communities",
+        "header"
+      ]
+    },
+    {
+      "id": "F10-05",
+      "task": "Topluluk → ilgili içerik → üye/profil → mesaj zincirini bağla; erişim ve üyelik durumları backend'le tutarlı olsun.",
+      "status": "partial",
+      "evidence": "docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs",
+      "note": "Topluluk detayı/post/event/member profiline gerçek linkler ve private üyelik yetkileri testli. Profil Topluluk kartı hâlâ genel hedefe gidebilir; uçtan uca profil→DM cihaz zinciri tamamlanmadı.",
+      "evidenceRefs": [
+        "communities",
+        "profile",
+        "links"
+      ]
+    },
+    {
+      "id": "F10-06",
+      "task": "Üye/yönetici işlemleri, katılma isteği, etkinlik ve bildirme ekranlarının mobil düzenini tamamla; yetkisiz eylem yalnız gizlenmekle yetinmesin.",
+      "status": "partial",
+      "evidence": "docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs",
+      "note": "Request/approval/event/RSVP/ban gerçek API yetkileri ve nested report/error katmanları testli; yalnız gizlemeye dayanmaz. Bütün yönetici mobil düzeni ve native focus kabulü açık.",
+      "evidenceRefs": [
+        "communities",
+        "safety"
+      ]
+    },
+    {
+      "id": "F10-07",
+      "task": "Sıfır topluluk, uzun ad, çok üyelik, özel topluluk, silinmiş sonuç ve kampüs değişimi durumlarını test et; ana araçlar hâlâ bulunabilir olsun.",
+      "status": "partial",
+      "evidence": "docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; docs/mobile/F00_TEST_DATA.md; scripts/mobile-quality/fixtures.mjs; tests/mobile-quality-fixtures.test.mjs",
+      "note": "Türkçe/literal query, null faculty, bans/campus/removed/401, 120 dışında üye bulma ve stale/retry dahil 16 test geçti. Tam sıfır/çok üyelik/uzun ad cihaz ve öğrenci matrisi açık.",
+      "evidenceRefs": [
+        "communities",
+        "fixtures"
+      ]
+    },
+    {
+      "id": "F11-01",
+      "task": "Notlar'da tek başlık, kaynak sekmesi, arama ve kompakt sonuç akışı kur; öğrenci/editoryal/sınav kaynağı ayrımını ve not/soru yükleme davranışını koru.",
+      "status": "partial",
+      "evidence": "app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; docs/mobile/F11_NOTES_FLOW.md; tests/notes-interactions-runtime.test.mjs; tests/note-actions-state-api.test.mjs; app/use-scoped-requests.ts; exports/mobile-quality-continuation-2026-09-05/notes-detail-320-light.json; exports/mobile-quality-continuation-2026-09-05/notes-list-390-dark-after.png",
+      "note": "Gerçek Notes kompakt64px belge kartı, kaynak/filtre/arama,48px eylem/tek dialog scroll, hedefe bağlı yorum ve yükleme taslağı; desired save/oy ve hatada rollback uygulandı.9 DOM+4 API,8 galeri grubu ve320/390 seçili CUA kanıtı var. Gerçek hesap upload ve bütün kaynak/rol/tema/masaüstü matrisi açık.",
+      "evidenceRefs": [
+        "notes",
+        "header",
+        "cua",
+        "notesFlow"
+      ]
+    },
+    {
+      "id": "F11-02",
+      "task": "Kampüs'ü liste, harita ve seçili nokta detayı olarak açık böl; harita/kaynak açıklaması bütün listeyi aşağı itmesin. Kaynak güvenilirliği ve kontrol tarihi detayda erişilebilir kalsın.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs",
+      "note": "Mobil liste önce; harita yalnız Ayrıntılar'da mount edilir. Kaynak/tarih ve koordinatsız fallback; Back/Forward, gerçek sekmeler ve 781px desktop DOM altı component testinde doğrulandı.",
+      "evidenceRefs": [
+        "campus",
+        "layers"
+      ]
+    },
+    {
+      "id": "F11-03",
+      "task": "Etkinlik, konaklama ve Bugün alanlarını aynı geri/filtre/ekleme sözleşmesine taşı; sekme değişince gerçek birincil eylem de değişsin.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; docs/mobile/F11_HOUSING_FLOW.md; tests/housing-flow-runtime.test.mjs; tests/housing-experiences-api.test.mjs",
+      "note": "Etkinlik/Bugün sözleşmesi korundu; konaklama katalog liste/detail/filtre ve ayrı öğrenci deneyim listesi→detay→form eklendi. Ortak Back/Forward, hedef taslağı, gerçek create ID ve rol/anonimlik/soft-delete için27 odaklı yerel test var. Gerçek oturum/tema/masaüstü/Android kabulü açık; housing POST kalıcı idempotency eklenmedi.",
+      "evidenceRefs": [
+        "campus",
+        "notes",
+        "housingFlow"
+      ]
+    },
+    {
+      "id": "F11-04",
+      "task": "Kampüs Anlık için içerik ömrü, anonimlik/görünürlük, oluşturma ve bildirme durumlarını sadeleştir; canlılık ve güncellik ifadeleri gerçek veriyle desteklensin.",
+      "status": "partial",
+      "evidence": "docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs",
+      "note": "Pulse create/report katmanları, live/confession ayrı metin ve File cache, hata/Back yeniden denemesi iki gerçek DOM testinde doğrulandı. İçerik ömrü/anonimlik/güncellik tam cihaz kabulü açık.",
+      "evidenceRefs": [
+        "campus"
+      ]
+    },
+    {
+      "id": "F11-05",
+      "task": "Kütüphane'de yer bulma ve güncel bilgi; Pazar'da ilan/filtre/detay/iletişim akışını düzenle. Doluluk, fiyat ve bulunabilirlik bilinmiyorsa açıkça belirt.",
+      "status": "partial",
+      "evidence": "docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; docs/mobile/F11_MARKET_RECOVERY.md; tests/market-recovery-runtime.test.mjs; tests/market-images-recovery-api.test.mjs; docs/mobile/F04_CONTENT_TARGETS.md; docs/mobile/F11_CONTENT_DETAILS.md; tests/content-target-runtime.test.mjs; tests/message-target-runtime.test.mjs; tests/campus-content-api.test.mjs; tests/campus-content-runtime.test.mjs; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json; docs/mobile/FINAL_VERIFICATION_2026-09-06.md; docs/mobile/F11_PERSISTENT_MARKET_DRAFTS.md; exports/mobile-remaining-code-2026-09-06/phase1/final/verification.json",
+      "note": "Pazar sunucu idempotency akışına cihazda kalıcı alanlar, sıralı fotoğraflar, değişmez anahtarlar, CAS/çıkış/yeniden açılış koruması eklendi. Son kaynak 46 otomatik test; Chrome 11 genel ve ayrı 4 son tarih kontrolü, gerçek süreç yeniden açılışı ve R2 bayt sırası geçti. Medya tekilleştirmesi sıradaki iş; bütün fiziksel cihaz zinciri açık.",
+      "evidenceRefs": [
+        "campus",
+        "marketRecovery",
+        "contentTargets",
+        "actualBrowser",
+        "codeContinuation"
+      ]
+    },
+    {
+      "id": "F11-06",
+      "task": "Eşleş'te tercih, sonuç ve iletişime geçişi anlaşılır kur; yaş/gizlilik/engelleme sınırlarını koru. Genel Paylaş düğmesiyle eşleşme eylemlerini karıştırma.",
+      "status": "partial",
+      "evidence": "docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs",
+      "note": "Eşleş tercihleri remount/refresh korur; kişi bazlı request/report taslakları ve hata akışı ortak katmanda, iki DOM testi var. Yaş/gizlilik/engelleme ve tam iletişim zinciri cihaz matrisi açık.",
+      "evidenceRefs": [
+        "campus",
+        "safety"
+      ]
+    },
+    {
+      "id": "F11-07",
+      "task": "Ders katalog ekibiyle kimlik, uzun ders adı, 5–6. sınıf/yaz dönemi, eksik dönem ve kaynak alanlarını sözleşmede doğrula; tüm yedi aracın mobil ve masaüstü dönüş akışını test et.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; docs/mobile/F04_SCOPED_SESSION_REQUESTS.md; lib/authenticated-fetch.ts; app/use-authenticated-fetch.ts; tests/authenticated-fetch.test.mjs; tests/workspace-session-runtime.test.mjs",
+      "note": "Yedi aracın kapsam/eksik tablosu ve Kaydedilenler ek testi hazır. Ders katalog ekibi kimlik/5–6/yaz/eksik dönem kaynak sözleşmesinin son ortak kabulü ve yedi aracın tüm mobil-desktop dönüş testleri yapılmadı.",
+      "evidenceRefs": [
+        "contract",
+        "campus",
+        "scopedSession"
+      ]
+    },
+    {
+      "id": "F12-01",
+      "task": "Kayıt/giriş/oturum süresi dolması akışlarını küçük ekranda düzenle; zorunlu hesap alanlarıyla sonradan tamamlanabilir kampüs/profil alanlarını ayır.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F12_ACCOUNT_DELETION_CONTRACT.md; tests/account-deletion.test.mjs; docs/mobile/F04_SCOPED_SESSION_REQUESTS.md; lib/authenticated-fetch.ts; app/use-authenticated-fetch.ts; tests/authenticated-fetch.test.mjs; tests/workspace-session-runtime.test.mjs; docs/mobile/F12_AUTH_ONBOARDING_CHECK.md; tests/auth-onboarding-runtime.test.mjs; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json",
+      "note": "Auth/akademik çift submit, eski yanıt, hata/alan odağı7test; iki Home onSessionExpired bağlı, scoped401 owner temizliği entegre. Gerçek kullanıcı giriş oturumu ve bütün küçük ekran/alan önceliği matrisi açık.",
+      "evidenceRefs": [
+        "contract",
+        "profile",
+        "messages",
+        "deletion",
+        "scopedSession",
+        "authOnboarding",
+        "finalLocal"
+      ]
+    },
+    {
+      "id": "F12-02",
+      "task": "Üniversite/bölüm/ders seçimini arama ve ilerleme bağlamında tasarla; uzun katalog listesi, eksik program ve sonradan değiştirme akışlarını koru.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F12_AUTH_ONBOARDING_CHECK.md; tests/auth-onboarding-runtime.test.mjs; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json",
+      "note": "Akademik adım odağı/tek-adım koruması, üniversite değişiminde eski yanıt, eksik ders alanı ve400/401 davranışı gerçekDOM testli. Arama/uzun katalog/sonradan değiştirme bütün tasarım kabulü açık.",
+      "evidenceRefs": [
+        "contract",
+        "authOnboarding",
+        "finalLocal"
+      ]
+    },
+    {
+      "id": "F12-03",
+      "task": "İlk kullanımda tek anlamlı sonraki adım göster; izinleri toplu isteme; boş akış, boş ders ve boş topluluk için dürüst başlangıç yolu sun.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; app/product-features.tsx; tests/notes-discovery.test.mjs; lib/notes-navigation.ts; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs",
+      "note": "Boş sorgu ve bazı empty CTA'lar ayrıldı; galeri açık fixture etiketli. İlk oturumun boş akış/ders/topluluk ve izin zinciri öğrenciyle doğrulanmadı.",
+      "evidenceRefs": [
+        "contract",
+        "design",
+        "notes",
+        "messages"
+      ]
+    },
+    {
+      "id": "F12-04",
+      "task": "Profil düzenleme, tema, azaltılmış hareket, bildirim tercihleri, Kaydedilenler ve Ayarlar'ı anlaşılır grupla; hesabı kapatmaya kadar geri yolunu tanımla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; docs/mobile/F11_CAMPUS_STATUS.md; docs/mobile/F11_TOOLS_STATUS.md; tests/campus-guide-layers-runtime.test.mjs; tests/campus-tools-layers-runtime.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs; docs/mobile/F05_CSS_OWNERSHIP.md; tests/mobile-css-ownership.test.mjs; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json",
+      "note": "Profil editörü4DOM test, Backtaslak/Vazgeçclear CUA, gerçek320px reduced-motion tek tekrar/scrollauto doğrulandı. Tüm tercihler/hesap kapatma geri matrisi açık.",
+      "evidenceRefs": [
+        "contract",
+        "header",
+        "campus",
+        "layers",
+        "cssOwnership"
+      ]
+    },
+    {
+      "id": "F12-05",
+      "task": "Bildirimden doğru içerik/yorum/kişi/konuşmaya git; okundu işaretleme başarısızlığı gezinmeyi belirsiz bırakmasın. Kaldırılmış içeriğe açıklama sun.",
+      "status": "partial",
+      "evidence": "lib/app-links.ts; app/app-navigation.tsx; tests/app-links.test.mjs; tests/public-profile-navigation.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx",
+      "note": "Bildirim ve içerik hedefleri ortak href/çözücüye bağlandı. Okundu hatası ve kaldırılmış her içerik/yorum/konuşma deep-link zincirinin CUA kabulü kapanmadı.",
+      "evidenceRefs": [
+        "links",
+        "profile"
+      ]
+    },
+    {
+      "id": "F12-06",
+      "task": "Bildir/engelle/sessize al ve destek akışlarını gerçek sunucu işlemleriyle tamamla; kullanıcıya sonucu göster; görevli inceleme ekranının küçük ekran kullanımını kontrol et.",
+      "status": "partial",
+      "evidence": "app/profile-safety-menu.tsx; tests/profile-safety-runtime.test.mjs; docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md; app/communities-workspace.tsx; tests/community-requests.test.mjs; tests/community-search-api.test.mjs; tests/communities-flow-runtime.test.mjs; tests/communities.test.mjs; docs/mobile/F12_ACCOUNT_DELETION_CONTRACT.md; tests/account-deletion.test.mjs",
+      "note": "Profilde server state'li block/mute/report 3 DOM testi ve topluluk/staff yetki testleri var. Gerçek destek sorumlusu ve bütün görevli küçük ekran inceleme kabulü açık.",
+      "evidenceRefs": [
+        "safety",
+        "communities",
+        "deletion"
+      ]
+    },
+    {
+      "id": "F12-07",
+      "task": "Hesap ve ilişkili veri silme talebinin uygulama içi ve dış web akışını tasarla/uygula; gerçek destek ve sorumlu bilgilerini ürün sahibinden al; saklama ve silme davranışını doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F12_ACCOUNT_DELETION_CONTRACT.md; tests/account-deletion.test.mjs; exports/mobile-quality-implementation-2026-09-05/local-migrations.json; exports/mobile-quality-implementation-2026-09-05/local-migration-0025.json",
+      "note": "Uygulama/dış web talep, geçmiş, iptal ve gerçek owner/admin inceleme kuyruğu; 28 testlik grup ve yerel 0024 migration kanıtlı. Gerçek silme motoru yok; deletionExecuted false, retention/destek/operasyon/Play açık.",
+      "evidenceRefs": [
+        "deletion",
+        "migrations"
+      ]
+    },
+    {
+      "id": "F13-01",
+      "task": "Seçilen mimarinin release'e yakın Android derlemesini üret; açılış, launcher/maskable/adaptive simge, splash, tema, sistem çubukları ve offline ekranını seçilen marka tokenlarıyla eşleştir.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F13_MARK_ASSETS.md; docs/mobile/F13_MARK_ASSETS.json; tests/brand-mark-assets.test.mjs; docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs; docs/mobile/F03_TABLET_PREVIEW_STATUS.md; experiments/android-preview/README.md; outputs/android-preview/source-checks.json; outputs/android-preview/artifact-checks.json; outputs/android-preview/artifacts/build-receipt.json; outputs/android-preview/artifacts/lan-download-check.json; outputs/android-preview/local-site/http-checks.json; docs/mobile/FINAL_VERIFICATION_2026-09-06.md",
+      "note": "Kampira Test v2 debug APK build/lint/imza ve LAN hash doğrulandı; tablet güncellemesi adbSuccess.24origin+28recoveryJVMkontrolü geçti; sonSPAadres/Activitygeri yükleme ve HTTP/ağ/timeout/TLS/renderer durumları eklendi. Kalıcı native mimari,adaptiveikon,release ve fiziksel yolculuk kabulü açık.",
+      "evidenceRefs": [
+        "android",
+        "brand",
+        "release",
+        "tabletPreview",
+        "codeContinuation"
+      ]
+    },
+    {
+      "id": "F13-02",
+      "task": "Gesture/üç düğme geri, klavye, safe-area, rotation, arka plan, süreç yeniden oluşumu ve yeniden açılışta bütün kritik akışları test et.",
+      "status": "external",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs",
+      "note": "Fiziksel gesture/üç düğme Back, klavye, rotation, background ve process recreation matrisi yok. DOM history testi bunun yerine geçmez.",
+      "evidenceRefs": [
+        "android"
+      ]
+    },
+    {
+      "id": "F13-03",
+      "task": "Dokunma, cache dönüşü, uzun liste, medya decode, bellek ve frame zamanlarını iki cihazda ölç; yavaş kalan işi iz ile teşhis et, yalnız animasyon süresini kısaltma.",
+      "status": "external",
+      "evidence": "docs/mobile/F13_MARK_ASSETS.md; docs/mobile/F13_MARK_ASSETS.json; tests/brand-mark-assets.test.mjs; docs/mobile/F06_IMAGE_DIMENSIONS.md; tests/post-media-dimensions.test.mjs; tests/post-media-view.test.mjs; tests/post-media-gallery-runtime.test.mjs; tests/media-lifecycle.test.mjs; docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F13_LAYER_LISTENERS.md; tests/app-layer-runtime.test.mjs; docs/mobile/F00_WEB_MEASUREMENT.md; tests/web-performance-runtime.test.mjs; exports/mobile-quality-implementation-2026-09-05/web-metrics-gallery-session.json",
+      "note": "Mark 528222 byte'tan 11379/31190 byte'a izlenebilir biçimde küçüldü; video pause testleri var. Bunlar iki cihazda decode/bellek/INP/frame ölçümü değildir; ölçüm kapısı açık. 200 hiç açılmamış katmanda 0/0 global dinleyici; ilk açılış/Back/Forward/unmount matrisi testli. Bu 200 medya gönderisinin native FPS/bellek ölçümü değildir.",
+      "evidenceRefs": [
+        "brand",
+        "media",
+        "android",
+        "layerListeners",
+        "webMetrics"
+      ]
+    },
+    {
+      "id": "F13-04",
+      "task": "TalkBack, odak sırası, anlamlı etiket/durum, kontrast, büyük yazı, büyütme, azaltılmış hareket ve tek elle erişimi bütün ana görevlerde doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F05_HEADER_STATUS.md; app/workspace-ui.tsx; tests/workspace-header-runtime.test.mjs; app/use-app-layer.ts; tests/app-layer-runtime.test.mjs; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs",
+      "note": "Etiket, gerçek focus/Tab/inert davranışı ve reduced-motion yolları yerel testli. TalkBack, büyük yazı, kontrast, büyütme ve tek-el bütün görev kabulü tamamlanmadı.",
+      "evidenceRefs": [
+        "header",
+        "layers",
+        "design"
+      ]
+    },
+    {
+      "id": "F13-05",
+      "task": "Bildirim izni/abonelik, token yenileme, gerçek sunucu teslimi, ön/arka plan ve tıklama hedefini tamamla; soğuk deep link doğru kullanıcı ve ekrana ulaşsın.",
+      "status": "pending",
+      "evidence": "docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs",
+      "note": "Gizli sayfada polling durması push değildir. İzin/abonelik/token yenileme/gerçek teslim/soğuk hedef için backend+Android hat henüz yok.",
+      "evidenceRefs": [
+        "messages",
+        "android",
+        "release"
+      ]
+    },
+    {
+      "id": "F13-06",
+      "task": "Offline/retry, ağ değişimi, kamera dönüşü, dosya açma/paylaşma ve hesap değişiminde özel veri izolasyonunu test et; web metriklerini native frame verisinden ayrı raporla.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F07_PROFILE_STATUS.md; tests/profile-content-state.test.mjs; app/profile-content.tsx; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts",
+      "note": "Özel API cache etmeyen offline fallback ve owner/401/late-response testleri var. Gerçek ağ değişimi, kamera/dosya dönüşü, native paylaşma ve cihaz özel veri izolasyonu açık.",
+      "evidenceRefs": [
+        "android",
+        "profile",
+        "messages",
+        "publish"
+      ]
+    },
+    {
+      "id": "F13-07",
+      "task": "Web'de 320–430/780/781/820/1440 px ve iki tema regresyonlarını, Android'de cihaz matrisini kapat; ölçülemeyen koşulları geçti sayma.",
+      "status": "in-progress",
+      "evidence": "exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png; docs/mobile/F02_DESIGN_SYSTEM.md; app/design-lab/page.tsx; app/design-lab/design-lab.tsx; tests/design-lab-runtime.test.mjs; docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; exports/mobile-quality-implementation-2026-09-05/gallery-geometry-matrix.json; docs/mobile/F05_CSS_OWNERSHIP.md; tests/mobile-css-ownership.test.mjs; exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json; exports/mobile-quality-implementation-2026-09-05/verified-campus-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-notes-filter-320-light.png; exports/mobile-quality-implementation-2026-09-05/verified-feed-390-dark.png; docs/mobile/LOCAL_VERIFICATION_2026-09-05.md; exports/mobile-quality-implementation-2026-09-05/unit-suite-final.txt; exports/mobile-quality-implementation-2026-09-05/build-final.txt; exports/mobile-quality-implementation-2026-09-05/typecheck-final.txt; exports/mobile-quality-implementation-2026-09-05/lint-final.txt; exports/mobile-quality-implementation-2026-09-05/artifact-validation.json; scripts/mobile-quality/start-isolated-preview.mjs; scripts/mobile-quality/isolated-browser-qa.mjs; exports/isolated-mobile-qa/browser/final-1788640435788/report.json; docs/mobile/F05_SHARED_COMPONENTS.md; tests/ui-primitives-runtime.test.mjs; tests/ui-contract-inventory.test.mjs; exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json; docs/mobile/F02_FONT_ASSETS.md; app/fonts.css; tests/font-assets.test.mjs; docs/mobile/F02_ICON_INVENTORY.json; docs/mobile/FINAL_VERIFICATION_2026-09-06.md",
+      "note": "31 gerçek bölüm/tema/genişlik görünümü ve44 API/browser kontrolü geçti;0JS/asset hata. Yorum ve gerçek Pazar yanıt kaybı eklendi. Bütün genişlik x durum x tema ve Android matrisi açık.",
+      "evidenceRefs": [
+        "cua",
+        "design",
+        "android",
+        "navigation",
+        "galleryGeometry",
+        "cssOwnership",
+        "finalCua",
+        "finalLocal",
+        "actualBrowser",
+        "sharedContracts",
+        "fontAssets",
+        "codeContinuation"
+      ]
+    },
+    {
+      "id": "F14-01",
+      "task": "Öğrencilerle yönlendirmesiz görev oturumları yap; görev başarısı, yanlış dönüş, yardım ihtiyacı ve algılanan rahatlığı kaydet. F00 örnekleriyle farkı göster.",
+      "status": "external",
+      "evidence": "docs/MOBILE_APP_QUALITY_ROADMAP.md; docs/mobile/F01_EXPERIENCE_CONTRACT.md",
+      "note": "Yönlendirmesiz gerçek öğrenci oturumu ve F00 ile ölçülmüş görev başarısı karşılaştırması yok.",
+      "evidenceRefs": [
+        "research",
+        "contract"
+      ]
+    },
+    {
+      "id": "F14-02",
+      "task": "Eksik gerçek içerik, sahipsiz topluluk, ilk paylaşım ve ilk mesaj senaryoları için ürün açılış planı oluştur; sahte kullanıcı/etkileşim kullanma.",
+      "status": "verified-local",
+      "evidence": "docs/mobile/F00_TEST_DATA.md; scripts/mobile-quality/fixtures.mjs; tests/mobile-quality-fixtures.test.mjs; docs/mobile/F01_EXPERIENCE_CONTRACT.md; docs/mobile/F14_LAUNCH_CONTENT_PLAN.md",
+      "note": "Gerçek içerik/sorumlu/ilk paylaşım/ilk mesaj ve sahipsiz topluluk için kod yollarına bağlı operasyon planı yazıldı. Atanmamış kişiler ve onaylı kohort alanları boş; öneri eşikler açık etiketli. Belge teslimi doğrulandı; operasyon uygulanmadı.",
+      "evidenceRefs": [
+        "fixtures",
+        "contract",
+        "launchContent"
+      ]
+    },
+    {
+      "id": "F14-03",
+      "task": "Nihai paket kimliği, servis origin'i, imzalama sahipliği, App Links/TWA doğrulaması ve destek kanallarını kesinleştir; anahtarları kaynak kod dışında yönet.",
+      "status": "partial",
+      "evidence": "docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs; docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs",
+      "note": "Kullanıcı mevcut Railway origin'ini seçti; paket kimliği geçici. Gerçek signing sahibi/sertifika, DAL ve destek kanalları kesinleşmedi.",
+      "evidenceRefs": [
+        "android",
+        "release"
+      ]
+    },
+    {
+      "id": "F14-04",
+      "task": "Hedef API, Data safety, hesap silme, UGC/çocuk güvenliği, hedef yaş, içerik derecelendirme ve kullanılan SDK/izin beyanlarını gerçek davranışla karşılaştır.",
+      "status": "partial",
+      "evidence": "docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs; docs/mobile/F12_ACCOUNT_DELETION_CONTRACT.md; tests/account-deletion.test.mjs",
+      "note": "Güncel API36/Play kapıları ve talep-silme ayrımı belgeli; gerçek yaş/UGC/SDK/izin/Data safety/retention beyanı ile işletim ve paket kanıtı tamamlanmadı.",
+      "evidenceRefs": [
+        "release",
+        "deletion"
+      ]
+    },
+    {
+      "id": "F14-05",
+      "task": "Hesap türüne göre gerekli Play test kanalını işlet; imzalı AAB'yi kanala yükle, Play'in ürettiği sürümü cihazlarda kur; kurulum/güncelleme/oturum/geri/medya/push akışını doğrula.",
+      "status": "external",
+      "evidence": "docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs; docs/mobile/F03_ANDROID_DECISION_STATUS.md; docs/ANDROID_APP.md; tests/android-environment.test.mjs; tests/android-app.test.mjs",
+      "note": "İmzalı AAB, Play hesabı/test kanalı, mağaza dağıtımından cihaz kurulum/güncelleme ve gerçek medya/push kabulü yok.",
+      "evidenceRefs": [
+        "release",
+        "android"
+      ]
+    },
+    {
+      "id": "F14-06",
+      "task": "Crash/ANR ve kritik API/üretim/mesaj hataları için müdahale planı kur. Eski native/web istemcisiyle API uyumu, oturum/medya davranışı, geri çekme/rollback ve destek sorumluluğunu doğrula.",
+      "status": "partial",
+      "evidence": "docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs; docs/mobile/F08_PUBLISH_CONTRACT.md; tests/post-idempotency.test.mjs; tests/publish-attempt.test.mjs; lib/publish-attempt.ts; docs/mobile/F09_MESSAGES_STATUS.md; tests/messages-session-state.test.mjs; tests/message-mobile-history.test.mjs; tests/async-workspaces.test.mjs; docs/mobile/F14_INCIDENT_RESPONSE_PLAN.md",
+      "note": "Crash/ANR, API/mesaj/oturum, eski-yeni istemci uyumu, Railway migration/data rollback ve destek müdahale planı gerçek kod/resmi kaynaklarla yazıldı. Bakım modu yalnız banner diye ayrıldı. Sorumlu, gerçek alarm/native vitals, rollback tatbikatı ve cihaz kabulü açık.",
+      "evidenceRefs": [
+        "release",
+        "publish",
+        "messages",
+        "incidentResponse"
+      ]
+    },
+    {
+      "id": "F14-07",
+      "task": "Görsel kabul, cihaz kabulü, öğrenci geri bildirimi, politikalar ve yayın durumunu ayrı imzala; mağaza ekran görüntüleri gerçek sürümden olsun; açık yayın onayıyla dağıtım yap.",
+      "status": "external",
+      "evidence": "docs/mobile/F14_RELEASE_GATES.md; tests/android-release-readiness.test.mjs; exports/mobile-quality-implementation-2026-09-05/notes-390-header.png; exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png; exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png; docs/mobile/F04_NAVIGATION_STATUS.md; exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json; exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png; exports/mobile-quality-implementation-2026-09-05/notes-390-current.png; exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png; exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png; exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png",
+      "note": "Yayın aracı releaseReady=false/publicationAuthorized=false kalır. Görsel/cihaz/öğrenci/politika ayrı onayları, gerçek sürüm store görselleri ve açık yayın yetkisi yok.",
+      "evidenceRefs": [
+        "release",
+        "cua"
+      ]
+    }
+  ],
+  "statusDefinitions": {
+    "verified-local": "Görevin belirtilen yerel çıktısı doğrudan belge veya gerçekleşmiş davranış testi ile doğrulandı; cihaz/öğrenci/yayın kabulü değildir.",
+    "partial": "Somut uygulama veya belge var; görevde sayılan en az bir davranış/kapsam/kabul kapısı açık.",
+    "in-progress": "Ana çalışma bu görevin uygulama veya CUA düzeltme/yeniden testini aktif sürdürüyor; sonuç henüz kapanmadı.",
+    "pending": "Görevin ana teslimi henüz doğrulanmadı; ilişkili altyapı veya araştırma tamamlanma kanıtı sayılmaz.",
+    "external": "Mevcut kayıtta fiziksel cihaz, öğrenci, gerçek hesap/mağaza veya insan kararı kanıtı yok; yerel otomasyon yerine geçirilmez."
+  },
+  "evidencePolicy": [
+    "Dosyanın mevcut olması testin geçtiği anlamına gelmez. Gerçek koşuların kaynağı IMPLEMENTATION_STATUS.md içinde ayrı belirtilir.",
+    "37 testlik ortak header/layer/campus/tools/gallery/brand grubu bu alt görevden önce gerçekten geçti; son teslimlerde 14 testlik search/safety/layer/viewer ve 2 lifecycle sonucu ana çalışma bildirimi, 16 community sonucu F10 durum belgesi/ajan koşu kaydıdır.",
+    "exports/mobile-quality-implementation-2026-09-05/unit-suite.txt önceki kesilmiş/iptal edilmiş tanı koşusudur; tüm suite başarısı sayılmaz.",
+    "Geçici scroll tanı testi, seçili galeri screenshot ve DOM sonucu fiziksel viewport/Android/production kanıtı değildir.",
+    "F03 native scout yerel 13 test+Metro exportla teslim edildi; gerçek cookie/medya/cihaz ve ADR açık. F08 Home/kalıcı taslak/ilerleme entegre ve 51/51 yerel; gerçek browser disk/çok sekme/Android açık. F06 üç kırmızı nested regresyon düzeltme sonrası genişletilen 5/5 ile yerel kapandı; bütün F11 kabulü ve F12 gerçek silme açık.",
+    "CSS modülü/override eklenmesi global cascade sahipliği temizliğinin tamamlandığını göstermez.",
+    "Sonraki F05 mobil filtre teslimi: 6 yeni + 30 mevcut test birlikte 36/36 geçti; kısa ekran/CUA ve Android select/IME kapısı açık.",
+    "F03 scout kanıtı experiments/mobile-native-spike/evidence/local-checks.json içindedir; 13/13+typecheck+lint+Metro599 export fiziksel cihaz veya native mimari kabulü değildir.",
+    "mobile-route-geometry.json ilk 12 satır sınırlı geometri snapshot; son 3 oturum sonrası yüzeydir. 15/15 akış geçti sayılmaz; önceki notes/campus/profile kanıtı ayrı tutulur.",
+    "CUA scroll: tıklama öncesi2107, gerçek push1984, Back1984. Aracın navigasyon öncesi123px scroll hareketi ürün kaybı değildir; tek örnek 20 döngü/cihaz/perf kabulü olmaz.",
+    "gallery-geometry-matrix.json sentetik development galeride 16 seçili snapshot: yatay taşma yok; theme istenen değerdir, effect/medya hazır oluşu doğrulanmadan gerçek görsel tema veya authenticated ürün kabulü değildir.",
+    "Course hub dar teslimi3 yeni ReactDOM +2 mevcut course +5 ortak layer +5 medya birlikte15/15 geçti; Home gerçek callbackleri AST ile yürütüldü, gerçek API mutasyonu/Android/CUA kabulü üretilmedi.",
+    "Önceki teslimin seri suite'i 484/484,0fail/cancel/skip,exit0; genişESLint/sonTypeScript/Vinextbuild exit0. Artifactworker/hostingJSON geçer,deployedfalse. Güncel devam teslimi aşağıda ayrıca kayıtlıdır; dış kabul kapıları açık.",
+    "F05 CSS41/41 yalnız taşınan kabuk kuralları; bütün cascade tamam değil. F12 Auth/onboarding7/7 ve scoped40129/29 kontrollü yerel; gerçek kullanıcı oturumu/Android kabulü değildir.",
+    "Son devam teslimi 529/529; build-followup, lint-followup, typecheck-followup ve artifact-validation-followup kayıtları son kanıttır. Önceki 529 testteki tek galeri fixture hatası, asenkron Back kapanışı tamamlanmadan yeni owner mount edilmesiydi; dialog kapanışını gözleyen test düzeltmesi sonrası tüm suite geçti. Üretim kodu bu test için gevşetilmedi."
+  ],
+  "evidenceCatalog": {
+    "baseline": [
+      "exports/mobile-quality-implementation-2026-09-05/initial-head.txt",
+      "exports/mobile-quality-implementation-2026-09-05/initial-git-status.txt"
+    ],
+    "contract": [
+      "docs/mobile/F01_EXPERIENCE_CONTRACT.md"
+    ],
+    "fixtures": [
+      "docs/mobile/F00_TEST_DATA.md",
+      "scripts/mobile-quality/fixtures.mjs",
+      "tests/mobile-quality-fixtures.test.mjs"
+    ],
+    "research": [
+      "docs/MOBILE_APP_QUALITY_ROADMAP.md"
+    ],
+    "design": [
+      "docs/mobile/F02_DESIGN_SYSTEM.md",
+      "app/design-lab/page.tsx",
+      "app/design-lab/design-lab.tsx",
+      "tests/design-lab-runtime.test.mjs"
+    ],
+    "directions": [
+      "exports/mobile-quality-implementation-2026-09-05/direction-a.png",
+      "exports/mobile-quality-implementation-2026-09-05/direction-b.png"
+    ],
+    "cua": [
+      "exports/mobile-quality-implementation-2026-09-05/notes-390-header.png",
+      "exports/mobile-quality-implementation-2026-09-05/gallery-feed-390-dark.png",
+      "exports/mobile-quality-implementation-2026-09-05/gallery-messages-390-dark.png",
+      "exports/mobile-quality-implementation-2026-09-05/gallery-media-viewer-390.png",
+      "docs/mobile/F04_NAVIGATION_STATUS.md",
+      "exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json",
+      "exports/mobile-quality-implementation-2026-09-05/campus-detail-390.png",
+      "exports/mobile-quality-implementation-2026-09-05/notes-390-current.png",
+      "exports/mobile-quality-implementation-2026-09-05/notes-filter-320x568.png",
+      "exports/mobile-quality-implementation-2026-09-05/profile-editor-390-before.png",
+      "exports/mobile-quality-implementation-2026-09-05/profile-editor-390-after.png",
+      "exports/mobile-quality-implementation-2026-09-05/gallery-message-detail-390-dark.png"
+    ],
+    "android": [
+      "docs/mobile/F03_ANDROID_DECISION_STATUS.md",
+      "docs/ANDROID_APP.md",
+      "tests/android-environment.test.mjs",
+      "tests/android-app.test.mjs"
+    ],
+    "links": [
+      "lib/app-links.ts",
+      "app/app-navigation.tsx",
+      "tests/app-links.test.mjs",
+      "tests/public-profile-navigation.test.mjs"
+    ],
+    "scroll": [
+      "tests/feed-history-restoration.test.mjs",
+      "tests/scroll-restoration.test.mjs",
+      "tests/workspace-state.test.mjs",
+      "lib/workspace-state.ts",
+      "lib/scroll-restoration.ts"
+    ],
+    "layers": [
+      "app/use-app-layer.ts",
+      "tests/app-layer-runtime.test.mjs"
+    ],
+    "header": [
+      "docs/mobile/F05_HEADER_STATUS.md",
+      "app/workspace-ui.tsx",
+      "tests/workspace-header-runtime.test.mjs"
+    ],
+    "primitives": [
+      "app/ui-icon.tsx",
+      "app/social-primitives.tsx",
+      "app/mobile-app.tsx",
+      "app/social-design.css"
+    ],
+    "motion": [
+      "app/interaction-motion.css",
+      "app/use-screen-motion.ts",
+      "tests/screen-motion.test.mjs",
+      "tests/mobile-viewport-runtime.test.mjs"
+    ],
+    "feed": [
+      "app/feed-post.tsx",
+      "tests/design-lab-runtime.test.mjs"
+    ],
+    "media": [
+      "docs/mobile/F06_IMAGE_DIMENSIONS.md",
+      "tests/post-media-dimensions.test.mjs",
+      "tests/post-media-view.test.mjs",
+      "tests/post-media-gallery-runtime.test.mjs",
+      "tests/media-lifecycle.test.mjs"
+    ],
+    "profile": [
+      "docs/mobile/F07_PROFILE_STATUS.md",
+      "tests/profile-content-state.test.mjs",
+      "app/profile-content.tsx"
+    ],
+    "publish": [
+      "docs/mobile/F08_PUBLISH_CONTRACT.md",
+      "tests/post-idempotency.test.mjs",
+      "tests/publish-attempt.test.mjs",
+      "lib/publish-attempt.ts"
+    ],
+    "messages": [
+      "docs/mobile/F09_MESSAGES_STATUS.md",
+      "tests/messages-session-state.test.mjs",
+      "tests/message-mobile-history.test.mjs",
+      "tests/async-workspaces.test.mjs"
+    ],
+    "search": [
+      "app/unified-search.tsx",
+      "tests/unified-search-runtime.test.mjs",
+      "app/api/search/route.ts"
+    ],
+    "communities": [
+      "docs/mobile/F10_COMMUNITIES_SEARCH_STATUS.md",
+      "app/communities-workspace.tsx",
+      "tests/community-requests.test.mjs",
+      "tests/community-search-api.test.mjs",
+      "tests/communities-flow-runtime.test.mjs",
+      "tests/communities.test.mjs"
+    ],
+    "notes": [
+      "app/product-features.tsx",
+      "tests/notes-discovery.test.mjs",
+      "lib/notes-navigation.ts",
+      "exports/mobile-quality-implementation-2026-09-05/notes-390-header.png"
+    ],
+    "campus": [
+      "docs/mobile/F11_CAMPUS_STATUS.md",
+      "docs/mobile/F11_TOOLS_STATUS.md",
+      "tests/campus-guide-layers-runtime.test.mjs",
+      "tests/campus-tools-layers-runtime.test.mjs"
+    ],
+    "safety": [
+      "app/profile-safety-menu.tsx",
+      "tests/profile-safety-runtime.test.mjs"
+    ],
+    "deletion": [
+      "docs/mobile/F12_ACCOUNT_DELETION_CONTRACT.md",
+      "tests/account-deletion.test.mjs"
+    ],
+    "release": [
+      "docs/mobile/F14_RELEASE_GATES.md",
+      "tests/android-release-readiness.test.mjs"
+    ],
+    "brand": [
+      "docs/mobile/F13_MARK_ASSETS.md",
+      "docs/mobile/F13_MARK_ASSETS.json",
+      "tests/brand-mark-assets.test.mjs"
+    ],
+    "migrations": [
+      "exports/mobile-quality-implementation-2026-09-05/local-migrations.json",
+      "exports/mobile-quality-implementation-2026-09-05/local-migration-0025.json"
+    ],
+    "filters": [
+      "docs/mobile/F05_FILTERS_STATUS.md",
+      "app/workspace-filters.module.css",
+      "tests/workspace-filters-runtime.test.mjs"
+    ],
+    "nativeScout": [
+      "experiments/mobile-native-spike/DELIVERY.md",
+      "experiments/mobile-native-spike/AUTH_AND_MEDIA_CONTRACT.md",
+      "experiments/mobile-native-spike/README.md",
+      "experiments/mobile-native-spike/evidence/local-checks.json"
+    ],
+    "mediaRegression": [
+      "tests/media-layer-regressions-runtime.test.mjs",
+      "docs/mobile/F04_NAVIGATION_STATUS.md"
+    ],
+    "navigation": [
+      "docs/mobile/F04_NAVIGATION_STATUS.md",
+      "exports/mobile-quality-implementation-2026-09-05/mobile-route-geometry.json"
+    ],
+    "durablePublish": [
+      "docs/mobile/F08_DURABLE_DRAFTS.md",
+      "app/use-publish-draft.ts",
+      "app/publish-draft-notice.tsx",
+      "lib/publish-draft-store.ts",
+      "lib/publish-upload.ts",
+      "tests/publish-draft-runtime.test.mjs",
+      "tests/publish-draft-store.test.mjs",
+      "tests/publish-upload.test.mjs"
+    ],
+    "galleryGeometry": [
+      "exports/mobile-quality-implementation-2026-09-05/gallery-geometry-matrix.json",
+      "docs/mobile/F04_NAVIGATION_STATUS.md"
+    ],
+    "courseHub": [
+      "docs/mobile/F04_NAVIGATION_STATUS.md",
+      "app/course-hub.tsx",
+      "tests/course-hub-runtime.test.mjs",
+      "tests/course-hub.test.mjs"
+    ],
+    "finalLocal": [
+      "docs/mobile/LOCAL_VERIFICATION_2026-09-05.md",
+      "exports/mobile-quality-continuation-2026-09-05/unit-suite.txt",
+      "exports/mobile-quality-continuation-2026-09-05/build.txt",
+      "exports/mobile-quality-continuation-2026-09-05/lint.txt",
+      "exports/mobile-quality-continuation-2026-09-05/typecheck.txt",
+      "exports/mobile-quality-continuation-2026-09-05/artifact-validation.json"
+    ],
+    "cssOwnership": [
+      "docs/mobile/F05_CSS_OWNERSHIP.md",
+      "tests/mobile-css-ownership.test.mjs",
+      "exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json"
+    ],
+    "scopedSession": [
+      "docs/mobile/F04_SCOPED_SESSION_REQUESTS.md",
+      "lib/authenticated-fetch.ts",
+      "app/use-authenticated-fetch.ts",
+      "tests/authenticated-fetch.test.mjs",
+      "tests/workspace-session-runtime.test.mjs"
+    ],
+    "authOnboarding": [
+      "docs/mobile/F12_AUTH_ONBOARDING_CHECK.md",
+      "tests/auth-onboarding-runtime.test.mjs"
+    ],
+    "finalCua": [
+      "exports/mobile-quality-implementation-2026-09-05/verified-campus-320-light.png",
+      "exports/mobile-quality-implementation-2026-09-05/verified-notes-320-light.png",
+      "exports/mobile-quality-implementation-2026-09-05/verified-notes-filter-320-light.png",
+      "exports/mobile-quality-implementation-2026-09-05/verified-feed-390-dark.png",
+      "exports/mobile-quality-implementation-2026-09-05/reduced-motion-browser.json"
+    ],
+    "webMetrics": [
+      "docs/mobile/F00_WEB_MEASUREMENT.md",
+      "tests/web-performance-runtime.test.mjs",
+      "exports/mobile-quality-implementation-2026-09-05/web-metrics-gallery-session.json"
+    ],
+    "feedRefresh": [
+      "docs/mobile/F06_FEED_REFRESH.md",
+      "tests/feed-refresh-runtime.test.mjs"
+    ],
+    "postInteractions": [
+      "docs/mobile/F06_POST_INTERACTIONS.md",
+      "tests/feed-post-runtime.test.mjs",
+      "tests/post-actions-state-api.test.mjs"
+    ],
+    "dmContext": [
+      "docs/mobile/F09_CONTEXT_ACTIONS.md",
+      "tests/message-context-actions-runtime.test.mjs",
+      "exports/mobile-quality-implementation-2026-09-05/dm-context-browser.json"
+    ],
+    "layerListeners": [
+      "docs/mobile/F13_LAYER_LISTENERS.md",
+      "tests/app-layer-runtime.test.mjs",
+      "tests/app-layer-listener-load.test.mjs"
+    ],
+    "launchContent": [
+      "docs/mobile/F14_LAUNCH_CONTENT_PLAN.md"
+    ],
+    "incidentResponse": [
+      "docs/mobile/F14_INCIDENT_RESPONSE_PLAN.md"
+    ],
+    "notesFlow": [
+      "docs/mobile/F11_NOTES_FLOW.md",
+      "tests/notes-interactions-runtime.test.mjs",
+      "tests/note-actions-state-api.test.mjs",
+      "app/use-scoped-requests.ts",
+      "exports/mobile-quality-continuation-2026-09-05/notes-detail-320-light.json",
+      "exports/mobile-quality-continuation-2026-09-05/notes-list-390-dark-after.png"
+    ],
+    "relationships": [
+      "docs/mobile/F07_RELATIONSHIPS.md",
+      "tests/profile-relationships-runtime.test.mjs",
+      "tests/profile-relationships-api.test.mjs",
+      "tests/follow-handler-runtime.test.mjs",
+      "exports/mobile-quality-continuation-2026-09-05/profile-relationships-320-light.json"
+    ],
+    "housingFlow": [
+      "docs/mobile/F11_HOUSING_FLOW.md",
+      "tests/housing-flow-runtime.test.mjs",
+      "tests/housing-experiences-api.test.mjs"
+    ],
+    "workspaceCss": [
+      "docs/mobile/F05_WORKSPACE_CSS.md",
+      "tests/workspace-css-ownership.test.mjs"
+    ],
+    "dynamicIsolation": [
+      "docs/mobile/F04_NAVIGATION_STATUS.md",
+      "tests/app-layer-dynamic-isolation.test.mjs",
+      "exports/mobile-quality-continuation-2026-09-05/notes-filter-dynamic-isolation.json"
+    ],
+    "sharedContracts": [
+      "docs/mobile/F05_SHARED_COMPONENTS.md",
+      "tests/ui-primitives-runtime.test.mjs",
+      "tests/ui-contract-inventory.test.mjs",
+      "exports/mobile-quality-continuation-2026-09-05/shared-ui-browser/matrix.json"
+    ],
+    "contentTargets": [
+      "docs/mobile/F04_CONTENT_TARGETS.md",
+      "docs/mobile/F11_CONTENT_DETAILS.md",
+      "tests/content-target-runtime.test.mjs",
+      "tests/message-target-runtime.test.mjs",
+      "tests/campus-content-api.test.mjs",
+      "tests/campus-content-runtime.test.mjs"
+    ],
+    "multiMedia": [
+      "docs/mobile/F08_MULTI_MEDIA.md",
+      "tests/composer-media-runtime.test.mjs",
+      "tests/post-idempotency.test.mjs"
+    ],
+    "marketRecovery": [
+      "docs/mobile/F11_MARKET_RECOVERY.md",
+      "tests/market-recovery-runtime.test.mjs",
+      "tests/market-images-recovery-api.test.mjs"
+    ],
+    "actualBrowser": [
+      "scripts/mobile-quality/start-isolated-preview.mjs",
+      "scripts/mobile-quality/isolated-browser-qa.mjs",
+      "exports/isolated-mobile-qa/browser/final-1788640435788/report.json"
+    ],
+    "tabletPreview": [
+      "docs/mobile/F03_TABLET_PREVIEW_STATUS.md",
+      "experiments/android-preview/README.md",
+      "outputs/android-preview/source-checks.json",
+      "outputs/android-preview/artifact-checks.json",
+      "outputs/android-preview/artifacts/build-receipt.json",
+      "outputs/android-preview/artifacts/lan-download-check.json",
+      "outputs/android-preview/local-site/http-checks.json",
+      "outputs/android-preview/artifacts/tablet-install-check.json"
+    ],
+    "fontAssets": [
+      "docs/mobile/F02_FONT_ASSETS.md",
+      "app/fonts.css",
+      "tests/font-assets.test.mjs",
+      "docs/mobile/F02_ICON_INVENTORY.json"
+    ],
+    "codeContinuation": [
+      "docs/mobile/FINAL_VERIFICATION_2026-09-06.md",
+      "exports/isolated-mobile-qa/browser/final-1788643452436/report.json",
+      "exports/mobile-code-continuation-2026-09-06/unit-suite.txt",
+      "exports/mobile-code-continuation-2026-09-06/market-client.txt",
+      "outputs/android-preview/artifacts/f03-recovery-v2/tablet-install-check.json",
+      "exports/isolated-mobile-qa/browser/final-1788644133103/report.json"
+    ]
+  },
+  "summary": {
+    "verified-local": 24,
+    "partial": 67,
+    "external": 9,
+    "pending": 2,
+    "in-progress": 3
+  },
+  "phaseSummary": [
+    {
+      "id": "F00",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "verified-local": 2,
+        "partial": 3,
+        "external": 2
+      }
+    },
+    {
+      "id": "F01",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 3,
+        "verified-local": 4
+      }
+    },
+    {
+      "id": "F02",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 6,
+        "verified-local": 1
+      }
+    },
+    {
+      "id": "F03",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 4,
+        "external": 2,
+        "pending": 1
+      }
+    },
+    {
+      "id": "F04",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "verified-local": 2,
+        "partial": 4,
+        "in-progress": 1
+      }
+    },
+    {
+      "id": "F05",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "verified-local": 4,
+        "partial": 3
+      }
+    },
+    {
+      "id": "F06",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 5,
+        "verified-local": 1,
+        "in-progress": 1
+      }
+    },
+    {
+      "id": "F07",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 6,
+        "verified-local": 1
+      }
+    },
+    {
+      "id": "F08",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "verified-local": 1,
+        "partial": 6
+      }
+    },
+    {
+      "id": "F09",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "verified-local": 3,
+        "partial": 4
+      }
+    },
+    {
+      "id": "F10",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 5,
+        "verified-local": 2
+      }
+    },
+    {
+      "id": "F11",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 5,
+        "verified-local": 2
+      }
+    },
+    {
+      "id": "F12",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 7
+      }
+    },
+    {
+      "id": "F13",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "partial": 3,
+        "external": 2,
+        "pending": 1,
+        "in-progress": 1
+      }
+    },
+    {
+      "id": "F14",
+      "taskCount": 7,
+      "acceptance": "open",
+      "statuses": {
+        "external": 3,
+        "verified-local": 1,
+        "partial": 3
+      }
+    }
+  ],
+  "localVerification": {
+    "record": "docs/mobile/FINAL_VERIFICATION_2026-09-06.md",
+    "node": "24.19.0",
+    "unitSuite": {
+      "tests": 679,
+      "passed": 679,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationSeconds": 157.0931681,
+      "finalHandlerFocusedChecks": 12
+    },
+    "eslint": {
+      "scope": "app lib db tests scripts/mobile-quality",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "exitCode": 0
+    },
+    "vinextBuild": {
+      "exitCode": 0
+    },
+    "artifact": {
+      "hostingManifestValid": true,
+      "workerDefaultFetch": true,
+      "deployed": false
+    },
+    "actualBrowser": {
+      "report": "exports/isolated-mobile-qa/browser/final-1788643452436/report.json",
+      "passed": 44,
+      "failed": 0,
+      "screens": 31,
+      "pageErrors": 0,
+      "assetErrors": 0,
+      "deliberateNetworkFaults": 1,
+      "finalFocusedRecovery": {
+        "report": "exports/isolated-mobile-qa/browser/final-1788644133103/report.json",
+        "passed": 4,
+        "failed": 0,
+        "manualScroll": false,
+        "recoveryFocused": true,
+        "recoveryVisibleBelowHeader": true
+      }
+    },
+    "androidDebug": {
+      "artifact": "outputs/android-preview/artifacts/f03-recovery-v2/build-receipt.json",
+      "buildExecuted": true,
+      "signatureVerified": true,
+      "downloadVerified": true,
+      "deviceInstalled": true,
+      "versionCode": 2,
+      "installReceipt": "outputs/android-preview/artifacts/f03-recovery-v2/tablet-install-check.json",
+      "deviceJourneyVerified": false
+    },
+    "physicalDeviceAcceptance": false,
+    "studentAcceptance": false,
+    "publicationAuthorized": false,
+    "logs": {
+      "unitSuite": "exports/mobile-code-continuation-2026-09-06/unit-suite.txt",
+      "build": "exports/mobile-code-continuation-2026-09-06/build.txt",
+      "eslint": "exports/mobile-code-continuation-2026-09-06/lint.txt",
+      "typecheck": "exports/mobile-code-continuation-2026-09-06/typecheck.txt",
+      "artifact": "exports/mobile-code-continuation-2026-09-06/artifact-validation.json"
+    }
+  }
+}

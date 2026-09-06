@@ -1,5 +1,8 @@
 import { sameOriginRequest } from "../../../../lib/app-auth";
 import { profileMediaUrl } from "../../../../lib/profile";
+import { fileContentDisposition } from "../../../../lib/file-response";
+import { MediaUploadError, putOwnedMedia } from "../../../../lib/media-upload-operations";
+import { activeActor, ActiveActorError } from "../../../../lib/active-actor";
 import {
   audit,
   cleanText,
@@ -12,7 +15,7 @@ import {
   unavailableResponse,
 } from "../../../../lib/server-api";
 
-type MediaKind = "avatar" | "banner";
+type MediaKind = "avatar";
 
 const allowedImages: Record<string, { extensions: string[]; storedExtension: string; magic: (bytes: Uint8Array) => boolean }> = {
   "image/png": {
@@ -33,11 +36,7 @@ const allowedImages: Record<string, { extensions: string[]; storedExtension: str
 };
 
 function cleanKind(value: unknown): MediaKind | null {
-  return value === "avatar" || value === "banner" ? value : null;
-}
-
-function safeInlineName(value: string) {
-  return value.replace(/[\r\n"\\/]/g, "_").slice(0, 140) || "profil-gorseli";
+  return value === "avatar" ? value : null;
 }
 
 export async function GET(request: Request) {
@@ -80,7 +79,7 @@ export async function GET(request: Request) {
     object.writeHttpMetadata(headers);
     headers.set("content-type", media.content_type);
     headers.set("content-length", String(object.size || media.byte_size));
-    headers.set("content-disposition", `inline; filename="${safeInlineName(media.original_file_name)}"`);
+    headers.set("content-disposition", fileContentDisposition("inline", media.original_file_name, "profil-gorseli"));
     headers.set("cache-control", "private, no-store");
     headers.set("x-content-type-options", "nosniff");
     return new Response(object.body, { headers });
@@ -103,8 +102,8 @@ export async function POST(request: Request) {
   const kind = cleanKind(formData.get("kind"));
   const image = formData.get("image");
   if (!kind || !(image instanceof File) || image.size === 0) return Response.json({ error: "Profil görseli seçmelisin." }, { status: 400 });
-  const maxBytes = kind === "avatar" ? 4 * 1024 * 1024 : 8 * 1024 * 1024;
-  if (image.size > maxBytes) return Response.json({ error: kind === "avatar" ? "Profil fotoğrafı en fazla 4 MB olabilir." : "Kapak görseli en fazla 8 MB olabilir." }, { status: 413 });
+  const maxBytes = 4 * 1024 * 1024;
+  if (image.size > maxBytes) return Response.json({ error: "Profil fotoğrafı en fazla 4 MB olabilir." }, { status: 413 });
   const allowed = allowedImages[image.type];
   const extension = image.name.split(".").at(-1)?.toLocaleLowerCase("tr-TR") ?? "";
   if (!allowed || !allowed.extensions.includes(extension)) return Response.json({ error: "Yalnızca PNG, JPG veya WEBP profil görselleri yükleyebilirsin." }, { status: 415 });
@@ -122,33 +121,41 @@ export async function POST(request: Request) {
     const existing = await DB.prepare("SELECT object_key FROM profile_media WHERE user_email = ? AND kind = ? LIMIT 1").bind(identity.email, kind).first<{ object_key: string }>();
     const safeOwner = identity.email.toLocaleLowerCase("en-US").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70) || "student";
     uploadedKey = `profiles/${safeOwner}/${kind}-${crypto.randomUUID()}.${allowed.storedExtension}`;
-    await FILES.put(uploadedKey, bytes, {
+    await putOwnedMedia(DB, FILES, { ownerEmail: identity.email, ownerPublicId: profile.public_id, objectKey: uploadedKey, kind: "profile" }, bytes, {
       httpMetadata: { contentType: image.type },
       customMetadata: { owner: identity.email, kind },
     });
-    await DB.prepare(
+    const published = await DB.prepare(
       `INSERT INTO profile_media (user_email, kind, object_key, original_file_name, content_type, byte_size, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, STRFTIME('%Y-%m-%d %H:%M:%f', 'now'))
+       SELECT ?, ?, ?, ?, ?, ?, STRFTIME('%Y-%m-%d %H:%M:%f', 'now')
+       WHERE EXISTS (SELECT 1 FROM users WHERE email = ? AND public_id = ? AND status = 'active')
        ON CONFLICT(user_email, kind) DO UPDATE SET
          object_key = excluded.object_key,
          original_file_name = excluded.original_file_name,
          content_type = excluded.content_type,
          byte_size = excluded.byte_size,
-         updated_at = excluded.updated_at`,
-    ).bind(identity.email, kind, uploadedKey, image.name.slice(0, 180), image.type, image.size).run();
+         updated_at = excluded.updated_at
+       WHERE EXISTS (SELECT 1 FROM users WHERE email = excluded.user_email AND public_id = ? AND status = 'active') RETURNING object_key`,
+    ).bind(identity.email, kind, uploadedKey, image.name.slice(0, 180), image.type, image.size, identity.email, profile.public_id, profile.public_id).first<{ object_key: string }>();
+    if (!published) throw new MediaUploadError();
     if (existing?.object_key && existing.object_key !== uploadedKey) {
       try { await FILES.delete(existing.object_key); } catch { /* The new media is already active; stale-object cleanup can retry later. */ }
     }
     const stored = await DB.prepare("SELECT updated_at FROM profile_media WHERE user_email = ? AND kind = ? LIMIT 1").bind(identity.email, kind).first<{ updated_at: string }>();
-    await audit(DB, identity.email, "profile.media_updated", "profile", profile.public_id, { kind, byteSize: image.size });
+    await activeActor(DB, identity.email, profile.public_id).audit("profile.media_updated", "profile", profile.public_id, { kind, byteSize: image.size });
     return Response.json({ media: { kind, url: profileMediaUrl(profile.public_id, kind, stored?.updated_at ?? new Date().toISOString()) } }, { status: 201 });
   } catch (error) {
     if (uploadedKey) {
       try {
-        const { FILES } = await getRuntime();
-        if (FILES) await FILES.delete(uploadedKey);
+        const { DB, FILES } = await getRuntime();
+        const safe = await DB.prepare(`SELECT id FROM media_upload_operations WHERE object_key = ? AND owner_email = ? AND state = 'settled'
+          AND NOT EXISTS (SELECT 1 FROM profile_media WHERE object_key = ?) LIMIT 1`)
+          .bind(uploadedKey, identity.email, uploadedKey).first<{ id: string }>();
+        if (FILES && safe) await FILES.delete(uploadedKey);
       } catch { /* Preserve the original error response. */ }
     }
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
+    if (error instanceof MediaUploadError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
     return unavailableResponse(error, "Profil görseli şu anda kaydedilemedi.");
   }
 }

@@ -62,16 +62,16 @@ const image = await fetch(`${base}${globalPost.media[0].url}`,{headers:{cookie:a
 assert.equal(image.status,200); assert.equal(image.headers.get('cache-control'),'private, no-store');
 assert.deepEqual(Buffer.from(await image.arrayBuffer()),png);
 await request('remote','/api/profile',{action:'update-details',displayName:peer.displayName,handle:peer.handle,bio:'Campus-only biography',links:[{title:'Private campus page',url:'https://example.com/campus'}]},'PUT');
-for (const kind of ['avatar','banner']) {
+for (const kind of ['avatar']) {
   const upload = new FormData(); upload.set('kind',kind); upload.set('image',new File([png],`${kind}.png`,{type:'image/png'}));
   await request('remote','/api/profile/media',upload,'POST',201);
 }
 const fullProfile = (await request('remote','/api/profile')).profile;
 const publicProfile = (await request('local',`/api/people?id=${peer.publicId}`)).person;
 assert.equal(publicProfile.sameCampus,false); assert.equal(publicProfile.bio,''); assert.deepEqual(publicProfile.links,[]);
-assert.equal(publicProfile.bannerUrl,null); assert.deepEqual(publicProfile.courses,[]); assert.equal(publicProfile.postCount,1);
+assert.equal('bannerUrl' in publicProfile,false); assert.equal('bannerUrl' in fullProfile,false); assert.deepEqual(publicProfile.courses,[]); assert.equal(publicProfile.postCount,1);
 assert.equal((await fetch(`${base}${fullProfile.avatarUrl}`,{headers:{cookie:accounts.local.cookie}})).status,200);
-assert.equal((await fetch(`${base}${fullProfile.bannerUrl}`,{headers:{cookie:accounts.local.cookie}})).status,404);
+assert.equal((await fetch(`${base}/api/profile/media?user=${peer.publicId}&kind=banner`,{headers:{cookie:accounts.local.cookie}})).status,400);
 assert.deepEqual((await request('local',`/api/profile/content?user=${peer.publicId}&tab=images`)).posts.map(p=>p.id),[globalPost.id]);
 assert.deepEqual((await request('local',`/api/profile/content?user=${peer.publicId}&tab=notes`)).notes,[]);
 const discovery = await request('local',`/api/people?scope=platform&q=${marker}`);

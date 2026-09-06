@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preview_retry">Yeniden dene</string>
+    <string name="preview_home">Başlangıca dön</string>
+    <string name="preview_loading_title">Kampira açılıyor</string>
+    <string name="preview_loading_message">Bağlantı kuruluyor, birazdan buradayız.</string>
+    <string name="preview_connection_title">Bağlantı kurulamadı</string>
+    <string name="preview_connection_message">Tabletin ve bilgisayarın aynı Wi-Fi ağında, bilgisayardaki önizlemenin açık olduğundan emin ol. Hazır olduğunda tekrar deneyebilirsin.</string>
+    <string name="preview_timeout_title">Bağlantı biraz uzadı</string>
+    <string name="preview_timeout_message">Sayfa zamanında açılmadı. Bağlantını kontrol edip yeniden deneyebilirsin.</string>
+    <string name="preview_server_title">Şu anda açılamıyor</string>
+    <string name="preview_server_message">Kampira bu sayfayı yükleyemedi. Biraz sonra yeniden deneyebilirsin.</string>
+    <string name="preview_missing_title">Bu sayfa bulunamadı</string>
+    <string name="preview_missing_message">İçerik kaldırılmış veya bağlantı değişmiş olabilir. Geri dönebilir ya da başlangıç sayfasını açabilirsin.</string>
+    <string name="preview_access_title">Bu sayfaya erişilemiyor</string>
+    <string name="preview_access_message">Oturumun sona ermiş veya bu sayfaya erişimin olmayabilir. Başlangıç sayfasından devam edebilirsin.</string>
+    <string name="preview_security_title">Güvenli bağlantı kurulamadı</string>
+    <string name="preview_security_message">Bağlantı doğrulanamadığı için sayfa açılmadı. Sorun düzeltildiğinde yeniden deneyebilirsin.</string>
+    <string name="preview_renderer_title">Kampira tekrar açılabilir</string>
+    <string name="preview_renderer_message">Uygulama görünümü beklenmedik biçimde kapandı. Yeniden dene ile son sayfana dönebilirsin.</string>
+    <string name="preview_unsupported_title">Bu önizleme desteklenmiyor</string>
+    <string name="preview_unsupported_message">Yerel önizleme Android 7 veya üstünü gerektirir. Android 6 için HTTPS kaynağa bağlı ayrı bir test paketi gerekir.</string>
+</resources>

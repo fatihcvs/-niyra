@@ -1,0 +1,17 @@
+.overlay { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 24px; background: #0009; }
+.dialog { width: min(100%, 640px); max-height: min(90dvh, 900px); display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--card); color: var(--ink); box-shadow: 0 24px 90px #0005; }
+.header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.header h2 { margin: 0; font-size: 17px; }
+.body { overflow-y: auto; overscroll-behavior: contain; min-height: 0; padding: 20px; line-height: 1.6; overflow-wrap: anywhere; }
+.body h3 { font-size: 23px; line-height: 1.3; margin: 16px 0 8px; }
+.body p { white-space: pre-wrap; }
+.body a { color: var(--brand); text-decoration: none; }
+.body dl { display: grid; grid-template-columns: minmax(90px, auto) 1fr; gap: 8px 20px; margin: 24px 0; }
+.body dt, .body small { color: var(--muted); }
+.body dd { margin: 0; }
+.price { display: block; font-size: 26px; margin-top: 16px; }
+.gallery { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0; }
+.gallery figure { flex: 0 0 100%; margin: 0; min-width: 0; scroll-snap-align: start; }
+.gallery img { display: block; width: 100%; height: auto; max-height: 50dvh; object-fit: contain; background: var(--soft); border-radius: 12px; }
+.gallery figcaption { text-align: right; color: var(--muted); font-size: 12px; padding-top: 4px; }
+@media(max-width: 780px) { .overlay { padding: 0; } .dialog { width: 100%; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; padding-top: env(safe-area-inset-top); } .body { padding: 16px 16px max(24px, env(safe-area-inset-bottom)); } }

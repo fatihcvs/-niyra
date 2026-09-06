@@ -1,9 +1,15 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useAuthenticatedFetch } from "./use-authenticated-fetch";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 
-import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty, RefreshButton } from "./workspace-ui";
+import { WorkspaceHeader, WorkspaceSearch, WorkspaceEmpty } from "./workspace-ui";
+import { Plus } from "@phosphor-icons/react/dist/csr/Plus";
+import { useAppLayer } from "./use-app-layer";
+import { useWorkspaceState } from "./use-workspace-state";
+import { useWorkspaceDrafts } from "./use-workspace-drafts";
+import layerStyles from "./workspace-layer.module.css";
 import { matchesSearch } from "../lib/workspace-navigation";
 
 type LibraryArea = {
@@ -40,20 +46,26 @@ function mapUrl(area: LibraryArea) {
 }
 
 export function LibraryOccupancyWorkspace({ universityShortName }: { universityShortName: string }) {
-  const [query, setQuery] = useState("");
-  const [featureFilter, setFeatureFilter] = useState("");
-  const [availableOnly, setAvailableOnly] = useState(false);
+  const fetch = useAuthenticatedFetch();
+  const [query, setQuery] = useWorkspaceState("library:query", "");
+  const [featureFilter, setFeatureFilter] = useWorkspaceState("library:featureFilter", "");
+  const [availableOnly, setAvailableOnly] = useWorkspaceState("library:availableOnly", false);
   const [areas, setAreas] = useState<LibraryArea[]>([]);
   const [places, setPlaces] = useState<CampusPlace[]>([]);
   const [viewerActiveAreaId, setViewerActiveAreaId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [checkinArea, setCheckinArea] = useState<LibraryArea | null>(null);
-  const [features, setFeatures] = useState<string[]>([]);
-  const [durationMinutes, setDurationMinutes] = useState(60);
+  const [features, setFeatures] = useWorkspaceState<string[]>("library:create-features", []);
+  const [durationMinutes, setDurationMinutes] = useWorkspaceState("library:durationMinutes", 60);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const draft = useWorkspaceDrafts("library:forms");
+  const lastCheckin = useRef<LibraryArea | null>(null);
+  const { ref: createDialogRef, close: closeCreate } = useAppLayer({ id: "library.create", open: createOpen, busy, onClose: () => setCreateOpen(false), onRestore: () => setCreateOpen(true) });
+  const { ref: checkinDialogRef, close: closeCheckin } = useAppLayer({ id: "library.checkin", open: Boolean(checkinArea), busy, onClose: () => { lastCheckin.current = checkinArea; setCheckinArea(null); }, onRestore: () => setCheckinArea(lastCheckin.current) });
 
   const applyData = useCallback((data: LibraryResponse) => {
     setAreas(data.areas ?? []);
@@ -66,14 +78,14 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
     try { applyData(await readJson(await fetch("/api/library-occupancy")) as LibraryResponse); }
     catch (loadError) { setError(loadError instanceof Error ? loadError.message : "Kütüphane doluluğu getirilemedi."); }
     finally { if (showLoading) setLoading(false); }
-  }, [applyData]);
+  }, [applyData, fetch]);
 
   useEffect(() => {
     let active = true;
     void fetch("/api/library-occupancy").then(readJson).then((data) => { if (active) applyData(data as LibraryResponse); }).catch((loadError: unknown) => { if (active) setError(loadError instanceof Error ? loadError.message : "Kütüphane doluluğu getirilemedi."); }).finally(() => { if (active) setLoading(false); });
     const timer = window.setInterval(() => { if (active) void load(false); }, 60_000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [applyData, load]);
+  }, [applyData, fetch, load]);
 
   const activeArea = useMemo(() => areas.find((area) => area.id === viewerActiveAreaId) ?? null, [areas, viewerActiveAreaId]);
   const knownAreas = areas.filter((area) => area.estimatedFreeSeats !== null).length;
@@ -82,6 +94,7 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
 
   async function createArea(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     const form = new FormData(event.currentTarget);
     setBusy(true); setError(""); setNotice("");
     try {
@@ -89,13 +102,13 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "area", name: form.get("name"), floorLabel: form.get("floorLabel"), zoneLabel: form.get("zoneLabel"), description: form.get("description"), capacity: form.get("capacity"), placeId: form.get("placeId"), features }),
       }));
-      setCreateOpen(false); setFeatures([]); setNotice("Çalışma alanı eklendi. Doluluk, öğrenci check-in sinyali geldikçe tahmin edilecek."); await load();
+      setCreateOpen(false); setFeatures([]); draft.clear("create"); setNotice("Çalışma alanı eklendi. Doluluk, öğrenci check-in sinyali geldikçe tahmin edilecek."); await load();
     } catch (createError) { setError(createError instanceof Error ? createError.message : "Çalışma alanı eklenemedi."); }
     finally { setBusy(false); }
   }
 
   async function checkIn() {
-    if (!checkinArea) return;
+    if (!checkinArea || busy) return;
     setBusy(true); setError("");
     try {
       await readJson(await fetch("/api/library-occupancy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "check-in", areaId: checkinArea.id, durationMinutes }) }));
@@ -115,7 +128,7 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
   }
 
   return <div className="workspace-view library-live-workspace">
-    <WorkspaceHeader section="Kütüphane" eyebrow={universityShortName} title="Çalışmak için bir yer bul" description="Sessiz, prizli veya grup çalışmasına uygun alanları karşılaştır. Doluluk, süreli öğrenci check-in’lerinden üretilen bir tahmindir." actions={<><RefreshButton onClick={() => void load()} busy={loading}/><button className="feature-primary" type="button" onClick={() => setCreateOpen(true)}>＋ Alan ekle</button></>}/>
+    <WorkspaceHeader screenId="library" section="Kütüphane" eyebrow={universityShortName} title="Kütüphane" description="Çalışma alanlarını keşfet. Doluluk, öğrenci bildirimlerine dayalı bir tahmindir." primaryAction={{ id: "library.create", label: "Alan ekle", icon: <Plus size={22}/>, onPress: () => setCreateOpen(true) }} secondaryActions={[{ id: "library.refresh", label: "İçeriği yenile", busy: loading, onPress: load }]}/>
 
     <WorkspaceSearch value={query} onChange={setQuery} placeholder="Kütüphane, kat veya çalışma alanı ara" resultCount={loading ? undefined : visibleAreas.length} onReset={query || featureFilter || availableOnly ? () => { setQuery(""); setFeatureFilter(""); setAvailableOnly(false); } : undefined}><label><span className="sr-only">Alan özelliği</span><select value={featureFilter} onChange={(event) => setFeatureFilter(event.target.value)}><option value="">Tüm özellikler</option>{featureOptions.map(([value,label]) => <option value={value} key={value}>{label}</option>)}</select></label><label><input type="checkbox" checked={availableOnly} onChange={(event) => setAvailableOnly(event.target.checked)}/>Tahmini boş yer var</label></WorkspaceSearch>
     <section className="library-live-summary" aria-label="Kütüphane doluluk özeti"><article><span>ÇALIŞMA ALANI</span><strong>{areas.length}</strong><small>kampüs kataloğunda</small></article><article><span>GÜNCEL TAHMİN</span><strong>{knownAreas}</strong><small>son 2 saatte sinyal var</small></article><article><span>AKTİF CHECK-IN</span><strong>{activeCheckins}</strong><small>süre sonunda otomatik düşer</small></article></section>
@@ -128,8 +141,8 @@ export function LibraryOccupancyWorkspace({ universityShortName }: { universityS
       return <article className={`library-area-card ${area.viewerCheckin ? "viewer-active" : ""}`} key={area.id}><header><div><span>{area.floorLabel || "Kat bilgisi yok"}</span><h2>{area.name}</h2><p>{area.zoneLabel}</p></div><b className={known ? "known" : "unknown"}>{known ? `${area.occupancyPercent}% tahmini dolu` : "Doluluk bilinmiyor"}</b></header><div className="library-seat-map" aria-label={known ? `${occupiedCells} dolu gösterge, ${12 - occupiedCells} boş gösterge` : "Güncel doluluk verisi yok"}>{Array.from({ length: 12 }, (_, index) => <i className={known ? index < occupiedCells ? "occupied" : "available" : "unknown"} key={index}/>)}</div><small className="library-map-caption">Oran göstergesidir; fiziksel masa planı değildir.</small><section className="library-estimate"><div><span>TAHMİNİ BOŞ YER</span><strong>{known ? `~${area.estimatedFreeSeats}` : "—"}</strong><small>{known ? `${area.activeCount} aktif check-in / ${area.capacity} kapasite` : area.capacity === null ? "Kapasite bilgisi yok" : "Son 2 saatte öğrenci sinyali yok"}</small></div><div><span>SON SİNYAL</span><strong>{area.lastSignalTime ? `${area.lastSignalTime} önce` : "Henüz yok"}</strong><small>{area.recentSignalCount ? `${area.recentSignalCount} yakın zamanlı güncelleme` : "Tahmin üretilmedi"}</small></div></section><p className="library-area-description">{area.description}</p><div className="library-feature-list">{area.features.map((feature) => <span key={feature}>{featureNames[feature] ?? feature}</span>)}</div><footer><div>{area.placeName && <span>{area.placeName}</span>}{area.coordinatesKnown && <a href={mapUrl(area)} target="_blank" rel="noreferrer">Haritada aç ↗</a>}{area.own && <button type="button" onClick={() => void update("archive-area", area.id)}>Arşivle</button>}</div>{area.viewerCheckin ? <button className="checkout" type="button" disabled={busy} onClick={() => void update("check-out", area.id)}>Check-out</button> : <button type="button" disabled={busy || Boolean(viewerActiveAreaId)} onClick={() => setCheckinArea(area)}>{viewerActiveAreaId ? "Başka alanda aktifsin" : "Buradayım"}</button>}</footer></article>;
     })}</div>}
 
-    {createOpen && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setCreateOpen(false); }}><section className="feature-dialog library-live-dialog" role="dialog" aria-modal="true" aria-labelledby="library-area-title"><header><div><span>KÜTÜPHANE KATALOĞU</span><h2 id="library-area-title">Çalışma alanı ekle</h2></div><button type="button" onClick={() => setCreateOpen(false)} aria-label="Pencereyi kapat">×</button></header><form onSubmit={createArea}><label>Bağlı kampüs noktası<select name="placeId" defaultValue=""><option value="">Listede yok / belirtme</option>{places.map((place) => <option value={place.id} key={place.id}>{place.name}</option>)}</select></label><div className="library-form-row"><label>Kütüphane / bina adı<input name="name" minLength={3} maxLength={100} required placeholder="Örn. Merkez Kütüphane"/></label><label>Kat<input name="floorLabel" maxLength={60} placeholder="Örn. 2. Kat"/></label></div><div className="library-form-row"><label>Bölge adı<input name="zoneLabel" minLength={2} maxLength={80} required placeholder="Örn. Sessiz Salon A"/></label><label>Kapasite<input name="capacity" type="number" min="1" max="5000" placeholder="Bilmiyorsan boş bırak"/></label></div><label>Açıklama<textarea name="description" minLength={12} maxLength={600} rows={4} required placeholder="Alanı bulmayı kolaylaştıran ve çalışma düzenini açıklayan gerçek bilgi yaz."/></label><fieldset><legend>Alan özellikleri</legend><div>{featureOptions.map(([value, label]) => <button className={features.includes(value) ? "active" : ""} type="button" onClick={() => setFeatures((current) => current.includes(value) ? current.filter((item) => item !== value) : [...current, value])} key={value}>{label}</button>)}</div></fieldset><p className="library-live-disclaimer">Kapasiteyi bilmiyorsan boş bırak. Tahmini doluluk için öğrenci check-in&apos;leri gerekir; kesin boş masa iddiası gösterilmez.</p><footer><button type="button" onClick={() => setCreateOpen(false)}>Vazgeç</button><button className="feature-primary" type="submit" disabled={busy}>{busy ? "Kaydediliyor…" : "Alanı ekle"}</button></footer></form></section></div>}
+    {createOpen && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeCreate(); }}><section ref={createDialogRef} className={`feature-dialog library-live-dialog ${layerStyles.dialog}`} data-mobile-overlay="true" role="dialog" aria-modal="true" aria-labelledby="library-area-title"><header><div><span>KÜTÜPHANE KATALOĞU</span><h2 id="library-area-title">Çalışma alanı ekle</h2></div><button type="button" onClick={closeCreate} disabled={busy} aria-label="Pencereyi kapat">×</button></header><form onSubmit={createArea}>{error && <p role="alert" className="feature-feedback-state">{error}</p>}<label>Bağlı kampüs noktası<select name="placeId" {...draft.field("create", "placeId")} disabled={busy}><option value="">Listede yok / belirtme</option>{places.map((place) => <option value={place.id} key={place.id}>{place.name}</option>)}</select></label><div className="library-form-row"><label>Kütüphane / bina adı<input name="name" {...draft.field("create", "name")} disabled={busy} minLength={3} maxLength={100} required placeholder="Örn. Merkez Kütüphane"/></label><label>Kat<input name="floorLabel" {...draft.field("create", "floorLabel")} disabled={busy} maxLength={60} placeholder="Örn. 2. Kat"/></label></div><div className="library-form-row"><label>Bölge adı<input name="zoneLabel" {...draft.field("create", "zoneLabel")} disabled={busy} minLength={2} maxLength={80} required placeholder="Örn. Sessiz Salon A"/></label><label>Kapasite<input name="capacity" {...draft.field("create", "capacity")} disabled={busy} type="number" min="1" max="5000" placeholder="Bilmiyorsan boş bırak"/></label></div><label>Açıklama<textarea name="description" {...draft.field("create", "description")} disabled={busy} minLength={12} maxLength={600} rows={4} required placeholder="Alanı bulmayı kolaylaştıran ve çalışma düzenini açıklayan gerçek bilgi yaz."/></label><fieldset><legend>Alan özellikleri</legend><div>{featureOptions.map(([value, label]) => <button className={features.includes(value) ? "active" : ""} type="button" disabled={busy} aria-pressed={features.includes(value)} onClick={() => setFeatures((current) => current.includes(value) ? current.filter((item) => item !== value) : [...current, value])} key={value}>{label}</button>)}</div></fieldset><p className="library-live-disclaimer">Kapasiteyi bilmiyorsan boş bırak. Tahmini doluluk için öğrenci check-in&apos;leri gerekir; kesin boş masa iddiası gösterilmez.</p><footer><button type="button" onClick={closeCreate} disabled={busy}>Vazgeç</button><button className="feature-primary" type="submit" disabled={busy}>{busy ? "Kaydediliyor…" : "Alanı ekle"}</button></footer></form></section></div>}
 
-    {checkinArea && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setCheckinArea(null); }}><section className="feature-dialog library-live-dialog compact" role="dialog" aria-modal="true" aria-labelledby="library-checkin-title"><header><div><span>SÜRELİ CHECK-IN</span><h2 id="library-checkin-title">{checkinArea.name} · {checkinArea.zoneLabel}</h2></div><button type="button" onClick={() => setCheckinArea(null)} aria-label="Pencereyi kapat">×</button></header><div className="library-checkin-content"><p>Ne kadar süre burada çalışmayı planlıyorsun?</p><div className="library-duration-grid">{durationOptions.map(([value, label]) => <button className={durationMinutes === value ? "active" : ""} type="button" onClick={() => setDurationMinutes(value)} key={value}>{label}</button>)}</div><small>Erken ayrılırsan check-out yap. Unutursan check-in seçtiğin sürenin sonunda otomatik olarak aktif sayıdan düşer.</small><footer><button type="button" onClick={() => setCheckinArea(null)}>Vazgeç</button><button className="feature-primary" type="button" disabled={busy} onClick={() => void checkIn()}>{busy ? "Başlatılıyor…" : "Check-in başlat"}</button></footer></div></section></div>}
+    {checkinArea && <div className="feature-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeCheckin(); }}><section ref={checkinDialogRef} className={`feature-dialog library-live-dialog compact ${layerStyles.dialog}`} data-mobile-overlay="true" role="dialog" aria-modal="true" aria-labelledby="library-checkin-title"><header><div><span>SÜRELİ CHECK-IN</span><h2 id="library-checkin-title">{checkinArea.name} · {checkinArea.zoneLabel}</h2></div><button type="button" onClick={closeCheckin} disabled={busy} aria-label="Pencereyi kapat">×</button></header><div className="library-checkin-content">{error && <p role="alert" className="feature-feedback-state">{error}</p>}<p>Ne kadar süre burada çalışmayı planlıyorsun?</p><div className="library-duration-grid">{durationOptions.map(([value, label]) => <button className={durationMinutes === value ? "active" : ""} type="button" onClick={() => setDurationMinutes(value)} key={value}>{label}</button>)}</div><small>Erken ayrılırsan check-out yap. Unutursan check-in seçtiğin sürenin sonunda otomatik olarak aktif sayıdan düşer.</small><footer><button type="button" onClick={closeCheckin} disabled={busy}>Vazgeç</button><button className="feature-primary" type="button" disabled={busy} onClick={() => void checkIn()}>{busy ? "Başlatılıyor…" : "Check-in başlat"}</button></footer></div></section></div>}
   </div>;
 }

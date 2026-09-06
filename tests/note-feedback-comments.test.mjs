@@ -31,7 +31,7 @@ test("note comments are campus-scoped, rate limited, removable and moderated", a
   ]);
   assert.match(workspace, /Not hakkında konuş/);
   assert.match(workspace, /sendNoteComment/);
-  assert.match(route, /owner_profile\.university_id = \?/);
+  assert.match(route, /CASE WHEN owner\.status = 'deleted' THEN n\.erased_university_id ELSE owner_profile\.university_id END = \?/);
   assert.match(route, /enforceRateLimit\(DB, identity\.email, "note-comment", 20, 3600\)/);
   assert.match(route, /author_email = \? AND deleted_at IS NULL/);
   assert.match(route, /user_blocks/);

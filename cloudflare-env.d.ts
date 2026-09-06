@@ -28,23 +28,34 @@ interface Fetcher {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
 }
 
-interface R2ObjectBody {
-  body: ReadableStream<Uint8Array>;
+interface R2Object {
+  key: string;
   size: number;
   httpEtag: string;
+  customMetadata?: Record<string, string>;
   writeHttpMetadata(headers: Headers): void;
+}
+
+interface R2ObjectBody extends R2Object {
+  body: ReadableStream<Uint8Array>;
+}
+
+interface R2PutOptions {
+  httpMetadata?: { contentType?: string; contentDisposition?: string };
+  customMetadata?: Record<string, string>;
 }
 
 interface R2Bucket {
   put(
     key: string,
     value: ArrayBuffer | ArrayBufferView | ReadableStream,
-    options?: {
-      httpMetadata?: { contentType?: string; contentDisposition?: string };
-      customMetadata?: Record<string, string>;
-    },
+    options?: R2PutOptions,
   ): Promise<unknown>;
   get(key: string, options?: { range?: { offset: number; length: number } }): Promise<R2ObjectBody | null>;
+  head(key: string): Promise<R2Object | null>;
+  list(options?: { limit?: number; cursor?: string; prefix?: string; include?: ("httpMetadata" | "customMetadata")[] }): Promise<
+    { objects: R2Object[]; truncated: true; cursor: string } | { objects: R2Object[]; truncated: false }
+  >;
   delete(key: string): Promise<void>;
 }
 
@@ -53,6 +64,13 @@ declare module "cloudflare:workers" {
     DB: D1Database;
     FILES?: R2Bucket;
     ASSETS?: Fetcher;
+    PUSH_VAPID_SUBJECT?: string;
+    PUSH_VAPID_PUBLIC_KEY?: string;
+    PUSH_VAPID_PRIVATE_KEY?: string;
+    FCM_PROJECT_ID?: string;
+    FCM_CLIENT_EMAIL?: string;
+    FCM_PRIVATE_KEY?: string;
+    PUSH_JOB_SECRET?: string;
     [binding: string]: unknown;
   };
 }

@@ -1,0 +1,32 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { runInNewContext } from "node:vm";
+import ts from "typescript";
+const context = { exports: {} };
+runInNewContext(ts.transpileModule(readFileSync(new URL("../lib/workspace-state.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, context);
+test("workspace filters and file references are isolated by authoritative session owner", () => {
+  const store = context.exports.createWorkspaceState();
+  const file = { name: "notes.pdf", bytes: "synthetic" };
+  store.setOwnerScope("A:1");
+  store.write("A:1", "notes:file", file);
+  assert.equal(store.read("A:1", "notes:file", null), file);
+  assert.equal(store.read("B:2", "notes:file", null), null);
+  store.setOwnerScope(null);
+  store.setOwnerScope("B:2");
+  store.write("A:1", "notes:file", file);
+  assert.equal(store.read("B:2", "notes:file", null), null);
+});
+test("cached values expire and the oldest writes are bounded without changing reads", () => {
+  let time = 0;
+  const store = context.exports.createWorkspaceState({ limit: 2, ttlMs: 10, now: () => time });
+  store.setOwnerScope("A");
+  store.write("A", "one", 1); store.write("A", "two", 2); store.write("A", "three", 3);
+  assert.equal(store.read("A", "one", 0), 0);
+  assert.equal(store.read("A", "two", 0), 2);
+  time = 10;
+  assert.equal(store.read("A", "two", 0), 0);
+  store.setOwnerScope("A");
+  store.write("A", "two", 4);
+  assert.equal(store.read("A", "two", 0), 4);
+});

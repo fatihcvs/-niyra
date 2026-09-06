@@ -17,12 +17,6 @@ cd "${project_root}"
   --local \
   --persist-to "${data_root}"
 
-exec ./node_modules/.bin/wrangler dev \
-  --config wrangler.railway.jsonc \
-  --local \
-  --no-bundle \
-  --persist-to "${data_root}" \
-  --ip 0.0.0.0 \
-  --port "${port}" \
-  --log-level info \
-  --show-interactive-dev-session false
+export UNIYRA_DATA_DIR="${data_root}"
+export PORT="${port}"
+exec node scripts/push/railway-run.mjs

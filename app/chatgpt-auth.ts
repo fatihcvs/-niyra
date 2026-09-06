@@ -24,12 +24,13 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   if (email && requestHeaders.get(USER_ID_HEADER) && isTrustedPlatformHost(requestHeaders)) {
     try {
       const { env } = await import("cloudflare:workers");
-      if (env.DB) {
-        const account = await env.DB.prepare(`SELECT status FROM users WHERE email = ? LIMIT 1`).bind(email).first<{ status: string }>();
-        if (account?.status === "suspended") return null;
-      }
+      if (!env.DB) return null;
+      const account = await env.DB.prepare(`SELECT status FROM users WHERE email = ? LIMIT 1`).bind(email).first<{ status: string }>();
+      // A retained platform session cannot recreate an erased local account.
+      // New accounts enter through the explicit registration flow.
+      if (account?.status !== "active") return null;
     } catch {
-      // Platform identity remains available if the optional local account lookup is unavailable.
+      return null;
     }
     const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
     const fullName =

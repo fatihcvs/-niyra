@@ -3,7 +3,6 @@ import {
   cleanText,
   enforceRateLimit,
   getRuntime,
-  notify,
   rateLimitResponse,
   relativeTime,
   requireIdentity,
@@ -11,6 +10,10 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import {
+  commitMarketWrite, hashMarketPayload, MarketIdempotencyError, parseMarketIdempotencyKey, replayMarketWrite,
+  type MarketWriteAction, type MarketWriteContext,
+} from "../../../lib/market-idempotency";
 
 const listingKinds = new Set(["sell", "wanted", "free"]);
 const listingCategories = new Set(["books", "electronics", "home", "clothing", "sports", "hobby", "transport", "other"]);
@@ -134,10 +137,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const identity = await requireIdentity();
   if (!identity) return signInResponse();
+  let key: string | null;
+  try { key = parseMarketIdempotencyKey(request.headers.get("Idempotency-Key")); }
+  catch (error) {
+    if (error instanceof MarketIdempotencyError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
+    throw error;
+  }
   let payload: Record<string, unknown>;
   try { payload = (await request.json()) as Record<string, unknown>; }
   catch { return Response.json({ error: "Pazar kaydı geçerli değil." }, { status: 400 }); }
-  const action = cleanText(payload.action, 20);
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return Response.json({ error: "Pazar kaydı geçerli değil." }, { status: 400 });
+  const action = cleanText(payload.action, 20) as MarketWriteAction;
   if (!["listing", "inquiry", "price"].includes(action)) return Response.json({ error: "Pazar işlemi desteklenmiyor." }, { status: 400 });
   const kind = cleanText(payload.kind, 20);
   const category = cleanText(payload.category, 24);
@@ -155,7 +165,7 @@ export async function POST(request: Request) {
   const observedAtInput = cleanText(payload.observedAt, 40);
   if (action === "listing") {
     if (!listingKinds.has(kind) || !listingCategories.has(category) || !conditions.has(condition) || title.length < 3 || description.length < 12) return Response.json({ error: "İlan bilgileri yeterli veya geçerli değil." }, { status: 400 });
-    if (kind === "sell" && (priceCents === null || Number.isNaN(priceCents) || priceCents < 0 || priceCents > 1_000_000_000)) return Response.json({ error: "Satılık ilan fiyatı geçerli değil." }, { status: 400 });
+    if ((kind === "sell" && priceCents === null) || (priceCents !== null && (Number.isNaN(priceCents) || priceCents < 0 || priceCents > 1_000_000_000))) return Response.json({ error: "İlan fiyatı geçerli değil." }, { status: 400 });
     if (kind === "free" && priceCents !== null && priceCents !== 0) return Response.json({ error: "Ücretsiz ilan fiyat içeremez." }, { status: 400 });
   }
   if (action === "inquiry" && (!listingId || message.length < 8)) return Response.json({ error: "İletişim mesajı en az 8 karakter olmalı." }, { status: 400 });
@@ -163,40 +173,74 @@ export async function POST(request: Request) {
   if (action === "price") {
     const observedTimestamp = Date.parse(observedAtInput);
     if (!priceCategories.has(category) || placeName.length < 2 || itemName.length < 2 || sourceNote.length < 5 || priceCents === null || Number.isNaN(priceCents) || priceCents < 0 || priceCents > 100_000_000) return Response.json({ error: "Fiyat gözlemi bilgileri geçerli değil." }, { status: 400 });
-    if (!Number.isFinite(observedTimestamp) || observedTimestamp > Date.now() + 24 * 60 * 60 * 1000 || observedTimestamp < Date.now() - 180 * 24 * 60 * 60 * 1000) return Response.json({ error: "Gözlem tarihi son 180 gün içinde olmalı." }, { status: 400 });
+    if (!Number.isFinite(observedTimestamp)) return Response.json({ error: "Gözlem tarihi geçerli değil." }, { status: 400 });
     observedAt = new Date(observedTimestamp).toISOString();
   }
   try {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const fields = action === "listing"
+      ? [kind, category, title, description, kind === "free" ? 0 : priceCents, condition, meetupPlace]
+      : action === "inquiry" ? [listingId, message]
+        : [placeId || null, placeName, itemName, category, priceCents, observedAt, sourceNote];
+    const context: MarketWriteContext = {
+      key, ownerEmail: identity.email, universityId: profile.university_id, action,
+      payloadHash: key === null ? "" : await hashMarketPayload(profile.university_id, action, fields),
+    };
+    const replay = await replayMarketWrite(DB, context);
+    if (replay) return replay;
+    // Age limits govern new observations; an old committed receipt remains recoverable.
+    if (action === "price" && (Date.parse(observedAt!) > Date.now() + 24 * 60 * 60 * 1000 || Date.parse(observedAt!) < Date.now() - 180 * 24 * 60 * 60 * 1000)) return Response.json({ error: "Gözlem tarihi son 180 gün içinde olmalı." }, { status: 400 });
     const limit = await enforceRateLimit(DB, identity.email, `campus-market-${action}`, action === "inquiry" ? 30 : 12, 24 * 60 * 60);
-    if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+    if (!limit.allowed) return (await replayMarketWrite(DB, context)) ?? rateLimitResponse(limit.retryAfter);
+    const auditStatement = (event: string, entityType: string, entityId: string, detail: Record<string, unknown>) => DB.prepare(
+      `INSERT INTO audit_logs (id, actor_email, action, entity_type, entity_id, detail) VALUES (?, ?, ?, ?, ?, ?)`,
+    ).bind(crypto.randomUUID(), identity.email, event, entityType, entityId, JSON.stringify(detail));
     if (action === "listing") {
       const id = crypto.randomUUID();
-      await DB.prepare(
+      return await commitMarketWrite(DB, context, id, { listing: { id, title, status: "active" } }, [DB.prepare(
         `INSERT INTO marketplace_listings (id, university_id, owner_email, kind, category, title, description, price_cents, condition, meetup_place)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(id, profile.university_id, identity.email, kind, category, title, description, kind === "free" ? 0 : priceCents, condition, meetupPlace).run();
-      await audit(DB, identity.email, "market-listing.created", "listing", id, { kind, category });
-      return Response.json({ listing: { id, title, status: "active" } }, { status: 201 });
+      ).bind(id, profile.university_id, identity.email, kind, category, title, description, kind === "free" ? 0 : priceCents, condition, meetupPlace),
+      auditStatement("market-listing.created", "listing", id, { kind, category })]);
     }
     if (action === "inquiry") {
-      const listing = await DB.prepare(
+      const findListing = () => DB.prepare(
         `SELECT ml.id, ml.owner_email, ml.title FROM marketplace_listings ml
          WHERE ml.id = ? AND ml.university_id = ? AND ml.owner_email <> ? AND ml.status = 'active'
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = ml.owner_email) OR (b.blocker_email = ml.owner_email AND b.blocked_email = ?)) LIMIT 1`,
       ).bind(listingId, profile.university_id, identity.email, identity.email, identity.email).first<{ id: string; owner_email: string; title: string }>();
+      const listing = await findListing();
       if (!listing) return Response.json({ error: "İletişime açık ilan bulunamadı." }, { status: 404 });
-      const duplicate = await DB.prepare(`SELECT id FROM marketplace_inquiries WHERE listing_id = ? AND sender_email = ? AND status = 'open' LIMIT 1`).bind(listingId, identity.email).first();
-      if (duplicate) return Response.json({ error: "Bu ilan için açık bir mesajın zaten var." }, { status: 409 });
+      const findDuplicate = () => DB.prepare(`SELECT id FROM marketplace_inquiries WHERE listing_id = ? AND sender_email = ? AND status = 'open' LIMIT 1`).bind(listingId, identity.email).first();
+      const duplicate = await findDuplicate();
+      if (duplicate) return (await replayMarketWrite(DB, context)) ?? Response.json({ error: "Bu ilan için açık bir mesajın zaten var." }, { status: 409 });
       const id = crypto.randomUUID();
-      await DB.prepare(`INSERT INTO marketplace_inquiries (id, listing_id, sender_email, message) VALUES (?, ?, ?, ?)`).bind(id, listingId, identity.email, message).run();
-      await Promise.all([
-        notify(DB, { userEmail: listing.owner_email, actorEmail: identity.email, kind: "community", title: "İlanına yeni mesaj", body: `${listing.title} ilanına bir öğrenci mesaj gönderdi.`, entityType: "listing", entityId: listingId }),
-        audit(DB, identity.email, "market-inquiry.created", "listing", listingId, { inquiryId: id }),
-      ]);
-      return Response.json({ inquiry: { id, status: "open" } }, { status: 201 });
+      try {
+        return await commitMarketWrite(DB, context, id, { inquiry: { id, status: "open" } }, [
+        DB.prepare(`INSERT INTO marketplace_inquiries (id, listing_id, sender_email, message)
+          VALUES (?, (SELECT ml.id FROM marketplace_listings ml
+            WHERE ml.id = ? AND ml.university_id = ? AND ml.owner_email = ? AND ml.status = 'active'
+              AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = ml.owner_email)
+                OR (b.blocker_email = ml.owner_email AND b.blocked_email = ?))
+              AND NOT EXISTS (SELECT 1 FROM marketplace_inquiries mi WHERE mi.listing_id = ml.id AND mi.sender_email = ? AND mi.status = 'open')), ?, ?)`)
+          .bind(id, listingId, profile.university_id, listing.owner_email, identity.email, identity.email, identity.email, identity.email, message),
+        DB.prepare(`INSERT INTO notifications (id, user_email, actor_email, kind, title, body, entity_type, entity_id)
+          VALUES (?, ?, ?, 'community', 'İlanına yeni mesaj', ?, 'listing', ?)`)
+          .bind(crypto.randomUUID(), listing.owner_email, identity.email, `${listing.title} ilanına bir öğrenci mesaj gönderdi.`, listingId),
+        auditStatement("market-inquiry.created", "listing", listingId, { inquiryId: id }),
+        ]);
+      } catch (error) {
+        if (error instanceof MarketIdempotencyError) throw error;
+        // A competing request or changed block can invalidate the guarded INSERT.
+        // Read a winner first; never mistake a committed receipt for a duplicate failure.
+        const winner = await replayMarketWrite(DB, context);
+        if (winner) return winner;
+        if (!(await findListing())) return Response.json({ error: "İletişime açık ilan bulunamadı." }, { status: 404 });
+        if (await findDuplicate()) return Response.json({ error: "Bu ilan için açık bir mesajın zaten var." }, { status: 409 });
+        throw error;
+      }
     }
     if (placeId) {
       const place = await DB.prepare(`SELECT name FROM campus_places WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`).bind(placeId, profile.university_id).first<{ name: string }>();
@@ -204,13 +248,13 @@ export async function POST(request: Request) {
       if (place.name.toLocaleLowerCase("tr-TR") !== placeName.toLocaleLowerCase("tr-TR")) return Response.json({ error: "Mekân adı seçilen kampüs noktasıyla eşleşmiyor." }, { status: 400 });
     }
     const id = crypto.randomUUID();
-    await DB.prepare(
+    return await commitMarketWrite(DB, context, id, { price: { id, placeName, itemName, priceCents, observedAt } }, [DB.prepare(
       `INSERT INTO campus_price_reports (id, university_id, reporter_email, place_id, place_name, item_name, category, price_cents, observed_at, source_note)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).bind(id, profile.university_id, identity.email, placeId || null, placeName, itemName, category, priceCents, observedAt, sourceNote).run();
-    await audit(DB, identity.email, "campus-price.created", "price", id, { category, priceCents });
-    return Response.json({ price: { id, placeName, itemName, priceCents, observedAt } }, { status: 201 });
+    ).bind(id, profile.university_id, identity.email, placeId || null, placeName, itemName, category, priceCents, observedAt, sourceNote),
+    auditStatement("campus-price.created", "price", id, { category, priceCents })]);
   } catch (error) {
+    if (error instanceof MarketIdempotencyError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
     return unavailableResponse(error, "Kampüs pazarı kaydı şu anda oluşturulamadı.");
   }
 }

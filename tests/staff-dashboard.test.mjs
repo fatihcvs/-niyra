@@ -53,6 +53,7 @@ const registry = load(paths[1]);
 
 test("staff section links respect role-specific sections and reject unknown values", () => {
   assert.equal(view.staffTabFromSearch("owner", "?tab=updates"), "updates");
+  for (const mode of ["owner", "admin"]) assert.equal(view.staffTabFromSearch(mode, "?tab=account-deletion"), "account-deletion");
   assert.equal(
     view.staffTabFromSearch("admin", "?tab=reports&record=123"),
     "reports",

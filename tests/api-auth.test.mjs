@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { register } from "node:module";
+import test, { after } from "node:test";
 
 async function builtWorker() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -9,10 +10,24 @@ async function builtWorker() {
 }
 
 const runtimeEnv = {
+  // Trusted platform identity now also needs an existing active local account.
+  // All application data queries remain unavailable in this validation fixture.
+  DB: { prepare(sql) {
+    if (sql === "SELECT status FROM users WHERE email = ? LIMIT 1") return { bind() { return { first: async () => ({ status: "active" }) }; } };
+    throw new Error("Application database unavailable in validation fixture");
+  } },
   ASSETS: {
     fetch: async () => new Response("Not found", { status: 404 }),
   },
 };
+
+// Node cannot load the Worker-only cloudflare:workers module. Supply only that
+// host binding here; the built application's identity and request validation run
+// unchanged. Database calls beyond the explicit account-status read still fail.
+const fixtureKey = Symbol.for("kampira.api-auth.worker-bindings");
+globalThis[fixtureKey] = runtimeEnv;
+register(new URL("./helpers/worker-bindings-loader.mjs", import.meta.url));
+after(() => { delete globalThis[fixtureKey]; });
 
 const runtimeContext = {
   waitUntil() {},

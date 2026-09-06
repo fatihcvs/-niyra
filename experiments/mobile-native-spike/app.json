@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Kampira Native Scout",
+    "slug": "kampira-native-scout",
+    "version": "0.1.0",
+    "orientation": "default",
+    "icon": "./assets/kampira-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "app.kampira.scout"
+    },
+    "extra": {
+      "experimentOnly": true
+    }
+  }
+}

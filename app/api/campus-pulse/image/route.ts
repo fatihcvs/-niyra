@@ -6,10 +6,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../../lib/server-api";
-
-function safeInlineName(value: string) {
-  return value.replace(/[\r\n"\\/]/g, "_").slice(0, 140) || "kampus-anlik-gorseli";
-}
+import { fileContentDisposition } from "../../../../lib/file-response";
 
 export async function GET(request: Request) {
   const identity = await requireIdentity();
@@ -52,8 +49,8 @@ export async function GET(request: Request) {
     object.writeHttpMetadata(headers);
     headers.set("content-type", image.image_content_type);
     headers.set("content-length", String(object.size || image.image_byte_size));
-    headers.set("content-disposition", `inline; filename="${safeInlineName(image.image_original_file_name)}"`);
-    headers.set("cache-control", "private, max-age=600");
+    headers.set("content-disposition", fileContentDisposition("inline", image.image_original_file_name, "kampus-anlik-gorseli"));
+    headers.set("cache-control", "private, no-store");
     headers.set("x-content-type-options", "nosniff");
     return new Response(object.body, { headers });
   } catch (error) {

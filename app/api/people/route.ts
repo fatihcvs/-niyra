@@ -77,7 +77,6 @@ function publicPerson(row: {
   followingCount: number;
   isFollowing: number;
   avatarUpdatedAt: string | null;
-  bannerUpdatedAt: string | null;
 }) {
   return {
     publicId: row.publicId ?? "",
@@ -89,7 +88,6 @@ function publicPerson(row: {
     initials: initials(row.displayName),
     avatarClass: "avatar-blue",
     avatarUrl: profileMediaUrl(row.publicId, "avatar", row.avatarUpdatedAt),
-    bannerUrl: row.sameCampus ? profileMediaUrl(row.publicId, "banner", row.bannerUpdatedAt) : null,
     universityName: row.universityName,
     universityShortName: row.universityShortName,
     facultyName: row.facultyName,
@@ -173,7 +171,6 @@ export async function GET(request: Request) {
       followingCount,
       isFollowing,
       avatarUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'avatar' LIMIT 1)`,
-      bannerUpdatedAt: sql<string | null>`(SELECT updated_at FROM profile_media WHERE user_email = ${users.email} AND kind = 'banner' LIMIT 1)`,
     };
 
     if (!publicId) {

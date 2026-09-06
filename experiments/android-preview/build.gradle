@@ -1,0 +1,7 @@
+plugins { id 'com.android.application' version '8.13.2' apply false }
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name.toLowerCase(Locale.ROOT).contains('release') }) {
+        throw new GradleException('This project is a DEBUG tablet preview. Release builds are forbidden.')
+    }
+}

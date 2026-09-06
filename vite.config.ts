@@ -48,7 +48,7 @@ export default defineConfig(async () => {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
       watch: {
-        ignored: ["**/.sites-runtime/**", "**/.railway-runtime/**", "**/.wrangler/**"],
+        ignored: ["**/.sites-runtime/**", "**/.railway-runtime/**", "**/.wrangler/**", "**/exports/**", "**/outputs/**"],
         ...(isCodexSeatbeltSandbox ? { useFsEvents: false, usePolling: true } : {}),
       },
     },

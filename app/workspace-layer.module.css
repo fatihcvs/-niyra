@@ -1,0 +1,6 @@
+.dialog :is(input, select, textarea) { min-width:0; }
+.dialog [role="alert"] { margin:0; }
+@media(max-width:780px) {
+  .dialog :is(input, select, textarea) { font-size:16px; }
+  .dialog :is(button,input:not([type="checkbox"]):not([type="radio"]),select) { min-height:48px; }
+}

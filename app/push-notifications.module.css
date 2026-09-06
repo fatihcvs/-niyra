@@ -1,0 +1,13 @@
+.panel { min-width: 0; margin-top: 20px; padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); color: var(--ink); }
+.heading { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.heading > svg { flex: 0 0 auto; margin-top: 2px; color: var(--brand); }
+.heading > div { min-width: 0; }
+.heading h3 { margin: 0; font-size: 15px; line-height: 1.4; font-weight: 700; overflow-wrap: anywhere; }
+.heading p { margin: 6px 0 0; color: var(--muted, #697186); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions:empty { display: none; }
+.actions button { min-width: 0; min-height: 48px; max-width: 100%; margin-top: 14px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 650; white-space: normal; overflow-wrap: anywhere; text-align: center; cursor: pointer; touch-action: manipulation; }
+.actions .enable { border-color: var(--brand-solid, var(--brand)); background: var(--brand-solid, var(--brand)); color: #fff; }
+.actions button:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+.error { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--danger, #b72840); overflow-wrap: anywhere; }
+@media (max-width: 400px) { .panel { padding: 14px; } .actions button { width: 100%; } }

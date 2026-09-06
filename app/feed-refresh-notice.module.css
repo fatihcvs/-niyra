@@ -1,0 +1,5 @@
+.layer { position:sticky; top:12px; z-index:65; height:0; pointer-events:none; }
+.button { position:absolute; top:8px; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:48px; max-width:calc(100% - 16px); padding:10px 18px; border:1px solid var(--line); border-radius:999px; background:var(--brand-solid); color:#fff; font:inherit; font-size:14px; font-weight:650; line-height:1.4; white-space:nowrap; pointer-events:auto; cursor:pointer; box-shadow:var(--shadow-popover); }
+.button:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+.button:disabled { cursor:wait; }
+@media (max-width:780px) { .layer { top:calc(var(--app-mobile-header-height) + 48px); } }

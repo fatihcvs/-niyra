@@ -12,6 +12,8 @@ import {
   unavailableResponse,
 } from "../../../lib/server-api";
 import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
+import { MediaUploadError, putOwnedMedia } from "../../../lib/media-upload-operations";
+import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
 const noteTypes = new Set(["ders-notu", "formul-kagidi", "cikmis-soru", "sunum"]);
@@ -44,6 +46,7 @@ type NoteRow = {
   id: string;
   owner_id: string | null;
   owner_name: string;
+  owner_status?: string;
   course_id: string;
   course_code: string;
   course_name: string;
@@ -74,7 +77,7 @@ type NoteRow = {
 function serializeNote(row: NoteRow) {
   return {
     id: row.id,
-    ownerId: row.owner_id,
+    ownerId: row.owner_status === "deleted" ? null : row.owner_id,
     ownerName: row.owner_name,
     courseId: row.course_id,
     courseCode: row.course_code,
@@ -90,7 +93,7 @@ function serializeNote(row: NoteRow) {
     contentType: row.content_type,
     byteSize: Number(row.byte_size),
     pageCount: row.page_count === null ? null : Number(row.page_count),
-    status: row.status,
+    status: row.owner_status === "deleted" ? "erased" : row.status,
     rejectionReason: row.rejection_reason,
     createdAt: row.created_at,
     time: relativeTime(row.created_at),
@@ -102,7 +105,7 @@ function serializeNote(row: NoteRow) {
     unhelpfulCount: Number(row.unhelpful_count),
     commentCount: Number(row.comment_count),
     own: Boolean(row.own),
-    fileUrl: `/api/notes/file?id=${encodeURIComponent(row.id)}`,
+    fileUrl: row.owner_status === "deleted" ? "" : `/api/notes/file?id=${encodeURIComponent(row.id)}`,
   };
 }
 
@@ -130,7 +133,7 @@ export async function GET(request: Request) {
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
 
     const baseSql = `
-      SELECT n.id, u.public_id AS owner_id, u.display_name AS owner_name,
+      SELECT n.id, u.public_id AS owner_id, u.display_name AS owner_name, u.status AS owner_status,
              n.course_id, c.code AS course_code, c.name AS course_name,
              n.title, n.description, n.note_type, n.exam_year, n.exam_term, n.exam_kind, n.tags_json,
              n.original_file_name, n.content_type, n.byte_size, n.page_count,
@@ -145,7 +148,7 @@ export async function GET(request: Request) {
              CASE WHEN n.owner_email = ? THEN 1 ELSE 0 END AS own
       FROM notes n
       JOIN users u ON u.email = n.owner_email
-      JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
+      LEFT JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
       JOIN courses c ON c.id = n.course_id
       LEFT JOIN note_saves ns ON ns.note_id = n.id AND ns.user_email = ?
       LEFT JOIN note_feedback nf ON nf.note_id = n.id AND nf.user_email = ?`;
@@ -154,8 +157,8 @@ export async function GET(request: Request) {
       const row = await DB
         .prepare(`${baseSql}
           WHERE n.id = ? AND n.deleted_at IS NULL
-            AND (n.status = 'published' OR n.owner_email = ?)
-            AND owner_profile.university_id = ?
+            AND ((u.status = 'active' AND (n.status = 'published' OR n.owner_email = ?)) OR (u.status = 'deleted' AND n.status = 'rejected'))
+            AND CASE WHEN u.status = 'deleted' THEN n.erased_university_id ELSE owner_profile.university_id END = ?
             AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
           LIMIT 1`)
         .bind(identity.email, identity.email, identity.email, id, identity.email, profile.university_id, identity.email, identity.email)
@@ -169,8 +172,8 @@ export async function GET(request: Request) {
     const result = await DB
       .prepare(`${baseSql}
         WHERE n.deleted_at IS NULL
-          AND (n.status = 'published' OR n.owner_email = ?)
-          AND owner_profile.university_id = ?
+          AND ((u.status = 'active' AND (n.status = 'published' OR n.owner_email = ?)) OR (u.status = 'deleted' AND n.status = 'rejected'))
+          AND CASE WHEN u.status = 'deleted' THEN n.erased_university_id ELSE owner_profile.university_id END = ?
           AND (? = '' OR n.course_id = ?)
           AND (? = '' OR n.note_type = ?)
           AND (? = 0 OR n.exam_year = ?)
@@ -260,6 +263,7 @@ export async function POST(request: Request) {
   const safeExtension = allowed.extensions[0];
   const objectKey = `notes/${identity.email.toLocaleLowerCase("en-US").replace(/[^a-z0-9@._-]/g, "_")}/${id}.${safeExtension}`;
   let metadataCreated = false;
+  let ownerPublicId = "";
 
   try {
     const { DB, FILES } = await getRuntime();
@@ -269,6 +273,8 @@ export async function POST(request: Request) {
     if (!FILES) throw new Error("R2 binding FILES is unavailable");
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Not yüklemeden önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
+    ownerPublicId = profile.public_id;
 
     const course = await DB
       .prepare(
@@ -288,7 +294,8 @@ export async function POST(request: Request) {
         `INSERT INTO notes
          (id, owner_email, course_id, title, description, note_type, exam_year, exam_term, exam_kind, tags_json,
           object_key, original_file_name, content_type, byte_size, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'processing')`,
+         SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'processing'
+         WHERE EXISTS (SELECT 1 FROM users WHERE email = ? AND public_id = ? AND status = 'active')`,
       )
       .bind(
         id,
@@ -305,29 +312,33 @@ export async function POST(request: Request) {
         file.name,
         file.type,
         file.size,
+        identity.email,
+        profile.public_id,
       )
       .run();
     metadataCreated = true;
 
-    await FILES.put(objectKey, bytes, {
+    await putOwnedMedia(DB, FILES, { ownerEmail: identity.email, ownerPublicId: profile.public_id, objectKey, kind: "notes" }, bytes, {
       httpMetadata: { contentType: file.type },
       customMetadata: { noteId: id, owner: identity.email },
     });
-    await DB
+    const published = await DB
       .prepare(
         `UPDATE notes SET status = 'published', published_at = CURRENT_TIMESTAMP,
-         updated_at = CURRENT_TIMESTAMP WHERE id = ? AND owner_email = ?`,
+         updated_at = CURRENT_TIMESTAMP WHERE id = ? AND owner_email = ?
+         AND EXISTS (SELECT 1 FROM users WHERE email = notes.owner_email AND public_id = ? AND status = 'active') RETURNING id`,
       )
-      .bind(id, identity.email)
-      .run();
-    await DB.prepare(
+      .bind(id, identity.email, profile.public_id)
+      .first<{ id: string }>();
+    if (!published) throw new MediaUploadError();
+    await actor.run(
       `INSERT INTO notifications (id, user_email, actor_email, kind, title, body, entity_type, entity_id)
        SELECT LOWER(HEX(RANDOMBLOB(16))), sc.user_email, ?, 'course', ?, ?, 'note', ?
        FROM student_courses sc
        LEFT JOIN notification_preferences np ON np.user_email = sc.user_email
-       WHERE sc.course_id = ? AND sc.user_email <> ? AND COALESCE(np.courses, 1) = 1`,
-    ).bind(identity.email, `${title} notu yayınlandı`, `Takip ettiğin ders çevresine yeni bir kaynak eklendi.`, id, courseId, identity.email).run();
-    await audit(DB, identity.email, "note.created", "note", id, { courseId, noteType, examYear: noteType === "cikmis-soru" ? examYear : null, examTerm: noteType === "cikmis-soru" ? examTerm : null, examKind: noteType === "cikmis-soru" ? examKind : null, contentType: file.type, byteSize: file.size });
+       WHERE sc.course_id = ? AND sc.user_email <> ? AND COALESCE(np.courses, 1) = 1 AND ${ACTIVE_ACTOR_SQL}`,
+      [identity.email, `${title} notu yayınlandı`, `Takip ettiğin ders çevresine yeni bir kaynak eklendi.`, id, courseId, identity.email]);
+    await actor.audit("note.created", "note", id, { courseId, noteType, examYear: noteType === "cikmis-soru" ? examYear : null, examTerm: noteType === "cikmis-soru" ? examTerm : null, examKind: noteType === "cikmis-soru" ? examKind : null, contentType: file.type, byteSize: file.size });
     const response = await GET(new Request(`${new URL(request.url).origin}/api/notes?id=${encodeURIComponent(id)}`, { headers: request.headers }));
     const payload = await response.json();
     return Response.json(payload, { status: 201 });
@@ -338,14 +349,17 @@ export async function POST(request: Request) {
         await DB
           .prepare(
             `UPDATE notes SET status = 'rejected', rejection_reason = ?, updated_at = CURRENT_TIMESTAMP
-             WHERE id = ? AND owner_email = ?`,
+             WHERE id = ? AND owner_email = ? AND status = 'processing'
+               AND EXISTS (SELECT 1 FROM users WHERE email = ? AND public_id = ? AND status = 'active')`,
           )
-          .bind("Dosya aktarımı tamamlanamadı. Yeniden yüklemeyi dene.", id, identity.email)
+          .bind("Dosya aktarımı tamamlanamadı. Yeniden yüklemeyi dene.", id, identity.email, identity.email, ownerPublicId)
           .run();
       } catch {
         // The primary error is returned below; a later cleanup can remove an incomplete metadata row.
       }
     }
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
+    if (error instanceof MediaUploadError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
     return unavailableResponse(error, "Not yüklenemedi. Dosyanı koruduk; yeniden deneyebilirsin.");
   }
 }

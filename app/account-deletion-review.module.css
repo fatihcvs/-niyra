@@ -1,0 +1,45 @@
+.shell { display:grid; gap:18px; min-width:0; color:var(--ink); }
+.header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+.header h2 { margin:0; font-size:26px; line-height:1.25; letter-spacing:-.6px; }
+.header p { margin:8px 0 0; color:var(--muted); font-size:15px; }
+.header a { display:inline-flex; align-items:center; min-height:48px; color:var(--brand); font-size:14px; }
+.notice { padding:16px; margin:0; border:1px solid var(--line); border-radius:12px; background:var(--brand-soft); color:var(--text-body,var(--muted)); font-size:14px; line-height:1.6; }
+.toolbar { display:flex; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+.toolbar label { display:grid; gap:7px; font-size:13px; font-weight:600; }
+.shell button,.toolbar select { min-height:48px; padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--ink); font:inherit; font-size:14px; }
+.toolbar select { min-width:190px; font-size:16px; }
+.shell button { cursor:pointer; font-weight:600; }
+.shell button:disabled { cursor:default; opacity:.55; }
+.request { padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--card); min-width:0; }
+.rowHeading { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:12px; }
+.rowHeading h3 { margin:0; font-size:17px; }
+.rowHeading p { margin:5px 0 0; font-size:13px; color:var(--muted); overflow-wrap:anywhere; }
+.rowHeading>strong { color:var(--brand); font-size:13px; }
+.request dl { display:flex; flex-wrap:wrap; gap:12px 30px; font-size:12px; color:var(--muted); }
+.request dt { font-weight:600; margin-bottom:4px; }
+.request dd { margin:0; overflow-wrap:anywhere; }
+.request blockquote { margin:14px 0; padding:12px; border-left:3px solid var(--line); font-size:14px; line-height:1.65; overflow-wrap:anywhere; white-space:pre-wrap; }
+.history { margin:14px 0; padding-left:20px; color:var(--text-body,var(--muted)); font-size:13px; }
+.history li { padding-block:4px; }
+.history time { color:var(--muted); margin-left:12px; font-size:12px; }
+.pagination { display:flex; align-items:center; justify-content:center; gap:14px; font-size:13px; }
+.message,.error,.empty { margin:0; padding:14px; border-radius:10px; background:var(--card); border:1px solid var(--line); font-size:14px; line-height:1.6; }
+.error { border-left:3px solid #b43d44; }
+.message { background:var(--brand-soft); }
+.shell :is(a,button,select):focus-visible { outline:3px solid var(--brand); outline-offset:3px; }
+.jobs { display:grid; gap:14px; }
+.jobs>h3 { margin:10px 0 0; font-size:20px; }
+.jobNotice { margin:12px 0 0; color:var(--muted); font-size:14px; line-height:1.6; }
+.shell .danger { color:var(--danger,#b43d44); border-color:currentColor; }
+.backdrop { position:fixed; inset:0; z-index:2100; display:flex; align-items:center; justify-content:center; padding:24px; background:rgb(0 0 0/.52); }
+.dialog { width:100%; max-width:520px; max-height:calc(100dvh - 48px); padding:24px; overflow:auto; overscroll-behavior:contain; border:1px solid var(--line); border-radius:20px; background:var(--card); box-shadow:0 16px 64px rgb(0 0 0/.24); overflow-wrap:anywhere; }
+.dialog h3 { margin:0 0 18px; font-size:22px; line-height:1.25; }
+.dialog p { font-size:15px; line-height:1.6; }
+.dialog .reference { font-size:12px; color:var(--muted); }
+.confirm { display:flex; align-items:flex-start; gap:12px; padding-block:12px; font-size:14px; line-height:1.6; cursor:pointer; }
+.dialog .confirm input { flex:0 0 22px; width:22px; min-width:22px; max-width:22px; height:22px; min-height:22px; padding:0; margin:1px 0 0; accent-color:var(--brand); }
+.dialog .confirm span { flex:1; min-width:0; }
+.dialogActions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; margin-top:20px; }
+.shell input:focus-visible { outline:3px solid var(--brand); outline-offset:3px; }
+@media(max-width:420px) { .backdrop { padding:12px; } .dialog { padding:20px; max-height:calc(100dvh - 24px); } .dialogActions>button { width:100%; } }
+@media(max-width:600px) { .header h2 { font-size:22px; } .request { padding:16px; } .toolbar label { flex:1; } .toolbar select { min-width:0; width:100%; } }

@@ -9,6 +9,13 @@ export const metadata = {
 
 const sections = [
   {
+    id: "about",
+    title: "Hakkımızda",
+    paragraphs: [
+      "Kampira, öğrencilerin ders notlarını, kampüs paylaşımlarını ve topluluklarını bir araya getiren bir öğrenci ağıdır. Akademik çevreni oluşturabilir, çalışma arkadaşları bulabilir ve kampüsündeki mekân, etkinlik ve ilanları keşfedebilirsin.",
+    ],
+  },
+  {
     id: "privacy",
     title: "Gizlilik özeti",
     paragraphs: [
@@ -55,7 +62,8 @@ const sections = [
     id: "help",
     title: "Yardım ve veri talepleri",
     paragraphs: [
-      "Hesap, erişim, veri kopyası veya silme talebi için Güvenlik Merkezi üzerinden kayıt oluştur. Talebin güvenli biçimde eşleştirilebilmesi için Kampira'ya giriş yaptığın hesabı kullan.",
+      "Hesap ve ilişkili verilerin için silme talebini Hesap ve Veri Silme Talebi sayfasından oluşturabilir, durumunu takip edebilir ve talebini iptal edebilirsin. Talep kaydı açılması hesabın veya verilerinin silindiği anlamına gelmez; tamamlanma süresi ve veri saklama koşulları henüz yayımlanmadı.",
+      "Giriş yapılamayan veya askıya alınmış hesaplar için ayrı kimlik doğrulama ve destek yolu ile veri kopyası talep akışı henüz kullanıma açılmadı.",
       "Bir güvenlik olayı şüphesinde hassas ayrıntıları genel gönderide paylaşma. Güvenlik Merkezi'nden kayıt oluştur ve ilgili içerik bağlantısını ekle.",
     ],
   },
@@ -64,9 +72,9 @@ const sections = [
 export default function LegalPage() {
   return <main className={styles.shell}>
     <header className={styles.header}><Link href="/" aria-label="Kampira ana sayfa"><img src="/kampira-mark.png" width="38" height="38" alt=""/><strong>Kampira</strong></Link><Link href="/">Ürüne dön</Link></header>
-    <section className={styles.hero}><span>KAMPIRA MVP v1.8</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Kampira’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 4 Eylül 2026 · MVP v1.8</small></section>
+    <section className={styles.hero}><span>KAMPIRA MVP v1.8</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Kampira’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 5 Eylül 2026 · MVP v1.8</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
-    <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></section>)}</div>
+    <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.id === "help" && <Link href="/account-deletion">Hesap ve veri silme talebi oluştur veya takip et</Link>}</div></section>)}</div>
     <footer><p>Bu metin Kampira MVP v1.8 çalışma kurallarını açıklar ve ürün geliştikçe güncellenir.</p><Link href="/">Kampira&apos;ya dön</Link></footer>
   </main>;
 }

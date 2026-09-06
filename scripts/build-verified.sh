@@ -22,7 +22,7 @@ echo "Running bounded vinext build..."
 timeout \
   --signal=TERM \
   --kill-after="${SITES_BUILD_KILL_AFTER:-10s}" \
-  "${SITES_BUILD_TIMEOUT:-3m}" \
+  "${SITES_BUILD_TIMEOUT:-10m}" \
   "${vinext}" build
 
 "${script_dir}/validate-artifact.sh"

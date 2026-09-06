@@ -22,10 +22,10 @@ export function parseProfileLinks(value: string | null | undefined): ProfileLink
 
 export function profileMediaUrl(
   publicId: string | null | undefined,
-  kind: "avatar" | "banner",
+  kind: "avatar",
   updatedAt: string | null | undefined,
 ) {
-  if (!publicId || !updatedAt) return null;
+  if (!publicId || !updatedAt || kind !== "avatar") return null;
   const query = new URLSearchParams({ user: publicId, kind, v: updatedAt });
   return `/api/profile/media?${query.toString()}`;
 }

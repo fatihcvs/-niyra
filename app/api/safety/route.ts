@@ -10,6 +10,14 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
+
+const REPORT_OWNERS: Record<string, readonly string[]> = {
+  post: ["author_email"], comment: ["author_email"], note: ["owner_email"], "note-comment": ["author_email"],
+  community: ["creator_email"], "community-event": ["creator_email"], pulse: ["author_email"],
+  meetup: ["sender_email", "recipient_email"], place: ["creator_email"], "housing-message": ["author_email"],
+  event: ["creator_email"], listing: ["owner_email"], price: ["reporter_email"], "direct-message": ["sender_email"], user: ["_target_email"],
+};
 
 async function isModerator(db: D1Database, email: string) {
   return Boolean(await db.prepare(`SELECT role FROM platform_roles WHERE user_email = ? AND role IN ('moderator', 'admin') LIMIT 1`).bind(email).first());
@@ -119,6 +127,16 @@ export async function POST(request: Request) {
 
     if (action === "report") {
       const details = cleanText(payload.details, 800);
+      const actor = activeActor(DB, identity.email, profile.public_id);
+      let evidenceRead: { sql: string; values: D1Value[] } | null = null;
+      const evidenceQuery = (sql: string) => ({ bind(...values: D1Value[]) {
+        // Capture owner generations in the same snapshot as the evidence, before another await.
+        const wrapped = `SELECT evidence_source.*, ${REPORT_OWNERS[entityType].map((column, index) =>
+          `(SELECT public_id FROM users WHERE email=evidence_source.${column} AND status='active') AS _owner_${index}_public_id`).join(", ")}
+          FROM (${sql}) evidence_source`;
+        evidenceRead = { sql: wrapped, values };
+        return DB.prepare(wrapped).bind(...values);
+      } });
 
       let evidence: Record<string, unknown> | null = null;
       // Both report types inherit the parent post's audience and community access.
@@ -132,45 +150,45 @@ export async function POST(request: Request) {
             AND (c.join_policy = 'open' OR EXISTS (SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active'))
         ))`;
       const postAccessValues = [profile.university_id, identity.email, identity.email, profile.university_id, identity.email, identity.email];
-      if (entityType === "post") evidence = await DB.prepare(
+      if (entityType === "post") evidence = await evidenceQuery(
         `SELECT p.id, p.author_email, p.content, p.created_at FROM posts p
          JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
          WHERE p.id = ? AND ${postVisibility} LIMIT 1`,
       ).bind(entityId, ...postAccessValues).first<Record<string, unknown>>();
-      if (entityType === "comment") evidence = await DB.prepare(
+      if (entityType === "comment") evidence = await evidenceQuery(
         `SELECT pc.id, pc.author_email, pc.content, pc.created_at FROM post_comments pc
          JOIN posts p ON p.id = pc.post_id
          JOIN student_profiles author_profile ON author_profile.user_email = p.author_email
          WHERE pc.id = ? AND pc.deleted_at IS NULL AND ${postVisibility} LIMIT 1`,
       ).bind(entityId, ...postAccessValues).first<Record<string, unknown>>();
-      if (entityType === "note") evidence = await DB.prepare(
+      if (entityType === "note") evidence = await evidenceQuery(
         `SELECT n.id, n.owner_email, n.title, n.description, n.original_file_name, n.created_at FROM notes n
          JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
          WHERE n.id = ? AND owner_profile.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "note-comment") evidence = await DB.prepare(
+      if (entityType === "note-comment") evidence = await evidenceQuery(
         `SELECT nc.id, nc.author_email, nc.note_id, nc.content, nc.created_at FROM note_comments nc
          JOIN notes n ON n.id = nc.note_id
          JOIN student_profiles owner_profile ON owner_profile.user_email = n.owner_email
          WHERE nc.id = ? AND nc.deleted_at IS NULL AND owner_profile.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "community") evidence = await DB.prepare(
+      if (entityType === "community") evidence = await evidenceQuery(
         `SELECT c.id, c.creator_email, c.name, c.description, c.rules, c.created_at FROM communities c
          WHERE c.id = ? AND c.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "community-event") evidence = await DB.prepare(
+      if (entityType === "community-event") evidence = await evidenceQuery(
         `SELECT e.id, e.creator_email, e.community_id, e.title, e.description, e.location,
                 e.starts_at, e.ends_at, e.capacity, e.created_at
          FROM community_events e JOIN communities c ON c.id = e.community_id
          WHERE e.id = ? AND c.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "pulse") evidence = await DB.prepare(
+      if (entityType === "pulse") evidence = await evidenceQuery(
         `SELECT p.id, p.author_email, p.kind, p.category, p.content, p.campus_zone,
                 p.is_anonymous, p.expires_at, p.created_at
          FROM campus_pulse_posts p
          WHERE p.id = ? AND p.university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "meetup") evidence = await DB.prepare(
+      if (entityType === "meetup") evidence = await evidenceQuery(
         `SELECT mr.id, mr.sender_email, mr.recipient_email, mr.activity, mr.message,
                 mr.proposed_time, mr.campus_place, mr.status, mr.created_at
          FROM meetup_requests mr
@@ -180,32 +198,32 @@ export async function POST(request: Request) {
            AND (mr.sender_email = ? OR mr.recipient_email = ?)
          LIMIT 1`,
       ).bind(entityId, profile.university_id, profile.university_id, identity.email, identity.email).first<Record<string, unknown>>();
-      if (entityType === "place") evidence = await DB.prepare(
+      if (entityType === "place") evidence = await evidenceQuery(
         `SELECT id, creator_email, name, category, description, address, latitude, longitude,
                 accessibility_json, opening_hours, verified_at, created_at
          FROM campus_places WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "housing-message") evidence = await DB.prepare(
+      if (entityType === "housing-message") evidence = await evidenceQuery(
         `SELECT h.id, h.author_email, h.place_id, h.content, h.is_anonymous, h.created_at
          FROM housing_discussions h
          JOIN campus_places cp ON cp.id = h.place_id
          WHERE h.id = ? AND cp.university_id = ? AND h.status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "event") evidence = await DB.prepare(
+      if (entityType === "event") evidence = await evidenceQuery(
         `SELECT id, creator_email, place_id, title, description, category, starts_at, ends_at, created_at
          FROM campus_events WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "listing") evidence = await DB.prepare(
+      if (entityType === "listing") evidence = await evidenceQuery(
         `SELECT id, owner_email, kind, category, title, description, price_cents, condition,
                 meetup_place, status, created_at
          FROM marketplace_listings WHERE id = ? AND university_id = ? LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "price") evidence = await DB.prepare(
+      if (entityType === "price") evidence = await evidenceQuery(
         `SELECT id, reporter_email, place_id, place_name, item_name, category, price_cents,
                 observed_at, source_note, created_at
          FROM campus_price_reports WHERE id = ? AND university_id = ? AND status = 'active' LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
-      if (entityType === "direct-message") evidence = await DB.prepare(
+      if (entityType === "direct-message") evidence = await evidenceQuery(
         `SELECT m.id, m.conversation_id, m.sender_email, m.body, m.attachment_type,
                 m.attachment_id, m.attachment_snapshot, m.created_at
          FROM direct_messages m
@@ -215,8 +233,8 @@ export async function POST(request: Request) {
            AND m.sender_email <> ?
          LIMIT 1`,
       ).bind(entityId, profile.university_id, identity.email, identity.email, identity.email).first<Record<string, unknown>>();
-      if (entityType === "user") evidence = await DB.prepare(
-        `SELECT u.public_id, u.display_name, u.handle, u.created_at FROM users u
+      if (entityType === "user") evidence = await evidenceQuery(
+        `SELECT u.email AS _target_email, u.public_id, u.display_name, u.handle, u.created_at FROM users u
          JOIN student_profiles target_profile ON target_profile.user_email = u.email
          WHERE u.public_id = ? AND (target_profile.university_id = ? OR EXISTS (
            SELECT 1 FROM posts public_post WHERE public_post.author_email = u.email AND public_post.deleted_at IS NULL
@@ -224,21 +242,38 @@ export async function POST(request: Request) {
          )) LIMIT 1`,
       ).bind(entityId, profile.university_id).first<Record<string, unknown>>();
       if (!evidence) return Response.json({ error: "Şikâyet edilen içerik bulunamadı." }, { status: 404 });
+      const capturedEvidence = evidence;
+      const capturedRead = evidenceRead as { sql: string; values: D1Value[] } | null;
+      if (!capturedRead || REPORT_OWNERS[entityType].some((_, index) => typeof capturedEvidence[`_owner_${index}_public_id`] !== "string")) {
+        return Response.json({ error: "Şikâyet edilen hesabın durumu değişti. İçeriği yenile.", code: "REPORT_EVIDENCE_CHANGED" }, { status: 409 });
+      }
 
       const duplicate = await DB.prepare(
         `SELECT id FROM content_reports WHERE reporter_email = ? AND entity_type = ? AND entity_id = ? AND status IN ('open', 'appealed') LIMIT 1`,
       ).bind(identity.email, entityType, entityId).first();
       if (duplicate) return Response.json({ error: "Bu içerik için açık bir şikâyetin zaten var." }, { status: 409 });
       const id = crypto.randomUUID();
-      await DB.prepare(
+      const capturedFields = Object.entries(evidence);
+      const payloadEvidence = Object.fromEntries(capturedFields.filter(([column]) => !column.startsWith("_")));
+      // Re-read the exact current row, ACL and generations at the INSERT. This also fences
+      // redacted nested DM attachment snapshots whose referenced third-party owner was erased.
+      const unchangedEvidence = `EXISTS(SELECT 1 FROM (${capturedRead.sql}) current_evidence WHERE ${capturedFields.map(([column]) => `current_evidence."${column}" IS ?`).join(" AND ")})`;
+      await actor.batch([
+        actor.statement(
         `INSERT INTO content_reports (id, reporter_email, entity_type, entity_id, reason, details, evidence_json)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(id, identity.email, entityType, entityId, reason, details, JSON.stringify(evidence)).run();
-      await audit(DB, identity.email, "report.created", entityType, entityId, { reportId: id, reason });
+         SELECT ?, ?, ?, ?, ?, ?, ? WHERE ${unchangedEvidence} AND ${ACTIVE_ACTOR_SQL}`,
+        [id, identity.email, entityType, entityId, reason, details, JSON.stringify(payloadEvidence), ...capturedRead.values, ...capturedFields.map(([,value]) => value as D1Value)]),
+        actor.statement(`INSERT INTO audit_logs(id,actor_email,action,entity_type,entity_id,detail)
+          SELECT ?,?,'report.created',?,?,? WHERE EXISTS(SELECT 1 FROM content_reports WHERE id=? AND reporter_email=?) AND ${ACTIVE_ACTOR_SQL}`,
+          [crypto.randomUUID(), identity.email, entityType, entityId, JSON.stringify({ reportId: id, reason }), id, identity.email]),
+      ]);
+      const recorded = await DB.prepare("SELECT id FROM content_reports WHERE id=? AND reporter_email=?").bind(id, identity.email).first();
+      if (!recorded) return Response.json({ error: "Şikâyet edilen içerik veya hesap değişti. İçeriği yenile.", code: "REPORT_EVIDENCE_CHANGED" }, { status: 409 });
       return Response.json({ report: { id, status: "open" } }, { status: 201 });
     }
     return Response.json({ error: "Güvenlik işlemi desteklenmiyor." }, { status: 400 });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Güvenlik işlemi şu anda tamamlanamadı.");
   }
 }

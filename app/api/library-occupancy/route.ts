@@ -1,5 +1,5 @@
+import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
 import {
-  audit,
   cleanText,
   enforceRateLimit,
   getRuntime,
@@ -129,6 +129,7 @@ export async function POST(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     await expireStaleCheckins(DB);
     const limit = await enforceRateLimit(DB, identity.email, `library-${action}`, action === "area" ? 8 : 20, 24 * 60 * 60);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
@@ -146,12 +147,10 @@ export async function POST(request: Request) {
       ).bind(profile.university_id, name, floorLabel, zoneLabel).first();
       if (duplicate) return Response.json({ error: "Aynı kütüphane, kat ve bölgeyle aktif bir çalışma alanı zaten var." }, { status: 409 });
       const id = crypto.randomUUID();
-      await DB.prepare(
-        `INSERT INTO library_areas
+      await actor.run(`INSERT INTO library_areas
          (id, university_id, place_id, creator_email, name, floor_label, zone_label, description, capacity, features_json)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(id, profile.university_id, placeId || null, identity.email, name, floorLabel, zoneLabel, description, capacity, JSON.stringify(features)).run();
-      await audit(DB, identity.email, "library-area.created", "library-area", id, { capacity, placeId: placeId || null });
+         SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [id, profile.university_id, placeId || null, identity.email, name, floorLabel, zoneLabel, description, capacity, JSON.stringify(features)]);
+      await actor.audit("library-area.created", "library-area", id, { capacity, placeId: placeId || null });
       return Response.json({ area: { id, name, floorLabel, zoneLabel, capacity } }, { status: 201 });
     }
     const area = await DB.prepare(
@@ -168,19 +167,19 @@ export async function POST(request: Request) {
     const id = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + durationMinutes! * 60 * 1000).toISOString();
     try {
-      await DB.prepare(
-        `INSERT INTO library_checkins (id, area_id, user_email, expires_at) VALUES (?, ?, ?, ?)`,
-      ).bind(id, areaId, identity.email, expiresAt).run();
+      await actor.run(`INSERT INTO library_checkins (id, area_id, user_email, expires_at) SELECT ?, ?, ?, ? WHERE ${ACTIVE_ACTOR_SQL}`, [id, areaId, identity.email, expiresAt]);
     } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
       const detail = error instanceof Error ? error.message : "";
       if (detail.includes("library_checkins_one_active_user_idx") || detail.includes("library_checkins.user_email")) {
         return Response.json({ error: "Aynı anda yalnız bir çalışma alanında aktif check-in yapabilirsin." }, { status: 409 });
       }
       throw error;
     }
-    await audit(DB, identity.email, "library-checkin.created", "library-area", areaId, { checkinId: id, durationMinutes });
+    await actor.audit("library-checkin.created", "library-area", areaId, { checkinId: id, durationMinutes });
     return Response.json({ checkin: { id, areaId, expiresAt } }, { status: 201 });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Kütüphane işlemi şu anda tamamlanamıyor.");
   }
 }
@@ -198,29 +197,25 @@ export async function PATCH(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const actor = activeActor(DB, identity.email, profile.public_id);
     await expireStaleCheckins(DB);
     if (action === "check-out") {
-      const checkin = await DB.prepare(
-        `UPDATE library_checkins SET status = 'checked-out', checked_out_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+      const checkin = await actor.first<{ id: string }>(`UPDATE library_checkins SET status = 'checked-out', checked_out_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
          WHERE area_id = ? AND user_email = ? AND status = 'active'
            AND EXISTS (SELECT 1 FROM library_areas area WHERE area.id = library_checkins.area_id AND area.university_id = ? AND area.status = 'active')
-         RETURNING id`,
-      ).bind(areaId, identity.email, profile.university_id).first<{ id: string }>();
+         AND ${ACTIVE_ACTOR_SQL} RETURNING id`, [areaId, identity.email, profile.university_id]);
       if (!checkin) return Response.json({ error: "Bitirilebilecek aktif check-in bulunamadı." }, { status: 404 });
-      await audit(DB, identity.email, "library-checkin.completed", "library-area", areaId, { checkinId: checkin.id });
+      await actor.audit("library-checkin.completed", "library-area", areaId, { checkinId: checkin.id });
       return Response.json({ checkedOut: true, id: checkin.id });
     }
-    const area = await DB.prepare(
-      `UPDATE library_areas SET status = 'archived', updated_at = CURRENT_TIMESTAMP
-       WHERE id = ? AND university_id = ? AND creator_email = ? AND status = 'active' RETURNING id`,
-    ).bind(areaId, profile.university_id, identity.email).first<{ id: string }>();
+    const area = await actor.first<{ id: string }>(`UPDATE library_areas SET status = 'archived', updated_at = CURRENT_TIMESTAMP
+       WHERE id = ? AND university_id = ? AND creator_email = ? AND status = 'active' AND ${ACTIVE_ACTOR_SQL} RETURNING id`, [areaId, profile.university_id, identity.email]);
     if (!area) return Response.json({ error: "Arşivlenebilecek çalışma alanı bulunamadı." }, { status: 404 });
-    await DB.prepare(
-      `UPDATE library_checkins SET status = 'expired', updated_at = CURRENT_TIMESTAMP WHERE area_id = ? AND status = 'active'`,
-    ).bind(areaId).run();
-    await audit(DB, identity.email, "library-area.archived", "library-area", areaId);
+    await actor.run(`UPDATE library_checkins SET status = 'expired', updated_at = CURRENT_TIMESTAMP WHERE area_id = ? AND status = 'active' AND ${ACTIVE_ACTOR_SQL}`, [areaId]);
+    await actor.audit("library-area.archived", "library-area", areaId);
     return Response.json({ archived: true, id: areaId });
   } catch (error) {
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
     return unavailableResponse(error, "Kütüphane bilgisi şu anda güncellenemiyor.");
   }
 }

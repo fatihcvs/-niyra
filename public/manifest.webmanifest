@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Kampira",
+  "short_name": "Kampira",
+  "description": "Kampüsün, öğrenci çevren ve derslerin tek yerde.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#ffffff",
+  "background_color": "#f5f6f8",
+  "categories": ["social", "education"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "/app-icons/kampira-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icons/kampira-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icons/kampira-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Akış", "url": "/", "icons": [{ "src": "/app-icons/kampira-192.png", "sizes": "192x192" }] },
+    { "name": "Mesajlar", "url": "/?view=messages", "icons": [{ "src": "/app-icons/kampira-192.png", "sizes": "192x192" }] },
+    { "name": "Ders notları", "url": "/?view=notes", "icons": [{ "src": "/app-icons/kampira-192.png", "sizes": "192x192" }] },
+    { "name": "Kampüs Anlık", "url": "/?view=pulse", "icons": [{ "src": "/app-icons/kampira-192.png", "sizes": "192x192" }] }
+  ]
+}

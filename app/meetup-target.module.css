@@ -1,0 +1,25 @@
+.overlay { position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:24px; background:rgb(0 0 0/.52); }
+.dialog { display:flex; flex-direction:column; width:min(100%,560px); max-height:min(90dvh,850px); min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:24px; color:var(--ink); background:var(--card); box-shadow:0 24px 90px rgb(0 0 0/.25); }
+.header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 16px; border-bottom:1px solid var(--line); flex-shrink:0; }
+.header h2 { margin:0; font-size:18px; line-height:1.3; letter-spacing:-.3px; }
+.body { min-height:0; padding:24px; overflow-y:auto; overscroll-behavior:contain; overflow-wrap:anywhere; }
+.person { display:grid; justify-items:start; gap:8px; }
+.person>span,.timestamp { color:var(--muted); font-size:13px; line-height:1.5; }
+.person>a { color:var(--ink); font-size:22px; font-weight:700; line-height:1.3; text-decoration:none; }
+.status { padding:6px 10px; border-radius:999px; background:var(--brand-soft); color:var(--brand); font-size:12px; line-height:1.5; }
+.activity { margin:24px 0 8px; font-size:18px; }
+.message { margin:0; white-space:pre-wrap; font-size:16px; line-height:1.65; color:var(--text-body,var(--ink)); }
+.details { display:grid; gap:16px; margin:24px 0; padding:18px; border:1px solid var(--line); border-radius:16px; background:var(--canvas); }
+.details dt { display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13px; color:var(--muted); }
+.details dd { margin:0 0 0 28px; font-size:15px; line-height:1.6; }
+.notice,.safety { padding:14px; margin:0 0 20px; border-radius:12px; background:var(--brand-soft); color:var(--text-body,var(--ink)); font-size:14px; line-height:1.6; }
+.safety { display:flex; align-items:flex-start; gap:10px; }
+.safety svg { flex:0 0 auto; margin-top:2px; color:var(--brand); }
+.actions { display:flex; flex-wrap:wrap; gap:8px; padding:16px; border-top:1px solid var(--line); flex-shrink:0; }
+.actions>button { flex:1 1 auto; min-height:48px; gap:6px; }
+.listLink { display:inline-flex; align-items:center; min-height:48px; padding:0 8px; color:var(--brand); font-size:13px; text-decoration:none; }
+.listFooter { flex-wrap:wrap; }
+.listFooter .listActions { display:flex; flex:1 1 100%; flex-wrap:wrap; justify-content:flex-end; min-width:0; }
+.person>a:focus-visible,.listLink:focus-visible { outline:3px solid var(--brand); outline-offset:3px; border-radius:6px; }
+@media(max-width:780px) { .overlay { padding:0; } .dialog { width:100%; height:100dvh; max-height:100dvh; border:0; border-radius:0; padding-top:env(safe-area-inset-top); } .body { flex:1; padding:20px 16px; } .actions { padding:12px 12px max(12px,env(safe-area-inset-bottom)); } }
+@media(prefers-reduced-motion:no-preference) { .dialog { animation:meetup-enter 160ms ease-out; } @keyframes meetup-enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } } }

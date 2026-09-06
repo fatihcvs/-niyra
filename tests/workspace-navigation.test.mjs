@@ -29,9 +29,10 @@ test("notifications open supported content and do not construct unsafe destinati
   assert.equal(notificationHref("post", "one&view=safety"), "/?post=one%26view%3Dsafety");
   assert.equal(notificationHref("user", "a/b"), "/?profile=a%2Fb");
   assert.equal(notificationHref("user", "recipient", "follower"), "/?profile=follower");
-  assert.equal(notificationHref("direct-message", "one"), "/?view=messages");
-  assert.equal(notificationHref("community-event", "one"), "/?view=communities");
-  assert.equal(notificationHref("note", "one"), "/?view=notes");
+  assert.equal(notificationHref("direct-message", "one"), "/?view=messages&message=one");
+  assert.equal(notificationHref("community-event", "one"), "/?view=communities&communityEvent=one");
+  assert.equal(notificationHref("note", "one"), "/?view=notes&note=one");
+  assert.equal(notificationHref("meetup", "one&view=safety"), "/?view=match&meetup=one%26view%3Dsafety");
   assert.equal(notificationHref("unknown", "javascript:alert(1)"), null);
   assert.equal(notificationHref("__proto__", "one"), null);
   assert.equal(notificationHref("post", null), null);

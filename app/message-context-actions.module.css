@@ -1,0 +1,27 @@
+.overlay { position:fixed; inset:0; z-index:190; display:grid; place-items:center; padding:20px; background:rgb(0 0 0 / .38); }
+.sheet { width:min(100%,460px); min-height:0; max-height:calc(100dvh - 40px); overflow:auto; overscroll-behavior:contain; padding:20px; border:1px solid var(--line); border-radius:20px; background:var(--card); color:var(--ink); outline:none; }
+.sheet header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.sheet h2 { margin:0; font-size:20px; line-height:1.35; overflow-wrap:anywhere; }
+.sheet p { color:var(--text-body,var(--muted)); font-size:14px; line-height:1.55; }
+.sheet header p { margin:4px 0 0; }
+.sheet header button { width:48px; min-width:48px; height:48px; display:grid; place-items:center; border:0; border-radius:50%; background:transparent; color:var(--ink); }
+.actions { display:grid; gap:4px; margin-top:12px; }
+.actions button { display:flex; align-items:center; gap:14px; min-height:52px; padding:12px 8px; border:0; border-radius:12px; background:transparent; color:var(--ink); font:inherit; text-align:left; }
+.actions button:hover { background:var(--surface-interactive,var(--canvas)); }
+.preview { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; white-space:pre-wrap; overflow-wrap:anywhere; padding:12px; border-radius:12px; background:var(--surface-interactive,var(--canvas)); }
+.sheet form,.sheet label { display:grid; gap:8px; }
+.sheet form { gap:16px; }
+.sheet label { font-size:14px; }
+.sheet select,.sheet textarea { min-width:0; width:100%; min-height:48px; padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--canvas); color:var(--ink); font:inherit; font-size:16px; }
+.primary,.retry { min-height:48px; border:0; border-radius:12px; padding:12px 18px; font:inherit; cursor:pointer; }
+.primary { width:100%; background:var(--brand-solid,var(--brand)); color:white; }
+.retry { background:var(--surface-interactive,var(--canvas)); color:var(--ink); }
+.sheet .error { color:var(--danger,#c34352); }
+.sheet .notice { color:var(--text-body,var(--ink)); }
+.sheet .simulation { padding:10px 12px; border:1px dashed var(--line); border-radius:8px; color:var(--muted); font-size:12px; }
+.sheet button:disabled { opacity:.5; cursor:default; }
+.sheet :is(button,select,textarea):focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+@media(max-width:780px) {
+  .overlay { top:var(--app-viewport-top,0px); bottom:auto; height:var(--app-viewport-height,100dvh); padding:12px 0 0; align-items:end; }
+  .sheet { width:100%; max-height:calc(var(--app-viewport-height,100dvh) - env(safe-area-inset-top) - 12px); border-radius:20px 20px 0 0; padding:18px 20px calc(20px + env(safe-area-inset-bottom)); }
+}

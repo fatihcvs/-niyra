@@ -10,6 +10,8 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { MediaUploadError, putOwnedMedia } from "../../../lib/media-upload-operations";
+import { activeActor, ActiveActorError } from "../../../lib/active-actor";
 
 const kinds = new Set(["live", "confession"]);
 const categories = new Set(["general", "transport", "food", "event", "lost-found", "study", "safety", "social"]);
@@ -213,17 +215,18 @@ export async function POST(request: Request) {
     const safeOwner = identity.email.toLocaleLowerCase("en-US").replace(/[^a-z0-9@._-]/g, "_");
     const objectKey = preparedImage ? `pulse/${profile.university_id}/${safeOwner}/${id}.${preparedImage.extension}` : null;
     if (preparedImage && image && FILES && objectKey) {
-      await FILES.put(objectKey, preparedImage.bytes, {
+      await putOwnedMedia(DB, FILES, { ownerEmail: identity.email, ownerPublicId: profile.public_id, objectKey, kind: "pulse" }, preparedImage.bytes, {
         httpMetadata: { contentType: image.type },
         customMetadata: { postId: id, universityId: profile.university_id, owner: identity.email },
       });
       uploadedObject = { bucket: FILES, key: objectKey };
     }
-    await DB.prepare(
+    const published = await DB.prepare(
       `INSERT INTO campus_pulse_posts
        (id, author_email, university_id, kind, category, content, campus_zone, image_object_key,
         image_original_file_name, image_content_type, image_byte_size, is_anonymous, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+       WHERE EXISTS (SELECT 1 FROM users WHERE email = ? AND public_id = ? AND status = 'active') RETURNING id`,
     ).bind(
       id,
       identity.email,
@@ -238,15 +241,25 @@ export async function POST(request: Request) {
       image?.size ?? null,
       anonymous ? 1 : 0,
       expiresAt,
-    ).run();
+      identity.email,
+      profile.public_id,
+    ).first<{ id: string }>();
+    if (!published) throw new MediaUploadError();
     postCreated = true;
-    await audit(DB, identity.email, "campus-pulse.created", "pulse", id, { kind, category, anonymous, hasImage: Boolean(objectKey) });
+    await activeActor(DB, identity.email, profile.public_id).audit("campus-pulse.created", "pulse", id, { kind, category, anonymous, hasImage: Boolean(objectKey) });
     return Response.json({ item: { id, kind, category, content, campusZone, anonymous, expiresAt, imageUrl: objectKey ? `/api/campus-pulse/image?id=${encodeURIComponent(id)}` : null } }, { status: 201 });
   } catch (error) {
     if (uploadedObject && !postCreated) {
-      try { await uploadedObject.bucket.delete(uploadedObject.key); }
+      try {
+        const { DB } = await getRuntime();
+        const referenced = await DB.prepare("SELECT id FROM campus_pulse_posts WHERE image_object_key = ? LIMIT 1")
+          .bind(uploadedObject.key).first<{ id: string }>();
+        if (!referenced) await uploadedObject.bucket.delete(uploadedObject.key);
+      }
       catch { /* The inaccessible orphan can be cleaned by storage maintenance. */ }
     }
+    if (error instanceof ActiveActorError) return Response.json({ error: error.message, code: "ACCOUNT_CHANGED" }, { status: 409 });
+    if (error instanceof MediaUploadError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
     return unavailableResponse(error, "Kampüs paylaşımı şu anda yayınlanamadı.");
   }
 }

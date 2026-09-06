@@ -1,0 +1,41 @@
+/* State-driven motion: no repeating animations on feed cards or moving shell ancestors. */
+:root {
+  --motion-press:110ms;
+  --motion-state:180ms;
+  --motion-surface:260ms;
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+}
+.site-shell button { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+
+@media (prefers-reduced-motion:no-preference) {
+  html:not([data-reduce-motion="true"]) :is(.app-mobile-nav-item,.app-mobile-icon,.action-button,.app-campus-item,.app-post-publish,.workspace-primary,.profile-own-actions button) {
+    transition:transform var(--motion-press) var(--ease-out),background-color var(--motion-state) ease,color var(--motion-state) ease;
+  }
+  html:not([data-reduce-motion="true"]) :is(.app-mobile-nav-item,.app-mobile-icon,.action-button):active:not(:disabled) { transform:scale(.9); }
+  html:not([data-reduce-motion="true"]) :is(.app-campus-item,.app-post-publish,.workspace-primary,.profile-own-actions button):active:not(:disabled) { transform:scale(.975); }
+  html:not([data-reduce-motion="true"]) .app-mobile-nav-indicator { transition:transform 280ms cubic-bezier(.22,.8,.25,1); }
+  html:not([data-reduce-motion="true"]) :is(.post-owner-menu,.app-post-other[open]>div) { transform-origin:top right; animation:popover-arrive 160ms var(--ease-out); }
+  html:not([data-reduce-motion="true"]) .app-post-other[open]>div { transform-origin:bottom right; }
+  html:not([data-reduce-motion="true"]) .comment-thread { animation:content-arrive 160ms ease-out; }
+  html:not([data-reduce-motion="true"]) .feature-overlay { animation:content-arrive 180ms ease-out; }
+  html:not([data-reduce-motion="true"]) .feature-dialog { animation:surface-arrive var(--motion-surface) var(--ease-out); }
+  html:not([data-reduce-motion="true"]) .site-shell-messages [role="dialog"] { animation:surface-arrive var(--motion-surface) var(--ease-out); }
+  html:not([data-reduce-motion="true"]) .app-mobile-nav-item.is-active>svg { animation:icon-select var(--motion-state) var(--ease-out); }
+}
+@keyframes content-arrive { from { opacity:.55; } to { opacity:1; } }
+@keyframes surface-arrive { from { opacity:.7; translate:0 24px; } to { opacity:1; translate:0 0; } }
+@keyframes popover-arrive { from { opacity:0; scale:.96; } to { opacity:1; scale:1; } }
+@keyframes icon-select { from { scale:.88; } to { scale:1; } }
+
+@media (max-width:780px) and (prefers-reduced-motion:no-preference) {
+  /* Menus dismiss through existing controls/Back; entry never delays interaction. */
+  html:not([data-reduce-motion="true"]) .app-post-composer { animation:surface-arrive var(--motion-surface) var(--ease-out); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .app-mobile-nav-indicator { transition:none; }
+}
+html[data-reduce-motion="true"] .app-mobile-nav-indicator { transition:none; }
+
+/* The in-app preference must stop infinite loops and root smooth scrolling too. */
+html[data-reduce-motion="true"] { scroll-behavior:auto!important; }
+html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *::before,html[data-reduce-motion="true"] *::after { animation-iteration-count:1!important; }

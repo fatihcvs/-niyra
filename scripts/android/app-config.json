@@ -1,0 +1,10 @@
+{
+  "origin": "https://web-production-da44f.up.railway.app",
+  "packageId": "app.kampira.mobile",
+  "packageIdProvisional": true,
+  "appVersionName": "1.8.0",
+  "appVersionCode": 1,
+  "minSdkVersion": 23,
+  "requiredTargetSdkVersion": 36,
+  "bubblewrapVersion": "1.25.0"
+}

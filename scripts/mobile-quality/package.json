@@ -1,0 +1,17 @@
+{
+  "name": "kampira-mobile-quality-tests",
+  "private": true,
+  "type": "module",
+  "description": "Isolated Node DOM test tooling; not included in the application runtime.",
+  "scripts": {
+    "test:headers": "node --test --test-isolation=none ../../tests/workspace-header-runtime.test.mjs",
+    "test:filters": "node --test --test-isolation=none ../../tests/workspace-filters-runtime.test.mjs",
+    "test:layers": "node --test --test-isolation=none ../../tests/app-layer-runtime.test.mjs ../../tests/campus-guide-layers-runtime.test.mjs",
+    "test:design": "node --test --test-isolation=none ../../tests/design-lab-runtime.test.mjs",
+    "test:campus-tools": "node --test --test-isolation=none ../../tests/campus-tools-layers-runtime.test.mjs"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.5",
+    "jsdom": "26.1.0"
+  }
+}

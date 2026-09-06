@@ -17,6 +17,7 @@ type ActionPayload = {
   postId?: string;
   type?: "like" | "save" | "comment";
   content?: string;
+  active?: boolean;
 };
 
 function actionError(error: unknown) {
@@ -56,10 +57,16 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ error: "Geçerli bir etkileşim gönderilmedi." }, { status: 400 });
   }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return Response.json({ error: "Geçerli bir etkileşim gönderilmedi." }, { status: 400 });
+  }
 
   const postId = typeof payload.postId === "string" ? payload.postId.trim() : "";
   if (!postId || postId.length > 80 || !["like", "save", "comment"].includes(payload.type ?? "")) {
     return Response.json({ error: "Gönderi ve etkileşim türü zorunludur." }, { status: 400 });
+  }
+  if (payload.active !== undefined && (typeof payload.active !== "boolean" || payload.type === "comment")) {
+    return Response.json({ error: "Beğenme veya kaydetme durumu doğru ya da yanlış olmalı." }, { status: 400 });
   }
   const commentContent = payload.type === "comment" && typeof payload.content === "string"
     ? payload.content.trim()
@@ -130,21 +137,21 @@ export async function POST(request: Request) {
         .where(and(eq(postLikes.postId, postId), eq(postLikes.userEmail, identity.email)))
         .limit(1);
 
-      if (existing) {
-        await db
-          .delete(postLikes)
-          .where(and(eq(postLikes.postId, postId), eq(postLikes.userEmail, identity.email)));
-      } else {
-        await db.insert(postLikes).values({ postId, userEmail: identity.email });
-      }
+      // Desired state makes a lost-response retry safe; older callers keep toggle behavior.
+      const active = payload.active ?? !existing;
+      const changed = active
+        ? await db.insert(postLikes).values({ postId, userEmail: identity.email }).onConflictDoNothing().returning({ postId: postLikes.postId })
+        : await db.delete(postLikes).where(and(eq(postLikes.postId, postId), eq(postLikes.userEmail, identity.email))).returning({ postId: postLikes.postId });
 
       const [total] = await db
         .select({ value: count() })
         .from(postLikes)
         .where(eq(postLikes.postId, postId));
-      await audit(DB, identity.email, existing ? "post.unliked" : "post.liked", "post", postId);
-      if (!existing) await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderini beğendi`, body: post.content.slice(0, 120), entityType: "post", entityId: postId });
-      return Response.json({ type: "like", active: !existing, count: total.value });
+      if (changed.length) {
+        await audit(DB, identity.email, active ? "post.liked" : "post.unliked", "post", postId);
+        if (active) await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderini beğendi`, body: post.content.slice(0, 120), entityType: "post", entityId: postId });
+      }
+      return Response.json({ type: "like", active, count: total.value });
     }
 
     if (payload.type === "save") {
@@ -154,16 +161,13 @@ export async function POST(request: Request) {
         .where(and(eq(postSaves.postId, postId), eq(postSaves.userEmail, identity.email)))
         .limit(1);
 
-      if (existing) {
-        await db
-          .delete(postSaves)
-          .where(and(eq(postSaves.postId, postId), eq(postSaves.userEmail, identity.email)));
-      } else {
-        await db.insert(postSaves).values({ postId, userEmail: identity.email });
-      }
+      const active = payload.active ?? !existing;
+      const changed = active
+        ? await db.insert(postSaves).values({ postId, userEmail: identity.email }).onConflictDoNothing().returning({ postId: postSaves.postId })
+        : await db.delete(postSaves).where(and(eq(postSaves.postId, postId), eq(postSaves.userEmail, identity.email))).returning({ postId: postSaves.postId });
 
-      await audit(DB, identity.email, existing ? "post.unsaved" : "post.saved", "post", postId);
-      return Response.json({ type: "save", active: !existing });
+      if (changed.length) await audit(DB, identity.email, active ? "post.saved" : "post.unsaved", "post", postId);
+      return Response.json({ type: "save", active });
     }
 
     const id = crypto.randomUUID();
@@ -176,7 +180,7 @@ export async function POST(request: Request) {
       .from(postComments)
       .where(and(eq(postComments.postId, postId), isNull(postComments.deletedAt)));
     await audit(DB, identity.email, "comment.created", "comment", id, { postId });
-    await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderine yorum yaptı`, body: commentContent.slice(0, 120), entityType: "post", entityId: postId });
+    await notify(DB, { userEmail: post.authorEmail, actorEmail: identity.email, kind: "interaction", title: `${actor.displayName} gönderine yorum yaptı`, body: commentContent.slice(0, 120), entityType: "comment", entityId: id });
 
     return Response.json(
       {

@@ -82,6 +82,7 @@ function fixture(t) {
         "../../../lib/profile": profileHelpers,
         "../../../lib/app-auth": {},
         "../../../lib/post-media": helpers,
+        "../../../lib/post-idempotency": {},
       };
       assert.ok(path in dependencies, `Unexpected dependency ${path}`);
       return dependencies[path];

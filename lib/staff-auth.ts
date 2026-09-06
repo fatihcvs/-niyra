@@ -5,6 +5,12 @@ export const STAFF_SESSION_COOKIE_NAME = "uniyra_staff_session";
 export const INITIAL_OWNER_USERNAME = "admin";
 export const INITIAL_OWNER_PASSWORD = "admin123";
 
+/** Public correlation tag only; this value never authenticates a request. */
+export async function staffAccountContext(headers: HeaderReader, staffId: string) {
+  const token = readStaffSessionToken(headers);
+  return token ? sha256(`account-erasure-context/v1:${staffId}:${token}`) : "";
+}
+
 const STAFF_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
 
 type HeaderReader = Pick<Headers, "get">;
