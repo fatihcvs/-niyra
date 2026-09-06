@@ -3501,12 +3501,10 @@
       "universityId": "tr-istanbul-rumeli-universitesi",
       "name": "İstanbul Rumeli Üniversitesi",
       "programCount": 107,
-      "structuredProgramCount": 40,
-      "courseCount": 3781,
-      "linkedProgramCount": 40,
+      "structuredProgramCount": 44,
+      "courseCount": 4288,
+      "linkedProgramCount": 44,
       "missingProgramIds": [
-        "program-osym-208110329",
-        "program-osym-208151225",
         "program-osym-206870091",
         "program-osym-206851449",
         "program-osym-206851388",
@@ -3530,8 +3528,6 @@
         "program-osym-206850115",
         "program-osym-206850487",
         "program-osym-206851325",
-        "program-osym-208151323",
-        "program-osym-208151309",
         "program-osym-209900122",
         "program-osym-209910046",
         "program-osym-209900129",
@@ -3574,8 +3570,6 @@
         "program-osym-209900164"
       ],
       "missingReasons": {
-        "program-osym-208110329": "programme-source-not-matched",
-        "program-osym-208151225": "programme-source-not-matched",
         "program-osym-206870091": "programme-source-not-matched",
         "program-osym-206851449": "programme-source-not-matched",
         "program-osym-206851388": "programme-source-not-matched",
@@ -3599,8 +3593,6 @@
         "program-osym-206850115": "programme-source-not-matched",
         "program-osym-206850487": "programme-source-not-matched",
         "program-osym-206851325": "programme-source-not-matched",
-        "program-osym-208151323": "programme-source-not-matched",
-        "program-osym-208151309": "programme-source-not-matched",
         "program-osym-209900122": "programme-source-not-matched",
         "program-osym-209910046": "programme-source-not-matched",
         "program-osym-209900129": "programme-source-not-matched",
@@ -6975,14 +6967,15 @@
     }
   ],
   "research": {
-    "sourceCount": 14820,
-    "parserVersion": "0014493218d9",
+    "sourceCount": 14824,
+    "parserVersion": "b9beb2b93a5b",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
       "iau": "6fe442a0ca61",
       "thk": "183ba09549a7",
-      "yasar": "0014493218d9"
+      "yasar": "0014493218d9",
+      "rumeli-2026": "b9beb2b93a5b"
     },
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
@@ -7001,7 +6994,8 @@
       "language-courses.json": "6c6742c5a23561149014660d932e71311f9ba0760a1c7551d3434950591fa91c",
       "iau-courses.json": "20f65fd17816c7d555f566bdf89f7db8b0ed50c0130196e47e10120e0b267eab",
       "thk-courses.json": "d976b553e631e411c05cdac1abf60da8a5a62abd1c494b0b6a85bebe126f536d",
-      "yasar-courses.json": "043fef86237a795d5d2382dad0cce5978df9300857d1ea809195d930a230a38d"
+      "yasar-courses.json": "043fef86237a795d5d2382dad0cce5978df9300857d1ea809195d930a230a38d",
+      "rumeli-courses.json": "46a1e32ae029e2b8a209618abe0b53f0f19e1638f4f3b29d37968d00df59a994"
     }
   }
 }

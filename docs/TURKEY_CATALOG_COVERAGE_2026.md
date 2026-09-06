@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,896 programda ders kaydı · 2,287 programda ders listesi eksik.
-Toplam 1,442,252 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,900 programda ders kaydı · 2,283 programda ders listesi eksik.
+Toplam 1,442,759 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,886
+- Resmî program eşleşmesi eksik: 1,882
 - Okunabilir ders listesi bulunamadı: 335
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
@@ -121,7 +121,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İstanbul Medipol Üniversitesi | 149 | 104 | 45 | 6,514 | 10 | [Kaynak 1](https://www.medipol.edu.tr/akademik/fakulteler/hukuk-fakultesi) · [Kaynak 2](https://www.medipol.edu.tr/akademik/fakulteler/iletisim-fakultesi) |
 | İstanbul Nişantaşı Üniversitesi | 114 | 109 | 5 | 9,365 | 5 | [Kaynak 1](https://ebp.nisantasi.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.nisantasi.edu.tr/dereceprogramlari/1) |
 | İstanbul Okan Üniversitesi | 114 | 108 | 6 | 22,681 | 10 | [Kaynak 1](https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.okan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr) · [Kaynak 4](https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr) |
-| İstanbul Rumeli Üniversitesi | 107 | 40 | 67 | 3,781 | 5 | [Kaynak 1](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
+| İstanbul Rumeli Üniversitesi | 107 | 44 | 63 | 4,288 | 5 | [Kaynak 1](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.rumeli.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Sabahattin Zaim Üniversitesi | 38 | 21 | 17 | 2,366 | 10 | [Kaynak 1](https://www.izu.edu.tr/icerik/tum-programlar) |
 | İstanbul Sağlık ve Teknoloji Üniversitesi | 24 | 24 | 0 | 2,505 | 5 | [Kaynak 1](https://ois.istun.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_14/ln/tr) · [Kaynak 2](https://ois.istun.edu.tr/bilgipaketi/eobsakts) |
 | İstanbul Teknik Üniversitesi | 66 | 48 | 18 | 2,041 | 15 | Doğrulanmış giriş yok |
