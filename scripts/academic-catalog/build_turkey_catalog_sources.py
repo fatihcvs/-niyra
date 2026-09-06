@@ -18,7 +18,7 @@ def build():
                  'ubys-directories','ecatalog-directories','institution-directories','more-directories',
                  'kocaeli-directories','istanbul-directories','language-directories','iau-directories',
                  'thk-directories','yasar-directories','rumeli-directories','iste-directories',
-                 'halic-directories','iuc-directories']:
+                 'halic-directories','iuc-directories','bayburt-directories']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):

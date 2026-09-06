@@ -1273,37 +1273,11 @@
       "universityId": "tr-bayburt-universitesi",
       "name": "Bayburt Üniversitesi",
       "programCount": 66,
-      "structuredProgramCount": 54,
-      "courseCount": 2744,
-      "linkedProgramCount": 54,
-      "missingProgramIds": [
-        "program-osym-101850201",
-        "program-osym-101850291",
-        "program-osym-101890062",
-        "program-osym-101850167",
-        "program-osym-101850097",
-        "program-osym-101850176",
-        "program-osym-101850088",
-        "program-osym-101890147",
-        "program-osym-101890196",
-        "program-osym-101890133",
-        "program-osym-101850194",
-        "program-osym-101850255"
-      ],
-      "missingReasons": {
-        "program-osym-101850201": "no-readable-curriculum",
-        "program-osym-101850291": "no-readable-curriculum",
-        "program-osym-101890062": "programme-source-not-matched",
-        "program-osym-101850167": "no-readable-curriculum",
-        "program-osym-101850097": "programme-source-not-matched",
-        "program-osym-101850176": "no-readable-curriculum",
-        "program-osym-101850088": "no-readable-curriculum",
-        "program-osym-101890147": "no-readable-curriculum",
-        "program-osym-101890196": "no-readable-curriculum",
-        "program-osym-101890133": "no-readable-curriculum",
-        "program-osym-101850194": "no-readable-curriculum",
-        "program-osym-101850255": "no-readable-curriculum"
-      }
+      "structuredProgramCount": 66,
+      "courseCount": 3450,
+      "linkedProgramCount": 66,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-beykoz-universitesi",
@@ -6735,8 +6709,8 @@
     }
   ],
   "research": {
-    "sourceCount": 14953,
-    "parserVersion": "7b71773b2518",
+    "sourceCount": 14965,
+    "parserVersion": "8267e724e759",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -6745,8 +6719,9 @@
       "yasar": "0014493218d9",
       "rumeli-2026": "b9beb2b93a5b",
       "iste-2026": "e7fe25a4cdb5",
-      "halic-2026": "7b71773b2518",
-      "iuc-print": "7b71773b2518"
+      "halic-2026": "8267e724e759",
+      "iuc-print": "8267e724e759",
+      "bayburt-reviewed": "8267e724e759"
     },
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
@@ -6769,7 +6744,8 @@
       "rumeli-courses.json": "46a1e32ae029e2b8a209618abe0b53f0f19e1638f4f3b29d37968d00df59a994",
       "iste-courses.json": "a0fa2c5e609247a76568a8296ac540d6bf73d920b7527769593721468eae5de9",
       "halic-courses.json": "df18317a31db3a8b5809c87673aabe1557c6b12d847a0d8495dc76cbcdaa411c",
-      "iuc-courses.json": "1d60e09df09a846c6e6f015d0a05c95e64c495c7c3604a019814abf0c71ad9a9"
+      "iuc-courses.json": "1d60e09df09a846c6e6f015d0a05c95e64c495c7c3604a019814abf0c71ad9a9",
+      "bayburt-courses.json": "564f1d4c9ecebe80e4bb55a33d0a4e9d029075412151fdcb95944a1245dd2157"
     }
   }
 }

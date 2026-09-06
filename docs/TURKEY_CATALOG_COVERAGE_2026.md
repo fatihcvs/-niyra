@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 13,015 programda ders kaydı · 2,168 programda ders listesi eksik.
-Toplam 1,455,825 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,027 programda ders kaydı · 2,156 programda ders listesi eksik.
+Toplam 1,456,531 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,879
-- Okunabilir ders listesi bulunamadı: 223
+- Resmî program eşleşmesi eksik: 1,877
+- Okunabilir ders listesi bulunamadı: 213
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -53,7 +53,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Bartın Üniversitesi | 77 | 69 | 8 | 7,733 | 10 | [Kaynak 1](https://ubys.bartin.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Başkent Üniversitesi | 107 | 95 | 12 | 11,070 | 10 | [Kaynak 1](https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=lisans) · [Kaynak 2](https://truva.baskent.edu.tr/bilgipaketi/?dil=TR&menu=akademik&inner=onLisans) |
 | Batman Üniversitesi | 68 | 65 | 3 | 4,247 | 21 | [Kaynak 1](https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.batman.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Bayburt Üniversitesi | 66 | 54 | 12 | 2,744 | 7 | [Kaynak 1](https://ebp.bayburt.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.bayburt.edu.tr/DereceProgramlari/1) |
+| Bayburt Üniversitesi | 66 | 66 | 0 | 3,450 | 7 | [Kaynak 1](https://ebp.bayburt.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.bayburt.edu.tr/DereceProgramlari/1) |
 | Beykoz Üniversitesi | 36 | 32 | 4 | 2,697 | 5 | [Kaynak 1](https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_15/ln/tr) · [Kaynak 2](https://akts.beykoz.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_14/ln/tr) |
 | Bezmialem Vakıf Üniversitesi | 24 | 20 | 4 | 1,821 | 5 | [Kaynak 1](https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.bezmialem.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Bilecik Şeyh Edebali Üniversitesi | 96 | 94 | 2 | 8,832 | 10 | [Kaynak 1](https://ebs.bilecik.edu.tr/Bolumler?BolumAd=Lisans) |

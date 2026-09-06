@@ -605,4 +605,69 @@ class IucCatalogTests(unittest.TestCase):
                          ['Fransızca'])
 
 
+class BayburtCatalogTests(unittest.TestCase):
+    def test_bayburt_uses_only_reviewed_current_heading_and_excludes_pool_slots(self):
+        from parse_turkey_bayburt_courses import parse_bayburt
+        document=html('''<div id="accordion-mufredat">
+          <h3>Program (Bologna 2-2019)</h3><div><table>
+            <tr><th>1. Dönem</th></tr><tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>OLD101B2</td><td>Türkçe</td><td>Eski Ders</td><td>Zorunlu</td></tr></table></div>
+          <h3>Program (Bologna 3-2026)</h3><div><table>
+            <tr><th>1. Dönem</th></tr><tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>NEW101B3</td><td>Türkçe</td><td>Yeni Ders I</td><td>Zorunlu</td></tr>
+            <tr><th>2. Dönem</th></tr><tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>NEW102B3</td><td>Türkçe</td><td>Yeni Ders II</td><td>Zorunlu</td></tr>
+            <tr><th>3. Dönem</th></tr><tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>NEW201B3</td><td>Türkçe</td><td>Yeni Ders III</td><td>Zorunlu</td></tr>
+            <tr><th>4. Dönem</th></tr><tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>NEW202B3</td><td>Türkçe</td><td>Yeni Ders IV</td><td>Zorunlu</td></tr>
+            <tr><td>POOL202B3</td><td>Türkçe</td><td>Seçmeli Ders Grubu I</td><td>Seçmeli</td></tr>
+            <tr><th>POOL202B3 - Seçmeli Dersler Grubu I</th></tr>
+            <tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+            <tr><td>EL202.1B3</td><td>Türkçe</td><td>Meslek Etiği</td><td>Seçmeli</td></tr>
+          </table></div></div>''')
+        selection={'method':'reviewed-current-heading',
+                   'headings':['Program (Bologna 2-2019)','Program (Bologna 3-2026)'],
+                   'label':'Program (Bologna 3-2026)'}
+        rows,issues=parse_bayburt(document,selection,course_kind,heading_period)
+        self.assertEqual(issues,[])
+        self.assertEqual(rows,[
+          {'code':'NEW101B3','name':'Yeni Ders I','semester':1,'kind':'required'},
+          {'code':'NEW102B3','name':'Yeni Ders II','semester':2,'kind':'required'},
+          {'code':'NEW201B3','name':'Yeni Ders III','semester':3,'kind':'required'},
+          {'code':'NEW202B3','name':'Yeni Ders IV','semester':4,'kind':'required'},
+          {'code':'EL202.1B3','name':'Meslek Etiği','semester':None,'kind':'elective'},
+        ])
+        changed={**selection,'headings':['Program (Bologna 3-2026)']}
+        self.assertEqual(parse_bayburt(document,changed,course_kind,heading_period)[1],
+                         ['bayburt-curriculum-headings-changed'])
+
+    def test_bayburt_single_plan_requires_one_table_and_all_four_terms(self):
+        from parse_turkey_bayburt_courses import parse_bayburt
+        rows=''.join(f'''<tr><th>{term}. Dönem</th></tr>
+          <tr><th>Ders Kodu</th><th>[DersinDili]</th><th>Ders Adı</th><th>Ders Türü</th></tr>
+          <tr><td>OP{term}01B2</td><td>Türkçe</td><td>Optik {term}</td><td>Zorunlu</td></tr>'''
+          for term in range(1,5))
+        document=html(f'<table>{rows}</table>')
+        parsed,issues=parse_bayburt(document,{'method':'single-official-plan','headings':[]},
+                                    course_kind,heading_period)
+        self.assertEqual(issues,[])
+        self.assertEqual([row['semester'] for row in parsed],[1,2,3,4])
+        duplicate=html(f'<table>{rows}</table><table>{rows}</table>')
+        self.assertEqual(parse_bayburt(duplicate,{'method':'single-official-plan','headings':[]},
+                                      course_kind,heading_period)[1],
+                         ['bayburt-current-course-table-not-unique'])
+
+    def test_bayburt_aliases_are_exactly_scoped_and_totals_are_locked(self):
+        from collect_turkey_bayburt_catalog import ALIASES, EXPECTED, EXPECTED_TOTAL
+        self.assertEqual(EXPECTED_TOTAL,706)
+        self.assertEqual(len(EXPECTED),12)
+        self.assertEqual(ALIASES,{
+          'program-osym-101890062':('program-osym-101810132','İlahiyat'),
+          'program-osym-101850097':(None,
+            'Büro Hizmetleri ve Sekreterlik Bölümü Büro Yönetimi ve Yönetici Asistanlığı'),
+        })
+        self.assertEqual(EXPECTED['program-osym-101890062']['semesters'],list(range(1,9)))
+
+
 if __name__=='__main__':unittest.main()
