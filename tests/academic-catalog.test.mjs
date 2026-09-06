@@ -59,16 +59,20 @@ test("Cyprus curriculum expansion links only verified official programme pages",
   }
 });
 
-test("OMU bachelor curricula link to the official EBP course catalog", () => {
+test("OMU curricula link only to its official legacy EBP and current UBYS catalogs", () => {
   const omu = catalog.universities.omu;
   const curriculumPrograms = omu.programs.filter((program) => program.curriculumUrls?.length);
 
-  assert.equal(curriculumPrograms.length, 82);
-  assert.ok(curriculumPrograms.every((program) => program.degreeLevel === "bachelor"));
+  assert.equal(curriculumPrograms.length, 166);
+  assert.ok(curriculumPrograms.some((program) => program.degreeLevel === "bachelor"));
+  assert.ok(curriculumPrograms.some((program) => program.degreeLevel === "associate"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Ondokuz Mayıs Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
     const parsed = new URL(url);
-    return parsed.hostname === "ubs.omu.edu.tr" && parsed.searchParams.get("program");
+    return parsed.hostname === "ubs.omu.edu.tr" && parsed.searchParams.get("program")
+      || parsed.hostname === "ubys.omu.edu.tr"
+        && parsed.pathname === "/AIS/OutcomeBasedLearning/Home/Index"
+        && parsed.searchParams.get("id") && parsed.searchParams.get("apIdStr");
   })));
 
   const computerEngineering = curriculumPrograms.find((program) => program.name === "Bilgisayar Mühendisliği");

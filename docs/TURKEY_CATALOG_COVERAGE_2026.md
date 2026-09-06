@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 13,027 programda ders kaydı · 2,156 programda ders listesi eksik.
-Toplam 1,456,531 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,119 programda ders kaydı · 2,064 programda ders listesi eksik.
+Toplam 1,481,098 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,877
-- Okunabilir ders listesi bulunamadı: 213
-- Kaynakta program ayrımı doğrulanamadı: 38
-- Ders kaynağına erişilemedi: 28
+- Resmî program eşleşmesi eksik: 1,791
+- Okunabilir ders listesi bulunamadı: 215
+- Kaynakta program ayrımı doğrulanamadı: 36
+- Ders kaynağına erişilemedi: 22
 
 ## Kurumlar
 
@@ -177,7 +177,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Nevşehir Hacı Bektaş Veli Üniversitesi | 87 | 79 | 8 | 19,085 | 5 | [Kaynak 1](https://ubys.nevsehir.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Niğde Ömer Halisdemir Üniversitesi | 119 | 105 | 14 | 9,285 | 5 | [Kaynak 1](https://www.ohu.edu.tr/akts/bilgipaketi/lisans) · [Kaynak 2](https://www.ohu.edu.tr/akts/bilgipaketi/onlisans) |
 | Nuh Naci Yazgan Üniversitesi | 17 | 17 | 0 | 1,809 | 5 | [Kaynak 1](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Ondokuz Mayıs Üniversitesi | 168 | 74 | 94 | 7,510 | 30 | [Kaynak 1](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR) |
+| Ondokuz Mayıs Üniversitesi | 168 | 166 | 2 | 32,077 | 30 | [Kaynak 1](https://ubys.omu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) · [Kaynak 2](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR) |
 | Ordu Üniversitesi | 81 | 78 | 3 | 11,557 | 10 | [Kaynak 1](https://bologna.odu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bologna.odu.edu.tr/dereceprogramlari/1) |
 | Orta Doğu Teknik Üniversitesi | 42 | 42 | 0 | 1,726 | 5 | Doğrulanmış giriş yok |
 | Osmaniye Korkut Ata Üniversitesi | 76 | 76 | 0 | 5,166 | 5 | [Kaynak 1](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

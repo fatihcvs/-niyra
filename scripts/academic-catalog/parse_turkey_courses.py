@@ -9,7 +9,7 @@ from turkey_research import CACHE, ROOT, read, soup, write
 from parse_cyprus_courses import clean, fold, merge_courses
 from parse_cyprus_html import parse_metu
 from parse_cyprus_extra import parse_itu
-from discover_turkey_courses import match as match_program
+from discover_turkey_courses import match as match_program, normal
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir, parse_ktu, parse_bilgi, parse_afsu
 from parse_turkey_continuation_courses import parse_agu, parse_izu, parse_esenyurt
 from parse_turkey_foundation_courses import parse_foundation_tables, parse_demiroglu, parse_antalya
@@ -24,10 +24,14 @@ from parse_turkey_esogu_courses import parse_esogu_docx
 from parse_turkey_iau_courses import parse_iau
 from parse_turkey_iuc_courses import parse_iuc_print
 from parse_turkey_bayburt_courses import parse_bayburt
+from collect_turkey_omu_ubys_catalog import (
+    BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
+    source_unit_identity, target_unit_identity,
+)
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py','parse_turkey_esogu_courses.py','parse_turkey_iau_courses.py','parse_turkey_iuc_courses.py','parse_turkey_bayburt_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py','parse_turkey_esogu_courses.py','parse_turkey_iau_courses.py','parse_turkey_iuc_courses.py','parse_turkey_bayburt_courses.py','collect_turkey_omu_ubys_catalog.py'])).hexdigest()[:12]
 # Family-specific versions keep the previously verified national parse cache
 # intact when an isolated source adapter is added.
 LEGACY_PARSER_VERSION = 'dfab660ddd5d'
@@ -37,6 +41,9 @@ THK_PARSER_VERSION = '183ba09549a7'
 YASAR_PARSER_VERSION = '0014493218d9'
 RUMELI_PARSER_VERSION = 'b9beb2b93a5b'
 ISTE_PARSER_VERSION = 'e7fe25a4cdb5'
+HALIC_PARSER_VERSION = '8267e724e759'
+IUC_PARSER_VERSION = '8267e724e759'
+BAYBURT_PARSER_VERSION = '8267e724e759'
 
 
 def course_code(value):
@@ -245,7 +252,7 @@ def _parse_source(source):
             if c and 2<=len(name)<=200:
                 output.append({'code':c,'name':name,'semester':term if term in range(1,13) else None,'kind':course_kind(row.get('DersTipi',''))})
         return merge_courses(output)
-    if source.get('family') == 'ubys':
+    if source.get('family') in ['ubys', 'omu-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
         eligible = [c for c in (data.get('CurriculumDetails') or []) if c.get('IsApproved') and c.get('IsActiveForBologna')]
@@ -298,8 +305,8 @@ def parse_source(source):
     version = ({'esogu-docx': ESOGU_PARSER_VERSION, 'iau': IAU_PARSER_VERSION,
                 'thk': THK_PARSER_VERSION, 'yasar': YASAR_PARSER_VERSION,
                 'rumeli-2026': RUMELI_PARSER_VERSION, 'iste-2026': ISTE_PARSER_VERSION,
-                'halic-2026': PARSER_VERSION, 'iuc-print': PARSER_VERSION,
-                'bayburt-reviewed': PARSER_VERSION}
+                'halic-2026': HALIC_PARSER_VERSION, 'iuc-print': IUC_PARSER_VERSION,
+                'bayburt-reviewed': BAYBURT_PARSER_VERSION, 'omu-ubys-2026': PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -317,11 +324,27 @@ def parse_identity(source):
     return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
+def omu_reference_matches(university, programme, reference):
+    """Recheck the narrow OMU labels accepted by the dedicated collector."""
+    if programme['degreeLevel'] != reference.get('degree'):
+        return False
+    units = {unit['id']: unit['name'] for unit in university['units']}
+    if target_unit_identity(units.get(programme['unitId'], '')) != source_unit_identity(reference.get('unit', '')):
+        return False
+    if reference.get('registryAlias'):
+        base = next(item for item in university['programs'] if item['id'] == BASE_THEOLOGY_ID)
+        return (programme['id'] == MTOK_THEOLOGY_ID
+                and reference.get('programId') == MTOK_THEOLOGY_ID
+                and normal(base['name']) == normal(programme_title(reference.get('sourceTitle', ''))))
+    return (programme['id'] != MTOK_THEOLOGY_ID
+            and normal(programme['name']) == normal(programme_title(reference.get('sourceTitle', ''))))
+
+
 def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -329,8 +352,9 @@ def main():
     versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':ESOGU_PARSER_VERSION,
               'iau':IAU_PARSER_VERSION,'thk':THK_PARSER_VERSION,
               'yasar':YASAR_PARSER_VERSION,'rumeli-2026':RUMELI_PARSER_VERSION,
-              'iste-2026':ISTE_PARSER_VERSION,'halic-2026':PARSER_VERSION,
-              'iuc-print':PARSER_VERSION,'bayburt-reviewed':PARSER_VERSION}
+              'iste-2026':ISTE_PARSER_VERSION,'halic-2026':HALIC_PARSER_VERSION,
+              'iuc-print':IUC_PARSER_VERSION,'bayburt-reviewed':BAYBURT_PARSER_VERSION,
+              'omu-ubys-2026':PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
@@ -358,7 +382,11 @@ def main():
             uid, pid = ref['universityId'], ref['programId']
             u = academic[uid]
             p = next(p for p in u['programs'] if p['id'] == pid)
-            if ref.get('degree') and match_program(u, ref) != p:
+            if (ref.get('degree')
+                    and ((source.get('family') == 'omu-ubys-2026'
+                          and not omu_reference_matches(u, p, ref))
+                         or (source.get('family') != 'omu-ubys-2026'
+                             and match_program(u, ref) != p))):
                 issues.append({'url': source['url'], 'program': pid, 'conflicts': ['programme-identity-mismatch']})
                 continue
             record = {'universityId': uid, 'programId': pid, 'programName': p['name'], 'authority': u['officialName'],
@@ -373,7 +401,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)

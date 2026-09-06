@@ -670,4 +670,43 @@ class BayburtCatalogTests(unittest.TestCase):
         self.assertEqual(EXPECTED['program-osym-101890062']['semesters'],list(range(1,9)))
 
 
+class OmuUbysCatalogTests(unittest.TestCase):
+    def test_omu_labels_preserve_mode_and_use_only_documented_unit_suffixes(self):
+        from collect_turkey_omu_ubys_catalog import (
+            programme_title, source_unit_identity, target_unit_identity)
+        self.assertEqual(programme_title('Bilgisayar Programcılığı (UE)'),
+                         'Bilgisayar Programcılığı (Uzaktan Öğretim)')
+        self.assertEqual(programme_title('İngilizce Mütercim ve Tercümanlık (İngilizce)'),
+                         'İngilizce Mütercim ve Tercümanlık')
+        self.assertEqual(programme_title('Emlak ve Emlak Yönetimi'), 'Emlak Yönetimi')
+        self.assertEqual(target_unit_identity('Eczacılık Fakültesi (Bafra)'),
+                         source_unit_identity('Eczacılık Fakültesi Dekanlığı'))
+        self.assertEqual(target_unit_identity('İletişim Fakültesi (Çarşamba)'),
+                         source_unit_identity('İletişim Fakültesi Dekanlığı'))
+        self.assertNotEqual(target_unit_identity('İletişim Fakültesi (Başka Kampüs)'),
+                            source_unit_identity('İletişim Fakültesi Dekanlığı'))
+
+    def test_omu_match_requires_active_ordinary_degree_and_current_curriculum(self):
+        from collect_turkey_omu_ubys_catalog import match_missing_programmes
+        university = {
+            'units': [{'id': 'u1', 'name': 'Samsun Meslek Yüksekokulu'}],
+            'programs': [{'id': 'p1', 'unitId': 'u1', 'name':
+                          'Bilgisayar Programcılığı (Uzaktan Öğretim)',
+                          'degreeLevel': 'associate'}],
+        }
+        unit = {'Id': 10, 'ParentId': None, 'Name':
+                'Samsun Meslek Yüksekokulu Müdürlüğü', 'IsAcademicProgram': False}
+        programme = {'Id': 20, 'ParentId': 10, 'Name': 'Bilgisayar Programcılığı (UE)',
+                     'IsAcademicProgram': True, 'EducationQualificatinDegree': 10601,
+                     'Status': 10201, 'ProgramType': 10501, 'CurriculumId': 5115,
+                     'EncryptedCurriculumId': 'curriculum', 'AcademicProgramId': 4799,
+                     'EncryptedAcademicProgramId': 'programme'}
+        self.assertEqual([item['programId'] for item in match_missing_programmes(
+            [unit, programme], university, {'p1'})], ['p1'])
+        self.assertEqual(match_missing_programmes(
+            [unit, {**programme, 'Status': 10203}], university, {'p1'}), [])
+        self.assertEqual(match_missing_programmes(
+            [unit, {**programme, 'CurriculumId': None}], university, {'p1'}), [])
+
+
 if __name__=='__main__':unittest.main()

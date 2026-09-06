@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-second-expansion",
+    "releasedAt": "2026-09-06T19:39:06Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Ondokuz Mayıs Üniversitesinde 166 program yapılandırıldı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.119’a, program-ders kaydı sayısı 1.481.098’e ulaştı.",
+    "highlights": [
+      "Ondokuz Mayıs Üniversitesinin eksik 92 programına 24.567 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 74’ten 166’ya, toplam kayıt 7.510’dan 32.077’ye çıktı.",
+      "Güncel kamuya açık UBYS ağacında program adı, lisans/ön lisans derecesi, aktif Bologna durumu, olağan program türü ve akademik birim birlikte doğrulandı. Önceden yayımlanmış 74 programın içeriği değiştirilmedi.",
+      "Birim adlarındaki Dekanlığı/Müdürlüğü ekleri ve aynı birimin Bafra/Çarşamba konumları yalnız OMÜ’ye ait dar kurallarla eşleştirildi. (UE) etiketi Uzaktan Öğretim olarak korundu; ikinci öğretim ve dil farkları birleştirilmedi.",
+      "İlahiyat (M.T.O.K.) aynı fakültenin güncel İlahiyat müfredatına açık ÖSYM yerleştirme varyantı olarak bağlandı. Emlak ve Emlak Yönetimi başlığı, güncel envanterdeki Emlak Yönetimi karşılığıyla kaynak kanıtı tutularak eşleştirildi.",
+      "Aktif Kenevir Dokumacılığı kaydında müfredat kimliği bulunmadığı, Elektrik kaydının ise pasif olup aktif Elektrik (İÖ) kaydında müfredat yayımlanmadığı doğrulandı. Bu iki program eski veya farklı öğretim planıyla doldurulmadı; Türkiye genelinde 2.064 program eksik kalır."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-first-expansion",
     "releasedAt": "2026-09-06T18:31:44Z",
     "category": "İyileştirme",

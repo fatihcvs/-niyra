@@ -2493,6 +2493,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "f7e48a6804de803da5b635523f1cd330d4e4373b83d4cc7c58097de20721c6cf",
         "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ubys.omu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0613a43ed18455b36b2c0cb388ca82c90f8c27adad2b2b473db0e44b317a905d",
+        "evidence": "matched-programme-directory"
       }
     ],
     "status": "catalogue-checked"
