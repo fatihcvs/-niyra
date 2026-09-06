@@ -1,11 +1,13 @@
 """Offline regressions for ambiguities seen in the official source tables."""
 import unittest
+from bs4 import BeautifulSoup
 from parse_cyprus_courses import code, kind, merge_courses, parse_document, period
 from parse_turkey_courses import course_code, heading_period
 from parse_turkey_tedu_courses import parse_tedu
 from collect_turkey_more_catalogs import gelisim_program_identity
 from parse_turkey_esogu_courses import parse_esogu_tables, _parse_all_tables
 from collect_turkey_web_curricula import ogu_program_identity
+from parse_turkey_iau_courses import parse_iau
 
 
 def document(rows, text=''):
@@ -155,6 +157,41 @@ class CurriculumParsing(unittest.TestCase):
         self.assertEqual(courses, [
             {'code':'251611001','name':'Botanik','semester':1,'kind':None},
             {'code':'111011012','name':'Temel Tıp Bilimlerine Giriş','semester':None,'kind':'required','year':1}])
+        self.assertEqual(conflicts, [])
+
+    def test_iau_reads_semester_tables_and_real_elective_pool_rows(self):
+        document = BeautifulSoup('''
+            <table class="list">
+              <tr><td>2. Sinif Guz Donemi Dersleri</td></tr>
+              <tr><td></td><td>ID</td><td>Kodu</td><td>Ders Adi</td><td>Dersin Turu</td></tr>
+              <tr><td></td><td>11985</td><td>ELK231</td><td>Elektrik Enerjisi</td><td>Zorunlu</td></tr>
+            </table>
+            <table id="SanalSecmeli_2x1">
+              <tr><td></td><td>0001</td><td>BLMSEC</td><td></td><td>Bolum Secmeli</td></tr>
+              <tr><td></td><td>91932</td><td>ELK253</td><td>Pnomatik Sistemler</td><td>Bolum Secmeli</td></tr>
+            </table>
+        ''', 'html.parser')
+        courses, conflicts = parse_iau(document, course_code, heading_period)
+        self.assertEqual(courses, [
+            {'code':'ELK231','name':'Elektrik Enerjisi','semester':3,'kind':'required'},
+            {'code':'ELK253','name':'Pnomatik Sistemler','semester':3,'kind':'elective'}])
+        self.assertEqual(conflicts, [])
+
+    def test_iau_preserves_annual_plan_year(self):
+        document = BeautifulSoup('''
+            <table class="list">
+              <tr><td>1. Sinif Dersleri</td></tr>
+              <tr><td></td><td>ID</td><td>Kodu</td><td>Ders Adi</td><td>Dersin Turu</td></tr>
+              <tr><td></td><td>12163</td><td>DHF105</td><td>Deontoloji ve Etik</td><td>Zorunlu</td></tr>
+            </table>
+            <table id="SanalSecmeli_1x0">
+              <tr><td></td><td>77055</td><td>DHF281</td><td>Genetik</td><td>Bolum Secmeli</td></tr>
+            </table>
+        ''', 'html.parser')
+        courses, conflicts = parse_iau(document, course_code, heading_period)
+        self.assertEqual(courses, [
+            {'code':'DHF105','name':'Deontoloji ve Etik','semester':None,'kind':'required','year':1},
+            {'code':'DHF281','name':'Genetik','semester':None,'kind':'elective','year':1}])
         self.assertEqual(conflicts, [])
 
 

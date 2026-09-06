@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,706 programda ders kaydı · 2,477 programda ders listesi eksik.
-Toplam 1,427,181 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,843 programda ders kaydı · 2,340 programda ders listesi eksik.
+Toplam 1,432,503 program-ders kaydı. 187 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,076
+- Resmî program eşleşmesi eksik: 1,939
 - Okunabilir ders listesi bulunamadı: 335
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
@@ -108,7 +108,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İstanbul 29 Mayıs Üniversitesi | 29 | 25 | 4 | 2,115 | 5 | [Kaynak 1](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2026) · [Kaynak 2](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2026) |
 | İstanbul Arel Üniversitesi | 84 | 84 | 0 | 10,676 | 10 | [Kaynak 1](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Atlas Üniversitesi | 54 | 52 | 2 | 5,666 | 5 | [Kaynak 1](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_3/ln/tr) · [Kaynak 2](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_2/ln/tr) |
-| İstanbul Aydın Üniversitesi | 137 | 0 | 137 | 0 | 15 | Doğrulanmış giriş yok |
+| İstanbul Aydın Üniversitesi | 137 | 137 | 0 | 5,322 | 15 | [Kaynak 1](https://ebs.aydin.edu.tr/tr/index.iau?Page=AB&Type=L) · [Kaynak 2](https://ebs.aydin.edu.tr/tr/index.iau?Page=AB&Type=OL) |
 | İstanbul Beykent Üniversitesi | 125 | 121 | 4 | 7,118 | 20 | [Kaynak 1](https://obs.beykent.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.beykent.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Bilgi Üniversitesi | 73 | 70 | 3 | 2,097 | 5 | [Kaynak 1](https://ects.bilgi.edu.tr/Department?cid=95&cycleNo=0) · [Kaynak 2](https://ects.bilgi.edu.tr/Department?cid=95&cycleNo=1) |
 | İstanbul Esenyurt Üniversitesi | 69 | 58 | 11 | 5,212 | 5 | [Kaynak 1](https://obs.esenyurt.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.esenyurt.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

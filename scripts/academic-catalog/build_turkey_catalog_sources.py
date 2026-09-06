@@ -2,6 +2,7 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
+import hashlib
 import re
 from bs4 import ParserRejectedMarkup
 from turkey_research import CACHE, ROOT, fetch, read, soup, write, fair_tasks
@@ -11,16 +12,27 @@ from discover_turkey_courses import links
 def build():
     academic=read(ROOT/'data/academic-catalog-2026.json')['universities']
     candidates=defaultdict(dict)
+    browser_verified=defaultdict(list)
     # Successfully matched public directories are direct evidence of a catalogue.
     for name in ['discovery','additional-discovery','refined-discovery','expanded-discovery',
                  'ubys-directories','ecatalog-directories','institution-directories','more-directories',
-                 'kocaeli-directories','istanbul-directories','language-directories']:
+                 'kocaeli-directories','istanbul-directories','language-directories','iau-directories']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):
             for p in d.get('matched',[]):
                 if p.get('directoryUrl'):
                     candidates[d['universityId']][p['directoryUrl']]='matched-programme-directory'
+            for source in d.get('pages',[]):
+                body=CACHE/source.get('file','')
+                if (source.get('browserCapture') and source.get('status')==200 and body.is_file()
+                        and re.fullmatch(r'[a-f0-9]{64}',source.get('sha256',''))):
+                    if hashlib.sha256(body.read_bytes()).hexdigest()!=source['sha256']:continue
+                    browser_verified[d['universityId']].append({
+                        'url':source.get('publicUrl',source['url']),
+                        'checkedAt':source['fetchedAt'][:10],
+                        'sourceHash':source['sha256'],
+                        'evidence':'matched-programme-directory'})
     for name in ['homepages','additional-homepages','expanded-homepages']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
@@ -34,7 +46,7 @@ def build():
         for url,basis in urls.items():
             if url.startswith('http://'):url='https://'+url[7:]
             if url.startswith('https://'):tasks[url].append((uid,basis))
-    result=defaultdict(list)
+    result=defaultdict(list,{uid:list(values) for uid,values in browser_verified.items()})
     with ThreadPoolExecutor(12) as pool:
         futures={pool.submit(fetch,url):refs for url,refs in fair_tasks(tasks)}
         for f in as_completed(futures):

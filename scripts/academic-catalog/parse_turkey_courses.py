@@ -21,13 +21,15 @@ from parse_turkey_isik_courses import parse_isik, parse_isik_pdf
 from parse_turkey_ozyegin_courses import parse_ozyegin
 from parse_turkey_tedu_courses import parse_tedu
 from parse_turkey_esogu_courses import parse_esogu_docx
+from parse_turkey_iau_courses import parse_iau
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py','parse_turkey_esogu_courses.py'])).hexdigest()[:12]
-# The new DOCX adapter does not change any existing source family. Retain the
-# last verified cache key for those 14,143 responses and version ESOGU alone.
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py','parse_turkey_esogu_courses.py','parse_turkey_iau_courses.py'])).hexdigest()[:12]
+# Family-specific versions keep the previously verified national parse cache
+# intact when an isolated source adapter is added.
 LEGACY_PARSER_VERSION = 'dfab660ddd5d'
+ESOGU_PARSER_VERSION = 'b04a8d91a72f'
 
 
 def course_code(value):
@@ -176,6 +178,7 @@ def _parse_source(source):
     if source.get('family')=='ozyegin':return parse_ozyegin(read(CACHE/source['file']), course_code)
     if source.get('family')=='tedu':return parse_tedu(read(CACHE/source['file']), course_code, heading_period)
     if source.get('family')=='esogu-docx':return parse_esogu_docx(CACHE/source['file'],course_code,course_kind)
+    if source.get('family')=='iau':return parse_iau(soup(source),course_code,heading_period)
     if source.get('family')=='cag':return parse_cag(soup(source),course_code,course_kind)
     if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
     if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)
@@ -269,7 +272,8 @@ def _parse_source(source):
 
 def parse_source(source):
     if source['status'] != 200:return [], []
-    version=PARSER_VERSION if source.get('family')=='esogu-docx' else LEGACY_PARSER_VERSION
+    version = ({'esogu-docx': ESOGU_PARSER_VERSION, 'iau': PARSER_VERSION}
+               .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
         result=read(file)
@@ -290,12 +294,12 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
             sources += read(file)
-    versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':PARSER_VERSION}
+    versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':ESOGU_PARSER_VERSION,'iau':PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.

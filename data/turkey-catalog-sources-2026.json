@@ -1422,8 +1422,21 @@
     "status": "catalogue-checked"
   },
   "tr-istanbul-aydin-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ebs.aydin.edu.tr/tr/index.iau?Page=AB&Type=L",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "17d0bbc4118e462003467857300a251e3927450b4f0bc257affdebda45be1330",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebs.aydin.edu.tr/tr/index.iau?Page=AB&Type=OL",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "839e58245711bc6e9139300257daa270ee2e365814a486f03499ad4ecb886f4c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-istanbul-beykent-universitesi": {
     "catalogs": [
