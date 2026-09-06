@@ -2903,8 +2903,21 @@
     "status": "catalogue-checked"
   },
   "tr-turk-hava-kurumu-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://sis.thk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "6846572fc990064061e6adc3670ad83fd5c47500ac00e75dbc1e9bcb0a44b5cd",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://sis.thk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "13e59655df716a5ba05633aeca25ab098ad2895a69e10ea92a7c114116fca259",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-turk-alman-universitesi": {
     "catalogs": [

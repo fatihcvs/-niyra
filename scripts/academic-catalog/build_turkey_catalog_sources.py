@@ -16,7 +16,8 @@ def build():
     # Successfully matched public directories are direct evidence of a catalogue.
     for name in ['discovery','additional-discovery','refined-discovery','expanded-discovery',
                  'ubys-directories','ecatalog-directories','institution-directories','more-directories',
-                 'kocaeli-directories','istanbul-directories','language-directories','iau-directories']:
+                 'kocaeli-directories','istanbul-directories','language-directories','iau-directories',
+                 'thk-directories']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):

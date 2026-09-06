@@ -8,6 +8,7 @@ from collect_turkey_more_catalogs import gelisim_program_identity
 from parse_turkey_esogu_courses import parse_esogu_tables, _parse_all_tables
 from collect_turkey_web_curricula import ogu_program_identity
 from parse_turkey_iau_courses import parse_iau
+from collect_turkey_thk_catalog import _identity_stem
 
 
 def document(rows, text=''):
@@ -193,6 +194,12 @@ class CurriculumParsing(unittest.TestCase):
             {'code':'DHF105','name':'Deontoloji ve Etik','semester':None,'kind':'required','year':1},
             {'code':'DHF281','name':'Genetik','semester':None,'kind':'elective','year':1}])
         self.assertEqual(conflicts, [])
+
+    def test_thk_selected_plan_identity_ignores_only_explicit_plan_qualifiers(self):
+        self.assertEqual(_identity_stem('2024 (Bilgisayar Mühendisliği (2024) (TC))'),
+                         _identity_stem('Bilgisayar Mühendisliği (İngilizce)'))
+        self.assertNotEqual(_identity_stem('Uçak Mühendisliği (2024) (TC)'),
+                            _identity_stem('Uzay Mühendisliği'))
 
 
 if __name__ == '__main__':

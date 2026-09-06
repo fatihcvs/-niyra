@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,843 programda ders kaydı · 2,340 programda ders listesi eksik.
-Toplam 1,432,503 program-ders kaydı. 187 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,869 programda ders kaydı · 2,314 programda ders listesi eksik.
+Toplam 1,435,836 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,939
+- Resmî program eşleşmesi eksik: 1,913
 - Okunabilir ders listesi bulunamadı: 335
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
@@ -207,7 +207,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Toros Üniversitesi | 31 | 29 | 2 | 1,998 | 15 | [Kaynak 1](https://toros.edu.tr/bologna/programlar) |
 | Trabzon Üniversitesi | 56 | 42 | 14 | 3,020 | 10 | [Kaynak 1](https://ubys.trabzon.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | Trakya Üniversitesi | 136 | 129 | 7 | 16,988 | 13 | [Kaynak 1](https://obs.trakya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.trakya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Türk Hava Kurumu Üniversitesi | 26 | 0 | 26 | 0 | 10 | Doğrulanmış giriş yok |
+| Türk Hava Kurumu Üniversitesi | 26 | 26 | 0 | 3,333 | 10 | [Kaynak 1](https://sis.thk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://sis.thk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Türk-Alman Üniversitesi | 17 | 16 | 1 | 2,731 | 5 | [Kaynak 1](https://obs.tau.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.tau.edu.tr/oibs/bologna/index.aspx) |
 | Türk-Japon Bilim ve Teknoloji Üniversitesi | 4 | 0 | 4 | 0 | 5 | Doğrulanmış giriş yok |
 | Ufuk Üniversitesi | 28 | 28 | 0 | 1,387 | 5 | [Kaynak 1](https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ufuk.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

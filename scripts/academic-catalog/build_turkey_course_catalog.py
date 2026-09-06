@@ -111,14 +111,14 @@ def build():
         'research':{'sourceCount':receipt['sourceCount'],'parserVersion':receipt['parserVersion'],
             'parserVersions':receipt.get('parserVersions',{'default':receipt['parserVersion']}),
             'manifestHashes':receipt['inputs']}})
-    meta = {**legacy['meta'], 'version':'2026.09.06.13', 'updatedAt':today,
+    meta = {**legacy['meta'], 'version':'2026.09.06.14', 'updatedAt':today,
         'method':'Official university curriculum pages and public Bologna course data, matched to programme, degree, language and academic unit. Course source checksums are retained.',
         'stats':{'programCount':len(all_records),'courseCount':sum(r['courseCount'] for r in all_records.values()),
             'universityCount':len({r['universityId'] for r in all_records.values()}),
             'partialProgramCount':sum(r.get('coverage') == 'partial' for r in all_records.values()),
             'totalAcademicProgramCount':academic['meta']['stats']['programCount']}}
     compact(ROOT / 'data/course-catalog-index-2026.json', {'meta':meta,'programs':index})
-    academic['meta']['version'] = '2026.32'
+    academic['meta']['version'] = '2026.33'
     for source in academic['meta']['sources']:
         if source['id']=='yildiz-bologna-curricula-2026':source['url']=source['url'].replace('https://www.bologna.yildiz.edu.tr/','https://bologna.yildiz.edu.tr/')
     academic['meta']['updatedAt'] = today

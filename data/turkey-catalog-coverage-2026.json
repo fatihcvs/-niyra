@@ -6697,65 +6697,11 @@
       "universityId": "tr-turk-hava-kurumu-universitesi",
       "name": "Türk Hava Kurumu Üniversitesi",
       "programCount": 26,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-205750240",
-        "program-osym-205750205",
-        "program-osym-205750151",
-        "program-osym-205750219",
-        "program-osym-205750128",
-        "program-osym-205750058",
-        "program-osym-205750094",
-        "program-osym-205750233",
-        "program-osym-205750261",
-        "program-osym-205710535",
-        "program-osym-205750275",
-        "program-osym-205750153",
-        "program-osym-205750155",
-        "program-osym-205750013",
-        "program-osym-205750031",
-        "program-osym-205710923",
-        "program-osym-205710598",
-        "program-osym-205750157",
-        "program-osym-205710517",
-        "program-osym-205710571",
-        "program-osym-205750148",
-        "program-osym-205710835",
-        "program-osym-205710632",
-        "program-osym-205710738",
-        "program-osym-205710711",
-        "program-osym-205750165"
-      ],
-      "missingReasons": {
-        "program-osym-205750240": "programme-source-not-matched",
-        "program-osym-205750205": "programme-source-not-matched",
-        "program-osym-205750151": "programme-source-not-matched",
-        "program-osym-205750219": "programme-source-not-matched",
-        "program-osym-205750128": "programme-source-not-matched",
-        "program-osym-205750058": "programme-source-not-matched",
-        "program-osym-205750094": "programme-source-not-matched",
-        "program-osym-205750233": "programme-source-not-matched",
-        "program-osym-205750261": "programme-source-not-matched",
-        "program-osym-205710535": "programme-source-not-matched",
-        "program-osym-205750275": "programme-source-not-matched",
-        "program-osym-205750153": "programme-source-not-matched",
-        "program-osym-205750155": "programme-source-not-matched",
-        "program-osym-205750013": "programme-source-not-matched",
-        "program-osym-205750031": "programme-source-not-matched",
-        "program-osym-205710923": "programme-source-not-matched",
-        "program-osym-205710598": "programme-source-not-matched",
-        "program-osym-205750157": "programme-source-not-matched",
-        "program-osym-205710517": "programme-source-not-matched",
-        "program-osym-205710571": "programme-source-not-matched",
-        "program-osym-205750148": "programme-source-not-matched",
-        "program-osym-205710835": "programme-source-not-matched",
-        "program-osym-205710632": "programme-source-not-matched",
-        "program-osym-205710738": "programme-source-not-matched",
-        "program-osym-205710711": "programme-source-not-matched",
-        "program-osym-205750165": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 26,
+      "courseCount": 3333,
+      "linkedProgramCount": 26,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-turk-alman-universitesi",
@@ -7085,12 +7031,13 @@
     }
   ],
   "research": {
-    "sourceCount": 14767,
-    "parserVersion": "6fe442a0ca61",
+    "sourceCount": 14793,
+    "parserVersion": "183ba09549a7",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
-      "iau": "6fe442a0ca61"
+      "iau": "6fe442a0ca61",
+      "thk": "183ba09549a7"
     },
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
@@ -7107,7 +7054,8 @@
       "kocaeli-courses.json": "97df95bb21727a21f9053b1eb3510d5112698575b7ac2459d22bb8d4ac57ac08",
       "istanbul-courses.json": "b44ab029d935bb342323d241331fe37c7bf4e46e8fe6203a6103d39f99cb1e6e",
       "language-courses.json": "6c6742c5a23561149014660d932e71311f9ba0760a1c7551d3434950591fa91c",
-      "iau-courses.json": "20f65fd17816c7d555f566bdf89f7db8b0ed50c0130196e47e10120e0b267eab"
+      "iau-courses.json": "20f65fd17816c7d555f566bdf89f7db8b0ed50c0130196e47e10120e0b267eab",
+      "thk-courses.json": "d976b553e631e411c05cdac1abf60da8a5a62abd1c494b0b6a85bebe126f536d"
     }
   }
 }
