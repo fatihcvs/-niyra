@@ -291,13 +291,17 @@ test("Yildiz Technical current bachelor programmes all link to official Bologna 
   assert.equal(new URL(computerEngineering.curriculumUrls[0]).searchParams.get("aid"), "3");
 });
 
-test("Marmara programmes link only to populated official MEOBS curricula", () => {
+test("Marmara associate and bachelor programmes link only to populated official MEOBS curricula", () => {
   const marmara = catalog.universities["tr-marmara-universitesi"];
   const bachelorPrograms = marmara.programs.filter((program) => program.degreeLevel === "bachelor");
-  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+  const associatePrograms = marmara.programs.filter((program) => program.degreeLevel === "associate");
+  const curriculumPrograms = marmara.programs.filter((program) => program.curriculumUrls?.length);
 
   assert.equal(bachelorPrograms.length, 115);
-  assert.equal(curriculumPrograms.length, 94);
+  assert.equal(associatePrograms.length, 27);
+  assert.equal(bachelorPrograms.filter((program) => program.curriculumUrls?.length).length, 101);
+  assert.equal(associatePrograms.filter((program) => program.curriculumUrls?.length).length, 15);
+  assert.equal(curriculumPrograms.length, 116);
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Marmara Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
     const parsed = new URL(url);
@@ -312,17 +316,10 @@ test("Marmara programmes link only to populated official MEOBS curricula", () =>
   ));
   assert.ok(computerEngineering.curriculumUrls[0].includes("bilgisayar-muhendisligi-ingilizce"));
 
-  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name);
-  assert.equal(unlinked.length, 21);
-  assert.ok(unlinked.every((name) => name.includes("M.T.O.K.")
-    || name.includes("UOLP-")
-    || [
-      "Film Tasarımı ve Yönetimi",
-      "İşletme",
-      "İşletme (Almanca)",
-      "İşletme (İngilizce)",
-      "Turizm ve Gastronomi Yönetimi Programları (İngilizce)",
-    ].includes(name)));
+  const unlinked = marmara.programs.filter((program) => !program.curriculumUrls?.length);
+  assert.equal(unlinked.length, 26);
+  assert.ok(unlinked.some((program) => program.degreeLevel === "bachelor"));
+  assert.ok(unlinked.some((program) => program.degreeLevel === "associate"));
 });
 
 test("Ege programmes link only to populated official EBP course plans", () => {

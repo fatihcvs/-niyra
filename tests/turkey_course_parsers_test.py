@@ -709,4 +709,45 @@ class OmuUbysCatalogTests(unittest.TestCase):
             [unit, {**programme, 'CurriculumId': None}], university, {'p1'}), [])
 
 
+class MarmaraCatalogTests(unittest.TestCase):
+    def test_marmara_match_keeps_mode_and_uses_duration_to_resolve_old_plan(self):
+        from collect_turkey_marmara_catalog import _match_direct
+        university = {
+            'units': [{'id': 'u1', 'name': 'Atatürk Eğitim Fakültesi'},
+                      {'id': 'u2', 'name': 'Teknik Bilimler Meslek Yüksekokulu'}],
+            'programs': [
+                {'id': 'p1', 'unitId': 'u1', 'name': 'Coğrafya Öğretmenliği',
+                 'degreeLevel': 'bachelor', 'durationYears': 4},
+                {'id': 'p2', 'unitId': 'u2', 'name': 'Bilgisayar Programcılığı',
+                 'degreeLevel': 'associate', 'durationYears': 2},
+                {'id': 'p3', 'unitId': 'u2',
+                 'name': 'Bilgisayar Programcılığı (Uzaktan Öğretim)',
+                 'degreeLevel': 'associate', 'durationYears': 2},
+            ],
+        }
+        common = {'unit': 'Atatürk Eğitim Fakültesi', 'title': 'Coğrafya Öğretmenliği',
+                  'sourceTitle': 'Lisans', 'url': 'https://example.test/program',
+                  'directoryUrl': 'https://example.test/directory', 'degree': 'bachelor'}
+        entries = [
+            {**common, 'durationYears': 5},
+            {**common, 'durationYears': 4, 'url': 'https://example.test/current'},
+            {'unit': 'Teknik Bilimler Meslek Yüksekokulu',
+             'title': 'Bilgisayar Programcılığı', 'sourceTitle': 'Bilgisayar Programcılığı',
+             'durationYears': None, 'url': 'https://example.test/onsite',
+             'directoryUrl': 'https://example.test/directory', 'degree': 'associate'},
+            {'unit': 'Teknik Bilimler Meslek Yüksekokulu',
+             'title': 'Bilgisayar Programcılığı (Uzaktan Öğretim)',
+             'sourceTitle': 'Bilgisayar Programcılığı (Uzaktan Öğretim)',
+             'durationYears': None, 'url': 'https://example.test/remote',
+             'directoryUrl': 'https://example.test/directory', 'degree': 'associate'},
+        ]
+        matches = {item['programId']: item for item in _match_direct(
+            entries, university, {'p1', 'p2', 'p3'})}
+        self.assertEqual(set(matches), {'p1', 'p2', 'p3'})
+        self.assertEqual(matches['p1']['url'], 'https://example.test/current')
+        self.assertEqual(matches['p2']['sourceTitle'], 'Bilgisayar Programcılığı')
+        self.assertEqual(matches['p3']['sourceTitle'],
+                         'Bilgisayar Programcılığı (Uzaktan Öğretim)')
+
+
 if __name__=='__main__':unittest.main()

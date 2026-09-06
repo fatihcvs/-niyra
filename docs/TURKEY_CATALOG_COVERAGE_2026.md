@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 13,119 programda ders kaydı · 2,064 programda ders listesi eksik.
-Toplam 1,481,098 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,178 programda ders kaydı · 2,005 programda ders listesi eksik.
+Toplam 1,487,767 program-ders kaydı. 189 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,791
-- Okunabilir ders listesi bulunamadı: 215
+- Resmî program eşleşmesi eksik: 1,743
+- Okunabilir ders listesi bulunamadı: 204
 - Kaynakta program ayrımı doğrulanamadı: 36
 - Ders kaynağına erişilemedi: 22
 
@@ -164,7 +164,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Maltepe Üniversitesi | 45 | 0 | 45 | 0 | 5 | [Kaynak 1](https://ects.maltepe.edu.tr/) |
 | Manisa Celal Bayar Üniversitesi | 147 | 134 | 13 | 11,984 | 25 | [Kaynak 1](https://obsapp.mcbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obsapp.mcbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Mardin Artuklu Üniversitesi | 71 | 67 | 4 | 4,601 | 13 | [Kaynak 1](https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Marmara Üniversitesi | 142 | 57 | 85 | 7,672 | 11 | Doğrulanmış giriş yok |
+| Marmara Üniversitesi | 142 | 116 | 26 | 14,341 | 11 | [Kaynak 1](https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/lisans-900002) · [Kaynak 2](https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/on-lisans-900001) |
 | MEF Üniversitesi | 15 | 1 | 14 | 1,041 | 5 | [Kaynak 1](https://sis.mef.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_18/ln/tr) · [Kaynak 2](https://sis.mef.edu.tr/bilgipaketi/eobsakts/) |
 | Mersin Üniversitesi | 124 | 99 | 25 | 8,156 | 25 | [Kaynak 1](https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Milli Savunma Üniversitesi | 47 | 0 | 47 | 0 | 5 | Doğrulanmış giriş yok |
@@ -177,7 +177,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Nevşehir Hacı Bektaş Veli Üniversitesi | 87 | 79 | 8 | 19,085 | 5 | [Kaynak 1](https://ubys.nevsehir.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Niğde Ömer Halisdemir Üniversitesi | 119 | 105 | 14 | 9,285 | 5 | [Kaynak 1](https://www.ohu.edu.tr/akts/bilgipaketi/lisans) · [Kaynak 2](https://www.ohu.edu.tr/akts/bilgipaketi/onlisans) |
 | Nuh Naci Yazgan Üniversitesi | 17 | 17 | 0 | 1,809 | 5 | [Kaynak 1](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.nny.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Ondokuz Mayıs Üniversitesi | 168 | 166 | 2 | 32,077 | 30 | [Kaynak 1](https://ubys.omu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) · [Kaynak 2](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR) |
+| Ondokuz Mayıs Üniversitesi | 168 | 166 | 2 | 32,077 | 30 | [Kaynak 1](https://ubs.omu.edu.tr/ogrenci/ebp/organizasyon.aspx?Mod=1&kultur=tr-TR) · [Kaynak 2](https://ubys.omu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | Ordu Üniversitesi | 81 | 78 | 3 | 11,557 | 10 | [Kaynak 1](https://bologna.odu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bologna.odu.edu.tr/dereceprogramlari/1) |
 | Orta Doğu Teknik Üniversitesi | 42 | 42 | 0 | 1,726 | 5 | Doğrulanmış giriş yok |
 | Osmaniye Korkut Ata Üniversitesi | 76 | 76 | 0 | 5,166 | 5 | [Kaynak 1](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.osmaniye.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

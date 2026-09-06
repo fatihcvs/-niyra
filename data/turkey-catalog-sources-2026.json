@@ -2317,8 +2317,21 @@
     "status": "catalogue-checked"
   },
   "tr-marmara-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/lisans-900002",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "c6f6201a7e536681e90f3fe4148a9f2ba9c68bc5673901f555d254a334170d60",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/on-lisans-900001",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "7fbff4062d58419b482c2f5ed0017d69ef7d61e61f6eda452643b367efc9f04b",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-mef-universitesi": {
     "catalogs": [

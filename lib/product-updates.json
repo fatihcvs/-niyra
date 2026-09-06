@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-third-expansion",
+    "releasedAt": "2026-09-06T20:29:38Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Marmara Üniversitesinde 116 program yapılandırıldı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.178’e, program-ders kaydı sayısı 1.487.767’ye ulaştı.",
+    "highlights": [
+      "Marmara Üniversitesinin eksik 59 programına 6.669 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 57’den 116’ya, toplam kayıt 7.672’den 14.341’e çıktı.",
+      "Resmî MEOBS ön lisans ve lisans dizinleri program adı, derece, süre, eğitim dili/sunumu ve akademik birimle eşleştirildi. Birden çok güncel plan varsa kurumun ilk sunduğu plan seçildi; plan etiketleri ve kaynak özetleri kanıta kaydedildi.",
+      "Teknoloji Fakültesindeki yedi M.T.O.K. yerleştirme varyantı aynı fakülte ve derecedeki güncel taban müfredatına açık alias olarak bağlandı. Önceden yayımlanmış 57 programın içeriği değişmedi.",
+      "Yirmi beş program sayfasında güncel plan seçeneği bulunmadı. Film Tasarımı ve Yönetimi için yalnız ayrı uzmanlık müfredatları yayımlandığından bunlar birleştirilmedi; kurumda 26, Türkiye genelinde 2.005 program açık eksik kalır.",
+      "Türkiye genelinde doğrulanmış katalog girişi bulunan kurum sayısı 189’a yükseldi."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-second-expansion",
     "releasedAt": "2026-09-06T19:39:06Z",
     "category": "İyileştirme",
