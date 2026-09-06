@@ -5,7 +5,7 @@ import test from "node:test";
 const catalog = JSON.parse(await readFile(new URL("../data/academic-catalog-2026.json", import.meta.url), "utf8"));
 
 test("official academic catalog has verified coverage and referential integrity", () => {
-  assert.equal(catalog.meta.updatedAt, "2026-09-05");
+  assert.equal(catalog.meta.updatedAt, "2026-09-06");
   assert.deepEqual(catalog.meta.stats, {
     universityCount: 241,
     coveredUniversityCount: 239,

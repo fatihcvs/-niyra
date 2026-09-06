@@ -25,6 +25,17 @@ ROOTS={
  'tr-yildiz-teknik-universitesi':[('bachelor','https://bologna.yildiz.edu.tr/index.php?r=program/bachelor')],
 }
 
+
+def gelisim_program_identity(title):
+ """Separate the official normal/evening mode suffix from the programme name."""
+ match=re.search(r'\s*\(((?:NÖ|İÖ)(?:\s*-\s*(?:NÖ|İÖ))*)\)\s*$',title,re.I)
+ if not match:return title,[]
+ modes=[part.strip().upper() for part in re.split(r'\s*-\s*',match.group(1))]
+ # The registry contains current normal-teaching identities. An evening-only
+ # plan must not be attached to a normal programme with the same base title.
+ if 'NÖ' not in modes:return None,modes
+ return title[:match.start()].strip(),modes
+
 def directory(uid, roots, university):
  items=[]
  for degree,url in roots:
@@ -78,10 +89,12 @@ def directory(uid, roots, university):
      items.append({'title':title,'unit':unit,'degree':degree,'courseUrl':urljoin(url,p['href']),'directoryUrl':url,'family':'isparta'})
    continue
   for a in doc.select('a[href]'):
-   href=a['href']; title=clean(a.get_text());unit=None;course=None
+   href=a['href']; title=clean(a.get_text());unit=None;course=None;source_title=None;teaching_modes=[]
    if 'gelisim' in url and '/bolum-genel-bilgiler-' in href:
     h=a.find_previous('h5');unit=clean(h.get_text()) if h else None
     if re.search(r'\(K\)',title):continue
+    source_title=title;title,teaching_modes=gelisim_program_identity(title)
+    if title is None:continue
     s=fetch(urljoin(url,href));course=next((u for u,t in links(soup(s),s['url']).items() if '/ders-plani-' in u),None)
    elif 'nku.' in url and '/bolum/m/' in href:
     h=a.find_previous('h3');unit=clean(h.get_text()) if h else None;course=urljoin(url,href)
@@ -98,7 +111,10 @@ def directory(uid, roots, university):
     page=fetch(urljoin(url,href));ls=links(soup(page),page.get('finalUrl',page['url']))
     course=next((u for u,t in ls.items() if re.search(r'ders.*(?:plan|yapı)|müfredat|curriculum',t,re.I)),None)
     if not course:course=urljoin(url,href)
-   if course:items.append({'title':title,'unit':unit,'degree':degree,'courseUrl':course,'directoryUrl':url})
+   if course:
+    item={'title':title,'unit':unit,'degree':degree,'courseUrl':course,'directoryUrl':url}
+    if source_title:item.update(sourceTitle=source_title,teachingModes=teaching_modes)
+    items.append(item)
  mapped=[]
  for item in {i['courseUrl']:i for i in items}.values():
   p=match(university,item)

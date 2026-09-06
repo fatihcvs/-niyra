@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twelfth-expansion",
+    "releasedAt": "2026-09-06T00:03:09Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "İstanbul Gelişim Üniversitesinin 68 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.657’ye, program-ders kaydı sayısı 1.423.177’ye ulaştı.",
+    "highlights": [
+      "İstanbul Gelişim Üniversitesinin 68 önlisans programına 1.437 resmî program-ders kaydı eklendi. Kurumun daha önce yayımlanan 80 programı ve diğer bütün katalog kayıtları korundu.",
+      "Resmî lisans ve önlisans dizinlerinde program adı, derece, akademik birim ve öğretim dili birlikte doğrulanır. Kaynakta bulunmayan dil veya program ilişkisi üretilmez.",
+      "Dizin başlıklarındaki NÖ, İÖ ve NÖ - İÖ ifadeleri program adından ayrılarak öğretim biçimi kanıtı olarak saklanır. Yalnız normal öğretimi açıkça kapsayan planlar mevcut normal öğretim programlarına bağlanır.",
+      "Güncel 149 programın 148'inde yapılandırılmış ders listesi bulunur. İngilizce Mütercim ve Tercümanlık için resmî dizin başlığı öğretim dilini ÖSYM kaydıyla açıkça eşleştirmediğinden program eksik bırakıldı.",
+      "191 kurumda ders kaydı, 186 kurumda doğrulanmış katalog girişi bulunur. 2.526 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-eleventh-expansion",
     "releasedAt": "2026-09-05T23:32:54Z",
     "category": "İyileştirme",

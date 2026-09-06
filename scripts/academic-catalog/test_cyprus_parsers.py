@@ -3,6 +3,7 @@ import unittest
 from parse_cyprus_courses import code, kind, merge_courses, parse_document, period
 from parse_turkey_courses import course_code, heading_period
 from parse_turkey_tedu_courses import parse_tedu
+from collect_turkey_more_catalogs import gelisim_program_identity
 
 
 def document(rows, text=''):
@@ -72,6 +73,14 @@ class CurriculumParsing(unittest.TestCase):
             {'code': 'COM411', 'name': 'Networks', 'semester': 7, 'kind': 'elective'}])
         self.assertIsNone(courses[0]['semester'])
         self.assertEqual(courses[0]['offeredSemesters'], [6, 7])
+
+    def test_gelisim_mode_suffix_is_preserved_outside_program_identity(self):
+        self.assertEqual(gelisim_program_identity('AŞÇILIK (NÖ - İÖ)'),
+                         ('AŞÇILIK', ['NÖ', 'İÖ']))
+        self.assertEqual(gelisim_program_identity('BİLGİSAYAR PROGRAMCILIĞI (İNGİLİZCE) (NÖ)'),
+                         ('BİLGİSAYAR PROGRAMCILIĞI (İNGİLİZCE)', ['NÖ']))
+        self.assertEqual(gelisim_program_identity('AŞÇILIK (İÖ)'), (None, ['İÖ']))
+        self.assertEqual(gelisim_program_identity('PSİKOLOJİ'), ('PSİKOLOJİ', []))
 
     def test_tedu_tables_require_semesters_and_reject_placeholders(self):
         courses, conflicts = parse_tedu({'tables': [

@@ -1,14 +1,14 @@
-# Türkiye katalog kapsamı — 2026-09-05
+# Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,589 programda ders kaydı · 2,594 programda ders listesi eksik.
-Toplam 1,421,740 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,657 programda ders kaydı · 2,526 programda ders listesi eksik.
+Toplam 1,423,177 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,149
+- Resmî program eşleşmesi eksik: 2,081
 - Okunabilir ders listesi bulunamadı: 379
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
@@ -114,7 +114,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İstanbul Esenyurt Üniversitesi | 69 | 58 | 11 | 5,212 | 5 | [Kaynak 1](https://obs.esenyurt.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.esenyurt.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Galata Üniversitesi | 32 | 31 | 1 | 2,630 | 5 | [Kaynak 1](https://ois.galata.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr) · [Kaynak 2](https://ois.galata.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr) |
 | İstanbul Gedik Üniversitesi | 52 | 51 | 1 | 5,089 | 5 | [Kaynak 1](https://obs.gedik.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gedik.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| İstanbul Gelişim Üniversitesi | 149 | 80 | 69 | 2,997 | 10 | [Kaynak 1](https://gbs.gelisim.edu.tr/fakulteler-2-1) |
+| İstanbul Gelişim Üniversitesi | 149 | 148 | 1 | 4,434 | 10 | [Kaynak 1](https://gbs.gelisim.edu.tr/fakulteler-1-1) · [Kaynak 2](https://gbs.gelisim.edu.tr/fakulteler-2-1) |
 | İstanbul Kent Üniversitesi | 56 | 54 | 2 | 4,289 | 5 | [Kaynak 1](https://ois.kent.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_2/ln/tr) · [Kaynak 2](https://ois.kent.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_1/ln/tr) |
 | İstanbul Kültür Üniversitesi | 57 | 50 | 7 | 8,718 | 10 | [Kaynak 1](https://akademikpaket.iku.edu.tr/TR/ects.php?p=1&r=0) · [Kaynak 2](https://akademikpaket.iku.edu.tr/TR/ects.php?p=3&r=0) |
 | İstanbul Medeniyet Üniversitesi | 52 | 49 | 3 | 7,453 | 20 | [Kaynak 1](https://ubys.medeniyet.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |

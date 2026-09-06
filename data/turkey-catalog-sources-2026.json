@@ -1513,6 +1513,12 @@
   "tr-istanbul-gelisim-universitesi": {
     "catalogs": [
       {
+        "url": "https://gbs.gelisim.edu.tr/fakulteler-1-1",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "6f78fff275c6f7e165048573db633fa9e23ff6feea047be92f79fc1d07e832f6",
+        "evidence": "matched-programme-directory"
+      },
+      {
         "url": "https://gbs.gelisim.edu.tr/fakulteler-2-1",
         "checkedAt": "2026-09-05",
         "sourceHash": "e721c58d07af1d2f440dba3d480c5d254e2265c3112c31521335f573ecc13189",
