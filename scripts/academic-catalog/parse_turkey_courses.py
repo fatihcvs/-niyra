@@ -34,6 +34,7 @@ IAU_PARSER_VERSION = '6fe442a0ca61'
 THK_PARSER_VERSION = '183ba09549a7'
 YASAR_PARSER_VERSION = '0014493218d9'
 RUMELI_PARSER_VERSION = 'b9beb2b93a5b'
+ISTE_PARSER_VERSION = 'e7fe25a4cdb5'
 
 
 def course_code(value):
@@ -196,6 +197,7 @@ def _parse_source(source):
     if source.get('family')=='yasar':return parse_tables(soup(source))
     if source.get('family')=='rumeli-2026':return parse_tables(soup(source))
     if source.get('family')=='iste-2026':return parse_tables(soup(source), 'iste')
+    if source.get('family')=='halic-2026':return parse_tables(soup(source))
     if source.get('family')=='cag':return parse_cag(soup(source),course_code,course_kind)
     if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
     if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)
@@ -291,7 +293,8 @@ def parse_source(source):
     if source['status'] != 200:return [], []
     version = ({'esogu-docx': ESOGU_PARSER_VERSION, 'iau': IAU_PARSER_VERSION,
                 'thk': THK_PARSER_VERSION, 'yasar': YASAR_PARSER_VERSION,
-                'rumeli-2026': RUMELI_PARSER_VERSION, 'iste-2026': PARSER_VERSION}
+                'rumeli-2026': RUMELI_PARSER_VERSION, 'iste-2026': ISTE_PARSER_VERSION,
+                'halic-2026': PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -313,7 +316,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -321,7 +324,7 @@ def main():
     versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':ESOGU_PARSER_VERSION,
               'iau':IAU_PARSER_VERSION,'thk':THK_PARSER_VERSION,
               'yasar':YASAR_PARSER_VERSION,'rumeli-2026':RUMELI_PARSER_VERSION,
-              'iste-2026':PARSER_VERSION}
+              'iste-2026':ISTE_PARSER_VERSION,'halic-2026':PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.

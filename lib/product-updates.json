@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-nineteenth-expansion",
+    "releasedAt": "2026-09-06T16:07:20Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Haliç Üniversitesinin 42 MYO programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.983’e, program-ders kaydı sayısı 1.454.904’e ulaştı.",
+    "highlights": [
+      "Haliç Üniversitesinin daha önce eksik olan 42 ön lisans programına 4.114 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 39’dan 81’e, toplam kayıt 3.565’ten 7.679’a çıktı.",
+      "Resmî Bologna dizinindeki program adı ve ön lisans derecesi güncel envanterle birebir eşleştirildi. Kurumun “Meslek Yüksek Okulu” yazımı ile envanterdeki “Meslek Yüksekokulu” yazımı açık kaynak aliası olarak her kayıtta saklandı.",
+      "Her program için sayfanın seçili gösterdiği 2026 planı ve resmî plan kimliği sabitlendi; alternatif yıllar birleştirilmedi. Yarıyıl ve zorunlu/seçmeli türleri yalnız yayımlanmış tablolardan aktarıldı.",
+      "Güncel Büyük Veri Analistliği programı resmî Haliç dizininde bulunmadığından eksik bırakıldı; kurumun 82 güncel programından 81’i yapılandırılmıştır.",
+      "193 kurumda ders kaydı, 188 kurumda doğrulanmış katalog girişi bulunur. 2.200 programın yapılandırılmış ders listesi hâlâ eksiktir; program-ders kayıtları ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-eighteenth-expansion",
     "releasedAt": "2026-09-06T15:37:41Z",
     "category": "İyileştirme",

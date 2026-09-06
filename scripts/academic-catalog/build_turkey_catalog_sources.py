@@ -17,7 +17,8 @@ def build():
     for name in ['discovery','additional-discovery','refined-discovery','expanded-discovery',
                  'ubys-directories','ecatalog-directories','institution-directories','more-directories',
                  'kocaeli-directories','istanbul-directories','language-directories','iau-directories',
-                 'thk-directories','yasar-directories','rumeli-directories','iste-directories']:
+                 'thk-directories','yasar-directories','rumeli-directories','iste-directories',
+                 'halic-directories']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):

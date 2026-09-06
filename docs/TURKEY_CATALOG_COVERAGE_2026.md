@@ -1,7 +1,7 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,941 programda ders kaydı · 2,242 programda ders listesi eksik.
-Toplam 1,450,790 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,983 programda ders kaydı · 2,200 programda ders listesi eksik.
+Toplam 1,454,904 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
@@ -9,7 +9,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 ## Eksik listelerin nedenleri
 
 - Resmî program eşleşmesi eksik: 1,882
-- Okunabilir ders listesi bulunamadı: 294
+- Okunabilir ders listesi bulunamadı: 252
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -93,7 +93,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Gümüşhane Üniversitesi | 90 | 89 | 1 | 5,754 | 15 | [Kaynak 1](https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gumushane.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hacettepe Üniversitesi | 105 | 103 | 2 | 9,685 | 18 | [Kaynak 1](https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://bilsis.hacettepe.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hakkari Üniversitesi | 43 | 41 | 2 | 2,060 | 9 | [Kaynak 1](https://obs.hakkari.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.hakkari.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Haliç Üniversitesi | 82 | 39 | 43 | 3,565 | 5 | [Kaynak 1](https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
+| Haliç Üniversitesi | 82 | 81 | 1 | 7,679 | 5 | [Kaynak 1](https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.halic.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Harran Üniversitesi | 133 | 130 | 3 | 16,747 | 19 | [Kaynak 1](https://obs.harran.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.harran.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hasan Kalyoncu Üniversitesi | 41 | 33 | 8 | 5,156 | 5 | [Kaynak 1](https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hatay Mustafa Kemal Üniversitesi | 113 | 109 | 4 | 7,876 | 10 | [Kaynak 1](https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
