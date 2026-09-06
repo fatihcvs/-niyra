@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-eighteenth-expansion",
+    "releasedAt": "2026-09-06T15:37:41Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "İskenderun Teknik Üniversitesinin 55 güncel program planı yayımlandı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.941’e, program-ders kaydı sayısı 1.450.790’a ulaştı.",
+    "highlights": [
+      "İskenderun Teknik Üniversitesinin 41 eksik programı eklendi; daha önce yayımlanan 14 programın 2099 yedek planları da kurumun güncel varsayılan planlarıyla değiştirildi.",
+      "Resmî Bologna lisans ve ön lisans dizinindeki 55 program ad, derece, akademik birim ve sabit curSunit kimliğiyle güncel envantere birebir eşleştirildi.",
+      "Her program için sayfanın seçili gösterdiği tek varsayılan plan ve resmî plan kimliği sabitlendi. Kurumun yayımladığı 2022–2026 dönemleri korundu; alternatif planlar birleştirilmedi.",
+      "Harf-rakam karışık resmî ders kodları kurum özelindeki dar ayrıştırıcıyla okundu; seçmeli havuz etiketleri ders sayılmadı. Kurumda yapılandırılmış program sayısı 14’ten 55’e, program-ders kaydı 1.200’den 9.231’e çıktı.",
+      "Resmî dizinde karşılığı bulunmayan Makine Mühendisliği KKTC Uyruklu kaydı eksik bırakıldı. 193 kurumda ders kaydı, 188 kurumda doğrulanmış katalog girişi bulunur; 2.242 programın ders listesi hâlâ eksiktir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-seventeenth-expansion",
     "releasedAt": "2026-09-06T15:10:33Z",
     "category": "İyileştirme",

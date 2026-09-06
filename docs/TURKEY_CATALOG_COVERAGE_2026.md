@@ -1,7 +1,7 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,900 programda ders kaydı · 2,283 programda ders listesi eksik.
-Toplam 1,442,759 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,941 programda ders kaydı · 2,242 programda ders listesi eksik.
+Toplam 1,450,790 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
@@ -9,7 +9,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 ## Eksik listelerin nedenleri
 
 - Resmî program eşleşmesi eksik: 1,882
-- Okunabilir ders listesi bulunamadı: 335
+- Okunabilir ders listesi bulunamadı: 294
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -104,7 +104,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | İbn Haldun Üniversitesi | 11 | 10 | 1 | 791 | 10 | [Kaynak 1](https://obs.ihu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ihu.edu.tr/oibs/bologna/index.aspx) |
 | İhsan Doğramacı Bilkent Üniversitesi | 27 | 27 | 0 | 1,072 | 10 | Doğrulanmış giriş yok |
 | İnönü Üniversitesi | 90 | 75 | 15 | 12,242 | 15 | [Kaynak 1](https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.inonu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| İskenderun Teknik Üniversitesi | 56 | 14 | 42 | 1,200 | 5 | [Kaynak 1](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
+| İskenderun Teknik Üniversitesi | 56 | 55 | 1 | 9,231 | 5 | [Kaynak 1](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.iste.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul 29 Mayıs Üniversitesi | 29 | 25 | 4 | 2,115 | 5 | [Kaynak 1](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2026) · [Kaynak 2](https://ebs.29mayis.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2026) |
 | İstanbul Arel Üniversitesi | 84 | 84 | 0 | 10,676 | 10 | [Kaynak 1](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.arel.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | İstanbul Atlas Üniversitesi | 54 | 52 | 2 | 5,666 | 5 | [Kaynak 1](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_3/ln/tr) · [Kaynak 2](https://ois.atlas.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_2/ln/tr) |

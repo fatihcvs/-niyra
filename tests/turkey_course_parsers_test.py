@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts/academic-catalog'))
 from bs4 import BeautifulSoup
-from parse_turkey_courses import parse_tables, _parse_source, course_code, course_kind, heading_period
+from parse_turkey_courses import parse_tables, _parse_source, course_code, iste_course_code, course_kind, heading_period
 from parse_turkey_late_courses import parse_baskent, parse_erciyes, parse_subu, parse_igdir
 from discover_turkey_courses import match
 from collect_turkey_ecatalogs import discover,leaf_programme_title
@@ -57,6 +57,12 @@ class CourseParsers(unittest.TestCase):
             self.assertEqual(course_code(value),value)
         for value in ['2025-2026','1. Yarıyıl','4905.020221.1.2','BS198-hello','<script>']:
             self.assertIsNone(course_code(value))
+
+    def test_iste_mixed_prefix_codes_exclude_elective_pool_labels(self):
+        for value in ['AİİT2-1101', 'BLM2-1105', 'İHA1-1113']:
+            self.assertEqual(iste_course_code(value), value)
+        for value in ['MESLEKİSEÇMELİ-1', 'ORTAKSEÇ-1', '5.YY SEÇMELİ']:
+            self.assertIsNone(iste_course_code(value))
         rows,_=parse_tables(html('''<table><tr><td>2.Yarıyıl Ders Planı</td></tr>
           <tr><th>Ders Kodu</th><th>Ders Adı</th><th>Zorunlu/Seçmeli</th></tr>
           <tr><td>BS198-2020</td><td>Yabancı Dil II</td><td>Zorunlu</td></tr>
