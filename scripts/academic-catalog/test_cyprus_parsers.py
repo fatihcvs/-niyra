@@ -4,6 +4,8 @@ from parse_cyprus_courses import code, kind, merge_courses, parse_document, peri
 from parse_turkey_courses import course_code, heading_period
 from parse_turkey_tedu_courses import parse_tedu
 from collect_turkey_more_catalogs import gelisim_program_identity
+from parse_turkey_esogu_courses import parse_esogu_tables, _parse_all_tables
+from collect_turkey_web_curricula import ogu_program_identity
 
 
 def document(rows, text=''):
@@ -110,6 +112,50 @@ class CurriculumParsing(unittest.TestCase):
         ]}, course_code, heading_period)
         self.assertEqual(courses, [])
         self.assertEqual(conflicts, ['CMPE101'])
+
+    def test_esogu_reads_only_programme_plan_tables(self):
+        courses, conflicts = parse_esogu_tables([
+            [['YIL'], ['Ders Kodu', 'Ders Adı', 'AKTS', 'D+U+L', 'Z/S', 'Dili'],
+             ['Güz Dönemi'], ['İŞL 101', 'İşletmeye Giriş', '5', '3+0+0', 'Z', 'Türkçe'],
+             ['', 'SOSYAL SEÇMELİ I', '2', '2+0+0', 'S', 'Türkçe'],
+             ['Bahar Dönemi'], ['İŞL 102', 'Muhasebe', '5', '3+0+0', 'S', 'Türkçe']],
+            [['DERSİN KODU', 'İŞL 101', 'DERSİN ADI', 'İşletmeye Giriş']]
+        ], course_code, lambda value: {'Z':'required','S':'elective'}.get(value))
+        self.assertEqual(courses, [
+            {'code':'İŞL101','name':'İşletmeye Giriş','semester':1,'kind':'required'},
+            {'code':'İŞL102','name':'Muhasebe','semester':2,'kind':'elective'}])
+        self.assertEqual(conflicts, [])
+
+    def test_esogu_recovers_explicit_course_forms_when_summary_is_absent(self):
+        courses, conflicts = _parse_all_tables([
+            [['DERSİN KODU', '171911017', 'DERSİN ADI', 'Çocuk Sağlığı ve İlk Yardım']],
+            [['YARIYIL', 'HAFTALIK DERS SAATİ', 'DERSİN'],
+             ['', 'Teorik', 'Uygulama', 'Laboratuar', 'Kredisi', 'AKTS', 'TÜRÜ', 'DİLİ'],
+             ['I', '2', '0', '0', '2', '3', 'ZORUNLU (✕) SEÇMELİ ( )', 'Türkçe']]
+        ], course_code, lambda value: None)
+        self.assertEqual(courses, [{
+            'code':'171911017','name':'Çocuk Sağlığı ve İlk Yardım','semester':1,'kind':'required'}])
+        self.assertEqual(conflicts, [])
+
+    def test_esogu_current_identity_evidence_preserves_language_and_unit(self):
+        self.assertEqual(ogu_program_identity('Uçak Mühendisliği','Mühendislik-Mimarlık Fakültesi'),
+                         ('Uçak Mühendisliği (İngilizce)','Mühendislik-Mimarlık Fakültesi',True))
+        self.assertEqual(ogu_program_identity('Atçılık ve Antrenörlüğü Programı','Mahmudiye Meslek Yüksekokulu'),
+                         ('Atçılık ve Antrenörlüğü Programı','Mahmudiye Atçılık Meslek Yüksekokulu',True))
+        self.assertEqual(ogu_program_identity('Makine Programı','Sivrihisar Meslek Yüksekokulu'),
+                         ('Makine Programı','Sivrihisar Meslek Yüksekokulu',False))
+
+    def test_esogu_reads_separate_semester_and_annual_plan_tables(self):
+        courses, conflicts = parse_esogu_tables([
+            [['Birinci Yarıyıl'], ['Ders Kodu','Dersin Adı','T','U','AKTS'],
+             ['251611001','Botanik','2','2','4']],
+            [['1. SINIF'], ['Kodu','Ders Adı','AKTS','T','U','Z/S','DİLİ'],
+             ['111011012','Temel Tıp Bilimlerine Giriş','42','15','7','Z','TÜRKÇE']]
+        ], course_code, lambda value: {'Z':'required'}.get(value))
+        self.assertEqual(courses, [
+            {'code':'251611001','name':'Botanik','semester':1,'kind':None},
+            {'code':'111011012','name':'Temel Tıp Bilimlerine Giriş','semester':None,'kind':'required','year':1}])
+        self.assertEqual(conflicts, [])
 
 
 if __name__ == '__main__':

@@ -43,8 +43,24 @@ def medipol(uid, university, home):
     return pair(uid,university,items)
 
 
+def ogu_program_identity(title,unit):
+    if title in ['Elektrik-Elektronik Mühendisliği','Uçak Mühendisliği','Yazılım Mühendisliği']:
+        return title+' (İngilizce)',unit,True
+    if title=='Atçılık ve Antrenörlüğü Programı' and unit=='Mahmudiye Meslek Yüksekokulu':
+        return title,'Mahmudiye Atçılık Meslek Yüksekokulu',True
+    if title=='Makine Programı' and unit=='Eskişehir Meslek Yüksekokulu':
+        return 'Cnc Programlama ve Operatörlüğü',unit,True
+    return title,unit,False
+
+
 def ogu(university):
     uid='tr-eskisehir-osmangazi-universitesi';items=[]
+    evidence='https://oidb.ogu.edu.tr/Sayfa/Index/286/esogu-2026-yks-taban-puanlari'
+    evidence_source=fetch(evidence)
+    evidence_text=clean(soup(evidence_source).get_text(' ',strip=True))
+    current_names=['Elektrik-Elektronik Mühendisliği (İngilizce)','Uçak Mühendisliği (İngilizce)',
+        'Yazılım Mühendisliği (İngilizce)','Atçılık ve Antrenörlüğü','Cnc Programlama ve Operatörlüğü']
+    assert evidence_source['status']==200 and all(name in evidence_text for name in current_names), 'ESOGU current programme evidence changed'
     aliases={'Bilgisayar ve Öğretim Teknolojileri Eğitimi':'Bilgisayar ve Öğretim Teknolojileri Öğretmenliği',
         'Fen Bilgisi':'Fen Bilgisi Öğretmenliği','Matematik':'İlköğretim Matematik Öğretmenliği',
         'Okul Öncesi':'Okul Öncesi Öğretmenliği','Özel Eğitim':'Özel Eğitim Öğretmenliği',
@@ -60,9 +76,11 @@ def ogu(university):
             title=re.sub(r'\s+Bölümü$','',title)
             if unit=='Eğitim Fakültesi':title=aliases.get(title,title)
             title=title.replace('Hukuk Fakültesi','Hukuk')
+            title,unit,uses_evidence=ogu_program_identity(title,unit)
             item={'title':title,'sourceTitle':original,'unit':unit,'degree':degree,
                 'directoryUrl':url,'courseUrl':urljoin(url,a['href'])}
             if version:item['planYear']=int(version[1])
+            if uses_evidence:item['identityEvidenceUrl']=evidence
             items.append(item)
     # The catalogue lists old and revised teacher plans together; keep the
     # latest explicitly labelled revision for the same subject and faculty.
@@ -72,6 +90,28 @@ def ogu(university):
         newest[key]=max(newest.get(key,0),item.get('planYear',0))
     items=[i for i in items if i.get('planYear',0)==newest[(normal(i['title']),normal(i['unit']))]]
     return pair(uid,university,items)
+
+
+def resolve_ogu_packages(sources):
+    """Add linked official DOCX plans while retaining ESOGU profile pages."""
+    output=[]
+    for source in sources:
+        programmes=source.get('programs',[])
+        if not programmes or programmes[0].get('universityId')!='tr-eskisehir-osmangazi-universitesi':
+            output.append(source);continue
+        # Keep any structured rows printed directly on the programme profile;
+        # the linked package is an additional source, not a replacement.
+        output.append(source)
+        page=soup(source)
+        package=next((a for a in page.select('a[href]')
+            if re.search(r'Ders\s+Bilgi\s+Paketi',clean(a.get_text()),re.I)
+            and re.search(r'\.docx(?:\?|$)',a.get('href',''),re.I)),None)
+        if not package:
+            continue
+        package_url=urljoin(source.get('finalUrl',source['url']),package['href'])
+        output.append({**fetch(package_url),'family':'esogu-docx','publicUrl':source['url'],
+            'programmePageHash':source.get('sha256'),'programs':programmes})
+    return output
 
 
 def ieu(university):
@@ -122,6 +162,8 @@ def main():
             d=f.result();directories.append(d);print(d['universityId'],len(d['matched']),flush=True)
             write(CACHE/'web-curricula-directories.json',directories)
     collect_program_pages(directories,'web-curricula-courses')
+    sources=read(CACHE/'web-curricula-courses.json')
+    write(CACHE/'web-curricula-courses.json',resolve_ogu_packages(sources))
 
 
 if __name__=='__main__':main()

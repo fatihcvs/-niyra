@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-thirteenth-expansion",
+    "releasedAt": "2026-09-06T01:02:12Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Eskişehir Osmangazi Üniversitesinin 49 programına ders listeleri eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.706’ya, program-ders kaydı sayısı 1.427.181’e ulaştı.",
+    "highlights": [
+      "Eskişehir Osmangazi Üniversitesinin 49 programına 4.004 resmî program-ders kaydı eklendi. Kurumun daha önce yayımlanan programı ve diğer bütün katalog kayıtları korundu.",
+      "Resmî lisans ve önlisans ağaçları, program profilleri ve 2026 YKS program tablosu birlikte doğrulanır; program adı, derece, akademik birim ve İngilizce öğretim ayrımı korunur.",
+      "Program profilinin bağladığı resmî DOCX paketlerindeki güz/bahar, numaralı yarıyıl ve sınıf tabloları kendi dönem yapılarıyla okunur. Yıllık planlara yarıyıl atanmaz.",
+      "Yalnız gerçek ders kodları yayımlanır. Kodu boş olan satırlar, XXXX yer tutucuları ve aynı kodu farklı adlarla veren çakışmalı kayıtlar dışarıda bırakılır. Güncel 70 programın 50'sinde yapılandırılmış ders listesi bulunur.",
+      "191 kurumda ders kaydı, 186 kurumda doğrulanmış katalog girişi bulunur. 2.477 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twelfth-expansion",
     "releasedAt": "2026-09-06T00:03:09Z",
     "category": "İyileştirme",

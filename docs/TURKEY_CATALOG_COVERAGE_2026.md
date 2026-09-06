@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,657 programda ders kaydı · 2,526 programda ders listesi eksik.
-Toplam 1,423,177 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,706 programda ders kaydı · 2,477 programda ders listesi eksik.
+Toplam 1,427,181 program-ders kaydı. 186 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 2,081
-- Okunabilir ders listesi bulunamadı: 379
+- Resmî program eşleşmesi eksik: 2,076
+- Okunabilir ders listesi bulunamadı: 335
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
 
@@ -79,7 +79,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Erciyes Üniversitesi | 88 | 85 | 3 | 6,045 | 21 | [Kaynak 1](https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=101) · [Kaynak 2](https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=102) |
 | Erzincan Binali Yıldırım Üniversitesi | 98 | 96 | 2 | 6,227 | 10 | [Kaynak 1](https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Erzurum Teknik Üniversitesi | 22 | 21 | 1 | 2,215 | 5 | [Kaynak 1](https://ubys.erzurum.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
-| Eskişehir Osmangazi Üniversitesi | 70 | 1 | 69 | 67 | 15 | [Kaynak 1](https://ects.ogu.edu.tr/Lisans) · [Kaynak 2](https://ects.ogu.edu.tr/Onlisans) |
+| Eskişehir Osmangazi Üniversitesi | 70 | 50 | 20 | 4,071 | 15 | [Kaynak 1](https://ects.ogu.edu.tr/Lisans) · [Kaynak 2](https://ects.ogu.edu.tr/Onlisans) |
 | Eskişehir Teknik Üniversitesi | 49 | 42 | 7 | 2,287 | 5 | [Kaynak 1](https://akts.eskisehir.edu.tr/tr/akademik/lisans) · [Kaynak 2](https://akts.eskisehir.edu.tr/tr/akademik/onLisans) |
 | Fatih Sultan Mehmet Vakıf Üniversitesi | 53 | 49 | 4 | 5,688 | 20 | [Kaynak 1](https://obs.fsm.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.fsm.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Fenerbahçe Üniversitesi | 46 | 43 | 3 | 6,442 | 5 | [Kaynak 1](https://obs.fbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.fbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) · [Kaynak 3](https://ois.fbu.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_17/ln/tr) · [Kaynak 4](https://ois.fbu.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_16/ln/tr) |

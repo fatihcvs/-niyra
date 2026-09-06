@@ -20,10 +20,14 @@ from parse_turkey_cankaya_courses import parse_cankaya
 from parse_turkey_isik_courses import parse_isik, parse_isik_pdf
 from parse_turkey_ozyegin_courses import parse_ozyegin
 from parse_turkey_tedu_courses import parse_tedu
+from parse_turkey_esogu_courses import parse_esogu_docx
 
 ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
 PARSER_VERSION = hashlib.sha256(b''.join((Path(__file__).parent / f).read_bytes() for f in
-    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py'])).hexdigest()[:12]
+    ['parse_turkey_courses.py','turkey_research.py','parse_cyprus_courses.py','parse_cyprus_html.py','parse_cyprus_extra.py','parse_turkey_late_courses.py','parse_turkey_continuation_courses.py','parse_turkey_foundation_courses.py','parse_turkey_kion_courses.py','parse_turkey_pdf_courses.py','parse_turkey_cag_courses.py','parse_turkey_cankaya_courses.py','parse_turkey_isik_courses.py','parse_turkey_ozyegin_courses.py','parse_turkey_tedu_courses.py','parse_turkey_esogu_courses.py'])).hexdigest()[:12]
+# The new DOCX adapter does not change any existing source family. Retain the
+# last verified cache key for those 14,143 responses and version ESOGU alone.
+LEGACY_PARSER_VERSION = 'dfab660ddd5d'
 
 
 def course_code(value):
@@ -171,6 +175,7 @@ def _parse_source(source):
     if source.get('family')=='isik-pdf':return parse_isik_pdf(CACHE/source['file'], course_code, heading_period)
     if source.get('family')=='ozyegin':return parse_ozyegin(read(CACHE/source['file']), course_code)
     if source.get('family')=='tedu':return parse_tedu(read(CACHE/source['file']), course_code, heading_period)
+    if source.get('family')=='esogu-docx':return parse_esogu_docx(CACHE/source['file'],course_code,course_kind)
     if source.get('family')=='cag':return parse_cag(soup(source),course_code,course_kind)
     if source.get('family')=='kion':return parse_kion(soup(source),course_code,course_kind)
     if source.get('family')=='piri-pdf':return parse_pdf(CACHE/source['file'],course_code,course_kind,heading_period)
@@ -264,7 +269,8 @@ def _parse_source(source):
 
 def parse_source(source):
     if source['status'] != 200:return [], []
-    file = CACHE / (source['file'] + '.' + PARSER_VERSION + '.' + parse_identity(source) + '.parsed.json')
+    version=PARSER_VERSION if source.get('family')=='esogu-docx' else LEGACY_PARSER_VERSION
+    file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
         result=read(file)
         return result['courses'],result['conflicts']
@@ -289,7 +295,8 @@ def main():
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
             sources += read(file)
-    write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION})
+    versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':PARSER_VERSION}
+    write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
     pending = {parse_identity(s):s for s in sources if s['status']==200}
@@ -338,7 +345,7 @@ def main():
     write(CACHE / 'turkey-course-candidates.json', records)
     write(CACHE / 'parser-issues.json', issues)
     assert all(hashlib.sha256((CACHE/name).read_bytes()).hexdigest()==value for name,value in inputs.items()), 'Research inputs changed during parsing; run again.'
-    write(CACHE/'parse-receipt.json',{'complete':True,'inputs':inputs,'parserVersion':PARSER_VERSION,
+    write(CACHE/'parse-receipt.json',{'complete':True,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions,
         'sourceCount':len(sources),'programCount':len(records),
         'candidateHash':hashlib.sha256((CACHE/'turkey-course-candidates.json').read_bytes()).hexdigest()})
     print('Programmes', len(records), 'courses', sum(len(r['courses']) for r in records.values()), 'universities', len({r['universityId'] for r in records.values()}))
