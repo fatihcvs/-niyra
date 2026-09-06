@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-sixteenth-expansion",
+    "releasedAt": "2026-09-06T14:56:01Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Yaşar Üniversitesinin 38 güncel programının ders listeleri tamamlandı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 12.896’ya, program-ders kaydı sayısı 1.442.252’ye ulaştı.",
+    "highlights": [
+      "Yaşar Üniversitesinin daha önce eksik olan 27 lisans programına 6.416 resmî program-ders kaydı eklendi. Kurumun 38 güncel programının tamamı 10.091 kayıtla yapılandırıldı.",
+      "Resmî Bologna dizinindeki program adı, derece ve akademik birim eşleşmesine ek olarak 24 İngilizce programın her biri kendi program-bilgi sayfasındaki dil alanıyla doğrulandı.",
+      "Hukuk, Endüstriyel Tasarım ve Çizgi Film ve Animasyon programlarının %30 İngilizce ayrımı hem dizin başlığında hem program bilgi sayfasında doğrulandı. Dil kanıtı sayfası ve kaynak özeti her kayıtta saklandı.",
+      "Her program için sayfanın seçili gösterdiği tek varsayılan plan kullanıldı; alternatif yıllar birleştirilmedi. Güncel envanterde bulunmayan eski programlar, ortak seçmeli birimi ve UOLP kaydı dışarıda bırakıldı.",
+      "193 kurumda ders kaydı, 188 kurumda doğrulanmış katalog girişi bulunur. 2.287 programın yapılandırılmış ders listesi hâlâ eksiktir. Yeni listeler kısmi kapsamdadır; sayılar ülke genelinde tekil ders sayısı değildir."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-fifteenth-expansion",
     "releasedAt": "2026-09-06T14:30:51Z",
     "category": "İyileştirme",

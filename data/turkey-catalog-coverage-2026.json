@@ -6835,67 +6835,11 @@
       "universityId": "tr-yasar-universitesi",
       "name": "Yaşar Üniversitesi",
       "programCount": 38,
-      "structuredProgramCount": 11,
-      "courseCount": 3675,
-      "linkedProgramCount": 11,
-      "missingProgramIds": [
-        "program-osym-206010487",
-        "program-osym-206010372",
-        "program-osym-206010654",
-        "program-osym-206010318",
-        "program-osym-206010433",
-        "program-osym-206010345",
-        "program-osym-206090347",
-        "program-osym-206010566",
-        "program-osym-206011113",
-        "program-osym-206090401",
-        "program-osym-206090387",
-        "program-osym-206000101",
-        "program-osym-206010981",
-        "program-osym-206011237",
-        "program-osym-206010681",
-        "program-osym-206010248",
-        "program-osym-206010284",
-        "program-osym-206090350",
-        "program-osym-206011176",
-        "program-osym-206090363",
-        "program-osym-206090366",
-        "program-osym-206010151",
-        "program-osym-206010945",
-        "program-osym-206010636",
-        "program-osym-206011167",
-        "program-osym-206010609",
-        "program-osym-206090357"
-      ],
-      "missingReasons": {
-        "program-osym-206010487": "programme-source-not-matched",
-        "program-osym-206010372": "programme-source-not-matched",
-        "program-osym-206010654": "programme-source-not-matched",
-        "program-osym-206010318": "programme-source-not-matched",
-        "program-osym-206010433": "programme-source-not-matched",
-        "program-osym-206010345": "programme-source-not-matched",
-        "program-osym-206090347": "programme-source-not-matched",
-        "program-osym-206010566": "programme-source-not-matched",
-        "program-osym-206011113": "programme-source-not-matched",
-        "program-osym-206090401": "programme-source-not-matched",
-        "program-osym-206090387": "programme-source-not-matched",
-        "program-osym-206000101": "programme-source-not-matched",
-        "program-osym-206010981": "programme-source-not-matched",
-        "program-osym-206011237": "programme-source-not-matched",
-        "program-osym-206010681": "programme-source-not-matched",
-        "program-osym-206010248": "programme-source-not-matched",
-        "program-osym-206010284": "programme-source-not-matched",
-        "program-osym-206090350": "programme-source-not-matched",
-        "program-osym-206011176": "programme-source-not-matched",
-        "program-osym-206090363": "programme-source-not-matched",
-        "program-osym-206090366": "programme-source-not-matched",
-        "program-osym-206010151": "programme-source-not-matched",
-        "program-osym-206010945": "programme-source-not-matched",
-        "program-osym-206010636": "programme-source-not-matched",
-        "program-osym-206011167": "programme-source-not-matched",
-        "program-osym-206010609": "programme-source-not-matched",
-        "program-osym-206090357": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 38,
+      "courseCount": 10091,
+      "linkedProgramCount": 38,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-yeditepe-universitesi",
@@ -7031,13 +6975,14 @@
     }
   ],
   "research": {
-    "sourceCount": 14793,
-    "parserVersion": "183ba09549a7",
+    "sourceCount": 14820,
+    "parserVersion": "0014493218d9",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
       "iau": "6fe442a0ca61",
-      "thk": "183ba09549a7"
+      "thk": "183ba09549a7",
+      "yasar": "0014493218d9"
     },
     "manifestHashes": {
       "known.json": "33f47a5ada4f174dde198d1768fe89210da28719ed2cf36c8f1d1d38deeaaa1e",
@@ -7055,7 +7000,8 @@
       "istanbul-courses.json": "b44ab029d935bb342323d241331fe37c7bf4e46e8fe6203a6103d39f99cb1e6e",
       "language-courses.json": "6c6742c5a23561149014660d932e71311f9ba0760a1c7551d3434950591fa91c",
       "iau-courses.json": "20f65fd17816c7d555f566bdf89f7db8b0ed50c0130196e47e10120e0b267eab",
-      "thk-courses.json": "d976b553e631e411c05cdac1abf60da8a5a62abd1c494b0b6a85bebe126f536d"
+      "thk-courses.json": "d976b553e631e411c05cdac1abf60da8a5a62abd1c494b0b6a85bebe126f536d",
+      "yasar-courses.json": "043fef86237a795d5d2382dad0cce5978df9300857d1ea809195d930a230a38d"
     }
   }
 }

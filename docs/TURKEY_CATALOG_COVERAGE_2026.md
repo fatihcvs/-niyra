@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-06
 
-204 kurum · 15,183 program · 12,869 programda ders kaydı · 2,314 programda ders listesi eksik.
-Toplam 1,435,836 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 12,896 programda ders kaydı · 2,287 programda ders listesi eksik.
+Toplam 1,442,252 program-ders kaydı. 188 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,913
+- Resmî program eşleşmesi eksik: 1,886
 - Okunabilir ders listesi bulunamadı: 335
 - Kaynakta program ayrımı doğrulanamadı: 38
 - Ders kaynağına erişilemedi: 28
@@ -215,7 +215,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Üsküdar Üniversitesi | 80 | 78 | 2 | 5,920 | 5 | [Kaynak 1](https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.uskudar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Van Yüzüncü Yıl Üniversitesi | 121 | 118 | 3 | 25,535 | 2 | [Kaynak 1](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://bilgipaketi.yyu.edu.tr/DereceProgramlari/1) |
 | Yalova Üniversitesi | 60 | 51 | 9 | 3,885 | 12 | [Kaynak 1](https://ubs.yalova.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
-| Yaşar Üniversitesi | 38 | 11 | 27 | 3,675 | 5 | [Kaynak 1](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
+| Yaşar Üniversitesi | 38 | 38 | 0 | 10,091 | 5 | [Kaynak 1](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.yasar.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Yeditepe Üniversitesi | 64 | 56 | 8 | 1,875 | 5 | [Kaynak 1](https://akts.yeditepe.edu.tr/tr/Ects/DegreePrograms?D=L) · [Kaynak 2](https://akts.yeditepe.edu.tr) |
 | Yıldız Teknik Üniversitesi | 56 | 56 | 0 | 14,739 | 10 | [Kaynak 1](https://bologna.yildiz.edu.tr/index.php?r=program/bachelor) |
 | Yozgat Bozok Üniversitesi | 111 | 103 | 8 | 17,370 | 5 | [Kaynak 1](https://ebp.bozok.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.bozok.edu.tr/DereceProgramlari/1) · [Kaynak 3](https://www.bozok.edu.tr/ebp) |

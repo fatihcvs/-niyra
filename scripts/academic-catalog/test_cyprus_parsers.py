@@ -9,6 +9,7 @@ from parse_turkey_esogu_courses import parse_esogu_tables, _parse_all_tables
 from collect_turkey_web_curricula import ogu_program_identity
 from parse_turkey_iau_courses import parse_iau
 from collect_turkey_thk_catalog import _identity_stem
+from collect_turkey_yasar_catalog import _identity_stem as yasar_identity_stem
 
 
 def document(rows, text=''):
@@ -200,6 +201,13 @@ class CurriculumParsing(unittest.TestCase):
                          _identity_stem('Bilgisayar Mühendisliği (İngilizce)'))
         self.assertNotEqual(_identity_stem('Uçak Mühendisliği (2024) (TC)'),
                             _identity_stem('Uzay Mühendisliği'))
+
+    def test_yasar_identity_keeps_programme_name_while_separating_language(self):
+        self.assertEqual(yasar_identity_stem('Hukuk %30 İng'), yasar_identity_stem('Hukuk'))
+        self.assertEqual(yasar_identity_stem('Bilgisayar Mühendisliği'),
+                         yasar_identity_stem('Bilgisayar Mühendisliği (İngilizce)'))
+        self.assertNotEqual(yasar_identity_stem('Bilgisayar Mühendisliği'),
+                            yasar_identity_stem('Yazılım Mühendisliği (İngilizce)'))
 
 
 if __name__ == '__main__':
