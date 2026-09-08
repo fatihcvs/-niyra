@@ -5,7 +5,7 @@ import test from "node:test";
 const catalog = JSON.parse(await readFile(new URL("../data/academic-catalog-2026.json", import.meta.url), "utf8"));
 
 test("official academic catalog has verified coverage and referential integrity", () => {
-  assert.equal(catalog.meta.updatedAt, "2026-09-06");
+  assert.equal(catalog.meta.updatedAt, "2026-09-08");
   assert.deepEqual(catalog.meta.stats, {
     universityCount: 241,
     coveredUniversityCount: 239,
@@ -177,10 +177,14 @@ test("Hacettepe programmes link only to populated official Bologna course plans"
 test("Ankara University programmes link only to verified official Bologna curricula", () => {
   const ankara = catalog.universities["tr-ankara-universitesi"];
   const bachelorPrograms = ankara.programs.filter((program) => program.degreeLevel === "bachelor");
+  const associatePrograms = ankara.programs.filter((program) => program.degreeLevel === "associate");
   const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+  const associateCurriculumPrograms = associatePrograms.filter((program) => program.curriculumUrls?.length);
 
   assert.equal(bachelorPrograms.length, 139);
+  assert.equal(associatePrograms.length, 66);
   assert.equal(curriculumPrograms.length, 137);
+  assert.equal(associateCurriculumPrograms.length, 65);
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Ankara Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => ["2026 - 2027", "2025 - 2026", "2024 - 2025"].includes(program.curriculumPeriod)));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
@@ -199,6 +203,10 @@ test("Ankara University programmes link only to verified official Bologna curric
     "Biyomedikal Mühendisliği (İngilizce) (UOLP-SUNY Buffalo)",
     "Gayrimenkul Geliştirme ve Yönetimi (UOLP-Azerbaycan Mimarlık ve İnşaat Üniversitesi)",
   ].sort());
+  assert.deepEqual(
+    associatePrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name),
+    ["Sosyal Güvenlik"],
+  );
 });
 
 test("Istanbul University programmes link only to populated official EBS curricula", () => {

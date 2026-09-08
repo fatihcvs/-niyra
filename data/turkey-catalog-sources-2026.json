@@ -315,8 +315,15 @@
     "status": "catalogue-checked"
   },
   "tr-ankara-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://bologna.ankara.edu.tr/",
+        "checkedAt": "2026-09-06",
+        "sourceHash": "ccdfbb572dbddb334108c37c986c46bd1e0fb4cbe8040ff400127a0db78f5b1c",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-ankara-yildirim-beyazit-universitesi": {
     "catalogs": [
@@ -1086,18 +1093,6 @@
   "tr-gaziantep-universitesi": {
     "catalogs": [
       {
-        "url": "https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "b2e1d0f30912488c778d76a270830cb6cfc11ca0d18bb878aaf8523599f8c98b",
-        "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://obs.gantep.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "05a25a5c698c6613dbb05e39dddeb8ecaf519e78c33d221614f4f2679b844258",
-        "evidence": "matched-programme-directory"
-      },
-      {
         "url": "https://obs.gaziantep.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
         "checkedAt": "2026-09-05",
         "sourceHash": "00b9e7120d64aec326b547cc8e33f948f1b44ef9d408f7aedee3ddc4bab91918",
@@ -1108,6 +1103,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "0d15999017ecf4a5fddd907d8b4064efeb31caf16b6aa882e3c824bb3f946bdb",
         "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.gantep.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "0c2e2f45ef82e8367fad9011a6ed5a6ec0daace574d7fb76a1d7854280dcbf6f",
+        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -1283,12 +1284,6 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "74b0cf7c373a6910e52f26fe7f79358754eeae28d92d4a4a284c597a6c8545e7",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://ebp.igdir.edu.tr/",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "926fda42c2965859267a8724f8f669baa2313c9cdc84c4a2ab695b6bccbc5411",
-        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -1632,18 +1627,6 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "df9674969a90757cf5a41bb7e79f275351bf7a2f3cc7f2811b96c6b9f11cc4a4",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_21/ln/tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "cc5e0725972a39e39a3eb847f97d52608f710df75a77c95757805a351075b6cb",
-        "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://ois.okan.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_20/ln/tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "c6bfa3414b3c66358882f741cdcf86068d31db498ac730d4899c1cd64286045b",
-        "evidence": "matched-programme-directory"
       }
     ],
     "status": "catalogue-checked"
@@ -1789,12 +1772,6 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "a55f7c3a67584e2438fedf54ee36b2fa564927daeddd6c6d2bdb0b0ded1e76b2",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://akts.istinye.edu.tr/",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "2296d98492604736f8d8f72ba93e808d0d81eb1689559a24d0f0c3e78bedc4e6",
-        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -1890,30 +1867,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "921daf4cdfe3bbd65b7098d5fb811e75f58b4a717397508dbe904f581f0a29a2",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://bologna.khas.edu.tr/",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "f8a361b36b6d310f13fbcb12d0e782f196e2c4474fb31ffbac8cad67cc9dac4d",
-        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
   },
   "tr-kafkas-universitesi": {
     "catalogs": [
-      {
-        "url": "https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "f049c447653188d70c35cd8254a64b0d0adcaad5f5f153d2bec52450b7e8bf70",
-        "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://obs.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "19496e2f4a888382d9522acac16f8df29a476fdf99f7a56151d7fa638c592f33",
-        "evidence": "matched-programme-directory"
-      },
       {
         "url": "https://obsyeni.kafkas.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
         "checkedAt": "2026-09-05",
@@ -1925,6 +1884,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "21243daa66594ce891f96d652cd7dd18a9f0010c104c861957e055b50ddb16bb",
         "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kafkas.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "fd19480e8ecef3cac611fa0617d465e05e96e0fd231b5bb5333482a74249d4ab",
+        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -1966,18 +1931,6 @@
   "tr-kapadokya-universitesi": {
     "catalogs": [
       {
-        "url": "https://obs.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "2479e783f15ad37c4c4cec3a6d69b763bdec856fec51d5ba60c93e3859a4923a",
-        "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://obs.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "30c927c9dce062419f465e63187571aa20d3563b6482f2db2c4dbd25c5616b97",
-        "evidence": "matched-programme-directory"
-      },
-      {
         "url": "https://sis.kapadokya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr",
         "checkedAt": "2026-09-05",
         "sourceHash": "6ec2e038da1e990e4a92b0a19249203f43a71153d96be3181736e91214cb8fb1",
@@ -1988,6 +1941,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "b2dc614e90df3a692a6d1a3c99eedd395cdc662d05d8b7919d2d4aabbc9f53f7",
         "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://obs.kapadokya.edu.tr/oibs/bologna/index.aspx",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "b5231dfaa50939bb95a5ef63b65fbf292fbe642f775582de72e5570bb2de1e05",
+        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"
@@ -2612,12 +2571,6 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "513a84f7cf27938ff2f43268812c5c89e6910ea8a526e43fdaf4d487ae93ccb5",
         "evidence": "matched-programme-directory"
-      },
-      {
-        "url": "https://ois.pirireis.edu.tr/bilgipaketi/eobsakts",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "c1fb80315f5e4c5e53be1e3052f9244bd7844b09bf82684a76dea0aec320e6c7",
-        "evidence": "catalogue-navigation"
       }
     ],
     "status": "catalogue-checked"

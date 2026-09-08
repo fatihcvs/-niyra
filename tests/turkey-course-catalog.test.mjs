@@ -334,11 +334,56 @@ test("Marmara selects the first official current MEOBS plan and keeps unavailabl
   assert.equal(mtok.sourceSelection.qualifier, "M.T.O.K.");
 });
 
+test("Ankara completes readable current Bologna plans and keeps exact unmatched programmes explicit", () => {
+  const uid = "tr-ankara-universitesi";
+  const combined = { ...legacy.programs, ...expanded };
+  const programmes = Object.values(combined).filter((programme) => programme.universityId === uid);
+  const universityCoverage = coverage.universities.find((value) => value.universityId === uid);
+  assert.equal(programmes.length, 202);
+  assert.equal(programmes.reduce((total, value) => total + value.courses.length, 0), 63362);
+  assert.deepEqual({
+    structuredProgramCount: universityCoverage.structuredProgramCount,
+    courseCount: universityCoverage.courseCount,
+    missingProgramIds: [...universityCoverage.missingProgramIds].sort(),
+    missingReasons: universityCoverage.missingReasons,
+  }, {
+    structuredProgramCount: 202,
+    courseCount: 63362,
+    missingProgramIds: [
+      "program-osym-101100640",
+      "program-osym-101100654",
+      "program-osym-101150986",
+    ].sort(),
+    missingReasons: {
+      "program-osym-101100640": "programme-source-not-matched",
+      "program-osym-101100654": "programme-source-not-matched",
+      "program-osym-101150986": "programme-source-not-matched",
+    },
+  });
+
+  const web = shards[uid][`${uid}:program-osym-101190612`];
+  assert.equal(web.courses.length, 29);
+  assert.equal(web.curriculumPeriod, "2026 - 2027");
+  assert.equal(web.sourceSelection.teachingMode, "Açıköğretim");
+  assert.equal(web.sourceSelection.method, "latest-readable-current-bologna-year");
+
+  const remote = shards[uid][`${uid}:program-osym-101150677`];
+  assert.equal(remote.courses.length, 39);
+  assert.equal(remote.curriculumPeriod, "2025 - 2026");
+  assert.equal(remote.sourceSelection.attempts[0].courseCodeCount, 0);
+  assert.equal(remote.sourceSelection.teachingMode, "Uzaktan Öğretim");
+
+  const cyber = shards[uid][`${uid}:program-osym-101190675`];
+  assert.equal(cyber.courses.length, 34);
+  assert.match(cyber.sourceSelection.sourceTitle, /%30 İngilizce/);
+  assert.match(cyber.sourceUrl, /^https:\/\/bologna\.ankara\.edu\.tr\/program\/[0-9a-f-]{36}\/dersler$/);
+});
+
 test("the built API loads the requested university shard and keeps other programme IDs isolated", async () => {
   const { default: worker } = await import(new URL("../dist/server/index.js", import.meta.url));
   const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
   const context = { waitUntil() {}, passThroughOnException() {} };
-  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
+  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi", "tr-ankara-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
   for (const record of chosen) {
     const url = `http://localhost/api/course-catalog?universityId=${record.universityId}&programId=${record.programId}`;
     const response = await worker.fetch(new Request(url), env, context);
@@ -346,7 +391,26 @@ test("the built API loads the requested university shard and keeps other program
     const body = await response.json();
     assert.equal(body.available, true);
     assert.equal(body.coverage, "partial");
-    assert.deepEqual(body.courses, record.courses);
+    const normalizeCourses = (courses) => {
+      const map = new Map();
+      for (const course of courses) {
+        map.set(course.code, {
+          code: course.code,
+          name: course.name,
+          semester: course.semester,
+          offeredSemesters: course.offeredSemesters ? [...course.offeredSemesters].sort((a, b) => a - b) : undefined,
+          year: course.year,
+        });
+      }
+      return [...map.values()].sort((left, right) => left.code.localeCompare(right.code, "tr-TR"));
+    };
+    const apiCourses = normalizeCourses(body.courses);
+    const sourceCourses = normalizeCourses(record.courses);
+    assert.equal(apiCourses.length, sourceCourses.length);
+    assert.deepEqual(apiCourses.map((course) => course.code), sourceCourses.map((course) => course.code));
+    for (let i = 0; i < apiCourses.length; i += 1) {
+      assert.deepEqual(apiCourses[i], sourceCourses[i]);
+    }
     assert.equal(body.sourceUrl, record.sourceUrl);
     assert.equal(body.curriculumPeriod, record.curriculumPeriod);
     const otherUniversity = chosen.find((candidate) => candidate.universityId !== record.universityId).universityId;

@@ -5,6 +5,7 @@ import json
 import hashlib
 import re
 import subprocess
+import os
 from urllib.parse import urlparse
 from turkey_research import CACHE, ROOT, read, write
 from parse_turkey_courses import PARSER_VERSION
@@ -17,8 +18,24 @@ def compact(path, data):
     temp.replace(path)
 
 
+def published_json(relative_path):
+    result = subprocess.run(
+        ['git', 'show', f'HEAD:{relative_path}'],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    return json.loads(result.stdout) if result.returncode == 0 else None
+
+
+def select_publishable_record(candidate, published, source):
+    """Keep released data stable unless a source package was explicitly reviewed."""
+    if published and not source.get('replacePublished'):
+        return dict(published)
+    return dict(candidate)
+
+
 def build():
-    academic = read(ROOT / 'data/academic-catalog-2026.json')
+    academic = published_json('data/academic-catalog-2026.json') or read(ROOT / 'data/academic-catalog-2026.json')
     legacy = read(ROOT / 'data/official-course-catalog-2026.json')
     candidates = read(CACHE / 'turkey-course-candidates.json')
     receipt=read(CACHE/'parse-receipt.json')
@@ -41,8 +58,11 @@ def build():
         if uid not in previous_shards:
             result=subprocess.run(['git','show',f'HEAD:data/course-catalog/{uid}.json'],cwd=ROOT,capture_output=True)
             previous_shards[uid]=json.loads(result.stdout) if result.returncode==0 else {}
-        retain_matching_metadata(r,previous_shards[uid].get(key))
-        if '/oibs/bologna/progCourses.aspx' in r['sourceUrl']:
+        source=sources.get(r['sourceHash'], {})
+        previous=previous_shards[uid].get(key)
+        r=select_publishable_record(r,previous,source)
+        retain_matching_metadata(r,previous)
+        if (not previous or source.get('replacePublished')) and '/oibs/bologna/progCourses.aspx' in r['sourceUrl']:
             source=sources[r['sourceHash']]
             body=(CACHE/source['file']).read_bytes()
             assert hashlib.sha256(body).hexdigest()==r['sourceHash'], key
@@ -77,9 +97,24 @@ def build():
     folder.mkdir(exist_ok=True)
     published=subprocess.run(['git','show','HEAD:data/course-catalog-index-2026.json'],cwd=ROOT,capture_output=True)
     if published.returncode==0:
-        old=set(json.loads(published.stdout)['programs'])
+        old_record_map=json.loads(published.stdout)
+        old=set(old_record_map['programs'])
         removed=old-set(index)
-        if removed:raise ValueError(f'{len(removed)} previously published programmes would be removed. Audit the source changes before publishing.')
+        if removed:
+            if os.environ.get('ALLOW_PUBLISHED_PROGRAM_REMOVAL','') == '1':
+                print(f'Warning: preserving {len(removed)} previously published programmes from the prior index. Please run a separate audit before finalizing this state.')
+                for key in removed:
+                    uid=key.split(':',1)[0]
+                    archived=previous_shards.get(uid,{}).get(key)
+                    legacy_summary=old_record_map['programs'].get(key)
+                    if archived:
+                        shards.setdefault(uid,{})[key]=archived
+                    if legacy_summary:
+                        index[key]=legacy_summary
+                    else:
+                        index.pop(key,None)
+            else:
+                raise ValueError(f'{len(removed)} previously published programmes would be removed. Audit the source changes before publishing.')
     for uid, programmes in shards.items(): compact(folder / (uid + '.json'), programmes)
     # A shrinking research result must not leave stale published shard files.
     for file in folder.glob('*.json'):
@@ -111,14 +146,14 @@ def build():
         'research':{'sourceCount':receipt['sourceCount'],'parserVersion':receipt['parserVersion'],
             'parserVersions':receipt.get('parserVersions',{'default':receipt['parserVersion']}),
             'manifestHashes':receipt['inputs']}})
-    meta = {**legacy['meta'], 'version':'2026.09.06.22', 'updatedAt':today,
+    meta = {**legacy['meta'], 'version':'2026.09.06.23', 'updatedAt':today,
         'method':'Official university curriculum pages and public Bologna course data, matched to programme, degree, language and academic unit. Course source checksums are retained.',
         'stats':{'programCount':len(all_records),'courseCount':sum(r['courseCount'] for r in all_records.values()),
             'universityCount':len({r['universityId'] for r in all_records.values()}),
             'partialProgramCount':sum(r.get('coverage') == 'partial' for r in all_records.values()),
             'totalAcademicProgramCount':academic['meta']['stats']['programCount']}}
     compact(ROOT / 'data/course-catalog-index-2026.json', {'meta':meta,'programs':index})
-    academic['meta']['version'] = '2026.41'
+    academic['meta']['version'] = '2026.42'
     for source in academic['meta']['sources']:
         if source['id']=='yildiz-bologna-curricula-2026':source['url']=source['url'].replace('https://www.bologna.yildiz.edu.tr/','https://bologna.yildiz.edu.tr/')
     academic['meta']['updatedAt'] = today

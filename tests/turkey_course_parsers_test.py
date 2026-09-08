@@ -750,4 +750,53 @@ class MarmaraCatalogTests(unittest.TestCase):
                          'Bilgisayar Programcılığı (Uzaktan Öğretim)')
 
 
+class AnkaraCatalogTests(unittest.TestCase):
+    def test_published_records_change_only_for_explicitly_reviewed_sources(self):
+        from build_turkey_course_catalog import select_publishable_record
+        published = {'programId': 'p1', 'courses': [{'code': 'OLD'}]}
+        candidate = {'programId': 'p1', 'courses': [{'code': 'NEW'}]}
+        self.assertEqual(
+            select_publishable_record(candidate, published, {}),
+            published,
+        )
+        self.assertEqual(
+            select_publishable_record(
+                candidate, published, {'replacePublished': True}),
+            candidate,
+        )
+
+    def test_ankara_labels_strip_only_redundant_degree_suffixes(self):
+        from collect_turkey_ankara_catalog import source_programme_title, source_unit_title
+        self.assertEqual(source_programme_title(
+            'Bilgisayar Programcılığı (Ön Lisans) (Uzaktan Öğretim)'),
+            'Bilgisayar Programcılığı (Uzaktan Öğretim)')
+        self.assertEqual(source_programme_title('Coğrafya (İngilizce)'),
+                         'Coğrafya (İngilizce)')
+        self.assertEqual(source_unit_title('Açık ve Uzaktan Eğitim Fakültesi (Ön Lisans)'),
+                         'Açık ve Uzaktan Eğitim Fakültesi')
+        self.assertEqual(source_unit_title('Dil ve Tarih - Coğrafya Fakültesi'),
+                         'Dil ve Tarih - Coğrafya Fakültesi')
+
+    def test_ankara_rejects_unreviewed_shared_official_programme(self):
+        from collect_turkey_ankara_catalog import match_programmes
+        university = {
+            'units': [{'id': 'u1', 'name': 'Dil ve Tarih Coğrafya Fakültesi'}],
+            'programs': [
+                {'id': 'p1', 'unitId': 'u1', 'name': 'Aynı Program',
+                 'degreeLevel': 'bachelor'},
+                {'id': 'p2', 'unitId': 'u1', 'name': 'Aynı Program',
+                 'degreeLevel': 'bachelor'},
+            ],
+        }
+        rows = [{
+            'id': 'unexpected-shared-id', 'isActive': True,
+            'programAdi': 'Aynı Program',
+            'akademikBirimAdi': 'Dil ve Tarih - Coğrafya Fakültesi',
+            'akademikBirim': {
+                'programTuruId': 'e0000000-0000-0000-0000-000000000002'},
+        }]
+        with self.assertRaisesRegex(ValueError, 'shared unexpectedly'):
+            match_programmes(rows, university, {'p1', 'p2'})
+
+
 if __name__=='__main__':unittest.main()
