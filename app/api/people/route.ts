@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, isNull, like, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { getDb } from "../../../db";
 import {
   courses,
@@ -18,6 +18,7 @@ import { getChatGPTUser } from "../../chatgpt-auth";
 import { parseProfileLinks, profileMediaUrl } from "../../../lib/profile";
 import { hydratePostMedia } from "../../../lib/post-media";
 import { getRuntime } from "../../../lib/server-api";
+import { searchContainsDrizzle } from "../../../lib/search-query-drizzle";
 
 function signInResponse() {
   return Response.json(
@@ -109,7 +110,7 @@ export async function GET(request: Request) {
   const publicId = requestUrl.searchParams.get("id")?.trim() ?? "";
   const directoryScope = requestUrl.searchParams.get("scope") === "platform" ? "platform" : "campus";
   const rawQuery = requestUrl.searchParams.get("q")?.trim() ?? "";
-  const searchQuery = rawQuery.replace(/[%_]/g, "").slice(0, 60);
+  const searchQuery = rawQuery.normalize("NFC").slice(0, 60);
 
   try {
     const db = await getDb();
@@ -187,13 +188,12 @@ export async function GET(request: Request) {
         )`,
       ];
       if (searchQuery) {
-        const pattern = `%${searchQuery}%`;
         directoryFilters.push(
           or(
-            like(users.displayName, pattern),
-            like(users.handle, pattern),
-            like(faculties.name, pattern),
-            like(departments.name, pattern),
+            searchContainsDrizzle(users.displayName, searchQuery),
+            searchContainsDrizzle(users.handle, searchQuery),
+            searchContainsDrizzle(faculties.name, searchQuery),
+            searchContainsDrizzle(departments.name, searchQuery),
           )!,
         );
       }

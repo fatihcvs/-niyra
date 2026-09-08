@@ -11,6 +11,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import { getCuratedCampusPlaces } from "../../../lib/campus-place-catalog";
 import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
   if (!identity) return signInResponse("Kampüs rehberini görmek için giriş yapmalısın.");
   const url = new URL(request.url);
   const category = cleanText(url.searchParams.get("category"), 24);
-  const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
+  const query = searchNeedle(cleanText(url.searchParams.get("q"), 80));
   if (category && !placeCategories.has(category)) return Response.json({ error: "Mekân kategorisi geçerli değil." }, { status: 400 });
   try {
     const { DB } = await getRuntime();
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
          LEFT JOIN campus_place_confirmations cpc ON cpc.place_id = cp.id
          WHERE cp.university_id = ? AND cp.status = 'active'
            AND (? = '' OR cp.category = ?)
-           AND (? = '' OR lower(cp.name || ' ' || cp.description || ' ' || cp.address) LIKE '%' || ? || '%')
+           AND (? = '' OR ${searchContainsSql("cp.name || ' ' || cp.description || ' ' || cp.address")})
          GROUP BY cp.id
          ORDER BY CASE WHEN cp.verified_at IS NULL THEN 1 ELSE 0 END, cp.verified_at DESC, cp.updated_at DESC
          LIMIT 120`,

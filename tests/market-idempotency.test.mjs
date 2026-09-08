@@ -12,12 +12,14 @@ const migrations = await Promise.all((await readdir(new URL("drizzle/", root))).
 const compile = async (path) => ts.transpileModule(await readFile(new URL(path, root), "utf8"), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const [helperSource, serverSource, routeSource] = await Promise.all([
-  "lib/market-idempotency.ts", "lib/server-api.ts", "app/api/campus-market/route.ts",
+const [helperSource, serverSource, routeSource, searchSource] = await Promise.all([
+  "lib/market-idempotency.ts", "lib/server-api.ts", "app/api/campus-market/route.ts", "lib/search-query.ts",
 ].map(compile));
 const globals = { crypto, Response, Request, Headers, TextEncoder, Uint8Array, URL };
 const helpers = {};
 runInNewContext(helperSource, { ...globals, exports: helpers });
+const search = {};
+runInNewContext(searchSource, { ...globals, exports: search });
 const listing = { action: "listing", kind: "sell", category: "books", title: "Calculus book", description: "Used course book in good condition", condition: "used-good", price: "25,50", meetupPlace: "Library" };
 const price = { action: "price", category: "food", placeName: "Campus cafe", itemName: "Lunch", price: "85", observedAt: new Date().toISOString(), sourceNote: "Seen on the posted menu" };
 const inquiry = { action: "inquiry", listingId: "other-listing", message: "Can we meet at the campus library?" };
@@ -77,6 +79,7 @@ function fixture(t) {
   const route = {};
   runInNewContext(routeSource, { ...globals, exports: route, require(path) {
     if (path === "../../../lib/server-api") return server;
+    if (path === "../../../lib/search-query") return search;
     assert.equal(path, "../../../lib/market-idempotency"); return helpers;
   } });
   return {

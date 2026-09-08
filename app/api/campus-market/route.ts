@@ -10,6 +10,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import {
   commitMarketWrite, hashMarketPayload, MarketIdempotencyError, parseMarketIdempotencyKey, replayMarketWrite,
   type MarketWriteAction, type MarketWriteContext,
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Kampüs pazarını görmek için giriş yapmalısın.");
   const url = new URL(request.url);
-  const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
+  const query = searchNeedle(cleanText(url.searchParams.get("q"), 80));
   const category = cleanText(url.searchParams.get("category"), 24);
   if (category && !listingCategories.has(category) && !priceCategories.has(category)) return Response.json({ error: "Pazar kategorisi geçerli değil." }, { status: 400 });
   try {
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
          FROM marketplace_listings ml JOIN users u ON u.email = ml.owner_email
          WHERE ml.university_id = ? AND ml.status IN ('active', 'reserved')
            AND (? = '' OR ml.category = ?)
-           AND (? = '' OR lower(ml.title || ' ' || ml.description || ' ' || ml.meetup_place) LIKE '%' || ? || '%')
+           AND (? = '' OR ${searchContainsSql("ml.title || ' ' || ml.description || ' ' || ml.meetup_place")})
            AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = ml.owner_email) OR (b.blocker_email = ml.owner_email AND b.blocked_email = ?))
          ORDER BY CASE ml.status WHEN 'active' THEN 0 ELSE 1 END, ml.created_at DESC LIMIT 120`,
       ).bind(profile.university_id, category, category, query, query, identity.email, identity.email).all<{
@@ -75,7 +76,7 @@ export async function GET(request: Request) {
          FROM campus_price_reports
          WHERE university_id = ? AND status = 'active' AND datetime(observed_at) >= datetime('now', '-180 days')
            AND (? = '' OR category = ?)
-           AND (? = '' OR lower(place_name || ' ' || item_name || ' ' || source_note) LIKE '%' || ? || '%')
+           AND (? = '' OR ${searchContainsSql("place_name || ' ' || item_name || ' ' || source_note")})
          ORDER BY datetime(observed_at) DESC LIMIT 500`,
       ).bind(profile.university_id, category, category, query, query).all<PriceRow>(),
       DB.prepare(

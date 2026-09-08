@@ -4,6 +4,11 @@ export function searchableSql(expression: string) {
   return `LOWER(${expression})`;
 }
 
-export function searchPattern(query: string) {
-  return `%${query.normalize("NFC").toLocaleLowerCase("tr-TR").replace(/[\\%_]/g, "\\$&")}%`;
+/** Literal substring comparison avoids D1's 50-byte LIKE pattern limit. */
+export function searchContainsSql(expression: string) {
+  return `INSTR(${searchableSql(expression)}, ?) > 0`;
+}
+
+export function searchNeedle(query: string) {
+  return query.normalize("NFC").toLocaleLowerCase("tr-TR");
 }

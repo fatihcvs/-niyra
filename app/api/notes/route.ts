@@ -11,6 +11,7 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 import { MediaUploadError, putOwnedMedia } from "../../../lib/media-upload-operations";
 import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
@@ -115,7 +116,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const id = cleanText(url.searchParams.get("id"), 80);
-  const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
+  const query = searchNeedle(cleanText(url.searchParams.get("q"), 80));
   const courseId = cleanText(url.searchParams.get("courseId"), 80);
   const noteType = cleanText(url.searchParams.get("noteType"), 40);
   const examYearInput = cleanText(url.searchParams.get("examYear"), 4);
@@ -168,7 +169,6 @@ export async function GET(request: Request) {
         : Response.json({ error: "Not bulunamadı veya bu nota erişim iznin yok." }, { status: 404 });
     }
 
-    const likeQuery = query ? `%${query}%` : "";
     const result = await DB
       .prepare(`${baseSql}
         WHERE n.deleted_at IS NULL
@@ -180,7 +180,7 @@ export async function GET(request: Request) {
           AND (? = '' OR n.exam_kind = ?)
           AND (? = 0 OR n.owner_email = ?)
           AND (? = 0 OR ns.user_email IS NOT NULL)
-          AND (? = '' OR LOWER(n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name) LIKE ?)
+          AND (? = '' OR ${searchContainsSql("n.title || ' ' || n.description || ' ' || n.tags_json || ' ' || c.code || ' ' || c.name || ' ' || u.display_name")})
           AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = n.owner_email) OR (b.blocker_email = n.owner_email AND b.blocked_email = ?))
         ORDER BY CASE WHEN n.status = 'published' THEN 0 ELSE 1 END, n.created_at DESC, n.id DESC
         LIMIT 40`)
@@ -201,8 +201,8 @@ export async function GET(request: Request) {
         mine,
         identity.email,
         saved,
-        likeQuery,
-        likeQuery,
+        query,
+        query,
         identity.email,
         identity.email,
       )

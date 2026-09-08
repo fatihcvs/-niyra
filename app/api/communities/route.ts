@@ -1,5 +1,5 @@
 import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
-import { searchableSql, searchPattern } from "../../../lib/search-query";
+import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import { sameOriginRequest } from "../../../lib/app-auth";
 import { profileMediaUrl } from "../../../lib/profile";
 import {
@@ -139,7 +139,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = cleanText(url.searchParams.get("id"), 80);
   const memberQuery = cleanText(url.searchParams.get("memberQ"), 80);
-  const memberLike = memberQuery ? searchPattern(memberQuery) : "";
+  const memberNeedle = memberQuery ? searchNeedle(memberQuery) : "";
   const query = cleanText(url.searchParams.get("q"), 80).toLocaleLowerCase("tr-TR");
   const mine = url.searchParams.get("mine") === "1" ? 1 : 0;
   const requestedCategory = cleanText(url.searchParams.get("category"), 30);
@@ -171,11 +171,11 @@ export async function GET(request: Request) {
              LEFT JOIN departments d ON d.id = sp.department_id
              WHERE cm.community_id = ? AND (cm.status = 'active' OR ? = 1) AND u.status = 'active' AND sp.university_id = ?
                AND NOT EXISTS (SELECT 1 FROM user_blocks b WHERE (b.blocker_email = ? AND b.blocked_email = u.email) OR (b.blocker_email = u.email AND b.blocked_email = ?))
-               AND (? = '' OR ${searchableSql("u.display_name || ' ' || u.handle || ' ' || COALESCE(d.name, '')")} LIKE ? ESCAPE '\\')
+               AND (? = '' OR ${searchContainsSql("u.display_name || ' ' || u.handle || ' ' || COALESCE(d.name, '')")})
              ORDER BY CASE cm.status WHEN 'pending' THEN 0 ELSE 1 END,
                       CASE cm.role WHEN 'founder' THEN 0 WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END,
                       cm.created_at LIMIT 120`,
-          ).bind(id, serialized.canManage ? 1 : 0, profile.university_id, identity.email, identity.email, memberLike, memberLike).all<MemberRow>()
+          ).bind(id, serialized.canManage ? 1 : 0, profile.university_id, identity.email, identity.email, memberNeedle, memberNeedle).all<MemberRow>()
         : { results: [] as MemberRow[] };
       const bans = serialized.canManage
         ? await DB.prepare(
@@ -187,13 +187,13 @@ export async function GET(request: Request) {
       return Response.json({ community: serialized, members: members.results.map(serializeMember), bans: bans.results });
     }
 
-    const like = query ? searchPattern(query) : "";
+    const needle = query ? searchNeedle(query) : "";
     const order = sort === "new"
       ? "c.created_at DESC"
       : sort === "members"
         ? "member_count DESC, last_activity_at DESC"
         : "CASE WHEN cm.status = 'active' THEN 0 ELSE 1 END, CASE WHEN c.course_id IN (SELECT sc.course_id FROM student_courses sc WHERE sc.user_email = ?) THEN 0 ELSE 1 END, last_activity_at DESC, member_count DESC";
-    const bindings: Array<string | number> = [identity.email, profile.university_id, identity.email, mine, category, category, like, like];
+    const bindings: Array<string | number> = [identity.email, profile.university_id, identity.email, mine, category, category, needle, needle];
     if (!['new', 'members'].includes(sort)) bindings.push(identity.email);
     const rows = await DB
       .prepare(`${baseSelect()}
@@ -201,7 +201,7 @@ export async function GET(request: Request) {
           AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
           AND (? = 0 OR cm.status = 'active')
           AND (? = '' OR c.category = ?)
-          AND (? = '' OR ${searchableSql("c.name || ' ' || c.description || ' ' || c.category || ' ' || COALESCE(cr.code, '')")} LIKE ? ESCAPE '\\' )
+          AND (? = '' OR ${searchContainsSql("c.name || ' ' || c.description || ' ' || c.category || ' ' || COALESCE(cr.code, '')")} )
         ORDER BY ${order} LIMIT 60`)
       .bind(...bindings)
       .all<CommunityRow>();

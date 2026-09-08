@@ -1,7 +1,7 @@
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getRuntime } from "../../../lib/server-api";
 import { profileMediaUrl } from "../../../lib/profile";
-import { searchableSql, searchPattern } from "../../../lib/search-query";
+import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import { unavailableRelationshipProfile } from "../../../lib/profile-relationships";
 
 type IdentityRow = { email: string; public_id: string; university_id: string };
@@ -35,8 +35,8 @@ export async function GET(request: Request) {
     const other = kind === "followers" ? "f.follower_email" : "f.following_email";
     const subject = kind === "followers" ? "f.following_email" : "f.follower_email";
     const bindings: (string | number)[] = [viewer.email, viewer.email, target.email, viewer.university_id, viewer.email, viewer.email];
-    const search = query ? `AND (${searchableSql("u.display_name")} LIKE ? ESCAPE '\\' OR ${searchableSql("u.handle")} LIKE ? ESCAPE '\\')` : "";
-    if (query) bindings.push(searchPattern(query), searchPattern(query));
+    const search = query ? `AND (${searchContainsSql("u.display_name")} OR ${searchContainsSql("u.handle")})` : "";
+    if (query) bindings.push(searchNeedle(query), searchNeedle(query));
     if (cursor) bindings.push(cursor.at, cursor.at, cursor.id);
     const result = await DB.prepare(`SELECT u.public_id, u.display_name, u.handle, university.short_name AS university_short_name, f.created_at,
       (SELECT updated_at FROM profile_media WHERE user_email = u.email AND kind = 'avatar' LIMIT 1) AS avatar_updated_at,
