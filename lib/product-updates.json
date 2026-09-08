@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-thirty-second-expansion",
+    "releasedAt": "2026-09-08T07:02:24Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Konya Teknik Üniversitesinde 33 programın ders kataloğu eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.678’e, program-ders kaydı sayısı 1.524.006’ya ulaştı.",
+    "highlights": [
+      "Konya Teknik Üniversitesinin 33 programına 3.205 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 0’dan 33’e, toplam kayıt 0’dan 3.205’e çıktı.",
+      "Bilgisayar ve Bilişim Bilimleri, Mimarlık ve Tasarım, Mühendislik ve Doğa Bilimleri fakülteleri ile Teknik Bilimler Meslek Yüksekokulunun resmî bölüm dizinleri izlendi. Her kayıt program adı, derece, akademik birim ve kurum içi program numarasıyla güncel envantere bağlandı.",
+      "Kurumun herkese açık Bölüm Dersleri tablolarındaki gerçek ders kodları, ders adları ve dönemler aktarıldı. Giriş isteyen Ders Bilgi yönetim ekranına bağlı kalmadan, her programın resmî bölüm sayfası kaynak kanıtı olarak saklandı.",
+      "Gıda Teknolojisi planında 5041258 kodu aynı dönemde iki farklı ders adı için yayımlandığından bu program açık bırakıldı; kaynak çakışması kanıta kaydedildi.",
+      "Daha önce yayımlanmış 13.645 programın ders içeriği değişmeden korundu. Türkiye genelinde eksik ders listesi sayısı 1.505’e, doğrulanmış katalog girişi bulunan kurum sayısı 191’e ulaştı."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-thirty-first-expansion",
     "releasedAt": "2026-09-08T05:55:10Z",
     "category": "İyileştirme",

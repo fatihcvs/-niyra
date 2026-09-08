@@ -799,4 +799,50 @@ class AnkaraCatalogTests(unittest.TestCase):
             match_programmes(rows, university, {'p1', 'p2'})
 
 
+class KonyaTechnicalCatalogTests(unittest.TestCase):
+    def test_department_tables_keep_periods_and_report_code_conflicts(self):
+        from bs4 import BeautifulSoup
+        from parse_turkey_courses import course_code
+        from parse_turkey_ktun_courses import parse_ktun
+
+        document = BeautifulSoup('''
+          <table><thead><tr><td><h5>DÖNEM 1</h5></td></tr><tr>
+            <th>Ders Kodu</th><th>Ders Adı</th><th>AKTS (ECTS)</th><th>Dersin Koordinatörü</th>
+          </tr></thead><tbody>
+            <tr><td>5019101</td><td><a href="/tr/Birim/DersIcerik/?brm=a">Teknik Resim</a></td><td>4</td><td>A</td></tr>
+            <tr><td>5019102</td><td><a href="/tr/Birim/DersIcerik/?brm=b">Malzeme</a></td><td>3</td><td>B</td></tr>
+          </tbody></table>
+          <table><thead><tr><td><h5>DÖNEM 2</h5></td></tr><tr>
+            <th>Ders Kodu</th><th>Ders Adı</th><th>AKTS (ECTS)</th><th>Dersin Koordinatörü</th>
+          </tr></thead><tbody>
+            <tr><td>5019101</td><td><a href="/tr/Birim/DersIcerik/?brm=c">Teknik Resim</a></td><td>4</td><td>A</td></tr>
+            <tr><td>5019102</td><td><a href="/tr/Birim/DersIcerik/?brm=d">Başka Ders</a></td><td>3</td><td>B</td></tr>
+          </tbody></table>
+        ''', 'html.parser')
+        courses, conflicts = parse_ktun(document, course_code)
+        self.assertEqual(conflicts, ['5019102'])
+        self.assertEqual(courses, [{
+            'code': '5019101', 'name': 'Teknik Resim', 'semester': None,
+            'kind': None, 'offeredSemesters': [1, 2],
+        }])
+
+    def test_programme_matching_requires_degree_unit_and_exact_title(self):
+        from collect_turkey_ktun_catalog import match_programmes
+
+        university = {
+            'units': [{'id': 'u1', 'name': 'Teknik Bilimler Meslek Yüksekokulu'}],
+            'programs': [{'id': 'p1', 'unitId': 'u1', 'name': 'Makine',
+                          'degreeLevel': 'associate'}],
+        }
+        official = [
+            {'title': 'Makine', 'degree': 'associate',
+             'unit': 'Teknik Bilimler Meslek Yüksekokulu', 'programmeId': '1108'},
+            {'title': 'Makine', 'degree': 'bachelor',
+             'unit': 'Teknik Bilimler Meslek Yüksekokulu', 'programmeId': '9999'},
+        ]
+        matches = match_programmes(official, university)
+        self.assertEqual(matches[0][0]['id'], 'p1')
+        self.assertEqual(matches[0][1]['programmeId'], '1108')
+
+
 if __name__=='__main__':unittest.main()

@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,645 programda ders kaydı · 1,538 programda ders listesi eksik.
-Toplam 1,520,801 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,678 programda ders kaydı · 1,505 programda ders listesi eksik.
+Toplam 1,524,006 program-ders kaydı. 191 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,336
-- Okunabilir ders listesi bulunamadı: 152
+- Resmî program eşleşmesi eksik: 1,302
+- Okunabilir ders listesi bulunamadı: 153
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
 
@@ -155,7 +155,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Kocaeli Üniversitesi | 146 | 141 | 5 | 9,464 | 25 | [Kaynak 1](https://ects.kocaeli.edu.tr/) |
 | Koç Üniversitesi | 22 | 0 | 22 | 0 | 9 | Doğrulanmış giriş yok |
 | Konya Gıda ve Tarım Üniversitesi | 9 | 9 | 0 | 661 | 5 | [Kaynak 1](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Konya Teknik Üniversitesi | 34 | 0 | 34 | 0 | 10 | Doğrulanmış giriş yok |
+| Konya Teknik Üniversitesi | 34 | 33 | 1 | 3,205 | 10 | [Kaynak 1](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cPptmSx3j3Pqo/tq1kIppg==) · [Kaynak 2](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cLKZUXuWfWaKoCWsu8017Q==) · [Kaynak 3](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=rZQAI7MaAX0C4modp2TgIQ==) · [Kaynak 4](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=1ZFlmVUo8qZzS+Jlbjvslw==) |
 | KTO-Karatay Üniversitesi | 50 | 50 | 0 | 9,406 | 5 | [Kaynak 1](https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Kütahya Dumlupınar Üniversitesi | 146 | 143 | 3 | 16,581 | 20 | [Kaynak 1](https://obs.dpu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.dpu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Kütahya Sağlık Bilimleri Üniversitesi | 38 | 38 | 0 | 2,665 | 5 | [Kaynak 1](https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

@@ -25,6 +25,7 @@
     "catalog:mugla": "python -X utf8 scripts/academic-catalog/collect_turkey_mugla_catalog.py",
     "catalog:igdir": "python -X utf8 scripts/academic-catalog/collect_turkey_igdir_catalog.py",
     "catalog:ataturk:open": "python -X utf8 scripts/academic-catalog/collect_turkey_ataturk_open_catalog.py",
+    "catalog:ktun": "python -X utf8 scripts/academic-catalog/collect_turkey_ktun_catalog.py",
     "catalog:logos": "node scripts/university-logos/sync-university-logos.mjs",
     "catalog:campus:build": "node scripts/campus-catalog/build-campus-place-catalog.mjs",
     "install:ci": "bash scripts/install-ci.sh",

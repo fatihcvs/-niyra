@@ -2148,8 +2148,33 @@
     "status": "catalogue-checked"
   },
   "tr-konya-teknik-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cPptmSx3j3Pqo/tq1kIppg==",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "960c517dbb82235c53a15454bbcc2338cf3802feb71a109d6532466a6123f761",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cLKZUXuWfWaKoCWsu8017Q==",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "13ba1699b7e1ef99e5c155ecfde60f6c9687a4d57a037a81e1205c2cce02c1b4",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=rZQAI7MaAX0C4modp2TgIQ==",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "73eed47b2bc96ccc0b99e815fe3748cdf1a0edeb7cab1b075f6e753176958eff",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=1ZFlmVUo8qZzS+Jlbjvslw==",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "dcf63900ac3e054d6dbf7e8fc44e29b1ea23b8f51cf0961be45b90e2df321506",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-kto-karatay-universitesi": {
     "catalogs": [
