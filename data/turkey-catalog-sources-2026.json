@@ -2874,8 +2874,15 @@
     "status": "catalogue-checked"
   },
   "tr-sivas-bilim-ve-teknoloji-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ubys.sivas.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "9ee39e0ae45f4ebf5353a710c46d7ba1079cbcd0b2669f70f154a02dbc73a3c6",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-sivas-cumhuriyet-universitesi": {
     "catalogs": [

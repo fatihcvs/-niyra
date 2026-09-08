@@ -1177,4 +1177,22 @@ class SankoCatalogTests(unittest.TestCase):
         self.assertEqual(EXPECTED_TOTAL, 421)
 
 
+class SivasCatalogTests(unittest.TestCase):
+    def test_reviewed_programme_totals_and_source_collisions_are_frozen(self):
+        from collect_turkey_sivas_catalog import (
+            EXPECTED_CONFLICTS, EXPECTED_COUNTS, EXPECTED_TOTAL, WITNESSES,
+        )
+
+        self.assertEqual(len(EXPECTED_COUNTS), 11)
+        self.assertEqual(set(EXPECTED_COUNTS), set(WITNESSES))
+        self.assertEqual(sum(EXPECTED_COUNTS.values()), EXPECTED_TOTAL)
+        self.assertEqual(EXPECTED_TOTAL, 1264)
+        self.assertEqual(EXPECTED_CONFLICTS, {
+            'program-osym-111900164': {
+                'MME312', 'MME314', 'MME316', 'MME318',
+                'MME320', 'MME322', 'MME323', 'MME324',
+            },
+        })
+
+
 if __name__=='__main__':unittest.main()

@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,804 programda ders kaydı · 1,379 programda ders listesi eksik.
-Toplam 1,534,040 program-ders kaydı. 194 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,815 programda ders kaydı · 1,368 programda ders listesi eksik.
+Toplam 1,535,304 program-ders kaydı. 195 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,172
+- Resmî program eşleşmesi eksik: 1,161
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -195,7 +195,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Selçuk Üniversitesi | 206 | 190 | 16 | 10,284 | 24 | [Kaynak 1](https://bologna.selcuk.edu.tr/tr/Birimler/lisans) · [Kaynak 2](https://bologna.selcuk.edu.tr/tr/Birimler/onlisans) |
 | Siirt Üniversitesi | 70 | 64 | 6 | 4,056 | 10 | [Kaynak 1](https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Sinop Üniversitesi | 84 | 82 | 2 | 6,435 | 15 | [Kaynak 1](https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Sivas Bilim ve Teknoloji Üniversitesi | 11 | 0 | 11 | 0 | 5 | Doğrulanmış giriş yok |
+| Sivas Bilim ve Teknoloji Üniversitesi | 11 | 11 | 0 | 1,264 | 5 | [Kaynak 1](https://ubys.sivas.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | Sivas Cumhuriyet Üniversitesi | 171 | 159 | 12 | 12,569 | 9 | [Kaynak 1](https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.cumhuriyet.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Süleyman Demirel Üniversitesi | 83 | 78 | 5 | 6,397 | 7 | [Kaynak 1](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://sis.sdu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Şırnak Üniversitesi | 50 | 49 | 1 | 3,036 | 10 | [Kaynak 1](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sirnak.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

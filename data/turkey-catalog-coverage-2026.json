@@ -4605,35 +4605,11 @@
       "universityId": "tr-sivas-bilim-ve-teknoloji-universitesi",
       "name": "Sivas Bilim ve Teknoloji Üniversitesi",
       "programCount": 11,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-111900157",
-        "program-osym-111900115",
-        "program-osym-111900122",
-        "program-osym-111900150",
-        "program-osym-111900171",
-        "program-osym-111900129",
-        "program-osym-111900101",
-        "program-osym-111900108",
-        "program-osym-111900136",
-        "program-osym-111900143",
-        "program-osym-111900164"
-      ],
-      "missingReasons": {
-        "program-osym-111900157": "programme-source-not-matched",
-        "program-osym-111900115": "programme-source-not-matched",
-        "program-osym-111900122": "programme-source-not-matched",
-        "program-osym-111900150": "programme-source-not-matched",
-        "program-osym-111900171": "programme-source-not-matched",
-        "program-osym-111900129": "programme-source-not-matched",
-        "program-osym-111900101": "programme-source-not-matched",
-        "program-osym-111900108": "programme-source-not-matched",
-        "program-osym-111900136": "programme-source-not-matched",
-        "program-osym-111900143": "programme-source-not-matched",
-        "program-osym-111900164": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 11,
+      "courseCount": 1264,
+      "linkedProgramCount": 11,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-sivas-cumhuriyet-universitesi",
@@ -5143,8 +5119,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28853,
-    "parserVersion": "d8b5dbfb507c",
+    "sourceCount": 28864,
+    "parserVersion": "0bf547250964",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5158,7 +5134,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "d8b5dbfb507c",
+      "ankara-reviewed-2026": "0bf547250964",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
@@ -5169,8 +5145,9 @@
       "tobb-abys-2026": "a909a17795d0",
       "tobb-ybs-curriculum-2026": "a909a17795d0",
       "sabanci-faculty-bundle-2026": "b8cc49f2a045",
-      "sanko-html-bundle-2026": "71ffcdc699a5",
-      "sanko-medicine-pdf-2026": "71ffcdc699a5"
+      "sanko-html-bundle-2026": "7b486dcb524e",
+      "sanko-medicine-pdf-2026": "7b486dcb524e",
+      "sivas-ubys-2026": "0bf547250964"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5208,7 +5185,8 @@
       "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09",
       "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df",
       "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43",
-      "sanko-reviewed-courses.json": "f006670f999c0236f9e2e5a695217459ba7eccd06242bbf1c3887da8bbea1572"
+      "sanko-reviewed-courses.json": "f006670f999c0236f9e2e5a695217459ba7eccd06242bbf1c3887da8bbea1572",
+      "sivas-reviewed-courses.json": "0d68516471d6840e261fcebf962a8ecc7712d40f469708876b6fe624e1941bba"
     }
   }
 }

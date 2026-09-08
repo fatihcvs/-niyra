@@ -293,7 +293,7 @@ def _parse_source(source):
         return parse_sanko_html_bundle(read(CACHE / source['file']), CACHE, course_code, course_kind)
     if source.get('family') == 'sanko-medicine-pdf-2026':
         return parse_sanko_medicine_pdf(CACHE / source['file'], course_code, course_kind)
-    if source.get('family') in ['ubys', 'omu-ubys-2026']:
+    if source.get('family') in ['ubys', 'omu-ubys-2026', 'sivas-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
         eligible = [c for c in (data.get('CurriculumDetails') or []) if c.get('IsApproved') and c.get('IsActiveForBologna')]
@@ -362,7 +362,8 @@ def parse_source(source):
                 'tobb-ybs-curriculum-2026': TOBB_PARSER_VERSION,
                 'sabanci-faculty-bundle-2026': SABANCI_PARSER_VERSION,
                 'sanko-html-bundle-2026': SANKO_PARSER_VERSION,
-                'sanko-medicine-pdf-2026': SANKO_PARSER_VERSION}
+                'sanko-medicine-pdf-2026': SANKO_PARSER_VERSION,
+                'sivas-ubys-2026': PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -400,7 +401,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses', 'sivas-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -424,7 +425,8 @@ def main():
               'tobb-ybs-curriculum-2026':TOBB_PARSER_VERSION,
               'sabanci-faculty-bundle-2026':SABANCI_PARSER_VERSION,
               'sanko-html-bundle-2026':SANKO_PARSER_VERSION,
-              'sanko-medicine-pdf-2026':SANKO_PARSER_VERSION}
+              'sanko-medicine-pdf-2026':SANKO_PARSER_VERSION,
+              'sivas-ubys-2026':PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
@@ -471,7 +473,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026','koc-curriculum-2026','koc-nursing-2026','koc-medicine-2026','tobb-abys-2026','tobb-ybs-curriculum-2026','sabanci-faculty-bundle-2026','sanko-html-bundle-2026','sanko-medicine-pdf-2026']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026','koc-curriculum-2026','koc-nursing-2026','koc-medicine-2026','tobb-abys-2026','tobb-ybs-curriculum-2026','sabanci-faculty-bundle-2026','sanko-html-bundle-2026','sanko-medicine-pdf-2026','sivas-ubys-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)
