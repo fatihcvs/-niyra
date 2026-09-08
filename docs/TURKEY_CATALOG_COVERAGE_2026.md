@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,797 programda ders kaydı · 1,386 programda ders listesi eksik.
-Toplam 1,533,619 program-ders kaydı. 193 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,804 programda ders kaydı · 1,379 programda ders listesi eksik.
+Toplam 1,534,040 program-ders kaydı. 194 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,179
+- Resmî program eşleşmesi eksik: 1,172
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -191,7 +191,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Sakarya Uygulamalı Bilimler Üniversitesi | 114 | 92 | 22 | 8,504 | 25 | [Kaynak 1](https://ebs.bys.subu.edu.tr/) |
 | Sakarya Üniversitesi | 77 | 59 | 18 | 19,641 | 15 | [Kaynak 1](https://ebs.sakarya.edu.tr/) |
 | Samsun Üniversitesi | 37 | 36 | 1 | 4,109 | 15 | [Kaynak 1](https://obs.samsun.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.samsun.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| SANKO Üniversitesi | 7 | 0 | 7 | 0 | 5 | Doğrulanmış giriş yok |
+| SANKO Üniversitesi | 7 | 7 | 0 | 421 | 5 | [Kaynak 1](https://www.sanko.edu.tr/fakulteler/saglik-bilimleri-fakultesi/saglik-bilimleri-fakultesi-ogretim-programi-mufredat/) · [Kaynak 2](https://www.sanko.edu.tr/yuksekokul/saglik-hizmetleri-myo/saglik-hizmetleri-meslek-yuksek-okulu-ogretim-programimufredat/) · [Kaynak 3](https://www.sanko.edu.tr/fakulteler/tip-fakultesi/ogretim-programi-mufredat/) |
 | Selçuk Üniversitesi | 206 | 190 | 16 | 10,284 | 24 | [Kaynak 1](https://bologna.selcuk.edu.tr/tr/Birimler/lisans) · [Kaynak 2](https://bologna.selcuk.edu.tr/tr/Birimler/onlisans) |
 | Siirt Üniversitesi | 70 | 64 | 6 | 4,056 | 10 | [Kaynak 1](https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.siirt.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Sinop Üniversitesi | 84 | 82 | 2 | 6,435 | 15 | [Kaynak 1](https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sinop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

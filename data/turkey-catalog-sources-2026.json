@@ -2800,8 +2800,27 @@
     "status": "catalogue-checked"
   },
   "tr-sanko-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.sanko.edu.tr/fakulteler/saglik-bilimleri-fakultesi/saglik-bilimleri-fakultesi-ogretim-programi-mufredat/",
+        "checkedAt": "2026-09-05",
+        "sourceHash": "2b5d1ddfa46527f24be72213bb057b9ccdee0cb107fe8a95db4ffddcba5bc534",
+        "evidence": "official-health-sciences-current-curriculum-directory"
+      },
+      {
+        "url": "https://www.sanko.edu.tr/yuksekokul/saglik-hizmetleri-myo/saglik-hizmetleri-meslek-yuksek-okulu-ogretim-programimufredat/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "062661fe05138f186fa7dae06bc5515da8a29d26b81b624ad5bafed640c6adfd",
+        "evidence": "official-vocational-school-current-curriculum-directory"
+      },
+      {
+        "url": "https://www.sanko.edu.tr/fakulteler/tip-fakultesi/ogretim-programi-mufredat/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "46520f49c0025382359467ca16393841055643d61d1ae03ca30fc8e9827939df",
+        "evidence": "official-medicine-current-curriculum-directory"
+      }
+    ],
+    "status": "official-current-curricula-reviewed"
   },
   "tr-selcuk-universitesi": {
     "catalogs": [

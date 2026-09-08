@@ -1114,4 +1114,67 @@ class SabanciCatalogTests(unittest.TestCase):
         self.assertEqual(EXPECTED_TOTAL, 382)
 
 
+class SankoCatalogTests(unittest.TestCase):
+    def test_html_class_pages_keep_terms_and_adjacent_electives(self):
+        from parse_turkey_sanko_courses import parse_sanko_html
+
+        document = html('''
+          <table>
+            <tr><td>1.SINIF/1. YARIYIL GÜZ</td></tr>
+            <tr><td>DERSİN KODU</td><td>DERSİN ADI</td><td>Z/S</td></tr>
+            <tr><td>AME 101</td><td>Cerrahi Hastalıkları Bilgisi I</td><td>Z</td></tr>
+          </table>
+          <table>
+            <tr><td>SEÇMELİ</td></tr>
+            <tr><td>MYO 105</td><td>Temel Bilgisayar Teknikleri</td><td>S</td></tr>
+          </table>
+          <table>
+            <tr><td>1.SINIF/2. YARIYIL BAHAR</td></tr>
+            <tr><td>AME 106</td><td>Ameliyathane Uygulamaları*</td><td>Z</td></tr>
+          </table>
+        ''')
+        courses, conflicts = parse_sanko_html(document, course_code, course_kind)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'AME101', 'name': 'Cerrahi Hastalıkları Bilgisi I', 'semester': 1, 'kind': 'required'},
+            {'code': 'MYO105', 'name': 'Temel Bilgisayar Teknikleri', 'semester': 1, 'kind': 'elective'},
+            {'code': 'AME106', 'name': 'Ameliyathane Uygulamaları', 'semester': 2, 'kind': 'required'},
+        ])
+
+    def test_medical_plan_keeps_annual_years_and_split_elective_sections(self):
+        from parse_turkey_sanko_courses import parse_sanko_medicine_rows
+
+        rows = [
+            ['4. SINIF (STAJ DÖNEMİ I)', '', '', '', '', '', '',
+             '5. SINIF (STAJ DÖNEMİ II)', '', '', '', '', '', ''],
+            ['TIP431', 'İç Hastalıkları', 'Z', '8', '10', '', '',
+             'TIP529', 'Göğüs Hastalıkları', 'Z', '3', '5', '', ''],
+            ['SEÇMELİ DERSLER', '', '', '', '', '', '',
+             'SEÇMELİ DERSLER', '', '', '', '', '', ''],
+            ['SEC403', 'Seçmeli Staj 1', 'S', '2', '3', '', '',
+             'SEC503', 'Seminer', 'S', '', '1', '', ''],
+            ['6. SINIF (İNTÖRNLÜK DÖNEMİ)', '', '', '', '', '', '',
+             'SEC502', 'Seçmeli Staj 2', 'S', '3', '3', '', ''],
+            ['TIP631', 'İç Hastalıkları', 'Z', '2', '10', '', '', '', '', '', '', '', '', ''],
+        ]
+        courses, conflicts = parse_sanko_medicine_rows(rows, course_code, course_kind)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'TIP431', 'name': 'İç Hastalıkları', 'semester': None, 'kind': 'required', 'year': 4},
+            {'code': 'TIP529', 'name': 'Göğüs Hastalıkları', 'semester': None, 'kind': 'required', 'year': 5},
+            {'code': 'SEC403', 'name': 'Seçmeli Staj 1', 'semester': None, 'kind': 'elective', 'year': 4},
+            {'code': 'SEC503', 'name': 'Seminer', 'semester': None, 'kind': 'elective', 'year': 5},
+            {'code': 'SEC502', 'name': 'Seçmeli Staj 2', 'semester': None, 'kind': 'elective', 'year': 5},
+            {'code': 'TIP631', 'name': 'İç Hastalıkları', 'semester': None, 'kind': 'required', 'year': 6},
+        ])
+
+    def test_reviewed_programme_totals_are_frozen(self):
+        from collect_turkey_sanko_catalog import EXPECTED_TOTAL, HTML_PROGRAMMES, MEDICINE_COUNT
+
+        self.assertEqual(len(HTML_PROGRAMMES), 6)
+        self.assertEqual(sum(value['count'] for value in HTML_PROGRAMMES.values()) + MEDICINE_COUNT,
+                         EXPECTED_TOTAL)
+        self.assertEqual(EXPECTED_TOTAL, 421)
+
+
 if __name__=='__main__':unittest.main()

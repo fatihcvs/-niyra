@@ -4511,27 +4511,11 @@
       "universityId": "tr-sanko-universitesi",
       "name": "SANKO Üniversitesi",
       "programCount": 7,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-207710035",
-        "program-osym-207710053",
-        "program-osym-207710109",
-        "program-osym-207710100",
-        "program-osym-207710106",
-        "program-osym-207710103",
-        "program-osym-207710071"
-      ],
-      "missingReasons": {
-        "program-osym-207710035": "programme-source-not-matched",
-        "program-osym-207710053": "programme-source-not-matched",
-        "program-osym-207710109": "programme-source-not-matched",
-        "program-osym-207710100": "programme-source-not-matched",
-        "program-osym-207710106": "programme-source-not-matched",
-        "program-osym-207710103": "programme-source-not-matched",
-        "program-osym-207710071": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 7,
+      "courseCount": 421,
+      "linkedProgramCount": 7,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-selcuk-universitesi",
@@ -5159,8 +5143,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28846,
-    "parserVersion": "4f68f19b3147",
+    "sourceCount": 28853,
+    "parserVersion": "d8b5dbfb507c",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5174,7 +5158,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "4f68f19b3147",
+      "ankara-reviewed-2026": "d8b5dbfb507c",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
@@ -5184,7 +5168,9 @@
       "koc-medicine-2026": "1c0bd0b75534",
       "tobb-abys-2026": "a909a17795d0",
       "tobb-ybs-curriculum-2026": "a909a17795d0",
-      "sabanci-faculty-bundle-2026": "778bc235f6af"
+      "sabanci-faculty-bundle-2026": "b8cc49f2a045",
+      "sanko-html-bundle-2026": "71ffcdc699a5",
+      "sanko-medicine-pdf-2026": "71ffcdc699a5"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5221,7 +5207,8 @@
       "maltepe-reviewed-courses.json": "14ab320281cd0e444f798635cbac7edafa72583750331f0e41e6049374547c30",
       "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09",
       "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df",
-      "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43"
+      "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43",
+      "sanko-reviewed-courses.json": "f006670f999c0236f9e2e5a695217459ba7eccd06242bbf1c3887da8bbea1572"
     }
   }
 }
