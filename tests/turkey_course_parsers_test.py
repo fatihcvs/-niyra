@@ -11,10 +11,44 @@ from discover_turkey_courses import match
 from collect_turkey_ecatalogs import discover,leaf_programme_title
 from parse_turkey_kion_courses import parse_kion
 from curriculum_metadata import selected_oibs_curriculum, retain_matching_metadata
+from parse_turkey_ayu_courses import _merge as merge_ayu, _normalized_code, parse_ayu_turtep
 
 def html(value): return BeautifulSoup(value,'html.parser')
 
 class CourseParsers(unittest.TestCase):
+    def test_ayu_turtep_keeps_explicit_terms_types_and_turkish_codes(self):
+        document = html('''
+          <table>
+            <tr><th>Dönem : 1</th></tr>
+            <tr><th>Ders Kodu</th><th>Ders Adı</th><th>Kredi</th><th>Türü</th></tr>
+            <tr><td>TİŞL-101</td><td>İşletme Bilimine Giriş I</td><td>3</td><td>Zorunlu</td></tr>
+            <tr><td>TYBS-109</td><td>Genel Ekonomi</td><td>3</td><td>Seçmeli</td></tr>
+          </table>
+          <table>
+            <tr><th>Dönem : 2</th></tr>
+            <tr><td>TYBS-204</td><td>Veri Yapıları</td><td>3</td><td>Zorunlu</td></tr>
+          </table>''')
+        rows, conflicts = parse_ayu_turtep(document)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(rows, [
+            {'code': 'TİŞL-101', 'name': 'İşletme Bilimine Giriş I', 'semester': 1, 'kind': 'required'},
+            {'code': 'TYBS-109', 'name': 'Genel Ekonomi', 'semester': 1, 'kind': 'elective'},
+            {'code': 'TYBS-204', 'name': 'Veri Yapıları', 'semester': 2, 'kind': 'required'},
+        ])
+
+    def test_ayu_multilingual_rows_merge_only_when_period_identity_agrees(self):
+        self.assertEqual(_normalized_code(' TİŞL - 101 '), 'TİŞL-101')
+        self.assertEqual(_normalized_code('KT/KD//KYA/KL1127,1128'), 'KL1127,1128')
+        rows, conflicts = merge_ayu([
+            {'code': 'PGPT4302', 'name': 'Mezuniyet Öncesi Uygulama', 'semester': 8, 'kind': 'required'},
+            {'code': 'PGPT4302', 'name': 'PRE-GRADUATION PRACTICAL TRAINING', 'semester': 8, 'kind': 'required'},
+        ])
+        self.assertEqual(conflicts, [])
+        self.assertEqual(rows, [{
+            'code': 'PGPT4302', 'name': 'PRE-GRADUATION PRACTICAL TRAINING',
+            'semester': 8, 'kind': 'required',
+        }])
+
     def test_ebp_leaf_names_preserve_programme_subject_language_and_evening_track(self):
         cases=[('Elektrik ve Enerji Bölümü','Elektrik','Elektrik'),
           ('Bilgisayar Programcılığı','Bilgisayar Programcılığı (İÖ)','Bilgisayar Programcılığı (İÖ)'),

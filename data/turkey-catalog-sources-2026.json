@@ -107,8 +107,33 @@
     "status": "catalogue-checked"
   },
   "tr-ahmet-yesevi-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://ayu.edu.kz/birimler/kz/144-ilahiyat/programlar/6B02229",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "77d355eb7ac73665408b3351230e40f86c449cbd2adc0047da41a54e447f6d15",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ayu.edu.kz/birimler/kz/152-tarih-bolumu/programlar/6B01615",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "0a18ed9e3af61d4072f6c6e272e40bf22ec39b55929bd8a6f35d5985cb5bf0e6",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.turtep.edu.tr/index.php?bolum=1&sayfa=akademik_programlar_detay",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "eddcf532dd64af5da6848c450eecb39750c6246cdc04fdc253ea28de4114d345",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://www.turtep.edu.tr/index.php?bolum=5&sayfa=akademik_programlar_detay",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "fbaf001653dc359f774628cb2e6c250ad5215fe9476f8fbd02641f49fbcbd015",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-akdeniz-universitesi": {
     "catalogs": [

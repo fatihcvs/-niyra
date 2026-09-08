@@ -11,6 +11,8 @@ from discover_turkey_courses import links
 
 def build():
     academic=read(ROOT/'data/academic-catalog-2026.json')['universities']
+    published_path=ROOT/'data/turkey-catalog-sources-2026.json'
+    published=read(published_path) if published_path.exists() else {}
     candidates=defaultdict(dict)
     browser_verified=defaultdict(list)
     # Successfully matched public directories are direct evidence of a catalogue.
@@ -20,7 +22,8 @@ def build():
                  'thk-directories','yasar-directories','rumeli-directories','iste-directories',
                  'halic-directories','iuc-directories','bayburt-directories',
                  'omu-ubys-directories','marmara-reviewed-directories',
-                 'ankara-reviewed-directories','sivas-reviewed-programmes']:
+                 'ankara-reviewed-directories','sivas-reviewed-programmes',
+                 'ayu-reviewed-programmes']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):
@@ -74,12 +77,16 @@ def build():
         if u['region']!='Türkiye':continue
         # At most two degree entrances per hostname; retain distinct official systems.
         chosen=[];hosts=defaultdict(int)
-        for c in sorted(result[uid],key=lambda c:(c['evidence']!='matched-programme-directory',len(c['url']),c['url'])):
+        prior_catalogs=published.get(uid,{}).get('catalogs',[])
+        live_catalogs=sorted(result[uid],key=lambda c:(c['evidence']!='matched-programme-directory',len(c['url']),c['url']))
+        # Previously checked entrances remain stable across transient source or
+        # network failures. Explicit removals require a separate catalogue audit.
+        for c in [*prior_catalogs,*live_catalogs]:
             host=urlparse(c['url']).hostname
             if hosts[host]>=2 or any(c['url']==v['url'] for v in chosen):continue
             chosen.append(c);hosts[host]+=1
         output[uid]={'catalogs':chosen[:4], 'status':'catalogue-checked' if chosen else 'no-verified-entry'}
-    write(ROOT/'data/turkey-catalog-sources-2026.json',output)
+    write(published_path,output)
     print('Verified catalogue entrances:',sum(bool(u['catalogs']) for u in output.values()),'/',len(output),flush=True)
 
 

@@ -31,6 +31,7 @@ from parse_turkey_koc_courses import parse_koc_curriculum, parse_koc_medicine, p
 from parse_turkey_tobb_courses import parse_tobb_abys, parse_tobb_ybs
 from parse_turkey_sabanci_courses import parse_sabanci_bundle
 from parse_turkey_sanko_courses import parse_sanko_html_bundle, parse_sanko_medicine_pdf
+from parse_turkey_ayu_courses import parse_ayu_docx, parse_ayu_pdf, parse_ayu_turtep
 from collect_turkey_omu_ubys_catalog import (
     BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
     source_unit_identity, target_unit_identity,
@@ -60,6 +61,34 @@ KOC_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_koc_c
 TOBB_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_tobb_courses.py').read_bytes()).hexdigest()[:12]
 SABANCI_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_sabanci_courses.py').read_bytes()).hexdigest()[:12]
 SANKO_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_sanko_courses.py').read_bytes()).hexdigest()[:12]
+AYU_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_ayu_courses.py').read_bytes()).hexdigest()[:12]
+
+FAMILY_PARSER_VERSIONS = {
+    'esogu-docx': ESOGU_PARSER_VERSION, 'iau': IAU_PARSER_VERSION,
+    'thk': THK_PARSER_VERSION, 'yasar': YASAR_PARSER_VERSION,
+    'rumeli-2026': RUMELI_PARSER_VERSION, 'iste-2026': ISTE_PARSER_VERSION,
+    'halic-2026': HALIC_PARSER_VERSION, 'iuc-print': IUC_PARSER_VERSION,
+    'bayburt-reviewed': BAYBURT_PARSER_VERSION,
+    'omu-ubys-2026': OMU_PARSER_VERSION,
+    'marmara-reviewed-2026': MARMARA_PARSER_VERSION,
+    'ankara-reviewed-2026': PARSER_VERSION,
+    'ktun-reviewed-2026': KTUN_PARSER_VERSION,
+    'duzce-reviewed-2026': DUZCE_PARSER_VERSION,
+    'maltepe-mubis-2026': MALTEPE_PARSER_VERSION,
+    'maltepe-direct-2026': MALTEPE_PARSER_VERSION,
+    'koc-curriculum-2026': KOC_PARSER_VERSION,
+    'koc-nursing-2026': KOC_PARSER_VERSION,
+    'koc-medicine-2026': KOC_PARSER_VERSION,
+    'tobb-abys-2026': TOBB_PARSER_VERSION,
+    'tobb-ybs-curriculum-2026': TOBB_PARSER_VERSION,
+    'sabanci-faculty-bundle-2026': SABANCI_PARSER_VERSION,
+    'sanko-html-bundle-2026': SANKO_PARSER_VERSION,
+    'sanko-medicine-pdf-2026': SANKO_PARSER_VERSION,
+    'ayu-pdf-2026': AYU_PARSER_VERSION,
+    'ayu-docx-2026': AYU_PARSER_VERSION,
+    'ayu-turtep-2026': AYU_PARSER_VERSION,
+    'sivas-ubys-2026': PARSER_VERSION,
+}
 
 
 def course_code(value):
@@ -293,6 +322,12 @@ def _parse_source(source):
         return parse_sanko_html_bundle(read(CACHE / source['file']), CACHE, course_code, course_kind)
     if source.get('family') == 'sanko-medicine-pdf-2026':
         return parse_sanko_medicine_pdf(CACHE / source['file'], course_code, course_kind)
+    if source.get('family') == 'ayu-pdf-2026':
+        return parse_ayu_pdf(CACHE / source['file'], source.get('expectedSemesters', 8))
+    if source.get('family') == 'ayu-docx-2026':
+        return parse_ayu_docx(CACHE / source['file'])
+    if source.get('family') == 'ayu-turtep-2026':
+        return parse_ayu_turtep(soup(source))
     if source.get('family') in ['ubys', 'omu-ubys-2026', 'sivas-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
@@ -343,29 +378,7 @@ def _parse_source(source):
 
 def parse_source(source):
     if source['status'] != 200:return [], []
-    version = ({'esogu-docx': ESOGU_PARSER_VERSION, 'iau': IAU_PARSER_VERSION,
-                'thk': THK_PARSER_VERSION, 'yasar': YASAR_PARSER_VERSION,
-                'rumeli-2026': RUMELI_PARSER_VERSION, 'iste-2026': ISTE_PARSER_VERSION,
-                'halic-2026': HALIC_PARSER_VERSION, 'iuc-print': IUC_PARSER_VERSION,
-                'bayburt-reviewed': BAYBURT_PARSER_VERSION,
-                'omu-ubys-2026': OMU_PARSER_VERSION,
-                'marmara-reviewed-2026': MARMARA_PARSER_VERSION,
-                'ankara-reviewed-2026': PARSER_VERSION,
-                'ktun-reviewed-2026': KTUN_PARSER_VERSION,
-                'duzce-reviewed-2026': DUZCE_PARSER_VERSION,
-                'maltepe-mubis-2026': MALTEPE_PARSER_VERSION,
-                'maltepe-direct-2026': MALTEPE_PARSER_VERSION,
-                'koc-curriculum-2026': KOC_PARSER_VERSION,
-                'koc-nursing-2026': KOC_PARSER_VERSION,
-                'koc-medicine-2026': KOC_PARSER_VERSION,
-                'tobb-abys-2026': TOBB_PARSER_VERSION,
-                'tobb-ybs-curriculum-2026': TOBB_PARSER_VERSION,
-                'sabanci-faculty-bundle-2026': SABANCI_PARSER_VERSION,
-                'sanko-html-bundle-2026': SANKO_PARSER_VERSION,
-                'sanko-medicine-pdf-2026': SANKO_PARSER_VERSION,
-                'sivas-ubys-2026': PARSER_VERSION}
-               .get(source.get('family'), LEGACY_PARSER_VERSION))
-    file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
+    file = parse_cache_file(source)
     if file.exists():
         result=read(file)
         return result['courses'],result['conflicts']
@@ -374,10 +387,17 @@ def parse_source(source):
     return courses,conflicts
 
 
+def parse_cache_file(source):
+    version = FAMILY_PARSER_VERSIONS.get(source.get('family'), LEGACY_PARSER_VERSION)
+    return CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
+
+
 def parse_identity(source):
-    value = json.dumps({'file': source['file'], 'url': source['url'],
-                        'family': source.get('family'), 'selection': source.get('selection')},
-                       ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    identity = {'file': source['file'], 'url': source['url'],
+                'family': source.get('family'), 'selection': source.get('selection')}
+    if source.get('expectedSemesters') is not None:
+        identity['expectedSemesters'] = source['expectedSemesters']
+    value = json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
     return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
@@ -401,36 +421,17 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses', 'sivas-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses', 'sivas-reviewed-courses', 'ayu-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
             sources += read(file)
-    versions={'default':LEGACY_PARSER_VERSION,'esogu-docx':ESOGU_PARSER_VERSION,
-              'iau':IAU_PARSER_VERSION,'thk':THK_PARSER_VERSION,
-              'yasar':YASAR_PARSER_VERSION,'rumeli-2026':RUMELI_PARSER_VERSION,
-              'iste-2026':ISTE_PARSER_VERSION,'halic-2026':HALIC_PARSER_VERSION,
-              'iuc-print':IUC_PARSER_VERSION,'bayburt-reviewed':BAYBURT_PARSER_VERSION,
-              'omu-ubys-2026':OMU_PARSER_VERSION,
-              'marmara-reviewed-2026':MARMARA_PARSER_VERSION,
-              'ankara-reviewed-2026':PARSER_VERSION,
-              'ktun-reviewed-2026':KTUN_PARSER_VERSION,
-              'duzce-reviewed-2026':DUZCE_PARSER_VERSION,
-              'maltepe-mubis-2026':MALTEPE_PARSER_VERSION,
-              'maltepe-direct-2026':MALTEPE_PARSER_VERSION,
-              'koc-curriculum-2026':KOC_PARSER_VERSION,
-              'koc-nursing-2026':KOC_PARSER_VERSION,
-              'koc-medicine-2026':KOC_PARSER_VERSION,
-              'tobb-abys-2026':TOBB_PARSER_VERSION,
-              'tobb-ybs-curriculum-2026':TOBB_PARSER_VERSION,
-              'sabanci-faculty-bundle-2026':SABANCI_PARSER_VERSION,
-              'sanko-html-bundle-2026':SANKO_PARSER_VERSION,
-              'sanko-medicine-pdf-2026':SANKO_PARSER_VERSION,
-              'sivas-ubys-2026':PARSER_VERSION}
+    versions={'default':LEGACY_PARSER_VERSION, **FAMILY_PARSER_VERSIONS}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
-    pending = {parse_identity(s):s for s in sources if s['status']==200}
+    pending = {parse_identity(s):s for s in sources
+               if s['status']==200 and not parse_cache_file(s).exists()}
     pending_items = list(pending.items())
     # Submitting the whole national catalogue at once retains thousands of
     # futures and decoded source bodies. Bounded batches keep full parser-version
@@ -473,7 +474,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026','koc-curriculum-2026','koc-nursing-2026','koc-medicine-2026','tobb-abys-2026','tobb-ybs-curriculum-2026','sabanci-faculty-bundle-2026','sanko-html-bundle-2026','sanko-medicine-pdf-2026','sivas-ubys-2026']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026','koc-curriculum-2026','koc-nursing-2026','koc-medicine-2026','tobb-abys-2026','tobb-ybs-curriculum-2026','sabanci-faculty-bundle-2026','sanko-html-bundle-2026','sanko-medicine-pdf-2026','sivas-ubys-2026','ayu-pdf-2026','ayu-docx-2026','ayu-turtep-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)

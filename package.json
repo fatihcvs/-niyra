@@ -33,6 +33,7 @@
     "catalog:sabanci": "python -X utf8 scripts/academic-catalog/collect_turkey_sabanci_catalog.py",
     "catalog:sanko": "python -X utf8 scripts/academic-catalog/collect_turkey_sanko_catalog.py",
     "catalog:sivas": "python -X utf8 scripts/academic-catalog/collect_turkey_sivas_catalog.py",
+    "catalog:ayu": "python -X utf8 scripts/academic-catalog/collect_turkey_ayu_catalog.py",
     "catalog:logos": "node scripts/university-logos/sync-university-logos.mjs",
     "catalog:campus:build": "node scripts/campus-catalog/build-campus-place-catalog.mjs",
     "install:ci": "bash scripts/install-ci.sh",

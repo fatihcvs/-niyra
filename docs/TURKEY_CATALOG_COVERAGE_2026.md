@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,815 programda ders kaydı · 1,368 programda ders listesi eksik.
-Toplam 1,535,304 program-ders kaydı. 195 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,832 programda ders kaydı · 1,351 programda ders listesi eksik.
+Toplam 1,536,187 program-ders kaydı. 196 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,161
+- Resmî program eşleşmesi eksik: 1,144
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -24,7 +24,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Afyon Kocatepe Üniversitesi | 142 | 134 | 8 | 12,244 | 10 | [Kaynak 1](https://obs.aku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.aku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Afyonkarahisar Sağlık Bilimleri Üniversitesi | 26 | 26 | 0 | 3,098 | 5 | [Kaynak 1](https://ekampus.afsu.edu.tr/bologna/) |
 | Ağrı İbrahim Çeçen Üniversitesi | 74 | 68 | 6 | 3,007 | 10 | [Kaynak 1](https://obs.agri.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.agri.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Ahmet Yesevi Üniversitesi | 17 | 0 | 17 | 0 | 0 | Doğrulanmış giriş yok |
+| Ahmet Yesevi Üniversitesi | 17 | 17 | 0 | 883 | 0 | [Kaynak 1](https://ayu.edu.kz/birimler/kz/144-ilahiyat/programlar/6B02229) · [Kaynak 2](https://ayu.edu.kz/birimler/kz/152-tarih-bolumu/programlar/6B01615) · [Kaynak 3](https://www.turtep.edu.tr/index.php?bolum=1&sayfa=akademik_programlar_detay) · [Kaynak 4](https://www.turtep.edu.tr/index.php?bolum=5&sayfa=akademik_programlar_detay) |
 | Akdeniz Üniversitesi | 184 | 178 | 6 | 14,026 | 25 | [Kaynak 1](https://obs.akdeniz.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.akdeniz.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Aksaray Üniversitesi | 84 | 77 | 7 | 15,361 | 10 | [Kaynak 1](https://obs.aksaray.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.aksaray.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Alanya Alaaddin Keykubat Üniversitesi | 61 | 53 | 8 | 3,083 | 10 | [Kaynak 1](https://obs.alanya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.alanya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

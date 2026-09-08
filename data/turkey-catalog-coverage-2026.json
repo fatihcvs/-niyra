@@ -155,47 +155,11 @@
       "universityId": "tr-ahmet-yesevi-universitesi",
       "name": "Ahmet Yesevi Üniversitesi",
       "programCount": 17,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-403910273",
-        "program-osym-403990046",
-        "program-osym-403910255",
-        "program-osym-403990081",
-        "program-osym-403990088",
-        "program-osym-403990102",
-        "program-osym-403990109",
-        "program-osym-403910158",
-        "program-osym-403990039",
-        "program-osym-403990025",
-        "program-osym-403990032",
-        "program-osym-403990095",
-        "program-osym-403990074",
-        "program-osym-403910052",
-        "program-osym-403910264",
-        "program-osym-403990060",
-        "program-osym-403950015"
-      ],
-      "missingReasons": {
-        "program-osym-403910273": "programme-source-not-matched",
-        "program-osym-403990046": "programme-source-not-matched",
-        "program-osym-403910255": "programme-source-not-matched",
-        "program-osym-403990081": "programme-source-not-matched",
-        "program-osym-403990088": "programme-source-not-matched",
-        "program-osym-403990102": "programme-source-not-matched",
-        "program-osym-403990109": "programme-source-not-matched",
-        "program-osym-403910158": "programme-source-not-matched",
-        "program-osym-403990039": "programme-source-not-matched",
-        "program-osym-403990025": "programme-source-not-matched",
-        "program-osym-403990032": "programme-source-not-matched",
-        "program-osym-403990095": "programme-source-not-matched",
-        "program-osym-403990074": "programme-source-not-matched",
-        "program-osym-403910052": "programme-source-not-matched",
-        "program-osym-403910264": "programme-source-not-matched",
-        "program-osym-403990060": "programme-source-not-matched",
-        "program-osym-403950015": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 17,
+      "courseCount": 883,
+      "linkedProgramCount": 17,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-akdeniz-universitesi",
@@ -5119,8 +5083,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28864,
-    "parserVersion": "0bf547250964",
+    "sourceCount": 28881,
+    "parserVersion": "db8c36a05ca7",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5134,7 +5098,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "0bf547250964",
+      "ankara-reviewed-2026": "db8c36a05ca7",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
@@ -5147,7 +5111,10 @@
       "sabanci-faculty-bundle-2026": "b8cc49f2a045",
       "sanko-html-bundle-2026": "7b486dcb524e",
       "sanko-medicine-pdf-2026": "7b486dcb524e",
-      "sivas-ubys-2026": "0bf547250964"
+      "ayu-pdf-2026": "041d958fbce3",
+      "ayu-docx-2026": "041d958fbce3",
+      "ayu-turtep-2026": "041d958fbce3",
+      "sivas-ubys-2026": "db8c36a05ca7"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5186,7 +5153,8 @@
       "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df",
       "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43",
       "sanko-reviewed-courses.json": "f006670f999c0236f9e2e5a695217459ba7eccd06242bbf1c3887da8bbea1572",
-      "sivas-reviewed-courses.json": "0d68516471d6840e261fcebf962a8ecc7712d40f469708876b6fe624e1941bba"
+      "sivas-reviewed-courses.json": "0d68516471d6840e261fcebf962a8ecc7712d40f469708876b6fe624e1941bba",
+      "ayu-reviewed-courses.json": "56f55d9747ae100dbd84ad040e4d04a0294fc73ce6d7a8f83191c5824a8b608a"
     }
   }
 }
