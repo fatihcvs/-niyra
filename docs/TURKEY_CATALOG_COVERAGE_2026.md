@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,615 programda ders kaydı · 1,568 programda ders listesi eksik.
-Toplam 1,519,766 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,645 programda ders kaydı · 1,538 programda ders listesi eksik.
+Toplam 1,520,801 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,369
-- Okunabilir ders listesi bulunamadı: 149
+- Resmî program eşleşmesi eksik: 1,336
+- Okunabilir ders listesi bulunamadı: 152
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
 
@@ -43,7 +43,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Antalya Bilim Üniversitesi | 42 | 24 | 18 | 1,211 | 5 | [Kaynak 1](https://dersbilgipaketi.antalya.edu.tr/index.php?lang=tr) |
 | Ardahan Üniversitesi | 47 | 41 | 6 | 5,482 | 3 | [Kaynak 1](https://ubys.ardahan.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Artvin Çoruh Üniversitesi | 81 | 75 | 6 | 4,924 | 20 | [Kaynak 1](https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.artvin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Atatürk Üniversitesi | 218 | 183 | 35 | 8,330 | 14 | [Kaynak 1](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/1) · [Kaynak 2](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/2) |
+| Atatürk Üniversitesi | 218 | 213 | 5 | 9,365 | 14 | [Kaynak 1](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/1) · [Kaynak 2](https://obs.atauni.edu.tr/moduller/dbp/eobs/birimListe/2) |
 | Atılım Üniversitesi | 49 | 48 | 1 | 7,918 | 5 | [Kaynak 1](https://www.atilim.edu.tr/tr/ects/site-courses/programlar/lisans) · [Kaynak 2](https://www.atilim.edu.tr/tr/ects/site-courses/programlar/onlisans) |
 | Avrasya Üniversitesi | 59 | 58 | 1 | 3,040 | 12 | [Kaynak 1](https://obs.avrasya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.avrasya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Aydın Adnan Menderes Üniversitesi | 168 | 152 | 16 | 13,055 | 23 | [Kaynak 1](https://akts.adu.edu.tr/degree-programmes/2/) · [Kaynak 2](https://akts.adu.edu.tr/degree-programmes/3/) |
