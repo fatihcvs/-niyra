@@ -23,8 +23,16 @@ const empty = () => ({ content: "", audience: "platform", courseId: null, media:
 const owner = (publicId) => ({ publicId, confirmed: true });
 const noop = () => {};
 
-async function setup({ seed, profileFetch = async () => { throw new Error("Unexpected profile refresh"); }, transport = async () => ({ ok: true, status: 201, data: { post: { id: 51 } } }) } = {}) {
+async function setup({ seed, storageOpenFailure = null, profileFetch = async () => { throw new Error("Unexpected profile refresh"); }, transport = async () => ({ ok: true, status: 201, data: { post: { id: 51 } } }) } = {}) {
   const indexedDB = new IDBFactory(), api = {}, instances = [];
+  let pendingOpenFailures = 0;
+  const open = indexedDB.open.bind(indexedDB);
+  indexedDB.open = (...args) => {
+    if (!storageOpenFailure) return open(...args);
+    const request = { error: new DOMException("Internal error.", storageOpenFailure) };
+    pendingOpenFailures++;
+    setTimeout(() => { request.onerror(); pendingOpenFailures--; }, 0); return request;
+  };
   runInNewContext(storeSource, { exports: api, File, Blob, DOMException, setTimeout, clearTimeout, require: (name) => name === "./publish-attempt" ? attemptApi : media });
   const create = (options = {}) => { const store = api.createPublishDraftStore({ ...options, indexedDB, debounceMs: 0 }); instances.push(store); return store; };
   const inspect = async (id = "owner-a") => { const store = create(); store.setOwner(owner(id)); try { return await store.load(); } finally { store.dispose(); } };
@@ -53,7 +61,7 @@ async function setup({ seed, profileFetch = async () => { throw new Error("Unexp
   const render = (id = "owner-a") => ui.render(h(StrictMode, null, h(Harness, { id })));
   const until = async (predicate) => { for (let i = 0; i < 100; i++) { if (predicate()) return; await act(async () => { await new Promise((resolve) => setTimeout(resolve, 5)); }); } assert.ok(predicate(), `Condition did not settle: ${ui.host.textContent}`); };
   const button = (label) => [...ui.host.querySelectorAll("button")].find((element) => element.textContent === label);
-  return { ...ui, render, until, button, inspect, calls, read: async (...args) => { let value; await act(async () => { value = await inspect(...args); }); return value; }, current: () => current, hide: () => ui.render(null), close: async () => { await ui.close(); instances.forEach((store) => store.dispose()); } };
+  return { ...ui, render, until, button, inspect, calls, pendingStorageOpenFailures: () => pendingOpenFailures, setStorageOpenFailure(value) { storageOpenFailure = value; }, read: async (...args) => { let value; await act(async () => { value = await inspect(...args); }); return value; }, current: () => current, hide: () => ui.render(null), close: async () => { await ui.close(); instances.forEach((store) => store.dispose()); } };
 }
 
 test("StrictMode recovery hides draft body and File until explicit restore; actual Home waits for durable key and clears on success", async () => {
@@ -119,6 +127,44 @@ test("quota failure never starts upload or claims saved; storage retry preserves
     await ui.click(ui.button("Paylaş")); await ui.until(() => ui.current().posts.length === 1);
     assert.equal(ui.calls.length, 1);
   } finally { IDBObjectStore.prototype.put = originalPut; await ui.close(); }
+});
+
+test("an IndexedDB internal error is not presented as a permission denial; publishing waits for a durable retry", async () => {
+  const ui = await setup({ storageOpenFailure: "UnknownError" });
+  try {
+    await ui.render(); await ui.until(() => ui.button("Depolamayı yeniden dene"));
+    assert.match(ui.host.textContent, /taslak deposunda bir iç hata/);
+    assert.doesNotMatch(ui.host.textContent, /izni|izinlerini|24 saat/);
+    assert.equal(ui.host.querySelector("textarea").disabled, true); assert.equal(ui.button("Paylaş").disabled, true);
+    await ui.click(ui.button("Depolamayı yeniden dene")); await ui.until(() => ui.pendingStorageOpenFailures() === 0 && ui.current().durableDraft.view.phase === "error");
+    assert.equal(ui.calls.length, 0);
+    ui.setStorageOpenFailure(null);
+    await ui.click(ui.button("Depolamayı yeniden dene")); await ui.until(() => !ui.current().durableDraft.blocked);
+    await ui.fill(ui.host.querySelector("textarea"), "Depolama doğrulandıktan sonra gönderilecek");
+    await ui.until(() => ui.current().durableDraft.view.phase === "saved");
+    await ui.click(ui.button("Paylaş")); await ui.until(() => ui.current().posts.length === 1);
+    assert.equal(ui.calls.length, 1);
+  } finally { await ui.close(); }
+});
+
+test("an internal cleanup failure preserves the confirmed publication and retries only the durable clear", async () => {
+  const originalDelete = IDBObjectStore.prototype.delete;
+  const ui = await setup({ transport: async () => {
+    IDBObjectStore.prototype.delete = function (...args) { if (this.name === "drafts") throw new DOMException("Internal error.", "UnknownError"); return originalDelete.apply(this, args); };
+    return { ok: true, status: 201, data: { post: { id: 91 } } };
+  } });
+  try {
+    await ui.render(); await ui.until(() => !ui.current().durableDraft.blocked);
+    await ui.fill(ui.host.querySelector("textarea"), "Yayını doğrulanmış gönderi");
+    await ui.click(ui.button("Paylaş")); await ui.until(() => ui.current().posts.length === 1 && ui.current().durableDraft.view.phase === "error");
+    assert.match(ui.host.textContent, /Yayın sonucu alındı/); assert.match(ui.host.textContent, /bir iç hata/);
+    assert.doesNotMatch(ui.host.textContent, /izinlerini|gönderim başlamadı/i);
+    assert.equal(ui.calls.length, 1); assert.equal(ui.current().durableDraft.blocked, true);
+    IDBObjectStore.prototype.delete = originalDelete;
+    await ui.click(ui.button("Depolamayı yeniden dene")); await ui.until(() => !ui.current().durableDraft.blocked);
+    assert.equal(ui.calls.length, 1, "A confirmed publication must not be sent again to clear local storage");
+    assert.equal((await ui.read()).record, null);
+  } finally { IDBObjectStore.prototype.delete = originalDelete; await ui.close(); }
 });
 
 test("401 hides private memory, other owner sees no candidate, same-owner reauth requires restore, explicit logout clears disk", async () => {

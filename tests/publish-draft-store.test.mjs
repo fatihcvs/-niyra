@@ -16,9 +16,9 @@ const media = {};
 runInNewContext(mediaSource, { exports: media, Uint8Array, DataView, TextDecoder });
 const attemptApi = {};
 runInNewContext(attemptSource, { exports: attemptApi, require: secureRandomKeyDependency });
-function module() {
+function module(timers = {}) {
   const exports = {};
-  runInNewContext(storeSource, { exports, File, Blob, DOMException, setTimeout, clearTimeout, require(name) {
+  runInNewContext(storeSource, { exports, File, Blob, DOMException, setTimeout: timers.setTimeout ?? setTimeout, clearTimeout: timers.clearTimeout ?? clearTimeout, require(name) {
     if (name === "./publish-attempt") return attemptApi;
     assert.equal(name, "./post-media"); return media;
   } });
@@ -317,6 +317,36 @@ test("quota, denied and unavailable storage never claim saved or prepared and ne
   assert.deepEqual(plain(await denied.load()), { status: "unavailable", reason: "denied" });
   const unsupported = api.createPublishDraftStore(); t.after(() => unsupported.dispose()); unsupported.setOwner(owner("owner-a"));
   assert.deepEqual(plain(await unsupported.saveNow(input)), { status: "unavailable", reason: "unsupported" });
+});
+
+test("asynchronous internal IndexedDB open errors remain distinct from permission errors and never prepare a send", async t => {
+  const requests = [];
+  const indexedDB = { open() { const request = { error: new DOMException("Internal error.", "UnknownError") }; requests.push(request); setTimeout(() => request.onerror(), 0); return request; } };
+  const store = api.createPublishDraftStore({ indexedDB }); t.after(() => store.dispose()); store.setOwner(owner("owner-a"));
+  assert.deepEqual(plain(await store.load()), { status: "unavailable", reason: "internal" });
+  const input = draft();
+  assert.deepEqual(plain(await store.preparePublish({ key: "internal-error-key", draft: input, uncertain: false })), { status: "unavailable", reason: "internal" });
+  assert.equal(requests.length, 2, "A retry opens again after the rejected request");
+  assert.equal(input.content, draft().content);
+});
+
+for (const stoppedBy of ["timeout", "dispose"]) test(`a delayed upgrade after ${stoppedBy} aborts before creating or changing stores`, async t => {
+  const timers = [], implementation = module({ setTimeout(callback) { timers.push(callback); return timers.length; }, clearTimeout() {} });
+  let request, aborts = 0, writes = 0;
+  const indexedDB = { open() {
+    request = {
+      result: { objectStoreNames: { contains() { return false; } }, createObjectStore() { writes++; return { createIndex() {}, put() { writes++; } }; }, close() {} },
+      transaction: { abort() { aborts++; request.error = new DOMException("Aborted", "AbortError"); request.onerror(); } },
+    };
+    return request;
+  } };
+  const store = implementation.createPublishDraftStore({ indexedDB }); t.after(() => store.dispose()); store.setOwner(owner("owner-a"));
+  const pending = store.load();
+  if (stoppedBy === "timeout") timers[0](); else store.dispose();
+  request.onupgradeneeded();
+  const result = await pending;
+  assert.equal(aborts, 1); assert.equal(writes, 0);
+  assert.deepEqual(plain(result), stoppedBy === "timeout" ? { status: "unavailable", reason: "blocked" } : { status: "stale" });
 });
 
 test("logout during database opening and dispose during debounce leave no late writes or stale records", async (t) => {

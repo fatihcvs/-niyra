@@ -14,7 +14,7 @@ export type DurablePublishDraft = PublishDraft & {
   immutableAttempt: PublishAttemptSnapshot | null;
 };
 export type DraftStoreFailure = { status: "inactive" | "stale" }
-  | { status: "unavailable"; reason: "unsupported" | "denied" | "quota" | "blocked" | "invalid" | "storage" };
+  | { status: "unavailable"; reason: "unsupported" | "denied" | "quota" | "blocked" | "internal" | "invalid" | "storage" };
 export type DraftLoadResult = { status: "loaded"; record: DurablePublishDraft | null; discarded?: "expired" | "invalid" } | DraftStoreFailure;
 export type DraftSaveResult = { status: "saved"; record: DurablePublishDraft } | { status: "recovery-required"; record: DurablePublishDraft } | DraftStoreFailure;
 export type DraftPrepareResult = { status: "prepared"; record: DurablePublishDraft; attempt: PublishAttemptSnapshot }
@@ -33,7 +33,7 @@ const coordinators = new WeakMap<IDBFactory, Map<string, Coordinator>>();
 
 function failure(error: unknown): DraftStoreFailure {
   const name = error && typeof error === "object" && "name" in error ? error.name : "";
-  return { status: "unavailable", reason: name === "QuotaExceededError" ? "quota" : name === "SecurityError" || name === "NotAllowedError" ? "denied" : "storage" };
+  return { status: "unavailable", reason: name === "QuotaExceededError" ? "quota" : name === "SecurityError" || name === "NotAllowedError" ? "denied" : name === "UnknownError" ? "internal" : "storage" };
 }
 function validDraft(value: PublishDraft) {
   if (!value || typeof value.content !== "string" || value.content.length > 1200
@@ -151,6 +151,7 @@ export function createPublishDraftStore(options: { indexedDB?: IDBFactory; datab
       const stop = (error: DOMException) => { if (!finished) { finished = true; clearTimeout(timer); reject(error); } };
       const timer = setTimeout(() => stop(new DOMException("Draft database open timed out", "TimeoutError")), 5000);
       request.onupgradeneeded = () => {
+        if (finished || disposed) { request.transaction?.abort(); return; }
         const db = request.result;
         if (!db.objectStoreNames.contains("drafts")) db.createObjectStore("drafts", { keyPath: "owner" }).createIndex("expiry", "expiresAt");
         if (!db.objectStoreNames.contains("meta")) db.createObjectStore("meta", { keyPath: "id" }).put({ id: "epoch", value: 0 });

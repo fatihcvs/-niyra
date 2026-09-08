@@ -12,9 +12,22 @@ export type PublishDraftView = {
   message: string;
 };
 const initial = (owner: string | null): PublishDraftView => ({ owner, phase: owner ? "loading" : "inactive", candidate: null, ready: false, message: "" });
-const storageMessage = (result: DraftStoreFailure) => result.status === "unavailable" && result.reason === "quota"
-  ? "Cihazda taslak için yeterli alan yok. Depolama alanı açıp yeniden dene; gönderim başlamadı."
-  : "Taslak bu cihaza kaydedilemiyor. Tarayıcı depolama iznini kontrol edip yeniden dene; gönderim başlamadı.";
+const storageMessage = (result: DraftStoreFailure) => {
+  if (result.status === "unavailable") {
+    if (result.reason === "quota") return "Cihazda taslak için yeterli alan yok. Depolama alanı açıp yeniden dene; gönderim başlamadı.";
+    if (result.reason === "denied") return "Tarayıcı bu site için taslak depolamasına izin vermiyor. Site izinlerini kontrol edip yeniden dene; gönderim başlamadı.";
+    if (result.reason === "internal") return "Tarayıcının taslak deposunda bir iç hata oluştu. Kaydın doğrulanamadı. Tarayıcıyı yeniden başlatıp deneyebilirsin; gönderim başlamadı.";
+    if (result.reason === "blocked") return "Tarayıcı taslak deposunun açıldığını doğrulayamadı. Kısa süre sonra yeniden dene; gönderim başlamadı.";
+    if (result.reason === "unsupported") return "Bu tarayıcıda kalıcı taslak depolaması kullanılamıyor. Desteklenen bir tarayıcıyla yeniden dene; gönderim başlamadı.";
+    if (result.reason === "invalid") return "Taslak bilgileri kayda uygun değil. Metni ve ekleri kontrol edip yeniden dene; gönderim başlamadı.";
+  }
+  return "Taslak bu cihaza kaydedilemedi. Kaydın doğrulanamadı; depolamayı yeniden dene. Gönderim başlamadı.";
+};
+const cleanupMessage = (result: DraftStoreFailure, summary: string) => `${summary} ${result.status === "unavailable" && result.reason === "denied"
+  ? "Site izinlerini kontrol edip yeniden dene."
+  : result.status === "unavailable" && result.reason === "internal"
+    ? "Tarayıcının taslak deposunda bir iç hata oluştu. Tarayıcıyı yeniden başlatıp deneyebilirsin."
+    : "Depolamayı yeniden dene."}`;
 
 export function usePublishDraft({ ownerId, draft, paused, onRestore, onInvalidate }: {
   ownerId: string | null;
@@ -117,7 +130,7 @@ export function usePublishDraft({ ownerId, draft, paused, onRestore, onInvalidat
     if (epoch !== generation.current) return;
     busy.current = false;
     if (result.status === "cleared") setState({ owner: ownerId, phase: "ready", candidate: null, ready: true, message: "" });
-    else if (result.status === "unavailable") setState((value) => ({ ...value, phase: "error", message: "Kaydedilmiş taslak silinemedi. Depolama iznini kontrol edip tekrar silmeyi dene." }));
+    else if (result.status === "unavailable") setState((value) => ({ ...value, phase: "error", message: cleanupMessage(result, "Kaydedilmiş taslak silinemedi.") }));
   }
   async function prepare(attempt: PublishAttemptSnapshot): Promise<DraftPrepareResult> {
     const current = binding.current;
@@ -141,7 +154,7 @@ export function usePublishDraft({ ownerId, draft, paused, onRestore, onInvalidat
     if (epoch !== generation.current) return { status: "stale" };
     busy.current = false;
     if (result.status === "cleared") { pendingClearKey.current = null; setSavedDraft(null); setState({ owner: ownerId, phase: "ready", candidate: null, ready: true, message: "" }); }
-    else if (result.status === "unavailable") { pendingClearKey.current = key; setState((value) => ({ ...value, phase: "error", ready: false, message: "Yayın sonucu alındı ancak cihazdaki taslak temizlenemedi. Depolama iznini kontrol edip yeniden dene." })); }
+    else if (result.status === "unavailable") { pendingClearKey.current = key; setState((value) => ({ ...value, phase: "error", ready: false, message: cleanupMessage(result, "Yayın sonucu alındı ancak cihazdaki taslak temizlenemedi.") })); }
     return result;
   }
   function suspend() {
