@@ -5,10 +5,11 @@ export type CourseSchedule = {
   kind: "required" | "elective" | null;
 };
 
-export function courseMatchesYear(course: CourseSchedule, year: number) {
+export function courseMatchesYear(course: CourseSchedule, year: number, options: { includeUnspecified?: boolean } = {}) {
   if (course.year !== undefined) return course.year === year;
   const semesters = course.offeredSemesters ?? (course.semester === null ? [] : [course.semester]);
-  return semesters.some((semester) => Math.ceil(semester / 2) === year);
+  // Missing schedule metadata cannot exclude a real course from a student's choices.
+  return (options.includeUnspecified !== false && semesters.length === 0) || semesters.some((semester) => Math.ceil(semester / 2) === year);
 }
 
 export function courseScheduleLabel(course: CourseSchedule) {

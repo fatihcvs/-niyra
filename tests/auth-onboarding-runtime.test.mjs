@@ -15,14 +15,26 @@ const code = ts.transpileModule(`${declarations}\nglobalThis.components = {AuthG
 const universities = [{ id: "omu", name: "Örnek Üniversite A", shortName: "ÖÜA", region: "Türkiye", city: "Örnek A" }, { id: "second", name: "Örnek Üniversite B", shortName: "ÖÜB", region: "Türkiye", city: "Örnek B" }];
 const catalog = (units = []) => ({ units, programs: [], sources: [], updatedAt: "2026-09-05", coverage: "catalog-only" });
 const response = (data, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => data });
-const deferred = () => { let resolve; const promise = new Promise((done) => { resolve = done; }); return { resolve, promise }; };
+const deferred = () => { let resolve, reject; const promise = new Promise((done, fail) => { resolve = done; reject = fail; }); return { resolve, reject, promise }; };
 const profile = { displayName: "Örnek Öğrenci", universityId: "omu", facultyId: "", departmentId: "", facultyName: "Mühendislik", departmentName: "Bilgisayar", classYear: 2, courses: [1, 2, 3].map((n) => ({ code: `DERS${n}`, name: `Örnek ders ${n}` })) };
+const officialCatalog = { ...catalog([{ id: "engineering", name: "Mühendislik", type: "Fakülte", programCount: 1 }]), programs: [{ id: "computer", unitId: "engineering", name: "Bilgisayar", degreeLevel: "bachelor" }] };
+const courseCatalog = (courses, available = true) => ({ available, courses, authority: "Resmî üniversite", sourceUrl: "https://example.invalid/courses", verifiedAt: "2026-09-08", coverage: "partial" });
+const publishedCatalog = JSON.parse(readFileSync(new URL("../data/official-course-catalog-2026.json", import.meta.url), "utf8"));
+const unknownScheduleCourse = Object.values(publishedCatalog.programs).flatMap((program) => program.courses).find((course) => course.semester === null && course.year === undefined && !course.offeredSemesters?.length);
+assert.ok(unknownScheduleCourse, "The released catalog contains a real course without published year/semester metadata");
+
+async function openCoursePicker(ui, classYear = 1) {
+  await ui.renderAcademic({ initialProfile: { ...profile, facultyId: "engineering", departmentId: "computer", classYear, courses: [] }, mode: "edit" });
+  await ui.until(() => ui.button("Devam et") && !ui.button("Devam et").disabled);
+  for (let step = 1; step < 4; step++) await ui.click("Devam et");
+  await ui.until(() => ui.host.querySelector(".official-course-picker, .course-catalog-unavailable"));
+}
 
 async function setup(fetch) {
   const ui = await createMobileDom();
   // jsdom has no layout engine; only semantic focus is asserted, not scroll geometry.
   ui.window.HTMLElement.prototype.scrollIntoView = () => {};
-  const context = { exports: {}, require: createRequire(import.meta.url), useEffect, useMemo, useRef, useState, document: ui.document, window: ui.window, FormData: ui.window.FormData, AbortController, Error, fetch, universities, getUniversityById: (id) => universities.find((university) => university.id === id), degreeLabels: { bachelor: "Lisans" }, courseMatchesYear: () => true, courseScheduleLabel: () => "", Logo: () => h("span", null, "Kampira"), UniversityMark: ({ university }) => h("span", { "aria-hidden": true }, university.shortName), Icon: () => h("span", { "aria-hidden": true }) };
+  const context = { exports: {}, require: createRequire(import.meta.url), useEffect, useMemo, useRef, useState, document: ui.document, window: ui.window, FormData: ui.window.FormData, AbortController, Error, fetch, universities, getUniversityById: (id) => universities.find((university) => university.id === id), degreeLabels: { bachelor: "Lisans" }, ...ui.load("lib/course-catalog-display.ts"), Logo: () => h("span", null, "Kampira"), UniversityMark: ({ university }) => h("span", { "aria-hidden": true }, university.shortName), Icon: () => h("span", { "aria-hidden": true }) };
   runInNewContext(code, context);
   const button = (label) => [...ui.host.querySelectorAll("button")].find((element) => element.textContent === label);
   const click = async (target) => ui.click(typeof target === "string" ? button(target) : target);
@@ -138,5 +150,103 @@ test("academic save is single-flight, 400 keeps draft, 401 requests session reco
     assert.equal(saves[2].options.signal.aborted, true);
     await act(async () => saves[2].resolve(response({ profile })));
     assert.equal(completed, 0);
+  } finally { await ui.close(); }
+});
+
+test("the real unknown-semester course remains selectable beside year matches without invented metadata", async () => {
+  const calls = [];
+  const firstYear = { code: "YEAR101", name: "Birinci sınıf dersi", semester: 1, kind: "required" };
+  const secondYear = { code: "YEAR201", name: "İkinci sınıf dersi", semester: 3, kind: "required" };
+  const ui = await setup(async (url, options) => {
+    calls.push({ url, options });
+    return response(url.startsWith("/api/academic-catalog") ? officialCatalog : courseCatalog([firstYear, unknownScheduleCourse, secondYear]));
+  });
+  try {
+    await openCoursePicker(ui);
+    const choices = () => [...ui.host.querySelectorAll(".official-course-grid > button")];
+    assert.equal(choices().length, 2);
+    const unknownChoice = choices().find((button) => button.textContent.includes(unknownScheduleCourse.code));
+    assert.ok(unknownChoice);
+    assert.match(unknownChoice.textContent, /Dönemi belirtilmemiş/);
+    assert.equal(ui.button("1. sınıf").getAttribute("aria-pressed"), "true");
+    assert.equal(ui.button("Tüm dönemler").getAttribute("aria-pressed"), "false");
+    await ui.click(unknownChoice);
+    assert.equal(unknownChoice.getAttribute("aria-pressed"), "true");
+    assert.ok(ui.host.querySelector(".selected-course-tray").textContent.includes(unknownScheduleCourse.code));
+    await ui.fill(ui.host.querySelector('[aria-label="Resmî derslerde ara"]'), "Olmayan arama sonucu xyz");
+    assert.equal(choices().length, 0);
+    assert.match(ui.host.textContent, /Aramanla eşleşen ders bulunamadı/);
+    assert.doesNotMatch(ui.host.textContent, /Seçim yapabilmen için tüm dönemlerin/);
+    assert.equal(ui.button("1. sınıf").getAttribute("aria-pressed"), "true");
+    await ui.click("Aramayı temizle");
+    assert.equal(choices().length, 2);
+    await ui.click("Tüm dönemler");
+    assert.equal(choices().length, 3);
+    assert.ok(calls.filter(({ url }) => url.startsWith("/api/course-catalog")).every(({ options }) => options.cache === "no-cache"));
+  } finally { await ui.close(); }
+});
+
+test("a missing academic year opens all real courses, while an empty search keeps its own recovery", async () => {
+  const courses = [{ code: "YEAR101", name: "Birinci sınıf dersi", semester: 1, kind: null }, { code: "YEAR201", name: "İkinci sınıf dersi", semester: 3, kind: null }, unknownScheduleCourse];
+  const ui = await setup(async (url) => response(url.startsWith("/api/academic-catalog") ? officialCatalog : courseCatalog(courses)));
+  try {
+    await openCoursePicker(ui, 6);
+    assert.equal(ui.host.querySelectorAll(".official-course-grid > button").length, 3);
+    assert.match(ui.host.textContent, /6\. sınıf için ders bulunamadı/);
+    assert.equal(ui.button("6. sınıf").getAttribute("aria-pressed"), "false");
+    assert.equal(ui.button("Tüm dönemler").getAttribute("aria-pressed"), "true");
+    assert.equal(ui.button("Tüm dönemler").className, "active");
+    await ui.fill(ui.host.querySelector('[aria-label="Resmî derslerde ara"]'), "Bulunmayan ders xyz");
+    assert.equal(ui.host.querySelectorAll(".official-course-grid > button").length, 0);
+    assert.match(ui.host.textContent, /Aramanla eşleşen ders bulunamadı/);
+    assert.equal(ui.button("Tüm dönemler").getAttribute("aria-pressed"), "true");
+    await ui.click("Aramayı temizle");
+    assert.equal(ui.host.querySelectorAll(".official-course-grid > button").length, 3);
+    await ui.click("Geri");
+    await ui.click(ui.host.querySelector(".year-picker button"));
+    await ui.click("Devam et");
+    assert.equal(ui.host.querySelectorAll(".official-course-grid > button").length, 2);
+    assert.equal(ui.button("1. sınıf").getAttribute("aria-pressed"), "true");
+    assert.doesNotMatch(ui.host.textContent, /Seçim yapabilmen için tüm dönemlerin/);
+  } finally { await ui.close(); }
+});
+
+test("missing and failed catalogs provide an empty manual row; retries refresh without losing typed choices", async () => {
+  const requests = [];
+  const ui = await setup((url, options) => {
+    if (url.startsWith("/api/academic-catalog")) return Promise.resolve(response(officialCatalog));
+    if (requests.length === 0) { requests.push({ options }); return Promise.resolve(response(courseCatalog([], false))); }
+    const pending = deferred(); requests.push({ options, ...pending }); return pending.promise;
+  });
+  try {
+    await openCoursePicker(ui);
+    assert.ok(ui.host.querySelectorAll(".custom-course-row").length >= 1);
+    // Remove every blank row so a failed retry must recover from the actual empty selection state.
+    while (ui.host.querySelector(".custom-course-row > button")) await ui.click(ui.host.querySelector(".custom-course-row > button"));
+    assert.equal(ui.host.querySelectorAll(".custom-course-row").length, 0);
+    await ui.click("Ders listesini yeniden dene");
+    assert.equal(requests.length, 2);
+    assert.equal(requests[1].options.cache, "no-store");
+    assert.ok(ui.host.querySelector(".course-catalog-loading"));
+    assert.equal(ui.button("Ders listesini yeniden dene"), undefined);
+    await act(async () => requests[1].reject(new Error("Geçici ağ hatası")));
+    assert.equal(ui.host.querySelectorAll(".custom-course-row").length, 1);
+    assert.match(ui.host.textContent, /Ders listesi şu an yüklenemedi/);
+    const fields = [...ui.host.querySelectorAll(".custom-course-row input")];
+    await ui.fill(fields[0], "MAN101"); await ui.fill(fields[1], "Kendi gerçek dersim");
+    await ui.click("Ders listesini yeniden dene");
+    assert.equal(requests[2].options.cache, "no-store");
+    assert.doesNotMatch(ui.host.textContent, /Geçici ağ hatası/);
+    assert.equal(fields[0].value, "MAN101");
+    await act(async () => requests[2].resolve(response(courseCatalog([], false))));
+    assert.equal(ui.host.querySelectorAll(".custom-course-row").length, 1);
+    assert.equal(ui.host.querySelector(".custom-course-row input").value, "MAN101");
+    await ui.click("Ders listesini yeniden dene");
+    await act(async () => requests[3].resolve(response(courseCatalog([unknownScheduleCourse]))));
+    assert.ok(ui.host.querySelector(".official-course-picker"));
+    assert.equal(ui.button("Tüm dönemler").getAttribute("aria-pressed"), "true", "A catalog containing only unspecified periods also opens all real courses");
+    assert.equal(ui.host.querySelector(".custom-course-row input").value, "MAN101");
+    assert.match(ui.host.querySelector(".selected-course-tray").textContent, /MAN101/);
+    assert.doesNotMatch(ui.host.textContent, /Geçici ağ hatası|Ders listesi şu an yüklenemedi/);
   } finally { await ui.close(); }
 });

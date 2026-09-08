@@ -875,6 +875,7 @@ function AcademicOnboarding({
   const [courseCatalog, setCourseCatalog] = useState<CourseCatalogPayload | null>(null);
   const [courseCatalogLoading, setCourseCatalogLoading] = useState(false);
   const [courseCatalogError, setCourseCatalogError] = useState("");
+  const [courseCatalogRequestRevision, setCourseCatalogRequestRevision] = useState(0);
   const [courseQuery, setCourseQuery] = useState("");
   const [courseSemesterFilter, setCourseSemesterFilter] = useState<"recommended" | "all">("recommended");
   const [manualCourseEntry, setManualCourseEntry] = useState(true);
@@ -908,12 +909,15 @@ function AcademicOnboarding({
     .filter((course) => course.code && course.name);
   const selectedCourseCodes = new Set(validCustomCourses.map((course) => normalizeCourseCode(course.code)));
   const recommendedSemesters = classYear >= 1 && classYear <= 6 ? [classYear * 2 - 1, classYear * 2] : [];
+  const courseOptions = courseCatalog?.courses ?? [];
+  const hasCourseCatalog = Boolean(courseCatalog?.available && courseOptions.length);
+  const recommendedCourseOptions = courseOptions.filter((course) => courseMatchesYear(course, classYear));
+  const fallsBackToAllCourses = courseSemesterFilter === "recommended" && courseOptions.length > 0
+    && !courseOptions.some((course) => courseMatchesYear(course, classYear, { includeUnspecified: false }));
+  const effectiveCourseSemesterFilter = fallsBackToAllCourses ? "all" : courseSemesterFilter;
   const normalizedCourseQuery = courseQuery.trim().toLocaleLowerCase("tr-TR");
-  const visibleCourseOptions = (courseCatalog?.courses ?? []).filter((course) => {
-    const matchesPeriod = courseSemesterFilter === "all" || courseMatchesYear(course, classYear);
-    const matchesQuery = !normalizedCourseQuery || `${course.code} ${course.name}`.toLocaleLowerCase("tr-TR").includes(normalizedCourseQuery);
-    return matchesPeriod && matchesQuery;
-  });
+  const visibleCourseOptions = (effectiveCourseSemesterFilter === "all" ? courseOptions : recommendedCourseOptions)
+    .filter((course) => !normalizedCourseQuery || `${course.code} ${course.name}`.toLocaleLowerCase("tr-TR").includes(normalizedCourseQuery));
   const visibleUniversities = useMemo(() => {
     const query = universityQuery.trim().toLocaleLowerCase("tr-TR");
     const matches = query
@@ -964,10 +968,14 @@ function AcademicOnboarding({
     if (!usesOfficialCatalog || !departmentId) return;
 
     const controller = new AbortController();
+    const showManualCourses = () => {
+      setManualCourseEntry(true);
+      setCustomCourses((current) => current.some((course) => course.source !== "catalog") ? current : [...current, { code: "", name: "", source: "manual" }]);
+    };
 
     void fetch(`/api/course-catalog?universityId=${encodeURIComponent(universityId)}&programId=${encodeURIComponent(departmentId)}`, {
       headers: { accept: "application/json" },
-      cache: "no-cache",
+      cache: courseCatalogRequestRevision > 0 ? "no-store" : "no-cache",
       signal: controller.signal,
     })
       .then(async (response) => {
@@ -976,8 +984,10 @@ function AcademicOnboarding({
         if (!response.ok) throw new Error(payload.error ?? "Ders kataloğu yüklenemedi.");
         if (controller.signal.aborted) return;
         setCourseCatalog(payload);
-        setManualCourseEntry(!payload.available);
-        if (payload.available) {
+        if (!payload.available || !payload.courses.length) {
+          showManualCourses();
+        } else if (courseCatalogRequestRevision === 0) {
+          setManualCourseEntry(false);
           setCustomCourses((current) => current.some((course) => course.code.trim() || course.name.trim()) ? current : []);
         }
       })
@@ -985,14 +995,14 @@ function AcademicOnboarding({
         if (controller.signal.aborted) return;
         setCourseCatalog(null);
         setCourseCatalogError(courseLoadError instanceof Error ? courseLoadError.message : "Ders kataloğu yüklenemedi.");
-        setManualCourseEntry(true);
+        showManualCourses();
       })
       .finally(() => {
         if (!controller.signal.aborted) setCourseCatalogLoading(false);
       });
 
     return () => controller.abort();
-  }, [usesOfficialCatalog, universityId, departmentId]);
+  }, [usesOfficialCatalog, universityId, departmentId, courseCatalogRequestRevision]);
 
   if (state === "unavailable") {
     return (
@@ -1015,6 +1025,7 @@ function AcademicOnboarding({
     setCourseCatalog(null);
     setCourseCatalogLoading(false);
     setCourseCatalogError("");
+    setCourseCatalogRequestRevision(0);
     setCustomCourses([{ code: "", name: "", source: "manual" }, { code: "", name: "", source: "manual" }, { code: "", name: "", source: "manual" }]);
     setManualCourseEntry(true);
     setProgramQuery("");
@@ -1039,6 +1050,7 @@ function AcademicOnboarding({
     setCourseCatalog(null);
     setCourseCatalogLoading(false);
     setCourseCatalogError("");
+    setCourseCatalogRequestRevision(0);
     setCourseQuery("");
     setManualCourseEntry(true);
     setManualAcademic(false);
@@ -1054,12 +1066,20 @@ function AcademicOnboarding({
       setCourseCatalog(null);
       setCourseCatalogLoading(true);
       setCourseCatalogError("");
+      setCourseCatalogRequestRevision(0);
       setCourseQuery("");
       setCourseSemesterFilter("recommended");
       setManualCourseEntry(true);
     }
     setDepartmentId(nextDepartmentId);
     setError("");
+  }
+
+  function retryCourseCatalog() {
+    setCourseCatalog(null);
+    setCourseCatalogError("");
+    setCourseCatalogLoading(true);
+    setCourseCatalogRequestRevision((revision) => revision + 1);
   }
 
   function updateCustomCourse(index: number, field: "code" | "name", value: string) {
@@ -1304,23 +1324,24 @@ function AcademicOnboarding({
               <div className={`course-count${validCustomCourses.length < 3 ? " needs-selection" : ""}`}><span><strong>{validCustomCourses.length}</strong> ders ekledin</span><small>{validCustomCourses.length < 3 ? `${3 - validCustomCourses.length} ders daha gerekli` : "En fazla 8 ders"}</small></div>
               {selectedDepartment?.curriculumUrls?.[0] && <a className="catalog-curriculum-link" href={selectedDepartment.curriculumUrls[0]} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Resmî ders / müfredat planını aç{(selectedDepartment.curriculumAuthority || selectedDepartment.curriculumPeriod) ? <small>{[selectedDepartment.curriculumAuthority, selectedDepartment.curriculumPeriod].filter(Boolean).join(" · ")}</small> : null}</span><Icon name="arrow" size={14}/></a>}
               {courseCatalogLoading && <div className="course-catalog-loading"><Icon name="sparkles" size={18}/> Bölümünün resmî dersleri hazırlanıyor…</div>}
-              {!courseCatalogLoading && courseCatalog?.available && <section className="official-course-picker" aria-labelledby="official-course-picker-title">
+              {!courseCatalogLoading && hasCourseCatalog && courseCatalog && <section className="official-course-picker" aria-labelledby="official-course-picker-title">
                 <header><div><span>DOĞRULANMIŞ DERS KATALOĞU</span><h2 id="official-course-picker-title">Derslerini listeden seç</h2><p>{courseCatalog.authority} tarafından yayımlanan programdan derlendi.</p></div><a href={courseCatalog.sourceUrl} target="_blank" rel="noreferrer">Kaynağı aç <Icon name="arrow" size={14}/></a></header>
                 <div className="course-picker-tools">
                   <label><Icon name="search" size={17}/><input value={courseQuery} onChange={(event) => setCourseQuery(event.target.value)} placeholder="Ders kodu veya adı ara" aria-label="Resmî derslerde ara"/>{courseQuery && <button type="button" onClick={() => setCourseQuery("")} aria-label="Ders aramasını temizle"><Icon name="close" size={14}/></button>}</label>
-                  <div role="group" aria-label="Ders dönemi filtresi"><button className={courseSemesterFilter === "recommended" ? "active" : ""} type="button" onClick={() => setCourseSemesterFilter("recommended")}>{recommendedSemesters.length ? `${classYear}. sınıf` : "Sınıfım"}</button><button className={courseSemesterFilter === "all" ? "active" : ""} type="button" onClick={() => setCourseSemesterFilter("all")}>Tüm dönemler</button></div>
+                  <div role="group" aria-label="Ders dönemi filtresi"><button className={effectiveCourseSemesterFilter === "recommended" ? "active" : ""} aria-pressed={effectiveCourseSemesterFilter === "recommended"} type="button" onClick={() => setCourseSemesterFilter("recommended")}>{recommendedSemesters.length ? `${classYear}. sınıf` : "Sınıfım"}</button><button className={effectiveCourseSemesterFilter === "all" ? "active" : ""} aria-pressed={effectiveCourseSemesterFilter === "all"} type="button" onClick={() => setCourseSemesterFilter("all")}>Tüm dönemler</button></div>
                 </div>
+                {fallsBackToAllCourses && <p className="official-course-empty" role="status">Bu katalogda {classYear}. sınıf için ders bulunamadı. Seçim yapabilmen için tüm dönemlerin derslerini gösteriyoruz.</p>}
                 <div className="official-course-grid">
                   {visibleCourseOptions.map((course) => {
                     const selected = selectedCourseCodes.has(normalizeCourseCode(course.code));
                     return <button className={selected ? "selected" : ""} type="button" aria-pressed={selected} onClick={() => toggleCatalogCourse(course)} key={course.code}><span><small>{course.code}</small><strong>{course.name}</strong><em>{courseScheduleLabel(course)}</em></span><i>{selected ? <Icon name="check" size={15}/> : <Icon name="plus" size={15}/>}</i></button>;
                   })}
                 </div>
-                {visibleCourseOptions.length === 0 && <p className="official-course-empty">Bu filtreyle eşleşen ders yok. Tüm dönemleri açabilir veya dersi elle ekleyebilirsin.</p>}
+                {visibleCourseOptions.length === 0 && normalizedCourseQuery && <p className="official-course-empty" role="status">Aramanla eşleşen ders bulunamadı. <button type="button" onClick={() => setCourseQuery("")}>Aramayı temizle</button></p>}
                 <footer><Icon name="check" size={15}/><span>{courseCatalog.curriculumPeriod && <>Müfredat: {courseCatalog.curriculumPeriod}. </>}{courseCatalog.verifiedAt} tarihinde resmî kaynaktan kontrol edildi. {courseCatalog.coverage === "partial" && "Kaynakta okunabilen dersler listelenir; belirtilmeyen dönem ve ders türleri tahmin edilmez. "}Listede olmayan dersini elle ekleyebilirsin.</span></footer>
               </section>}
-              {!courseCatalogLoading && !courseCatalog?.available && <div className="course-catalog-unavailable"><Icon name="file" size={18}/><span><strong>Bu programın ders listesi henüz yapılandırılmadı.</strong><small>{courseCatalogError || "Resmî bağlantı mevcutsa yukarıdan kontrol edebilir; derslerini aşağıya elle ekleyebilirsin."}</small></span></div>}
-              {!courseCatalogLoading && !courseCatalog?.available && courseCatalog?.catalogs?.map((catalog, index) => <a key={catalog.url} className="catalog-curriculum-link" href={catalog.url} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Üniversitenin resmî ders kataloğunu aç{index > 0 ? ` (${index + 1})` : ""}<small>Katalogdan bölümünü seçebilirsin · {catalog.checkedAt} tarihinde kontrol edildi</small></span><Icon name="arrow" size={14}/></a>)}
+              {!courseCatalogLoading && !hasCourseCatalog && <div className="course-catalog-unavailable"><Icon name="file" size={18}/><span><strong>{courseCatalogError ? "Ders listesi şu an yüklenemedi." : "Bu programın ders listesi henüz yapılandırılmadı."}</strong><small>{courseCatalogError || "Resmî bağlantı mevcutsa yukarıdan kontrol edebilir; derslerini aşağıya elle ekleyebilirsin."}</small>{usesOfficialCatalog && departmentId && <button type="button" onClick={retryCourseCatalog}>Ders listesini yeniden dene</button>}</span></div>}
+              {!courseCatalogLoading && !hasCourseCatalog && courseCatalog?.catalogs?.map((catalog, index) => <a key={catalog.url} className="catalog-curriculum-link" href={catalog.url} target="_blank" rel="noreferrer"><Icon name="file" size={16}/><span>Üniversitenin resmî ders kataloğunu aç{index > 0 ? ` (${index + 1})` : ""}<small>Katalogdan bölümünü seçebilirsin · {catalog.checkedAt} tarihinde kontrol edildi</small></span><Icon name="arrow" size={14}/></a>)}
               {validCustomCourses.length > 0 && <div className="selected-course-tray"><span>Seçtiklerin</span><div>{validCustomCourses.map((course) => <button type="button" onClick={() => setCustomCourses((current) => current.filter((item) => normalizeCourseCode(item.code) !== normalizeCourseCode(course.code)))} key={`${course.code}-${course.name}`}>{course.code}<Icon name="close" size={12}/></button>)}</div></div>}
               <button className="manual-course-toggle" type="button" onClick={toggleManualCourseEntry}><Icon name={manualCourseEntry ? "close" : "plus"} size={15}/>{manualCourseEntry ? "Elle ders ekleme alanını kapat" : "Dersim listede yok, elle ekle"}</button>
               {manualCourseEntry && <div className="custom-course-list">

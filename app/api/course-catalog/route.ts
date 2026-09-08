@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         catalogs: getCourseCatalogSources(universityId),
         limitations: officialCourseCatalogMeta.limitations,
       },
-      { headers: { "cache-control": "public, max-age=3600, stale-while-revalidate=86400" } },
+      { headers: { "cache-control": "public, max-age=60, must-revalidate" } },
     );
   }
 

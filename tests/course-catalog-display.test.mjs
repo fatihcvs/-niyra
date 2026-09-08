@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
+import { runInNewContext } from "node:vm";
 import ts from "typescript";
 
 const source = await readFile(new URL("../lib/course-catalog-display.ts", import.meta.url), "utf8");
@@ -10,7 +11,8 @@ const { courseMatchesYear, courseScheduleLabel } = await import(`data:text/javas
 test("unknown course metadata stays visible without inventing an elective or period", () => {
   const course = { semester: null, kind: null };
   assert.equal(courseScheduleLabel(course), "Dönemi belirtilmemiş · Türü belirtilmemiş");
-  for (let year = 1; year <= 6; year++) assert.equal(courseMatchesYear(course, year), false);
+  for (let year = 1; year <= 6; year++) assert.equal(courseMatchesYear(course, year), true);
+  assert.equal(courseMatchesYear(course, 1, { includeUnspecified: false }), false);
 });
 
 test("published academic year wins over a summer semester number", () => {
@@ -27,6 +29,27 @@ test("an elective offered in multiple years can be found in either year", () => 
   assert.equal(courseMatchesYear(elective, 4), true);
   assert.equal(courseMatchesYear(elective, 2), false);
   assert.equal(courseScheduleLabel(elective), "6, 7. dönem · Seçmeli");
+});
+
+test("an unavailable course catalog cannot remain stale for a day after new courses are published", async () => {
+  const routeSource = await readFile(new URL("../app/api/course-catalog/route.ts", import.meta.url), "utf8");
+  const routeCode = ts.transpileModule(routeSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  let currentProgram = null;
+  const modules = {
+    "../../../lib/academic-data": { getUniversityById: () => ({ id: "test", name: "Test üniversitesi" }) },
+    "../../../lib/academic-catalog": { getOfficialAcademicProgram: () => ({ id: "program", name: "Test programı" }) },
+    "../../../lib/official-course-catalog": { getOfficialCourseProgram: async () => currentProgram, officialCourseCatalogMeta: { version: "test", limitations: [] } },
+    "../../../lib/course-catalog-sources": { getCourseCatalogSources: () => [] },
+  };
+  const context = { exports: {}, URL, Response, require: (name) => { assert.ok(name in modules); return modules[name]; } };
+  runInNewContext(routeCode, context);
+  const request = new Request("https://kampira.net/api/course-catalog?universityId=test&programId=program");
+  const unavailable = await context.exports.GET(request);
+  assert.equal(unavailable.headers.get("cache-control"), "public, max-age=60, must-revalidate");
+  assert.equal((await unavailable.json()).available, false);
+  currentProgram = { courses: [{ code: "NEW101", name: "Yeni yayımlanan ders", semester: null, kind: null }] };
+  const refreshed = await context.exports.GET(request);
+  assert.equal((await refreshed.json()).courses[0].code, "NEW101");
 });
 
 test("Cyprus coverage reports actual matched courses and leaves gaps explicit", async () => {
