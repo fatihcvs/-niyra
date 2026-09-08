@@ -2931,8 +2931,33 @@
     "status": "catalogue-checked"
   },
   "tr-tobb-ekonomi-ve-teknoloji-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://www.etu.edu.tr/tr/sayfa/tyyc-bilgi-paketleri",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "a0580a1c31f6a65f46f91452879bcd34c53f0189ad817b315dc1a4a6cce85643",
+        "evidence": "official-undergraduate-tyyc-directory"
+      },
+      {
+        "url": "https://abys.etu.edu.tr/public/program.jsp?program=5&lang=tr&showMenu=true",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "6b5be27dfc54ab8f6e7c4bd341c78486d992f53fbba10c152cc5547ff1c8237b",
+        "evidence": "official-public-programme-course-package"
+      },
+      {
+        "url": "https://abys.etu.edu.tr/public/program.jsp?program=219&lang=tr&showMenu=true",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "f8d00c9eb32994d966513418dde7af93361f84f63ceef248320b67fe64d96cb6",
+        "evidence": "official-public-medical-programme-course-package"
+      },
+      {
+        "url": "https://www.etu.edu.tr/tr/bolum/yonetim-bilisim-sistemleri/ders-mufredati",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "c407a2540bd10668e302adc0a8cf07c524759312c6cc6659affe3fecd6566932",
+        "evidence": "official-current-ybs-curriculum"
+      }
+    ],
+    "status": "official-programme-course-packages-reviewed"
   },
   "tr-tokat-gaziosmanpasa-universitesi": {
     "catalogs": [

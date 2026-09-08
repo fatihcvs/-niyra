@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,772 programda ders kaydı · 1,411 programda ders listesi eksik.
-Toplam 1,531,704 program-ders kaydı. 192 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,794 programda ders kaydı · 1,389 programda ders listesi eksik.
+Toplam 1,533,237 program-ders kaydı. 193 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,204
+- Resmî program eşleşmesi eksik: 1,182
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -202,7 +202,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Tarsus Üniversitesi | 43 | 43 | 0 | 6,183 | 5 | [Kaynak 1](https://bologna.tarsus.edu.tr/tr/programlar/5367) · [Kaynak 2](https://bologna.tarsus.edu.tr/tr/programlar/5368) |
 | TED Üniversitesi | 22 | 21 | 1 | 815 | 5 | [Kaynak 1](https://www.tedu.edu.tr/akademik) |
 | Tekirdağ Namık Kemal Üniversitesi | 122 | 116 | 6 | 8,516 | 15 | [Kaynak 1](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/2) · [Kaynak 2](https://bilgipaketi.nku.edu.tr:443/nku/akademikliste/m/5559/3) |
-| TOBB Ekonomi ve Teknoloji Üniversitesi | 22 | 0 | 22 | 0 | 5 | Doğrulanmış giriş yok |
+| TOBB Ekonomi ve Teknoloji Üniversitesi | 22 | 22 | 0 | 1,533 | 5 | [Kaynak 1](https://www.etu.edu.tr/tr/sayfa/tyyc-bilgi-paketleri) · [Kaynak 2](https://abys.etu.edu.tr/public/program.jsp?program=5&lang=tr&showMenu=true) · [Kaynak 3](https://abys.etu.edu.tr/public/program.jsp?program=219&lang=tr&showMenu=true) · [Kaynak 4](https://www.etu.edu.tr/tr/bolum/yonetim-bilisim-sistemleri/ders-mufredati) |
 | Tokat Gaziosmanpaşa Üniversitesi | 150 | 149 | 1 | 12,538 | 10 | [Kaynak 1](https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gop.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Toros Üniversitesi | 31 | 29 | 2 | 1,998 | 15 | [Kaynak 1](https://toros.edu.tr/bologna/programlar) |
 | Trabzon Üniversitesi | 56 | 42 | 14 | 3,020 | 10 | [Kaynak 1](https://ubys.trabzon.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |

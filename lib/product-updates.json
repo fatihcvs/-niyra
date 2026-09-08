@@ -1,5 +1,21 @@
 [
   {
+    "id": "turkey-course-catalogs-thirty-sixth-expansion",
+    "releasedAt": "2026-09-08T10:25:49Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "TOBB ETÜ’nün 22 lisans programı tamamlandı",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.794’e, program-ders kaydı sayısı 1.533.237’ye ulaştı.",
+    "highlights": [
+      "TOBB Ekonomi ve Teknoloji Üniversitesinin 22 lisans programına 1.533 resmî program-ders kaydı eklendi. Kurumdaki programların tamamı yapılandırılmış ders içeriğine kavuştu.",
+      "Program adları ve akademik birimleri üniversitenin resmî lisans bilgi paketleri dizinindeki tekil program bağlantılarıyla eşleştirildi.",
+      "Yirmi bir programın herkese açık ders bilgi paketlerindeki kodlu dersleri aktarıldı. Kaynağın dönem veya ders türü yayımlamadığı kayıtlara bu bilgiler tahmin edilmedi.",
+      "Yeni açılan Yönetim Bilişim Sistemleri programında 11 eğitim dönemi ve beş seçmeli ders modülü birlikte işlendi; 74 dersin dönem ve zorunlu/seçmeli bilgisi kaynağa göre korundu.",
+      "Tek haneli İkinci Yabancı Dil ders kodları yalnız üniversitenin tekil ders sayfasına bağlandığı durumlarda gerçek ders olarak kabul edildi.",
+      "Daha önce yayımlanmış 13.772 programın ders içeriği değişmeden korundu. Türkiye genelinde eksik ders listesi sayısı 1.389’a düştü."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-thirty-fifth-expansion",
     "releasedAt": "2026-09-08T09:42:49Z",
     "category": "İyileştirme",

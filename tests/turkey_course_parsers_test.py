@@ -1034,4 +1034,52 @@ class KocCatalogTests(unittest.TestCase):
         })
 
 
+class TobbCatalogTests(unittest.TestCase):
+    def test_abys_programme_package_uses_lesson_link_identity(self):
+        from parse_turkey_tobb_courses import parse_tobb_abys
+
+        document = html('''
+          <a href="/public/lesson.jsp?program=5&amp;lang=tr&amp;lesson=BİL113">BİL113 - Bilgisayar Programlama I</a>
+          <a href="/public/lesson.jsp?program=5&amp;lang=tr&amp;lesson=İYD1">İYD1 - İkinci Yabancı Dil I</a>
+          <a href="/public/lesson.jsp?program=5&amp;lang=tr&amp;lesson=BİL114">Yanlış Kod - Dahil Edilmez</a>
+        ''')
+        courses, conflicts = parse_tobb_abys(document, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'BİL113', 'name': 'Bilgisayar Programlama I', 'semester': None, 'kind': None},
+            {'code': 'İYD1', 'name': 'İkinci Yabancı Dil I', 'semester': None, 'kind': None},
+        ])
+
+    def test_ybs_plan_keeps_eleven_terms_and_elective_modules(self):
+        from parse_turkey_tobb_courses import parse_tobb_ybs
+
+        document = html('''
+          <table><tbody>
+            <tr><td>1. Yıl — 1. Dönem (Güz)</td></tr>
+            <tr><td>Ders Kodu</td><td>Dersin Adı</td></tr>
+            <tr><td>YBS 101</td><td>Yönetim Bilişim Sistemlerine Giriş</td></tr>
+            <tr><td>4. Yıl — 11. Dönem (Bahar)</td></tr>
+            <tr><td>YBS 404</td><td>Bitirme Projesi</td></tr>
+          </tbody></table>
+          <table><tbody>
+            <tr><td>Ders Kodu</td><td>Ders Adı</td></tr>
+            <tr><td>YBS 451</td><td>Yapay Zeka ve Büyük Dil Modelleri</td></tr>
+          </tbody></table>
+        ''')
+        courses, conflicts = parse_tobb_ybs(document, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'YBS101', 'name': 'Yönetim Bilişim Sistemlerine Giriş', 'semester': 1, 'kind': 'required'},
+            {'code': 'YBS404', 'name': 'Bitirme Projesi', 'semester': 11, 'kind': 'required'},
+            {'code': 'YBS451', 'name': 'Yapay Zeka ve Büyük Dil Modelleri', 'semester': None, 'kind': 'elective'},
+        ])
+
+    def test_reviewed_tobb_counts_are_frozen(self):
+        from collect_turkey_tobb_catalog import EXPECTED_COUNTS, EXPECTED_TOTAL
+
+        self.assertEqual(len(EXPECTED_COUNTS), 22)
+        self.assertEqual(sum(EXPECTED_COUNTS.values()), EXPECTED_TOTAL)
+        self.assertEqual(EXPECTED_TOTAL, 1533)
+
+
 if __name__=='__main__':unittest.main()

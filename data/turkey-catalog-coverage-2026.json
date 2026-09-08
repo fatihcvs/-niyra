@@ -4783,57 +4783,11 @@
       "universityId": "tr-tobb-ekonomi-ve-teknoloji-universitesi",
       "name": "TOBB Ekonomi ve Teknoloji Üniversitesi",
       "programCount": 22,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-205410971",
-        "program-osym-205410026",
-        "program-osym-205410035",
-        "program-osym-205410486",
-        "program-osym-205411033",
-        "program-osym-205410105",
-        "program-osym-205410405",
-        "program-osym-205410123",
-        "program-osym-205410141",
-        "program-osym-205410168",
-        "program-osym-205410511",
-        "program-osym-205490116",
-        "program-osym-205410265",
-        "program-osym-205411103",
-        "program-osym-205410371",
-        "program-osym-205400157",
-        "program-osym-205410044",
-        "program-osym-205410062",
-        "program-osym-205490115",
-        "program-osym-205410962",
-        "program-osym-205410502",
-        "program-osym-205410698"
-      ],
-      "missingReasons": {
-        "program-osym-205410971": "programme-source-not-matched",
-        "program-osym-205410026": "programme-source-not-matched",
-        "program-osym-205410035": "programme-source-not-matched",
-        "program-osym-205410486": "programme-source-not-matched",
-        "program-osym-205411033": "programme-source-not-matched",
-        "program-osym-205410105": "programme-source-not-matched",
-        "program-osym-205410405": "programme-source-not-matched",
-        "program-osym-205410123": "programme-source-not-matched",
-        "program-osym-205410141": "programme-source-not-matched",
-        "program-osym-205410168": "programme-source-not-matched",
-        "program-osym-205410511": "programme-source-not-matched",
-        "program-osym-205490116": "programme-source-not-matched",
-        "program-osym-205410265": "programme-source-not-matched",
-        "program-osym-205411103": "programme-source-not-matched",
-        "program-osym-205410371": "programme-source-not-matched",
-        "program-osym-205400157": "programme-source-not-matched",
-        "program-osym-205410044": "programme-source-not-matched",
-        "program-osym-205410062": "programme-source-not-matched",
-        "program-osym-205490115": "programme-source-not-matched",
-        "program-osym-205410962": "programme-source-not-matched",
-        "program-osym-205410502": "programme-source-not-matched",
-        "program-osym-205410698": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 22,
+      "courseCount": 1533,
+      "linkedProgramCount": 22,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-tokat-gaziosmanpasa-universitesi",
@@ -5213,8 +5167,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28821,
-    "parserVersion": "c2c4a39ba566",
+    "sourceCount": 28843,
+    "parserVersion": "dd273bdaf512",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5228,14 +5182,16 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "c2c4a39ba566",
+      "ankara-reviewed-2026": "dd273bdaf512",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
       "maltepe-direct-2026": "96e4cbc0f403",
-      "koc-curriculum-2026": "13e763812ccb",
-      "koc-nursing-2026": "13e763812ccb",
-      "koc-medicine-2026": "13e763812ccb"
+      "koc-curriculum-2026": "1c0bd0b75534",
+      "koc-nursing-2026": "1c0bd0b75534",
+      "koc-medicine-2026": "1c0bd0b75534",
+      "tobb-abys-2026": "cf94264b96b2",
+      "tobb-ybs-curriculum-2026": "cf94264b96b2"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5270,7 +5226,8 @@
       "ktun-reviewed-courses.json": "1d12c4b3a68cc25f60f634f38c85045419d29acc767a16bc0c0550b6bbbe0874",
       "duzce-reviewed-courses.json": "d88ddece92d6c5ecd5a0eeb38f5d23e5286d3e31f9c08082e0c35d9e9861843e",
       "maltepe-reviewed-courses.json": "14ab320281cd0e444f798635cbac7edafa72583750331f0e41e6049374547c30",
-      "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09"
+      "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09",
+      "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df"
     }
   }
 }
