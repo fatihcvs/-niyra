@@ -23,6 +23,25 @@ ROOTS = {
     'tr-eskisehir-teknik-universitesi':'https://akts.eskisehir.edu.tr/tr/akademik/lisans',
 }
 
+# Anadolu's public ABP uses older internal programme labels for a small set of
+# current YÖK programmes.  The profile id, degree and unit together provide the
+# stable identity; keep the source label for auditability and match the current
+# registry title only for these reviewed routes.
+ANADOLU_PROFILE_ALIASES = {
+    '165': 'program-osym-101010131',
+    '211': 'program-osym-101010282',
+    '213': 'program-osym-101010316',
+    '214': 'program-osym-101010291',
+    '226': 'program-osym-101010361',
+    '227': 'program-osym-101090566',
+    '228': 'program-osym-101010352',
+    '1991': 'program-osym-101010167',
+    '2150': 'program-osym-101090776',
+    '2151': 'program-osym-101090762',
+    '2152': 'program-osym-101090769',
+    '2220': 'program-osym-101000122',
+}
+
 
 def leaf_programme_title(parent,leaf):
     """A leaf can name a degree or an actual programme below a department."""
@@ -53,7 +72,8 @@ def unique_or_published(mapped,published):
 def discover(uid, root, university):
     first=fetch(root); d=soup(first); dirs={root}
     for url,title in links(d,first.get('finalUrl',root)).items():
-        if normal(title) in ['lisans','onlisans','on lisans','lisans programlari','onlisans programlari']:
+        if normal(title) in ['lisans','onlisans','on lisans','lisans programlari','onlisans programlari',
+                             'acik uzaktan egitim sistemi']:
             dirs.add(url.strip())
     items=[]
     for url in dirs:
@@ -79,6 +99,12 @@ def discover(uid, root, university):
                 course=target
             elif '/program/programProfili/' in href or '/program/hakkinda/' in href:
                 h=a.find_previous('a',href=re.compile('/birim/genelBilgi/'));unit=clean(h.get_text()) if h else None
+                if '/akademik/acikogretim' in url:
+                    section=a.find_previous('li',class_='bolum')
+                    section_title=clean(section.get_text()) if section else ''
+                    degree='associate' if normal(section_title).startswith('onlisans') else 'bachelor'
+                    if normal(title)=='ilahiyat':title+=' (Önlisans)'
+                    title+=' (Açıköğretim)'
                 course=None
             elif '/programme-detail/' in href:
                 p=a.find_parent('li',class_='list-group-item');h=p.find(['div','span','b','strong','a'],recursive=False) if p else None
@@ -104,7 +130,17 @@ def discover(uid, root, university):
             items.append({'title':clean(row.get_text()),'unit':clean(heading.get_text()) if heading else None,
                 'degree':degree,'url':urljoin(url,m[1]),'courseUrl':urljoin(url,m[1]),'directoryUrl':url})
     mapped=[]
+    units={u['id']:normal(u['name']) for u in university['units']}
+    programmes={p['id']:p for p in university['programs']}
     for item in {x['url']:x for x in items}.values():
+        if uid=='tr-anadolu-universitesi':
+            profile=re.search(r'/program/programProfili/(\d+)/',item['url'])
+            alias_id=ANADOLU_PROFILE_ALIASES.get(profile[1] if profile else '')
+            if alias_id:
+                target=programmes[alias_id]
+                if target['degreeLevel']!=item['degree'] or units[target['unitId']]!=normal(item.get('unit','')):
+                    raise ValueError(f'Anadolu alias identity changed for profile {profile[1]}')
+                item={**item,'sourceTitle':item['title'],'title':target['name']}
         p=match(university,item)
         if not p:continue
         if not item['courseUrl']:

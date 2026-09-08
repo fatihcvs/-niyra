@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,384 programda ders kaydı · 1,799 programda ders listesi eksik.
-Toplam 1,505,663 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,441 programda ders kaydı · 1,742 programda ders listesi eksik.
+Toplam 1,508,010 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,599
-- Okunabilir ders listesi bulunamadı: 147
+- Resmî program eşleşmesi eksik: 1,541
+- Okunabilir ders listesi bulunamadı: 149
 - Kaynakta program ayrımı doğrulanamadı: 32
-- Ders kaynağına erişilemedi: 21
+- Ders kaynağına erişilemedi: 20
 
 ## Kurumlar
 
@@ -31,7 +31,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Alanya Üniversitesi | 26 | 26 | 0 | 1,241 | 5 | [Kaynak 1](https://sis.alanyauniversity.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://sis.alanyauniversity.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Altınbaş Üniversitesi | 46 | 45 | 1 | 1,579 | 10 | [Kaynak 1](https://auects.altinbas.edu.tr/web/Ects/DegreePrograms?D=L) · [Kaynak 2](https://auects.altinbas.edu.tr/web/Ects/DegreePrograms?D=O) |
 | Amasya Üniversitesi | 85 | 63 | 22 | 4,043 | 20 | [Kaynak 1](https://obs.amasya.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.amasya.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Anadolu Üniversitesi | 104 | 37 | 67 | 2,429 | 5 | [Kaynak 1](https://abp.anadolu.edu.tr/tr/akademik/lisans) · [Kaynak 2](https://abp.anadolu.edu.tr/tr/akademik/onLisans) |
+| Anadolu Üniversitesi | 104 | 94 | 10 | 4,776 | 5 | [Kaynak 1](https://abp.anadolu.edu.tr/tr/akademik/lisans) · [Kaynak 2](https://abp.anadolu.edu.tr/tr/akademik/onLisans) |
 | Ankara Bilim Üniversitesi | 29 | 26 | 3 | 1,448 | 5 | [Kaynak 1](https://obs.ankarabilim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ankarabilim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Ankara Hacı Bayram Veli Üniversitesi | 70 | 66 | 4 | 16,706 | 20 | [Kaynak 1](https://obs.hacibayram.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.hacibayram.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Ankara Medipol Üniversitesi | 64 | 61 | 3 | 4,887 | 0 | [Kaynak 1](https://mebis.ankaramedipol.edu.tr/ProgramBilgi/ProgramListesi?derece=Lisans&lang=tr) · [Kaynak 2](https://mebis.ankaramedipol.edu.tr/ProgramBilgi/ProgramListesi?derece=OnLisans&lang=tr) |

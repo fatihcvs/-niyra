@@ -439,6 +439,43 @@ test("Cukurova programmes link only to populated current EBS course plans", () =
   ].sort());
 });
 
+test("Anadolu programmes include the official open-education directory and reviewed profile aliases", () => {
+  const anadolu = catalog.universities["tr-anadolu-universitesi"];
+  const curriculumPrograms = anadolu.programs.filter((program) => program.curriculumUrls?.length);
+
+  assert.equal(anadolu.programs.length, 104);
+  assert.equal(curriculumPrograms.length, 94);
+  assert.equal(curriculumPrograms.filter((program) => program.name.includes("(Açıköğretim)")).length, 46);
+  assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Anadolu Üniversitesi"));
+  assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
+    const parsed = new URL(url);
+    return parsed.hostname === "abp.anadolu.edu.tr"
+      && /^\/tr\/program\/dersler\/\d+\/13$/.test(parsed.pathname);
+  })));
+
+  assert.equal(
+    curriculumPrograms.find((program) => program.name === "Gazetecilik")?.curriculumUrls[0],
+    "https://abp.anadolu.edu.tr/tr/program/dersler/227/13",
+  );
+  assert.equal(
+    curriculumPrograms.find((program) => program.name === "İngilizce Öğretmenliği (İngilizce) (UOLP-SUNY Cortland)")?.curriculumUrls[0],
+    "https://abp.anadolu.edu.tr/tr/program/dersler/165/13",
+  );
+
+  assert.deepEqual(anadolu.programs.filter((program) => !program.curriculumUrls?.length).map((program) => program.id).sort(), [
+    "program-osym-101000101",
+    "program-osym-101000108",
+    "program-osym-101000115",
+    "program-osym-101000122",
+    "program-osym-101000136",
+    "program-osym-101010016",
+    "program-osym-101010079",
+    "program-osym-101010113",
+    "program-osym-101010255",
+    "program-osym-101090713",
+  ].sort());
+});
+
 test("institution-published catalogs cover the six former registry-only institutions", () => {
   const expected = {
     "tr-milli-savunma-universitesi": [15, 47],

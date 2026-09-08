@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-sixth-expansion",
+    "releasedAt": "2026-09-08T03:29:55Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Anadolu Üniversitesinde 57 programın ders planı eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.441’e, program-ders kaydı sayısı 1.508.010’a ulaştı.",
+    "highlights": [
+      "Anadolu Üniversitesinin eksik 57 programına 2.347 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 37’den 94’e, toplam kayıt 2.429’dan 4.776’ya çıktı.",
+      "Resmî ABP lisans ve önlisans dizinlerine ek olarak ayrı Açık ve Uzaktan Eğitim Sistemi dizini işlendi. Dizindeki programlar ön lisans/lisans bölümü, Açıköğretim Fakültesi ve program adıyla güncel ÖSYM envanterine bağlandı.",
+      "Kurumun eski iç başlık kullandığı 12 örgün program sabit resmî profil kimliği, derece ve akademik birimle doğrulandı; bunların 11’inde okunabilir ders tablosu yayımlandı.",
+      "Yeni kayıtlar yalnız programın kendi resmî ders sayfasından alındı. Daha önce yayımlanmış 13.384 programın ders içeriği değişmeden korundu.",
+      "Anadolu Üniversitesinde birebir resmî profil bulunmayan veya ders tablosu yayımlanmayan 10 program açık eksik bırakıldı. Türkiye genelinde 1.742 programın ders listesi hâlâ eksik; 204 kurumun 29’u tamamen yapılandırıldı ve 193 kurumda en az bir doğrulanmış ders planı bulunuyor."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-fifth-expansion",
     "releasedAt": "2026-09-08T02:52:10Z",
     "category": "İyileştirme",
