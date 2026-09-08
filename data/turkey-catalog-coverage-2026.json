@@ -1451,76 +1451,20 @@
       "universityId": "tr-duzce-universitesi",
       "name": "Düzce Üniversitesi",
       "programCount": 111,
-      "structuredProgramCount": 79,
-      "courseCount": 8239,
-      "linkedProgramCount": 79,
+      "structuredProgramCount": 107,
+      "courseCount": 10964,
+      "linkedProgramCount": 107,
       "missingProgramIds": [
-        "program-osym-103310361",
-        "program-osym-103350306",
-        "program-osym-103310494",
-        "program-osym-103310528",
-        "program-osym-103350554",
-        "program-osym-103350448",
-        "program-osym-103390202",
         "program-osym-103390265",
-        "program-osym-103310573",
-        "program-osym-103350757",
-        "program-osym-103350518",
-        "program-osym-103350096",
-        "program-osym-103390300",
-        "program-osym-103350457",
-        "program-osym-103350193",
-        "program-osym-103390197",
-        "program-osym-103350369",
-        "program-osym-103350342",
-        "program-osym-103350387",
-        "program-osym-103390160",
         "program-osym-103390258",
-        "program-osym-103350703",
-        "program-osym-103350184",
         "program-osym-103390223",
-        "program-osym-103350351",
-        "program-osym-103350166",
-        "program-osym-103350396",
-        "program-osym-103310176",
-        "program-osym-103310185",
-        "program-osym-103390166",
-        "program-osym-103390272",
-        "program-osym-103390168"
+        "program-osym-103390166"
       ],
       "missingReasons": {
-        "program-osym-103310361": "no-readable-curriculum",
-        "program-osym-103350306": "programme-source-not-matched",
-        "program-osym-103310494": "programme-source-not-matched",
-        "program-osym-103310528": "programme-source-not-matched",
-        "program-osym-103350554": "programme-source-not-matched",
-        "program-osym-103350448": "programme-source-not-matched",
-        "program-osym-103390202": "programme-source-not-matched",
-        "program-osym-103390265": "programme-source-not-matched",
-        "program-osym-103310573": "programme-source-not-matched",
-        "program-osym-103350757": "programme-source-not-matched",
-        "program-osym-103350518": "programme-source-not-matched",
-        "program-osym-103350096": "programme-source-not-matched",
-        "program-osym-103390300": "programme-source-not-matched",
-        "program-osym-103350457": "programme-source-not-matched",
-        "program-osym-103350193": "programme-source-not-matched",
-        "program-osym-103390197": "programme-source-not-matched",
-        "program-osym-103350369": "programme-source-not-matched",
-        "program-osym-103350342": "programme-source-not-matched",
-        "program-osym-103350387": "programme-source-not-matched",
-        "program-osym-103390160": "programme-source-not-matched",
-        "program-osym-103390258": "programme-source-not-matched",
-        "program-osym-103350703": "programme-source-not-matched",
-        "program-osym-103350184": "programme-source-not-matched",
-        "program-osym-103390223": "programme-source-not-matched",
-        "program-osym-103350351": "programme-source-not-matched",
-        "program-osym-103350166": "programme-source-not-matched",
-        "program-osym-103350396": "programme-source-not-matched",
-        "program-osym-103310176": "programme-source-not-matched",
-        "program-osym-103310185": "programme-source-not-matched",
-        "program-osym-103390166": "programme-source-not-matched",
-        "program-osym-103390272": "programme-source-not-matched",
-        "program-osym-103390168": "programme-source-not-matched"
+        "program-osym-103390265": "no-readable-curriculum",
+        "program-osym-103390258": "no-readable-curriculum",
+        "program-osym-103390223": "no-readable-curriculum",
+        "program-osym-103390166": "no-readable-curriculum"
       }
     },
     {
@@ -5403,8 +5347,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28722,
-    "parserVersion": "a1bf47e57478",
+    "sourceCount": 28754,
+    "parserVersion": "8669ea0e07f8",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5418,8 +5362,9 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "a1bf47e57478",
-      "ktun-reviewed-2026": "993b37183e56"
+      "ankara-reviewed-2026": "8669ea0e07f8",
+      "ktun-reviewed-2026": "993b37183e56",
+      "duzce-reviewed-2026": "6009248a932a"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5451,7 +5396,8 @@
       "igdir-reviewed-courses.json": "4956d51d7530a37116dc0b9df7e9c9e115a4a683789b25881f28ddefd9f51e0b",
       "ege-associate-reviewed-courses.json": "d727e81591d147170ebbbb512b2dc4315a3ca2e4fee96ef913d163da5413520d",
       "ataturk-open-reviewed-courses.json": "4787a47c2d8f917972f5f9e84a22a5bad2d36908092fd5dea36ad080b6b0e9fe",
-      "ktun-reviewed-courses.json": "1d12c4b3a68cc25f60f634f38c85045419d29acc767a16bc0c0550b6bbbe0874"
+      "ktun-reviewed-courses.json": "1d12c4b3a68cc25f60f634f38c85045419d29acc767a16bc0c0550b6bbbe0874",
+      "duzce-reviewed-courses.json": "d88ddece92d6c5ecd5a0eeb38f5d23e5286d3e31f9c08082e0c35d9e9861843e"
     }
   }
 }

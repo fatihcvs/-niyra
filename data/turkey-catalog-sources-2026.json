@@ -872,8 +872,14 @@
   "tr-duzce-universitesi": {
     "catalogs": [
       {
+        "url": "https://ebs.duzce.edu.tr/tr-TR/Program/Index/1",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "e73b6b32c81422c221c2f7b1a5b16fd452c30a58a02b6ee8efed33cf07913ff4",
+        "evidence": "matched-programme-directory"
+      },
+      {
         "url": "https://ebs.duzce.edu.tr/tr-TR/Program/Index/2",
-        "checkedAt": "2026-09-05",
+        "checkedAt": "2026-09-08",
         "sourceHash": "b47efe84efb7c00202420600cdce1d3c5036aa11e01470973d26d2392948a5e0",
         "evidence": "matched-programme-directory"
       },

@@ -845,4 +845,52 @@ class KonyaTechnicalCatalogTests(unittest.TestCase):
         self.assertEqual(matches[0][1]['programmeId'], '1108')
 
 
+class DuzceCatalogTests(unittest.TestCase):
+    def test_curriculum_tables_keep_semesters_kinds_and_report_conflicts(self):
+        from bs4 import BeautifulSoup
+        from parse_turkey_courses import course_code, course_kind
+        from parse_turkey_duzce_courses import parse_duzce
+
+        document = BeautifulSoup('''
+          <h5>1. Yarıyıl</h5><table class="table"><thead><tr>
+            <th>Kodu</th><th>Ders Adı</th><th>Zorunlu mu?</th><th>AKTS</th>
+          </tr></thead><tbody>
+            <tr><td>DUZ101</td><td><a href="/tr-TR/Ders/Index/1">Programlama</a></td><td>Evet</td><td>5</td></tr>
+            <tr><td>HAVUZ 1</td><td><a href="#">Seçmeli Havuzu</a></td><td>Hayır</td><td>4</td></tr>
+            <tr><td>DUZ102</td><td><a href="/tr-TR/Ders/Index/2">Tasarım</a></td><td>Hayır</td><td>4</td></tr>
+          </tbody></table>
+          <h5>2. Yarıyıl</h5><table class="table"><thead><tr>
+            <th>Kodu</th><th>Ders Adı</th><th>Zorunlu mu?</th><th>AKTS</th>
+          </tr></thead><tbody>
+            <tr><td>DUZ101</td><td><a href="/tr-TR/Ders/Index/3">Başka Ders</a></td><td>Evet</td><td>5</td></tr>
+          </tbody></table>
+        ''', 'html.parser')
+        courses, conflicts = parse_duzce(document, course_code, course_kind)
+        self.assertEqual(conflicts, ['DUZ101'])
+        self.assertEqual(courses, [{
+            'code': 'DUZ102', 'name': 'Tasarım', 'semester': 1,
+            'kind': 'elective',
+        }])
+
+    def test_reviewed_aliases_and_unreadable_set_are_narrowly_locked(self):
+        from collect_turkey_duzce_catalog import (
+            EXPECTED_TOTAL, EXPECTED_UNREADABLE, PROGRAMME_ALIASES,
+        )
+
+        self.assertEqual(EXPECTED_TOTAL, 2725)
+        self.assertEqual(PROGRAMME_ALIASES, {
+            'program-osym-103310494': 'Türkçe Eğitimi',
+            'program-osym-103310528': 'İngilizce Öğretmenliği',
+            'program-osym-103350757': 'Arıcılık',
+            'program-osym-103390160': 'Makine,Resim ve Konstrüksiyon',
+            'program-osym-103390197': 'İlahiyat',
+        })
+        self.assertEqual(EXPECTED_UNREADABLE, {
+            'program-osym-103390166': 'official-course-code-conflict:INS327,INS433',
+            'program-osym-103390223': 'no-readable-curriculum',
+            'program-osym-103390258': 'no-readable-curriculum',
+            'program-osym-103390265': 'no-readable-curriculum',
+        })
+
+
 if __name__=='__main__':unittest.main()

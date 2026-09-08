@@ -25,6 +25,7 @@ from parse_turkey_iau_courses import parse_iau
 from parse_turkey_iuc_courses import parse_iuc_print
 from parse_turkey_bayburt_courses import parse_bayburt
 from parse_turkey_ktun_courses import parse_ktun
+from parse_turkey_duzce_courses import parse_duzce
 from collect_turkey_omu_ubys_catalog import (
     BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
     source_unit_identity, target_unit_identity,
@@ -48,6 +49,7 @@ BAYBURT_PARSER_VERSION = '8267e724e759'
 OMU_PARSER_VERSION = '381f380f3844'
 MARMARA_PARSER_VERSION = 'fc2655eba249'
 KTUN_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_ktun_courses.py').read_bytes()).hexdigest()[:12]
+DUZCE_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_duzce_courses.py').read_bytes()).hexdigest()[:12]
 
 
 def course_code(value):
@@ -259,6 +261,8 @@ def _parse_source(source):
         return merge_courses(output)
     if source.get('family') == 'ktun-reviewed-2026':
         return parse_ktun(soup(source), course_code)
+    if source.get('family') == 'duzce-reviewed-2026':
+        return parse_duzce(soup(source), course_code, course_kind)
     if source.get('family') in ['ubys', 'omu-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
@@ -316,7 +320,9 @@ def parse_source(source):
                 'bayburt-reviewed': BAYBURT_PARSER_VERSION,
                 'omu-ubys-2026': OMU_PARSER_VERSION,
                 'marmara-reviewed-2026': MARMARA_PARSER_VERSION,
-                'ankara-reviewed-2026': PARSER_VERSION}
+                'ankara-reviewed-2026': PARSER_VERSION,
+                'ktun-reviewed-2026': KTUN_PARSER_VERSION,
+                'duzce-reviewed-2026': DUZCE_PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -354,7 +360,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -367,7 +373,8 @@ def main():
               'omu-ubys-2026':OMU_PARSER_VERSION,
               'marmara-reviewed-2026':MARMARA_PARSER_VERSION,
               'ankara-reviewed-2026':PARSER_VERSION,
-              'ktun-reviewed-2026':KTUN_PARSER_VERSION}
+              'ktun-reviewed-2026':KTUN_PARSER_VERSION,
+              'duzce-reviewed-2026':DUZCE_PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
@@ -414,7 +421,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)
