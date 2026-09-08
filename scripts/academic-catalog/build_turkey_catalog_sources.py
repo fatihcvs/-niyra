@@ -23,7 +23,7 @@ def build():
                  'halic-directories','iuc-directories','bayburt-directories',
                  'omu-ubys-directories','marmara-reviewed-directories',
                  'ankara-reviewed-directories','sivas-reviewed-programmes',
-                 'ayu-reviewed-programmes']:
+                 'ayu-reviewed-programmes','msgsu-reviewed-programmes']:
         path=CACHE/(name+'.json')
         if not path.exists():continue
         for d in read(path):

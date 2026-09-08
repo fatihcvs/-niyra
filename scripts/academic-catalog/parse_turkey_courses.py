@@ -32,6 +32,10 @@ from parse_turkey_tobb_courses import parse_tobb_abys, parse_tobb_ybs
 from parse_turkey_sabanci_courses import parse_sabanci_bundle
 from parse_turkey_sanko_courses import parse_sanko_html_bundle, parse_sanko_medicine_pdf
 from parse_turkey_ayu_courses import parse_ayu_docx, parse_ayu_pdf, parse_ayu_turtep
+from parse_turkey_msgsu_courses import (
+    parse_msgsu_digital_bundle, parse_msgsu_forms_bundle,
+    parse_msgsu_forms_pdf, parse_msgsu_plan_pdf, parse_msgsu_sociology_pdf,
+)
 from collect_turkey_omu_ubys_catalog import (
     BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
     source_unit_identity, target_unit_identity,
@@ -62,6 +66,7 @@ TOBB_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_tobb
 SABANCI_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_sabanci_courses.py').read_bytes()).hexdigest()[:12]
 SANKO_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_sanko_courses.py').read_bytes()).hexdigest()[:12]
 AYU_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_ayu_courses.py').read_bytes()).hexdigest()[:12]
+MSGSU_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_msgsu_courses.py').read_bytes()).hexdigest()[:12]
 
 FAMILY_PARSER_VERSIONS = {
     'esogu-docx': ESOGU_PARSER_VERSION, 'iau': IAU_PARSER_VERSION,
@@ -87,6 +92,11 @@ FAMILY_PARSER_VERSIONS = {
     'ayu-pdf-2026': AYU_PARSER_VERSION,
     'ayu-docx-2026': AYU_PARSER_VERSION,
     'ayu-turtep-2026': AYU_PARSER_VERSION,
+    'msgsu-plan-pdf-2026': MSGSU_PARSER_VERSION,
+    'msgsu-forms-pdf-2026': MSGSU_PARSER_VERSION,
+    'msgsu-forms-bundle-2026': MSGSU_PARSER_VERSION,
+    'msgsu-sociology-pdf-2026': MSGSU_PARSER_VERSION,
+    'msgsu-digital-bundle-2026': MSGSU_PARSER_VERSION,
     'sivas-ubys-2026': PARSER_VERSION,
 }
 
@@ -328,6 +338,19 @@ def _parse_source(source):
         return parse_ayu_docx(CACHE / source['file'])
     if source.get('family') == 'ayu-turtep-2026':
         return parse_ayu_turtep(soup(source))
+    if source.get('family') == 'msgsu-plan-pdf-2026':
+        return parse_msgsu_plan_pdf(
+            CACHE / source['file'], course_code, course_kind,
+            source.get('selection', {}).get('pageCount'),
+        )
+    if source.get('family') == 'msgsu-forms-pdf-2026':
+        return parse_msgsu_forms_pdf(CACHE / source['file'], course_code, course_kind)
+    if source.get('family') == 'msgsu-forms-bundle-2026':
+        return parse_msgsu_forms_bundle(read(CACHE / source['file']), CACHE, course_code, course_kind)
+    if source.get('family') == 'msgsu-sociology-pdf-2026':
+        return parse_msgsu_sociology_pdf(CACHE / source['file'], course_code)
+    if source.get('family') == 'msgsu-digital-bundle-2026':
+        return parse_msgsu_digital_bundle(read(CACHE / source['file']), CACHE, course_code, course_kind)
     if source.get('family') in ['ubys', 'omu-ubys-2026', 'sivas-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
@@ -421,7 +444,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses', 'sivas-reviewed-courses', 'ayu-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses', 'tobb-reviewed-courses', 'sabanci-reviewed-courses', 'sanko-reviewed-courses', 'sivas-reviewed-courses', 'ayu-reviewed-courses', 'msgsu-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()

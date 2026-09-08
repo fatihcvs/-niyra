@@ -3835,50 +3835,14 @@
       "universityId": "tr-mimar-sinan-guzel-sanatlar-universitesi",
       "name": "Mimar Sinan Güzel Sanatlar Üniversitesi",
       "programCount": 19,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
+      "structuredProgramCount": 18,
+      "courseCount": 1256,
+      "linkedProgramCount": 18,
       "missingProgramIds": [
-        "program-osym-107590293",
-        "program-osym-107510092",
-        "program-osym-107510144",
-        "program-osym-107510108",
-        "program-osym-107510083",
-        "program-osym-107510011",
-        "program-osym-107510117",
-        "program-osym-107510135",
-        "program-osym-107510038",
-        "program-osym-107500101",
-        "program-osym-107510047",
-        "program-osym-107510056",
-        "program-osym-107510065",
-        "program-osym-107510074",
-        "program-osym-107510029",
-        "program-osym-107590295",
-        "program-osym-107550055",
-        "program-osym-107550019",
-        "program-osym-107590323"
+        "program-osym-107500101"
       ],
       "missingReasons": {
-        "program-osym-107590293": "programme-source-not-matched",
-        "program-osym-107510092": "programme-source-not-matched",
-        "program-osym-107510144": "programme-source-not-matched",
-        "program-osym-107510108": "programme-source-not-matched",
-        "program-osym-107510083": "programme-source-not-matched",
-        "program-osym-107510011": "programme-source-not-matched",
-        "program-osym-107510117": "programme-source-not-matched",
-        "program-osym-107510135": "programme-source-not-matched",
-        "program-osym-107510038": "programme-source-not-matched",
-        "program-osym-107500101": "programme-source-not-matched",
-        "program-osym-107510047": "programme-source-not-matched",
-        "program-osym-107510056": "programme-source-not-matched",
-        "program-osym-107510065": "programme-source-not-matched",
-        "program-osym-107510074": "programme-source-not-matched",
-        "program-osym-107510029": "programme-source-not-matched",
-        "program-osym-107590295": "programme-source-not-matched",
-        "program-osym-107550055": "programme-source-not-matched",
-        "program-osym-107550019": "programme-source-not-matched",
-        "program-osym-107590323": "programme-source-not-matched"
+        "program-osym-107500101": "programme-source-not-matched"
       }
     },
     {
@@ -5083,8 +5047,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28881,
-    "parserVersion": "db8c36a05ca7",
+    "sourceCount": 28899,
+    "parserVersion": "be210b955998",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5098,7 +5062,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "db8c36a05ca7",
+      "ankara-reviewed-2026": "be210b955998",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
@@ -5114,7 +5078,12 @@
       "ayu-pdf-2026": "041d958fbce3",
       "ayu-docx-2026": "041d958fbce3",
       "ayu-turtep-2026": "041d958fbce3",
-      "sivas-ubys-2026": "db8c36a05ca7"
+      "msgsu-plan-pdf-2026": "62fb5d4f1a10",
+      "msgsu-forms-pdf-2026": "62fb5d4f1a10",
+      "msgsu-forms-bundle-2026": "62fb5d4f1a10",
+      "msgsu-sociology-pdf-2026": "62fb5d4f1a10",
+      "msgsu-digital-bundle-2026": "62fb5d4f1a10",
+      "sivas-ubys-2026": "be210b955998"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5154,7 +5123,8 @@
       "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43",
       "sanko-reviewed-courses.json": "f006670f999c0236f9e2e5a695217459ba7eccd06242bbf1c3887da8bbea1572",
       "sivas-reviewed-courses.json": "0d68516471d6840e261fcebf962a8ecc7712d40f469708876b6fe624e1941bba",
-      "ayu-reviewed-courses.json": "56f55d9747ae100dbd84ad040e4d04a0294fc73ce6d7a8f83191c5824a8b608a"
+      "ayu-reviewed-courses.json": "56f55d9747ae100dbd84ad040e4d04a0294fc73ce6d7a8f83191c5824a8b608a",
+      "msgsu-reviewed-courses.json": "deafb4ab8e02f8af378eeaba7f5642a5f453cc9b8aafc9079b53e91f05409f4a"
     }
   }
 }

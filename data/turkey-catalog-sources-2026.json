@@ -2472,8 +2472,21 @@
     "status": "no-verified-entry"
   },
   "tr-mimar-sinan-guzel-sanatlar-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://msgsu.edu.tr/akademik/mimarlik-fakultesi/bolumler/mimarlik/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "bb4885c972e011df5422cf325072c05a3399a4604fb1c2084e93f0f30af0b765",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://msgsu.edu.tr/akademik/fen-edebiyat-fakultesi/bolumler/fizik/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "a12ac98db83835b0bbaeed2a8466bf34e79084e8ddca92916a06566de0928261",
+        "evidence": "matched-programme-directory"
+      }
+    ],
+    "status": "catalogue-checked"
   },
   "tr-mudanya-universitesi": {
     "catalogs": [

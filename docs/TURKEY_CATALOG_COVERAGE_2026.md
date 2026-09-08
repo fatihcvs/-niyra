@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,832 programda ders kaydı · 1,351 programda ders listesi eksik.
-Toplam 1,536,187 program-ders kaydı. 196 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,850 programda ders kaydı · 1,333 programda ders listesi eksik.
+Toplam 1,537,443 program-ders kaydı. 197 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,144
+- Resmî program eşleşmesi eksik: 1,126
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -168,7 +168,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | MEF Üniversitesi | 15 | 1 | 14 | 1,041 | 5 | [Kaynak 1](https://sis.mef.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_18/ln/tr) · [Kaynak 2](https://sis.mef.edu.tr/bilgipaketi/eobsakts/) |
 | Mersin Üniversitesi | 124 | 99 | 25 | 8,156 | 25 | [Kaynak 1](https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mersin.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Milli Savunma Üniversitesi | 47 | 0 | 47 | 0 | 5 | Doğrulanmış giriş yok |
-| Mimar Sinan Güzel Sanatlar Üniversitesi | 19 | 0 | 19 | 0 | 20 | Doğrulanmış giriş yok |
+| Mimar Sinan Güzel Sanatlar Üniversitesi | 19 | 18 | 1 | 1,256 | 20 | [Kaynak 1](https://msgsu.edu.tr/akademik/mimarlik-fakultesi/bolumler/mimarlik/) · [Kaynak 2](https://msgsu.edu.tr/akademik/fen-edebiyat-fakultesi/bolumler/fizik/) |
 | Mudanya Üniversitesi | 39 | 39 | 0 | 4,609 | 5 | [Kaynak 1](https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_20/ln/tr) · [Kaynak 2](https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_19/ln/tr) |
 | Muğla Sıtkı Koçman Üniversitesi | 162 | 159 | 3 | 13,597 | 25 | [Kaynak 1](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Munzur Üniversitesi | 57 | 48 | 9 | 3,115 | 5 | [Kaynak 1](https://ubys.munzur.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
