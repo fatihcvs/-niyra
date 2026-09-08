@@ -47,11 +47,12 @@ test("disabled config never queries database and request bursts share one dispat
 
 test("worker dispatch runs after successful mutations without delaying response; cron and internal retries work", async () => {
   const pending = deferred(), waits = [], calls = [];
-  let allowed = false, routed = 0;
+  let allowed = false, routed = 0, cleanups = 0;
   const worker = load("../worker/index.ts", {
     "vinext/server/image-optimization": {},
     "vinext/server/app-router-entry": { default: { fetch: async () => { routed++; return new Response("ok"); } }, __esModule: true },
     "../lib/push-runtime": { pushDispatchAuthorized: async () => allowed, runPushDispatch: (env, limit) => { calls.push(limit); return pending.promise; }, reportPushDispatchFailure() {} },
+    "../lib/beta-retention": { purgeExpiredBetaRequests: async () => { cleanups++; } },
   }).default;
   const context = { waitUntil: (value) => waits.push(value) };
   assert.equal((await worker.fetch(new Request("https://app.test/api/comments", { method: "POST" }), {}, context)).status, 200);
@@ -65,6 +66,7 @@ test("worker dispatch runs after successful mutations without delaying response;
   pending.resolve({ sent: 1 }); assert.equal((await internal).status, 200); assert.equal(calls.at(-1), 4);
   await worker.scheduled({}, {}, context); assert.equal(calls.at(-1), 20);
   await Promise.all(waits);
+  assert.equal(cleanups, 1, "scheduled and internal dispatches share the bounded retention cadence");
 });
 
 test("Railway binds only allowlisted configuration using a private env file, never CLI secret values", () => {

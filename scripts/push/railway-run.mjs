@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startBackupRetention } from "../backup-retention.mjs";
 
-const providerNames = ["PUSH_VAPID_SUBJECT", "PUSH_VAPID_PUBLIC_KEY", "PUSH_VAPID_PRIVATE_KEY", "FCM_PROJECT_ID", "FCM_CLIENT_EMAIL", "FCM_PRIVATE_KEY"];
+const providerNames = ["PUSH_VAPID_SUBJECT", "PUSH_VAPID_PUBLIC_KEY", "PUSH_VAPID_PRIVATE_KEY", "FCM_PROJECT_ID", "FCM_CLIENT_EMAIL", "FCM_PRIVATE_KEY", "BETA_REVIEW_SECRET"];
 
 export function workerSecrets(environment) {
   const values = {};
@@ -84,7 +84,7 @@ export async function runRailway(environment = process.env, { spawnImpl = spawn,
       "--config", "wrangler.railway.jsonc", "--local", "--no-bundle", "--persist-to", dataRoot,
       "--ip", "0.0.0.0", "--port", String(port), "--log-level", "error", "--show-interactive-dev-session", "false", "--env-file", environmentFile],
     { cwd: projectRoot, env: { ...environment, CLOUDFLARE_INCLUDE_PROCESS_ENV: "false", CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "true" }, stdio: "inherit", windowsHide: true });
-    if (values.PUSH_VAPID_PRIVATE_KEY || values.FCM_PRIVATE_KEY) {
+    if (values.PUSH_VAPID_PRIVATE_KEY || values.FCM_PRIVATE_KEY || values.BETA_REVIEW_SECRET) {
       stopPump = pumpFactory({ origin: `http://127.0.0.1:${port}`, secret: values.PUSH_JOB_SECRET,
         onUnavailable: () => console.error("Push dispatch unavailable; queued deliveries will retry.") });
     }

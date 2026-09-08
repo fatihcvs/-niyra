@@ -17,6 +17,7 @@ import { MODERATABLE_ENTITY_TYPES } from "../lib/admin-registry";
 import { PRODUCT_UPDATES } from "../lib/product-updates";
 import { CourseCatalogCoverage } from "./course-catalog-coverage";
 import { AccountDeletionReview } from "./account-deletion-review";
+import { BetaReview } from "./beta-review";
 import styles from "./staff-console.module.css";
 import {
   StaffDialog,
@@ -64,6 +65,7 @@ const ownerTabs = [
   ["settings", "Sistem ayarları", "⚙"],
   ["audit", "İşlem günlüğü", "≡"],
   ["account-deletion", "Hesap silme talepleri", "♙"],
+  ["beta", "Test ve geri bildirim", "✦"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
 
@@ -73,6 +75,7 @@ const adminTabs = [
   ["content", "İçerik denetimi", "▦"],
   ["users", "Kullanıcılar", "♙"],
   ["account-deletion", "Hesap silme talepleri", "♙"],
+  ["beta", "Test ve geri bildirim", "✦"],
   ["decisions", "Karar geçmişi", "≡"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
@@ -658,6 +661,7 @@ function OwnerContent({
   onNavigate,
   onDirtyChange,
 }: ContentProps) {
+  if (tab === "beta") return <BetaReview onAccessChanged={reload}/>;
   if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "admins")
     return <OwnerAdmins data={data} reload={reload} setMessage={setMessage} />;
@@ -1424,6 +1428,7 @@ function AdminContent({
   setMessage,
   onNavigate,
 }: ContentProps) {
+  if (tab === "beta") return <BetaReview onAccessChanged={reload}/>;
   if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "reports")
     return <ReportQueue data={data} reload={reload} setMessage={setMessage} />;
@@ -2760,6 +2765,7 @@ function StaffNavIcon({ section }: { section: string }) {
     users: Users,
     decisions: ClockCounterClockwise,
     "account-deletion": Users,
+    beta: Sparkle,
   };
   const Icon = icons[section as keyof typeof icons] ?? House;
   return <Icon size={19} aria-hidden="true" />;

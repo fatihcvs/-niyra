@@ -35,6 +35,16 @@ const sections = [
     ],
   },
   {
+    id: "beta",
+    title: "Test başvurusu ve destek formları",
+    paragraphs: [
+      "Test başvurusunda Google Play hesabının e-posta adresi, Android cihaz modeli ve 18 yaş/Android cihaz/14 günlük katılım beyanları alınır. Ad, üniversite, Android sürümü ve ek açıklama isteğe bağlıdır. Geri bildirim formunda konu ve mesaj gerekli; iletişim adresi ve cihaz bilgileri isteğe bağlıdır. Bunlar başvuruyu değerlendirmek, kapalı test erişimini hazırlamak ve destek talebini yanıtlamak için yetkili ekip tarafından kullanılır; pazarlama listesine otomatik eklenmez.",
+      "Yeni kayıtlar yapay zekâ destekli ön değerlendirmeden geçebilir. Ön değerlendirme yaş veya e-posta sahipliğini doğrulamaz ve Google Play test erişimini kendiliğinden açmaz. Test listesine ekleme ve erişim teyidi ayrıca yapılır. Başvuru metinleri herkese açık değildir.",
+      "Gönderim sonunda verilen kişisel takip kodu, talebini ve görüşmeleri açar. Kodu gizli tut. Son kod bu tarayıcıda saklanır; e-posta bildirimi gönderilmez. Takip sayfasından yanıtları görebilir, ek bilgi paylaşabilir veya talebi kapatıp form bilgilerini silebilirsin. Bu işlem uygulama hesabının tamamını silmez.",
+      "Form kayıtları ve görüşmeler oluşturuldukları tarihten itibaren 90 gün sonunda otomatik temizlenir. Kötüye kullanımı azaltmak için IP adresinin özetiyle istek sınırı uygulanır; ham IP adresi form kaydında saklanmaz. Reklam bağlantısındaki kampanya etiketleri başvurunun kaynağını anlamak için kaydedilebilir. Veritabanı yedeklerinin saklama döngüsü aşağıda açıklanmıştır. Yardım ve veri talepleri için destek@kampira.net adresine ulaşabilirsin.",
+    ],
+  },
+  {
     id: "retention",
     title: "Saklama ve silme",
     paragraphs: [
@@ -93,7 +103,7 @@ export default function LegalPage() {
     <header className={styles.header}><Link href="/" aria-label="Kampira ana sayfa"><img src="/kampira-mark.png" width="38" height="38" alt=""/><strong>Kampira</strong></Link><Link href="/">Ürüne dön</Link></header>
     <section className={styles.hero}><span>KAMPIRA v1.8</span><h1>Gizlilik, kullanım ve topluluk ilkeleri</h1><p>Kampira’da hangi verilerin neden işlendiğini, güvenli kullanım kurallarını ve bir sorun olduğunda hangi yolu izleyeceğini burada bulabilirsin.</p><small>Son güncelleme: 8 Eylül 2026 · v1.8</small></section>
     <nav className={styles.nav} aria-label="Belge bölümleri">{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>0{index + 1}</span>{section.title}</a>)}</nav>
-    <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.id === "help" && <><p><a href="mailto:destek@kampira.net">E-posta ile destek al: destek@kampira.net</a></p><Link href="/account-deletion">Hesap ve veri silme talebi oluştur veya takip et</Link></>}</div></section>)}</div>
+    <div className={styles.content}>{sections.map((section, index) => <section id={section.id} key={section.id}><span>0{index + 1}</span><div><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.id === "help" && <><p><a href="mailto:destek@kampira.net">E-posta ile destek al: destek@kampira.net</a></p><p><Link href="/geri-bildirim">Geri bildirim veya destek talebi gönder</Link></p><p><Link href="/beta/takip">Başvuru ve destek yanıtlarını takip et</Link></p><Link href="/account-deletion">Hesap ve veri silme talebi oluştur veya takip et</Link></>}</div></section>)}</div>
     <footer><p>Kampira destek ve veri talepleri: <a href="mailto:destek@kampira.net">destek@kampira.net</a>. Sağlayıcı açıklamaları: <a href="https://firebase.google.com/support/privacy">Firebase gizlilik</a> ve <a href="https://railway.com/legal/privacy">Railway gizlilik</a>.</p><Link href="/child-safety">Çocuk güvenliği standartları</Link></footer>
   </main>;
 }

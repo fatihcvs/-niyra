@@ -1,6 +1,25 @@
 import { sql } from "drizzle-orm";
 import { foreignKey, index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
+// Public recruitment/support records are independent of an application account.
+export const betaRequests = sqliteTable("beta_requests", {
+  id: text("id").primaryKey(), kind: text("kind").notNull(), accessHash: text("access_hash").notNull().unique(),
+  submissionHash: text("submission_hash").notNull(), email: text("email").notNull().default(""),
+  displayName: text("display_name").notNull().default(""), university: text("university").notNull().default(""),
+  deviceModel: text("device_model").notNull().default(""), androidVersion: text("android_version").notNull().default(""),
+  category: text("category").notNull().default("application"), subject: text("subject").notNull(), message: text("message").notNull().default(""),
+  adultConfirmed: integer("adult_confirmed").notNull().default(0), androidConfirmed: integer("android_confirmed").notNull().default(0),
+  participationConfirmed: integer("participation_confirmed").notNull().default(0), consentVersion: text("consent_version").notNull(),
+  sourceJson: text("source_json").notNull().default("{}"), status: text("status").notNull().default("new"),
+  priority: text("priority").notNull().default("normal"), internalNote: text("internal_note").notNull().default(""), playUrl: text("play_url").notNull().default(""),
+  revision: integer("revision").notNull().default(0), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), expiresAt: text("expires_at").notNull().default(sql`(datetime('now','+90 days'))`),
+}, table => [index("beta_requests_queue_idx").on(table.kind, table.status, table.createdAt, table.id), index("beta_requests_email_idx").on(table.email, table.createdAt), index("beta_requests_expiry_idx").on(table.expiresAt)]);
+export const betaRequestMessages = sqliteTable("beta_request_messages", {
+  id: text("id").primaryKey(), requestId: text("request_id").notNull().references(() => betaRequests.id, { onDelete: "cascade" }),
+  authorKind: text("author_kind").notNull(), content: text("content").notNull(), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, table => [index("beta_request_messages_request_idx").on(table.requestId, table.createdAt, table.id)]);
+
 export const users = sqliteTable(
   "users",
   {

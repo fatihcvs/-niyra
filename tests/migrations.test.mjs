@@ -33,6 +33,8 @@ test("all database migrations apply cleanly in order", async () => {
         "account_erasure_entities",
         "media_upload_operations",
         "audit_logs",
+        "beta_requests",
+        "beta_request_messages",
         "campus_pulse_posts",
         "campus_pulse_reactions",
         "campus_events",

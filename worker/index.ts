@@ -2,6 +2,7 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { pushDispatchAuthorized, reportPushDispatchFailure, runPushDispatch } from "../lib/push-runtime";
+import { purgeExpiredBetaRequests } from "../lib/beta-retention";
 
 interface Env {
   [binding: string]: unknown;
@@ -27,6 +28,12 @@ interface ExecutionContext {
 // dangerouslyAllowSVG: true in next.config.js and uncomment below:
 // const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
 
+let lastBetaCleanup = 0;
+function betaCleanup(env: Env, ctx: ExecutionContext) {
+  if (Date.now() - lastBetaCleanup < 600000) return;
+  lastBetaCleanup = Date.now();
+  ctx.waitUntil(purgeExpiredBetaRequests(env.DB).catch(() => { lastBetaCleanup = 0; console.error("[beta] retention retry required"); }));
+}
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -36,6 +43,7 @@ const worker = {
         return new Response(null, { status: 404, headers: { "cache-control": "no-store" } });
       }
       try {
+        betaCleanup(env, ctx);
         return Response.json(await runPushDispatch(env, 4), { headers: { "cache-control": "no-store" } });
       } catch {
         reportPushDispatchFailure();
@@ -61,6 +69,7 @@ const worker = {
     return response;
   },
   async scheduled(_event: unknown, env: Env, ctx: ExecutionContext) {
+    betaCleanup(env, ctx);
     ctx.waitUntil(runPushDispatch(env, 20).catch(reportPushDispatchFailure));
   },
 };
