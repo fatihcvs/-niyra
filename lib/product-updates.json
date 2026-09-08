@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-thirtieth-expansion",
+    "releasedAt": "2026-09-08T05:23:02Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Ege Üniversitesinde 31 programın ders planı eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.615’e, program-ders kaydı sayısı 1.519.766’ya ulaştı.",
+    "highlights": [
+      "Ege Üniversitesinin eksik 31 ön lisans programına 2.161 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 110’dan 141’e, toplam kayıt 13.219’dan 15.380’e çıktı.",
+      "Resmî ön lisans dizinindeki 86 yayımlanmış plan; program adı, derece, akademik birim ve kurum içi program numarasıyla güncel envantere bağlandı.",
+      "Kurum başlıklarında kalan İKMEP ve (a)/(b) etiketleri yalnız aynı okul ve derecedeki tekil programa eşlendi. Otonom Sistemleri Teknikerliği başlığı güncel program adına açık eşleme olarak kaydedildi.",
+      "İki uzaktan öğretim kopyası dışarıda bırakıldı; havacılık programlarının Türkçe planları seçildi. Kadın ve erkek Mekatronik kontenjanları kurumun yayımladığı ortak akademik planı kullanıyor.",
+      "Ayrı planı yayımlanmayan İlahiyat (M.T.O.K.) açık eksik bırakıldı. Daha önce yayımlanmış 13.584 programın ders içeriği değişmeden korundu; Türkiye genelinde eksik ders listesi sayısı 1.568’e düştü."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-ninth-expansion",
     "releasedAt": "2026-09-08T04:48:52Z",
     "category": "İyileştirme",

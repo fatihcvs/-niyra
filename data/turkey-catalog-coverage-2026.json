@@ -1587,76 +1587,14 @@
       "universityId": "tr-ege-universitesi",
       "name": "Ege Üniversitesi",
       "programCount": 142,
-      "structuredProgramCount": 110,
-      "courseCount": 13219,
-      "linkedProgramCount": 110,
+      "structuredProgramCount": 141,
+      "courseCount": 15380,
+      "linkedProgramCount": 141,
       "missingProgramIds": [
-        "program-osym-103451269",
-        "program-osym-103451181",
-        "program-osym-103450668",
-        "program-osym-103451312",
-        "program-osym-103490582",
-        "program-osym-103451287",
-        "program-osym-103451278",
-        "program-osym-103450923",
-        "program-osym-103450023",
-        "program-osym-103451375",
-        "program-osym-103451666",
-        "program-osym-103451233",
-        "program-osym-103450147",
-        "program-osym-103451303",
-        "program-osym-103490659",
-        "program-osym-103490666",
-        "program-osym-103451296",
-        "program-osym-103490357",
-        "program-osym-103450456",
-        "program-osym-103450129",
-        "program-osym-103450156",
-        "program-osym-103451163",
-        "program-osym-103450898",
-        "program-osym-103450226",
-        "program-osym-103490356",
-        "program-osym-103451657",
-        "program-osym-103451684",
-        "program-osym-103451012",
-        "program-osym-103451057",
-        "program-osym-103490554",
-        "program-osym-103450792",
-        "program-osym-103450765"
+        "program-osym-103490582"
       ],
       "missingReasons": {
-        "program-osym-103451269": "programme-source-not-matched",
-        "program-osym-103451181": "programme-source-not-matched",
-        "program-osym-103450668": "programme-source-not-matched",
-        "program-osym-103451312": "programme-source-not-matched",
-        "program-osym-103490582": "programme-source-not-matched",
-        "program-osym-103451287": "programme-source-not-matched",
-        "program-osym-103451278": "programme-source-not-matched",
-        "program-osym-103450923": "programme-source-not-matched",
-        "program-osym-103450023": "programme-source-not-matched",
-        "program-osym-103451375": "source-unavailable",
-        "program-osym-103451666": "source-unavailable",
-        "program-osym-103451233": "programme-source-not-matched",
-        "program-osym-103450147": "programme-source-not-matched",
-        "program-osym-103451303": "programme-source-not-matched",
-        "program-osym-103490659": "programme-source-not-matched",
-        "program-osym-103490666": "programme-source-not-matched",
-        "program-osym-103451296": "programme-source-not-matched",
-        "program-osym-103490357": "programme-source-not-matched",
-        "program-osym-103450456": "programme-source-not-matched",
-        "program-osym-103450129": "programme-source-not-matched",
-        "program-osym-103450156": "programme-source-not-matched",
-        "program-osym-103451163": "programme-source-not-matched",
-        "program-osym-103450898": "programme-source-not-matched",
-        "program-osym-103450226": "programme-source-not-matched",
-        "program-osym-103490356": "programme-source-not-matched",
-        "program-osym-103451657": "programme-source-not-matched",
-        "program-osym-103451684": "programme-source-not-matched",
-        "program-osym-103451012": "programme-source-not-matched",
-        "program-osym-103451057": "programme-source-not-matched",
-        "program-osym-103490554": "programme-source-not-matched",
-        "program-osym-103450792": "programme-source-not-matched",
-        "program-osym-103450765": "programme-source-not-matched"
+        "program-osym-103490582": "programme-source-not-matched"
       }
     },
     {
@@ -5591,8 +5529,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28625,
-    "parserVersion": "b30798a0edd0",
+    "sourceCount": 28655,
+    "parserVersion": "010df2427f02",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5606,7 +5544,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "b30798a0edd0"
+      "ankara-reviewed-2026": "010df2427f02"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5635,7 +5573,8 @@
       "marmara-reviewed-courses.json": "295bf87cfd5100a0c23c733532b551e9c014cdb5039846d9db6a19b281ceed5b",
       "ankara-reviewed-courses.json": "ca352b43ff77fef569cd7b88b211512a9ed0a39baff4363461df0ba566b7575a",
       "mugla-reviewed-courses.json": "319630014109826c6bf91b1f7c922300d4c2b073e4c2fb2b66cb19cb9da77668",
-      "igdir-reviewed-courses.json": "4956d51d7530a37116dc0b9df7e9c9e115a4a683789b25881f28ddefd9f51e0b"
+      "igdir-reviewed-courses.json": "4956d51d7530a37116dc0b9df7e9c9e115a4a683789b25881f28ddefd9f51e0b",
+      "ege-associate-reviewed-courses.json": "d727e81591d147170ebbbb512b2dc4315a3ca2e4fee96ef913d163da5413520d"
     }
   }
 }

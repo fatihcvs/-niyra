@@ -18,6 +18,7 @@
     "catalog:yildiz": "node scripts/academic-catalog/augment-yildiz-curricula-2026.mjs",
     "catalog:marmara": "node scripts/academic-catalog/augment-marmara-curricula-2026.mjs",
     "catalog:ege": "node scripts/academic-catalog/augment-ege-curricula-2026.mjs",
+    "catalog:ege:associate": "python -X utf8 scripts/academic-catalog/collect_turkey_ege_associate_catalog.py",
     "catalog:deu": "node scripts/academic-catalog/augment-dokuz-eylul-curricula-2026.mjs",
     "catalog:akdeniz": "node scripts/academic-catalog/augment-akdeniz-curricula-2026.mjs",
     "catalog:cukurova": "node scripts/academic-catalog/augment-cukurova-curricula-2026.mjs",

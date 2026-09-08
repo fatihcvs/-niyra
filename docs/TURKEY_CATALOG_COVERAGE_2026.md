@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,584 programda ders kaydı · 1,599 programda ders listesi eksik.
-Toplam 1,517,605 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,615 programda ders kaydı · 1,568 programda ders listesi eksik.
+Toplam 1,519,766 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,398
+- Resmî program eşleşmesi eksik: 1,369
 - Okunabilir ders listesi bulunamadı: 149
 - Kaynakta program ayrımı doğrulanamadı: 32
-- Ders kaynağına erişilemedi: 20
+- Ders kaynağına erişilemedi: 18
 
 ## Kurumlar
 
@@ -75,7 +75,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Doğuş Üniversitesi | 75 | 75 | 0 | 7,786 | 15 | [Kaynak 1](https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Dokuz Eylül Üniversitesi | 139 | 130 | 9 | 15,236 | 18 | Doğrulanmış giriş yok |
 | Düzce Üniversitesi | 111 | 79 | 32 | 8,239 | 25 | [Kaynak 1](https://ebs.duzce.edu.tr/tr-TR/Program/Index/2) · [Kaynak 2](https://ebs.duzce.edu.tr) |
-| Ege Üniversitesi | 142 | 110 | 32 | 13,219 | 15 | [Kaynak 1](https://ebp.ege.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.ege.edu.tr/DereceProgramlari/1) |
+| Ege Üniversitesi | 142 | 141 | 1 | 15,380 | 15 | [Kaynak 1](https://ebp.ege.edu.tr/DereceProgramlari/0) · [Kaynak 2](https://ebp.ege.edu.tr/DereceProgramlari/1) |
 | Erciyes Üniversitesi | 88 | 85 | 3 | 6,045 | 21 | [Kaynak 1](https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=101) · [Kaynak 2](https://dbp.erciyes.edu.tr/Degree/Default.aspx?FakulteKod=102) |
 | Erzincan Binali Yıldırım Üniversitesi | 98 | 96 | 2 | 6,227 | 10 | [Kaynak 1](https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ebyu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Erzurum Teknik Üniversitesi | 22 | 21 | 1 | 2,215 | 5 | [Kaynak 1](https://ubys.erzurum.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
