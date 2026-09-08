@@ -7,14 +7,25 @@ const universityId = "tr-dokuz-eylul-universitesi";
 const authority = "Dokuz Eylül Üniversitesi";
 const period = "2025-2026";
 const baseUrl = `https://debis.deu.edu.tr/ders-katalog/${period}/tr/`;
-const indexUrl = `${baseUrl}tr-c3.html`;
-const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
-const source = {
-  id: "deu-course-catalog-curricula-2026",
-  authority,
-  title: `${period} Ders Kataloğu lisans programları ve ders planları`,
-  url: indexUrl,
+const indexUrls = {
+  bachelor: `${baseUrl}tr-c3.html`,
+  associate: `${baseUrl}tr-c4.html`,
 };
+const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com/fatihcvs/-niyra)" };
+const sources = [
+  {
+    id: "deu-course-catalog-curricula-2026",
+    authority,
+    title: `${period} Ders Kataloğu lisans programları ve ders planları`,
+    url: indexUrls.bachelor,
+  },
+  {
+    id: "deu-associate-course-catalog-curricula-2026",
+    authority,
+    title: `${period} Ders Kataloğu ön lisans programları ve ders planları`,
+    url: indexUrls.associate,
+  },
+];
 
 const normalizeName = (value) => value
   .toLocaleLowerCase("tr-TR")
@@ -57,16 +68,11 @@ const expectedUnlinked = [
   "Tarih (UOLP-Gence Devlet Üniversitesi)",
   "Havacılık ve Uzay Mühendisliği (İngilizce)",
   "Radyo, Televizyon ve Sinema",
+  "Laboratuvar Hayvanları",
+  "Tarım Makineleri ve Teknolojileri",
 ];
 
-const response = await fetch(indexUrl, { headers });
-if (!response.ok) throw new Error(`Dokuz Eylül lisans dizini alınamadı: HTTP ${response.status}`);
-const indexHtml = await response.text();
-if (indexHtml.length < 25_000 || !indexHtml.includes('id="onlisans"')) {
-  throw new Error(`Dokuz Eylül lisans dizini eksik: ${indexHtml.length} bayt`);
-}
-
-function extractOfficialProgrammes(html) {
+function extractOfficialProgrammes(html, degree) {
   const rootStart = html.search(/<ul\b[^>]*\bid=["']onlisans["'][^>]*>/iu);
   if (rootStart < 0) throw new Error("Dokuz Eylül lisans program ağacı bulunamadı.");
   const content = html.slice(rootStart);
@@ -105,6 +111,7 @@ function extractOfficialProgrammes(html) {
           unit,
           name: programmeNameAliases.get(name) ?? name,
           rawName: name,
+          degree,
           url: new URL(match[1], baseUrl).href,
         });
       }
@@ -117,25 +124,38 @@ function extractOfficialProgrammes(html) {
   return programmes;
 }
 
-const officialProgrammes = extractOfficialProgrammes(indexHtml);
-if (officialProgrammes.length < 130) {
-  throw new Error(`Dokuz Eylül yayımlanmış lisans planı sayısı eksik: ${officialProgrammes.length}`);
-}
+const indexPages = await Promise.all(Object.entries(indexUrls).map(async ([degree, url]) => {
+  const response = await fetch(url, { headers });
+  if (!response.ok) throw new Error(`Dokuz Eylül ${degree} dizini alınamadı: HTTP ${response.status}`);
+  const html = await response.text();
+  if (html.length < (degree === "bachelor" ? 25_000 : 15_000) || !html.includes('id="onlisans"')) {
+    throw new Error(`Dokuz Eylül ${degree} dizini eksik: ${html.length} bayt`);
+  }
+  const programmes = extractOfficialProgrammes(html, degree);
+  const minimum = degree === "bachelor" ? 130 : 45;
+  if (programmes.length < minimum) {
+    throw new Error(`Dokuz Eylül yayımlanmış ${degree} planı sayısı eksik: ${programmes.length}`);
+  }
+  return { degree, programmes };
+}));
+const officialProgrammes = indexPages.flatMap((page) => page.programmes);
 
 const university = catalog.universities[universityId];
 if (!university) throw new Error("Dokuz Eylül Üniversitesi katalog kaydı bulunamadı.");
-const bachelorProgrammes = university.programs.filter((item) => item.degreeLevel === "bachelor");
-if (bachelorProgrammes.length !== 88) {
-  throw new Error(`Dokuz Eylül katalog lisans sayısı beklenmiyor: ${bachelorProgrammes.length}`);
+const degreeProgrammes = university.programs.filter((item) => ["associate", "bachelor"].includes(item.degreeLevel));
+if (degreeProgrammes.length !== 139) {
+  throw new Error(`Dokuz Eylül katalog program sayısı beklenmiyor: ${degreeProgrammes.length}`);
 }
 const unitById = new Map(university.units.map((unit) => [unit.id, unit]));
+const normalizeUnitName = (value) => normalizeName(value).replace(/\s+selcuk$/u, "");
 
-const mappings = bachelorProgrammes
+const mappings = degreeProgrammes
   .filter((programme) => !expectedUnlinked.includes(programme.name))
   .map((programme) => {
     const unit = unitById.get(programme.unitId);
     const candidates = officialProgrammes.filter((item) => (
-      normalizeName(item.unit) === normalizeName(unit?.name ?? "")
+      item.degree === programme.degreeLevel
+      && normalizeUnitName(item.unit) === normalizeUnitName(unit?.name ?? "")
       && normalizeName(item.name) === normalizeName(programme.name)
     ));
     if (candidates.length !== 1) {
@@ -170,7 +190,9 @@ for (let offset = 0; offset < mappings.length; offset += 4) {
     const semesterCount = new Set([
       ...html.matchAll(/([1-8])\.\s*(?:Yarıyıl|Dönem)/giu),
     ].map((match) => match[1]));
-    const hasStructuredPeriods = semesterCount.size >= 2 || courseCodes.size >= 20;
+    const hasStructuredPeriods = semesterCount.size >= 2
+      || (semesterCount.size >= 1 && courseCodes.size >= 10)
+      || courseCodes.size >= 20;
     if (!pageResponse.ok || html.length < 25_000 || !/\bAKTS\b/iu.test(html)
       || courseCodes.size < 5 || !hasStructuredPeriods) {
       throw new Error(
@@ -187,13 +209,15 @@ for (const { programme, official } of mappings) {
   programme.curriculumPeriod = period;
 }
 
-const unlinkedBachelorProgrammes = bachelorProgrammes.filter((program) => !program.curriculumUrls?.length);
-if (unlinkedBachelorProgrammes.length !== expectedUnlinked.length
-  || !expectedUnlinked.every((name) => unlinkedBachelorProgrammes.some((program) => program.name === name))) {
-  throw new Error(`Dokuz Eylül bağlantısız lisans listesi beklenmiyor: ${unlinkedBachelorProgrammes.map((program) => program.name).join(", ")}`);
+const unlinkedProgrammes = degreeProgrammes.filter((program) => !program.curriculumUrls?.length);
+if (unlinkedProgrammes.length !== expectedUnlinked.length
+  || !expectedUnlinked.every((name) => unlinkedProgrammes.some((program) => program.name === name))) {
+  throw new Error(`Dokuz Eylül bağlantısız program listesi beklenmiyor: ${unlinkedProgrammes.map((program) => program.name).join(", ")}`);
 }
 
-if (!catalog.meta.sources.some((item) => item.id === source.id)) catalog.meta.sources.push(source);
+for (const source of sources) {
+  if (!catalog.meta.sources.some((item) => item.id === source.id)) catalog.meta.sources.push(source);
+}
 
 const universities = Object.values(catalog.universities);
 catalog.meta.version = "2026.17";
@@ -207,7 +231,7 @@ await writeFile(catalogUrl, JSON.stringify(catalog), "utf8");
 
 console.log(JSON.stringify({
   catalogVersion: catalog.meta.version,
-  officialPublishedProgrammes: officialProgrammes.length,
+  officialPublishedProgrammes: Object.fromEntries(indexPages.map((page) => [page.degree, page.programmes.length])),
   matchedProgrammes: mappings.length,
   intentionallyUnlinked: expectedUnlinked,
   curriculumLinkCount: catalog.meta.stats.curriculumLinkCount,

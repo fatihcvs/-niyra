@@ -359,10 +359,14 @@ test("Ege programmes link only to populated official EBP course plans", () => {
 test("Dokuz Eylul programmes link only to verified 2025-2026 course-catalog plans", () => {
   const deu = catalog.universities["tr-dokuz-eylul-universitesi"];
   const bachelorPrograms = deu.programs.filter((program) => program.degreeLevel === "bachelor");
-  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+  const associatePrograms = deu.programs.filter((program) => program.degreeLevel === "associate");
+  const degreePrograms = deu.programs.filter((program) => ["associate", "bachelor"].includes(program.degreeLevel));
+  const curriculumPrograms = degreePrograms.filter((program) => program.curriculumUrls?.length);
 
   assert.equal(bachelorPrograms.length, 88);
-  assert.equal(curriculumPrograms.length, 81);
+  assert.equal(associatePrograms.length, 51);
+  assert.equal(curriculumPrograms.length, 130);
+  assert.equal(curriculumPrograms.filter((program) => program.degreeLevel === "associate").length, 49);
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Dokuz Eylül Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumPeriod === "2025-2026"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
@@ -374,7 +378,7 @@ test("Dokuz Eylul programmes link only to verified 2025-2026 course-catalog plan
   assert.ok(curriculumPrograms.find((program) => program.name === "Bilgisayar ve Öğretim Teknolojileri Öğretmenliği")
     ?.curriculumUrls[0].endsWith("/bolum_1099_tr.html"));
 
-  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  const unlinked = degreePrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
   assert.deepEqual(unlinked, [
     "Tıp (İngilizce)",
     "İlahiyat (M.T.O.K.)",
@@ -383,6 +387,8 @@ test("Dokuz Eylul programmes link only to verified 2025-2026 course-catalog plan
     "Tarih (UOLP-Gence Devlet Üniversitesi)",
     "Havacılık ve Uzay Mühendisliği (İngilizce)",
     "Radyo, Televizyon ve Sinema",
+    "Laboratuvar Hayvanları",
+    "Tarım Makineleri ve Teknolojileri",
   ].sort());
 });
 
