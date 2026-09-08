@@ -38,7 +38,7 @@ export function BetaForm({ kind }: { kind: "application" | "feedback" }) {
     <p>{application ? "Başvurunu değerlendireceğiz. Test erişimin hazır olduğunda katılım bağlantını takip sayfanda göreceksin." : "Ekibin yanıtını takip sayfanda görebilir ve görüşmeye devam edebilirsin."}</p>
     <Link className={styles.primary} href={`/beta/takip#${receipt}`}>Durumumu ve yanıtları gör →</Link>
     <label className={styles.receipt}>Kişisel takip kodun<input readOnly value={receipt} onFocus={event => event.currentTarget.select()}/></label>
-    <p className={styles.hint}>Bu kod yalnız sana aittir; yanıtlarını açar. Güvenli bir yere kaydet. Son kod bu tarayıcıda hatırlanır. E-posta gönderilmez; gelişmeleri takip sayfandan kontrol edebilirsin.</p>
+    <p className={styles.hint}>Bu kod yalnız sana aittir; yanıtlarını açar. Güvenli bir yere kaydet. Son kod bu tarayıcıda hatırlanır. Gelişmeleri takip sayfandan kontrol edebilirsin.</p>
     <Link className={styles.textLink} href="/beta">Test hakkında bilgi al</Link>
   </div>;
   return <>

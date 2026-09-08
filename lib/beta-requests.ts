@@ -74,7 +74,7 @@ export async function submitBetaRequest(db: D1Database, request: Request, input:
   const id = crypto.randomUUID();
   await db.prepare(`INSERT INTO beta_requests(id,kind,access_hash,submission_hash,email,display_name,university,device_model,android_version,
     category,subject,message,adult_confirmed,android_confirmed,participation_confirmed,consent_version,source_json)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'beta-2026-09-08',?) ON CONFLICT(access_hash) DO NOTHING`)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'beta-2026-09-08-mail',?) ON CONFLICT(access_hash) DO NOTHING`)
     .bind(id, kind, accessHash, submissionHash, email, fields.displayName, fields.university, fields.deviceModel, fields.androidVersion,
       category, fields.subject, fields.message, Number(adult), Number(android), Number(participation), JSON.stringify(source)).run();
   const saved = await db.prepare("SELECT id,submission_hash FROM beta_requests WHERE access_hash=?").bind(accessHash).first<{ id: string; submission_hash: string }>();
