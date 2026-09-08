@@ -1,15 +1,15 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,706 programda ders kaydı · 1,477 programda ders listesi eksik.
-Toplam 1,526,731 program-ders kaydı. 191 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,750 programda ders kaydı · 1,433 programda ders listesi eksik.
+Toplam 1,529,085 program-ders kaydı. 191 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,271
-- Okunabilir ders listesi bulunamadı: 156
+- Resmî program eşleşmesi eksik: 1,226
+- Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
 
@@ -161,7 +161,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Kütahya Sağlık Bilimleri Üniversitesi | 38 | 38 | 0 | 2,665 | 5 | [Kaynak 1](https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ksbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Lokman Hekim Üniversitesi | 25 | 24 | 1 | 3,866 | 5 | [Kaynak 1](https://obs.lokmanhekim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.lokmanhekim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Malatya Turgut Özal Üniversitesi | 84 | 84 | 0 | 6,910 | 10 | [Kaynak 1](https://obs.ozal.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ozal.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
-| Maltepe Üniversitesi | 45 | 0 | 45 | 0 | 5 | [Kaynak 1](https://ects.maltepe.edu.tr/) |
+| Maltepe Üniversitesi | 45 | 44 | 1 | 2,354 | 5 | [Kaynak 1](https://ects.maltepe.edu.tr/tr/egitim-fakultesi) · [Kaynak 2](https://ects.maltepe.edu.tr/tr/meslek-yuksekokulu) · [Kaynak 3](https://ects.maltepe.edu.tr/tr/hemsirelik) · [Kaynak 4](https://ects.maltepe.edu.tr/tr/-saglik-bilimleri-yuksekokulu) · [Kaynak 5](https://aday.maltepe.edu.tr/meslek-yuksekokulu/) · [Kaynak 6](https://ects.maltepe.edu.tr/) |
 | Manisa Celal Bayar Üniversitesi | 147 | 134 | 13 | 11,984 | 25 | [Kaynak 1](https://obsapp.mcbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obsapp.mcbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Mardin Artuklu Üniversitesi | 71 | 67 | 4 | 4,601 | 13 | [Kaynak 1](https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.artuklu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Marmara Üniversitesi | 142 | 116 | 26 | 14,341 | 11 | [Kaynak 1](https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/lisans-900002) · [Kaynak 2](https://meobs.marmara.edu.tr/Program/programlar-hakkinda-bilgi/on-lisans-900001) |

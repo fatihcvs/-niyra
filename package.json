@@ -27,6 +27,7 @@
     "catalog:ataturk:open": "python -X utf8 scripts/academic-catalog/collect_turkey_ataturk_open_catalog.py",
     "catalog:ktun": "python -X utf8 scripts/academic-catalog/collect_turkey_ktun_catalog.py",
     "catalog:duzce": "python -X utf8 scripts/academic-catalog/collect_turkey_duzce_catalog.py",
+    "catalog:maltepe": "python -X utf8 scripts/academic-catalog/collect_turkey_maltepe_catalog.py",
     "catalog:logos": "node scripts/university-logos/sync-university-logos.mjs",
     "catalog:campus:build": "node scripts/campus-catalog/build-campus-place-catalog.mjs",
     "install:ci": "bash scripts/install-ci.sh",

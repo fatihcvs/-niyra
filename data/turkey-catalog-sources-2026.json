@@ -2270,6 +2270,36 @@
   "tr-maltepe-universitesi": {
     "catalogs": [
       {
+        "url": "https://ects.maltepe.edu.tr/tr/egitim-fakultesi",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "ee09128a54f3b9b2f27e277ded9dd2d59510bb96688f6521450c94fb40658ac5",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.maltepe.edu.tr/tr/meslek-yuksekokulu",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "9c719feba092ddba9731796af32a63cf1c4cb1dc36d7e8af372a286fc2f05998",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.maltepe.edu.tr/tr/hemsirelik",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "d78ff8e7081cd5f68099f83b13edff1802743aa2550ad9215815ef619a8cbf5c",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ects.maltepe.edu.tr/tr/-saglik-bilimleri-yuksekokulu",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "f97e7427a1ef3bc5f0a409cd8173e45465ea78dea70326b5741e976ca23ac3de",
+        "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://aday.maltepe.edu.tr/meslek-yuksekokulu/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "67bbc83f299035f1979612035b4de6cc362a8d47b706c20cc3203ab1c31ed40e",
+        "evidence": "programme-without-coded-course-list"
+      },
+      {
         "url": "https://ects.maltepe.edu.tr/",
         "checkedAt": "2026-09-05",
         "sourceHash": "e2ce9016da3132b13ba178c35fb2d668454a35c2b6f748f38eabdae81398c2c8",

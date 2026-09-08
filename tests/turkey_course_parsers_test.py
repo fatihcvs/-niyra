@@ -893,4 +893,74 @@ class DuzceCatalogTests(unittest.TestCase):
         })
 
 
+class MaltepeCatalogTests(unittest.TestCase):
+    def test_legacy_mubis_cards_decode_turkish_and_keep_unknown_terms(self):
+        import tempfile
+        from parse_turkey_maltepe_courses import parse_maltepe_mubis
+
+        fixture = '''<html><body>
+          <div id="RpDersTanimlari_ASPxHeadlineDersTanimlari_0">
+            <div class="dxhlHeader_PlasticBlue">ÖZÖY 205-Özel Eğitim</div>
+          </div>
+          <div id="RpDersTanimlari_ASPxHeadlineDersTanimlari_1">
+            <div class="dxhlHeader_PlasticBlue">TRD 155-Türk Dili I</div>
+          </div>
+        </body></html>'''
+        with tempfile.NamedTemporaryFile(delete=False) as temporary:
+            path = Path(temporary.name)
+            temporary.write(fixture.encode('windows-1254'))
+        try:
+            courses, conflicts = parse_maltepe_mubis(path, course_code)
+        finally:
+            path.unlink()
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'ÖZÖY205', 'name': 'Özel Eğitim', 'semester': None, 'kind': None},
+            {'code': 'TRD155', 'name': 'Türk Dili I', 'semester': None, 'kind': None},
+        ])
+
+    def test_direct_medical_headings_join_split_strong_elements(self):
+        from parse_turkey_maltepe_courses import parse_maltepe_direct
+
+        document = html('''<div class="editor-result">
+          <p><strong><u>MED 511 </u></strong><strong><u>Deri ve Zührevi Hastalıklar Stajı</u></strong></p>
+          <p>Açıklama</p>
+          <p><strong><u>MED 602 Çocuk Sağlığı ve Hastalıkları Stajı</u></strong></p>
+        </div>''')
+        courses, conflicts = parse_maltepe_direct(document, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'MED511', 'name': 'Deri ve Zührevi Hastalıklar Stajı', 'semester': None, 'kind': None},
+            {'code': 'MED602', 'name': 'Çocuk Sağlığı ve Hastalıkları Stajı', 'semester': None, 'kind': None},
+        ])
+
+    def test_aliases_select_current_law_page_and_lock_unreadable_programme(self):
+        from collect_turkey_maltepe_catalog import (
+            EXPECTED_TOTAL, EXPECTED_UNREADABLE, PROGRAMME_ALIASES, match_programmes,
+        )
+
+        university = {
+            'units': [{'id': 'u1', 'name': 'Hukuk Fakültesi'},
+                      {'id': 'u2', 'name': 'Meslek Yüksekokulu'}],
+            'programs': [
+                {'id': 'program-osym-204111939', 'unitId': 'u1',
+                 'name': 'Hukuk', 'degreeLevel': 'bachelor'},
+                {'id': 'program-osym-204191095', 'unitId': 'u2',
+                 'name': 'Yapı Yalıtım Teknolojisi', 'degreeLevel': 'associate'},
+            ],
+        }
+        items = [
+            {'sourceTitle': 'Hukuk Bölümü', 'degree': 'bachelor', 'unit': 'Hukuk Fakültesi'},
+            {'sourceTitle': 'Hukuk Programı', 'degree': 'bachelor', 'unit': 'Hukuk Fakültesi'},
+        ]
+        mappings, missing = match_programmes(items, university)
+        self.assertEqual([item['id'] for item in missing], ['program-osym-204191095'])
+        self.assertEqual(mappings[0][1]['sourceTitle'], 'Hukuk Bölümü')
+        self.assertEqual(PROGRAMME_ALIASES['program-osym-204111939'], 'Hukuk Bölümü')
+        self.assertEqual(EXPECTED_TOTAL, 2354)
+        self.assertEqual(EXPECTED_UNREADABLE, {
+            'program-osym-204191095': 'no-structured-course-catalog',
+        })
+
+
 if __name__=='__main__':unittest.main()

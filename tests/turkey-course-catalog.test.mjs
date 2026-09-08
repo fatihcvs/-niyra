@@ -772,11 +772,59 @@ test("Duzce selects the newest readable official plan and keeps four source gaps
   }
 });
 
+test("Maltepe publishes current ECTS and MUBIS course lists while keeping the new uncoded programme explicit", async () => {
+  const uid = "tr-maltepe-universitesi";
+  const programmes = Object.values(shards[uid]);
+  const universityCoverage = coverage.universities.find((value) => value.universityId === uid);
+  const sources = await data("turkey-catalog-sources-2026.json");
+
+  assert.equal(programmes.length, 44);
+  assert.equal(programmes.reduce((total, value) => total + value.courses.length, 0), 2354);
+  assert.deepEqual({
+    structuredProgramCount: universityCoverage.structuredProgramCount,
+    courseCount: universityCoverage.courseCount,
+    missingProgramIds: universityCoverage.missingProgramIds,
+  }, {
+    structuredProgramCount: 44,
+    courseCount: 2354,
+    missingProgramIds: ["program-osym-204191095"],
+  });
+  assert.deepEqual(sources[uid].catalogs.slice(0, 5).map((value) => value.url), [
+    "https://ects.maltepe.edu.tr/tr/egitim-fakultesi",
+    "https://ects.maltepe.edu.tr/tr/meslek-yuksekokulu",
+    "https://ects.maltepe.edu.tr/tr/hemsirelik",
+    "https://ects.maltepe.edu.tr/tr/-saglik-bilimleri-yuksekokulu",
+    "https://aday.maltepe.edu.tr/meslek-yuksekokulu/",
+  ]);
+
+  const law = shards[uid][`${uid}:program-osym-204111939`];
+  assert.equal(law.courses.length, 90);
+  assert.equal(law.sourceSelection.sourceTitle, "Hukuk Bölümü");
+  assert.equal(law.sourceSelection.programUrl, "https://ects.maltepe.edu.tr/tr/hukuk-bolumu");
+  assert.doesNotMatch(law.sourceSelection.courseUrl, /eski/);
+
+  const preschool = shards[uid][`${uid}:program-osym-204110614`];
+  assert.equal(preschool.courses.length, 45);
+  assert.equal(preschool.curriculumPeriod, "Resmî ECTS ders listesi");
+  assert.equal(preschool.sourceSelection.dataUrl,
+    "https://mubis.maltepe.edu.tr/RAPOR/GENEL/DrupalDersTanimlari.aspx?SistemSK=6&BirimSK=32&BelgeDili=1");
+  assert.deepEqual(preschool.courses[0], {
+    code: "ATA153", name: "Atatürk İlkeleri Ve İnkılap Tarihi I",
+    semester: null, kind: null,
+  });
+
+  const medicine = shards[uid][`${uid}:program-osym-204110377`];
+  assert.ok(medicine.courses.some((course) => course.code === "MED511"
+    && course.name === "Deri ve Zührevi Hastalıklar Stajı"));
+  assert.equal(shards[uid][`${uid}:program-osym-204191095`], undefined);
+  assert.equal(universityCoverage.missingReasons["program-osym-204191095"], "no-readable-curriculum");
+});
+
 test("the built API loads the requested university shard and keeps other programme IDs isolated", async () => {
   const { default: worker } = await import(new URL("../dist/server/index.js", import.meta.url));
   const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
   const context = { waitUntil() {}, passThroughOnException() {} };
-  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi", "tr-ankara-universitesi", "tr-cukurova-universitesi", "tr-anadolu-universitesi", "tr-dokuz-eylul-universitesi", "tr-mugla-sitki-kocman-universitesi", "tr-igdir-universitesi", "tr-ege-universitesi", "tr-ataturk-universitesi", "tr-konya-teknik-universitesi", "tr-duzce-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
+  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi", "tr-ankara-universitesi", "tr-cukurova-universitesi", "tr-anadolu-universitesi", "tr-dokuz-eylul-universitesi", "tr-mugla-sitki-kocman-universitesi", "tr-igdir-universitesi", "tr-ege-universitesi", "tr-ataturk-universitesi", "tr-konya-teknik-universitesi", "tr-duzce-universitesi", "tr-maltepe-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
   for (const record of chosen) {
     const url = `http://localhost/api/course-catalog?universityId=${record.universityId}&programId=${record.programId}`;
     const response = await worker.fetch(new Request(url), env, context);

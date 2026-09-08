@@ -26,6 +26,7 @@ from parse_turkey_iuc_courses import parse_iuc_print
 from parse_turkey_bayburt_courses import parse_bayburt
 from parse_turkey_ktun_courses import parse_ktun
 from parse_turkey_duzce_courses import parse_duzce
+from parse_turkey_maltepe_courses import parse_maltepe_direct, parse_maltepe_mubis
 from collect_turkey_omu_ubys_catalog import (
     BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
     source_unit_identity, target_unit_identity,
@@ -50,6 +51,7 @@ OMU_PARSER_VERSION = '381f380f3844'
 MARMARA_PARSER_VERSION = 'fc2655eba249'
 KTUN_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_ktun_courses.py').read_bytes()).hexdigest()[:12]
 DUZCE_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_duzce_courses.py').read_bytes()).hexdigest()[:12]
+MALTEPE_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_maltepe_courses.py').read_bytes()).hexdigest()[:12]
 
 
 def course_code(value):
@@ -263,6 +265,10 @@ def _parse_source(source):
         return parse_ktun(soup(source), course_code)
     if source.get('family') == 'duzce-reviewed-2026':
         return parse_duzce(soup(source), course_code, course_kind)
+    if source.get('family') == 'maltepe-mubis-2026':
+        return parse_maltepe_mubis(CACHE / source['file'], course_code)
+    if source.get('family') == 'maltepe-direct-2026':
+        return parse_maltepe_direct(soup(source), course_code)
     if source.get('family') in ['ubys', 'omu-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
@@ -322,7 +328,9 @@ def parse_source(source):
                 'marmara-reviewed-2026': MARMARA_PARSER_VERSION,
                 'ankara-reviewed-2026': PARSER_VERSION,
                 'ktun-reviewed-2026': KTUN_PARSER_VERSION,
-                'duzce-reviewed-2026': DUZCE_PARSER_VERSION}
+                'duzce-reviewed-2026': DUZCE_PARSER_VERSION,
+                'maltepe-mubis-2026': MALTEPE_PARSER_VERSION,
+                'maltepe-direct-2026': MALTEPE_PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -360,7 +368,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -374,7 +382,9 @@ def main():
               'marmara-reviewed-2026':MARMARA_PARSER_VERSION,
               'ankara-reviewed-2026':PARSER_VERSION,
               'ktun-reviewed-2026':KTUN_PARSER_VERSION,
-              'duzce-reviewed-2026':DUZCE_PARSER_VERSION}
+              'duzce-reviewed-2026':DUZCE_PARSER_VERSION,
+              'maltepe-mubis-2026':MALTEPE_PARSER_VERSION,
+              'maltepe-direct-2026':MALTEPE_PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.

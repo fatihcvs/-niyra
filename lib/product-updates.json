@@ -1,5 +1,21 @@
 [
   {
+    "id": "turkey-course-catalogs-thirty-fourth-expansion",
+    "releasedAt": "2026-09-08T08:45:00Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Maltepe Üniversitesinde 44 programın ders listesi eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.750’ye, program-ders kaydı sayısı 1.529.085’e ulaştı.",
+    "highlights": [
+      "Maltepe Üniversitesinin 44 programına 2.354 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 0’dan 44’e çıktı.",
+      "Lisans, ön lisans ve yüksekokul ECTS ağaçları program adı, derece ve akademik birimle eşleştirildi. Her programın kendi Dersler bağlantısı ve gömülü MÜBİS kaynağı kanıtta saklandı.",
+      "Eski Windows-1254 kodlu MÜBİS ders başlıkları Türkçe karakterleri koruyan ayrı ayrıştırıcıyla okundu. Kaynağın yayımlamadığı yarıyıl ve ders türü alanları tahmin edilmedi.",
+      "Hukukta güncel Hukuk Bölümü sayfası seçildi; eski ve yüzde 30 İngilizce planları Türkçe programa karıştırılmadı. Türkçe ve İngilizce Tıp listeleri kendi resmî ECTS sayfalarından ayrı aktarıldı.",
+      "Yeni Yapı Yalıtım Teknolojisi programı resmî 2026-2027 tanıtımında doğrulandı; ECTS ağacında kodlu ders listesi henüz yayımlanmadığı için açık eksik bırakıldı.",
+      "Daha önce yayımlanmış 13.706 programın ders içeriği değişmeden korundu. Türkiye genelinde eksik ders listesi sayısı 1.433’e düştü."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-thirty-third-expansion",
     "releasedAt": "2026-09-08T07:58:30Z",
     "category": "İyileştirme",
