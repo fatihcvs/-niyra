@@ -2711,13 +2711,37 @@
   "tr-sabanci-universitesi": {
     "catalogs": [
       {
-        "url": "https://ects.sabanciuniv.edu/",
-        "checkedAt": "2026-09-05",
-        "sourceHash": "397dcb24221a0169c66450988184bcac6ff3e5006452e9ecc273e57ab368b2ee",
-        "evidence": "catalogue-navigation"
+        "url": "https://ects.sabanciuniv.edu/tr/akademik-programlar/lisans-programlari",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "933534986c72d7973c1e0d2db4339f59c81e598d6af23fbd97e062e3358edd2d",
+        "evidence": "official-current-undergraduate-degree-directory"
+      },
+      {
+        "url": "https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BSCS",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "bce2bf4c54fc54df90dcfcca6565442b959526f8748dd2a86cb55db1133ba351",
+        "evidence": "official-engineering-course-outcome-matrix"
+      },
+      {
+        "url": "https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BSDSA",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "f63f7f100b19388c94e6f80a4f717404e06fea5832cd6cd1ccacc9ecddbe3164",
+        "evidence": "official-data-science-course-outcome-matrix"
+      },
+      {
+        "url": "https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BAECON",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "79b7f26375c86e498ac2788fe6d2b1930430a0bca820e797371908d19085c46f",
+        "evidence": "official-social-science-course-outcome-matrix"
+      },
+      {
+        "url": "https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BAMAN",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "d88f6c6d95f0dc3ffc77ab2a194b918ae2e411bd41ebd3d12afc70cd6e0043e6",
+        "evidence": "official-management-course-outcome-matrix"
       }
     ],
-    "status": "catalogue-checked"
+    "status": "official-faculty-programme-matrices-reviewed"
   },
   "tr-saglik-bilimleri-universitesi": {
     "catalogs": [

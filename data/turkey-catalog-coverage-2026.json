@@ -4293,19 +4293,11 @@
       "universityId": "tr-sabanci-universitesi",
       "name": "Sabancı Üniversitesi",
       "programCount": 3,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-205110056",
-        "program-osym-205110135",
-        "program-osym-205110092"
-      ],
-      "missingReasons": {
-        "program-osym-205110056": "programme-source-not-matched",
-        "program-osym-205110135": "programme-source-not-matched",
-        "program-osym-205110092": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 3,
+      "courseCount": 382,
+      "linkedProgramCount": 3,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-saglik-bilimleri-universitesi",
@@ -5167,8 +5159,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28843,
-    "parserVersion": "dd273bdaf512",
+    "sourceCount": 28846,
+    "parserVersion": "4f68f19b3147",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5182,7 +5174,7 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "dd273bdaf512",
+      "ankara-reviewed-2026": "4f68f19b3147",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
@@ -5190,8 +5182,9 @@
       "koc-curriculum-2026": "1c0bd0b75534",
       "koc-nursing-2026": "1c0bd0b75534",
       "koc-medicine-2026": "1c0bd0b75534",
-      "tobb-abys-2026": "cf94264b96b2",
-      "tobb-ybs-curriculum-2026": "cf94264b96b2"
+      "tobb-abys-2026": "a909a17795d0",
+      "tobb-ybs-curriculum-2026": "a909a17795d0",
+      "sabanci-faculty-bundle-2026": "778bc235f6af"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5227,7 +5220,8 @@
       "duzce-reviewed-courses.json": "d88ddece92d6c5ecd5a0eeb38f5d23e5286d3e31f9c08082e0c35d9e9861843e",
       "maltepe-reviewed-courses.json": "14ab320281cd0e444f798635cbac7edafa72583750331f0e41e6049374547c30",
       "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09",
-      "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df"
+      "tobb-reviewed-courses.json": "2fb409b57cd9ab26afb78cdcf82aeff874c56ccdd835405b4f3a8d78c90e23df",
+      "sabanci-reviewed-courses.json": "98e849b358111099aed8091c11eb105da4effecab138f47e961a3896d33a9b43"
     }
   }
 }

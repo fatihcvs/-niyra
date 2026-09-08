@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,794 programda ders kaydı · 1,389 programda ders listesi eksik.
-Toplam 1,533,237 program-ders kaydı. 193 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,797 programda ders kaydı · 1,386 programda ders listesi eksik.
+Toplam 1,533,619 program-ders kaydı. 193 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,182
+- Resmî program eşleşmesi eksik: 1,179
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -186,7 +186,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Pamukkale Üniversitesi | 155 | 144 | 11 | 16,992 | 20 | [Kaynak 1](https://ebs.pusula.pau.edu.tr/bilgigoster/DereceProgram.aspx?lng=1) |
 | Piri Reis Üniversitesi | 25 | 12 | 13 | 669 | 8 | [Kaynak 1](https://dmyo.pirireis.edu.tr/programlar/ascilik-programi/program-hakkinda/) · [Kaynak 2](https://dmyo.pirireis.edu.tr/programlar/lojistik-programi/program-hakkinda/) · [Kaynak 3](https://muhendislik.pirireis.edu.tr/bolumler/bilgisayar-muhendisligi/dosyalar/) |
 | Recep Tayyip Erdoğan Üniversitesi | 82 | 72 | 10 | 9,472 | 15 | [Kaynak 1](https://bologna2.erdogan.edu.tr/tr/programlar/5367) · [Kaynak 2](https://bologna2.erdogan.edu.tr/tr/programlar/5368) |
-| Sabancı Üniversitesi | 3 | 0 | 3 | 0 | 10 | [Kaynak 1](https://ects.sabanciuniv.edu/) |
+| Sabancı Üniversitesi | 3 | 3 | 0 | 382 | 10 | [Kaynak 1](https://ects.sabanciuniv.edu/tr/akademik-programlar/lisans-programlari) · [Kaynak 2](https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BSCS) · [Kaynak 3](https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BSDSA) · [Kaynak 4](https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BAECON) · [Kaynak 5](https://ects.sabanciuniv.edu/undergraduate-course-program-outcomes?program=BAMAN) |
 | Sağlık Bilimleri Üniversitesi | 64 | 25 | 39 | 2,270 | 15 | [Kaynak 1](https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.sbu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Sakarya Uygulamalı Bilimler Üniversitesi | 114 | 92 | 22 | 8,504 | 25 | [Kaynak 1](https://ebs.bys.subu.edu.tr/) |
 | Sakarya Üniversitesi | 77 | 59 | 18 | 19,641 | 15 | [Kaynak 1](https://ebs.sakarya.edu.tr/) |

@@ -1082,4 +1082,36 @@ class TobbCatalogTests(unittest.TestCase):
         self.assertEqual(EXPECTED_TOTAL, 1533)
 
 
+class SabanciCatalogTests(unittest.TestCase):
+    def test_outcome_matrix_keeps_published_course_groups(self):
+        from parse_turkey_sabanci_courses import parse_sabanci_matrix
+
+        document = html('''
+          <div class="class"><div class="class-header">University Courses</div>
+            <table><tr><th>Code</th><th>Course Name</th></tr>
+              <tr><td>AL 102</td><td>Academic Literacies</td></tr></table></div>
+          <div class="class"><div class="class-header">Core Electives</div>
+            <table><tr><th>Code</th><th>Course Name</th></tr>
+              <tr><td>CS 302</td><td>Formal Languages and Automata Theory</td></tr></table></div>
+          <div class="class"><div class="class-header">Required Courses</div>
+            <table><tr><th>Code</th><th>Course Name</th></tr>
+              <tr><td>CS 201</td><td>Programming Fundamentals</td></tr></table></div>
+        ''')
+        courses, conflicts = parse_sabanci_matrix(document, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'AL102', 'name': 'Academic Literacies', 'semester': None, 'kind': None},
+            {'code': 'CS302', 'name': 'Formal Languages and Automata Theory', 'semester': None, 'kind': 'elective'},
+            {'code': 'CS201', 'name': 'Programming Fundamentals', 'semester': None, 'kind': 'required'},
+        ])
+
+    def test_reviewed_faculty_unions_are_frozen(self):
+        from collect_turkey_sabanci_catalog import EXPECTED_TOTAL, GROUPS, PROGRAMMES
+
+        self.assertEqual(len(PROGRAMMES), 12)
+        self.assertEqual(len(GROUPS), 3)
+        self.assertEqual(sum(value[1] for value in GROUPS.values()), EXPECTED_TOTAL)
+        self.assertEqual(EXPECTED_TOTAL, 382)
+
+
 if __name__=='__main__':unittest.main()
