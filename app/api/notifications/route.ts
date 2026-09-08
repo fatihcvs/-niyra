@@ -6,21 +6,29 @@ import {
   signInResponse,
   unavailableResponse,
 } from "../../../lib/server-api";
+import { NOTIFICATION_EVENT_VISIBLE_SQL, NOTIFICATION_VIEWER_SQL } from "../../../lib/notification-event-access";
 
 export async function GET(request: Request) {
+  const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "cache-control": "private, no-store" } });
   const identity = await requireIdentity();
-  if (!identity) return signInResponse("Bildirimlerini görmek için giriş yapmalısın.");
+  if (!identity) return json({ error: "Bildirimlerini görmek için giriş yapmalısın." }, 401);
   const kind = cleanText(new URL(request.url).searchParams.get("kind"), 30);
   try {
     const { DB } = await getRuntime();
+    const viewer = await DB.prepare(`SELECT u.public_id,p.university_id,COALESCE(p.onboarding_completed,0) AS onboarding_completed
+      FROM users u LEFT JOIN student_profiles p ON p.user_email=u.email WHERE u.email=? AND u.status='active' LIMIT 1`)
+      .bind(identity.email).first<{ public_id: string; university_id: string | null; onboarding_completed: number }>();
+    if (!viewer) return json({ error: "Hesap durumu değişti. Tekrar giriş yap." }, 409);
+    const viewerValues = [identity.email, viewer.public_id, viewer.university_id, Number(viewer.onboarding_completed)];
     const [items, preferences] = await Promise.all([
       DB.prepare(
-        `SELECT n.id, n.kind, n.title, n.body, n.entity_type, n.entity_id, n.read_at, n.created_at,
+        `${NOTIFICATION_VIEWER_SQL} SELECT n.id, n.kind, n.title, n.body, n.entity_type, n.entity_id, n.read_at, n.created_at,
                 u.public_id AS actor_id, u.display_name AS actor_name
-         FROM notifications n LEFT JOIN users u ON u.email = n.actor_email
-         WHERE n.user_email = ? AND (? = '' OR n.kind = ?)
+         FROM notifications n LEFT JOIN users u ON u.email = n.actor_email CROSS JOIN notification_viewer
+         WHERE n.user_email = notification_viewer.email AND (? = '' OR n.kind = ?)
+           AND ${NOTIFICATION_EVENT_VISIBLE_SQL}
          ORDER BY n.created_at DESC LIMIT 80`,
-      ).bind(identity.email, kind, kind).all<{
+      ).bind(...viewerValues, kind, kind).all<{
         id: string; kind: string; title: string; body: string; entity_type: string | null; entity_id: string | null;
         read_at: string | null; created_at: string; actor_id: string | null; actor_name: string | null;
       }>(),
@@ -40,15 +48,18 @@ export async function GET(request: Request) {
       actorId: item.actor_id,
       actorName: item.actor_name,
     }));
-    return Response.json({
+    if (!await DB.prepare(`${NOTIFICATION_VIEWER_SQL} SELECT 1 FROM notification_viewer`).bind(...viewerValues).first()) {
+      return json({ error: "Hesap veya kampüs bilgisi değişti. Ekranı yenile." }, 409);
+    }
+    return json({
       notifications,
       unreadCount: notifications.filter((item) => !item.read).length,
       preferences: preferences
         ? { interactions: Boolean(preferences.interactions), courses: Boolean(preferences.courses), communities: Boolean(preferences.communities) }
         : { interactions: true, courses: true, communities: true },
     });
-  } catch (error) {
-    return unavailableResponse(error, "Bildirimlerine şu anda ulaşılamıyor.");
+  } catch {
+    return json({ error: "Bildirimlerine şu anda ulaşılamıyor." }, 503);
   }
 }
 

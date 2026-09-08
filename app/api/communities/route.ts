@@ -1,6 +1,7 @@
 import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
 import { searchContainsSql, searchNeedle } from "../../../lib/search-query";
 import { sameOriginRequest } from "../../../lib/app-auth";
+import { communityEventVisibleSql, EVENT_VIEWER_SQL } from "../../../lib/community-event-access";
 import { profileMediaUrl } from "../../../lib/profile";
 import {
   cleanText,
@@ -17,6 +18,24 @@ import { getBooleanPlatformSetting } from "../../../lib/platform-settings";
 
 const categories = ["akademik", "teknoloji", "kampus", "kariyer", "sosyal", "spor", "sanat", "ilgi"] as const;
 const managerRoles = ["founder", "admin", "moderator"];
+
+async function privateResponse(handler: () => Promise<Response>, fallback: string) {
+  try {
+    const response = await handler();
+    const headers = new Headers(response.headers); headers.set("cache-control", "private, no-store");
+    return new Response(response.body, { status: response.status, headers });
+  } catch {
+    return Response.json({ error: fallback }, { status: 503, headers: { "cache-control": "private, no-store" } });
+  }
+}
+export function GET(request: Request) { return privateResponse(() => getCommunities(request), "Topluluklara şu anda ulaşılamıyor."); }
+export function POST(request: Request) { return privateResponse(() => createCommunity(request), "Topluluk şu anda kurulamadı."); }
+export function PATCH(request: Request) { return privateResponse(() => updateCommunity(request), "Topluluk işlemi şu anda tamamlanamadı."); }
+
+const accessibleEvents = `${EVENT_VIEWER_SQL}, accessible_events AS (
+  SELECT ce.id,ce.community_id,ce.title,ce.starts_at FROM community_events ce CROSS JOIN event_viewer
+  WHERE ${communityEventVisibleSql("ce", "event_viewer.email", "event_viewer.university_id")}
+    AND ce.status='active' AND julianday(ce.starts_at)>=julianday('now'))`;
 
 type CommunityRow = {
   id: string;
@@ -116,24 +135,24 @@ function slugify(value: string) {
 }
 
 function baseSelect() {
-  return `SELECT c.id, c.name, c.slug, c.description, c.category, c.join_policy,
+  return `${accessibleEvents} SELECT c.id, c.name, c.slug, c.description, c.category, c.join_policy,
                  c.rules, c.status, c.moderation_status, c.course_id, cr.code AS course_code,
                  u.public_id AS creator_id, u.display_name AS creator_name, c.created_at,
                  COALESCE(c.last_activity_at, c.created_at) AS last_activity_at,
                  (SELECT COUNT(*) FROM community_members cmx WHERE cmx.community_id = c.id AND cmx.status = 'active') AS member_count,
                  (SELECT COUNT(*) FROM posts px WHERE px.community_id = c.id AND px.deleted_at IS NULL) AS post_count,
                  (SELECT COUNT(*) FROM posts pw WHERE pw.community_id = c.id AND pw.deleted_at IS NULL AND datetime(pw.created_at) >= datetime('now', '-7 days')) AS weekly_post_count,
-                 (SELECT COUNT(*) FROM community_events ce WHERE ce.community_id = c.id AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now')) AS event_count,
-                 (SELECT ce.title FROM community_events ce WHERE ce.community_id = c.id AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now') ORDER BY ce.starts_at LIMIT 1) AS next_event_title,
-                 (SELECT ce.starts_at FROM community_events ce WHERE ce.community_id = c.id AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now') ORDER BY ce.starts_at LIMIT 1) AS next_event_starts_at,
+                 (SELECT COUNT(*) FROM accessible_events ce WHERE ce.community_id = c.id) AS event_count,
+                 (SELECT ce.title FROM accessible_events ce WHERE ce.community_id = c.id ORDER BY julianday(ce.starts_at), ce.id LIMIT 1) AS next_event_title,
+                 (SELECT ce.starts_at FROM accessible_events ce WHERE ce.community_id = c.id ORDER BY julianday(ce.starts_at), ce.id LIMIT 1) AS next_event_starts_at,
                  cm.status AS membership_status, cm.role, cm.notification_level
-          FROM communities c
+          FROM communities c CROSS JOIN event_viewer
           JOIN users u ON u.email = c.creator_email
           LEFT JOIN courses cr ON cr.id = c.course_id
-          LEFT JOIN community_members cm ON cm.community_id = c.id AND cm.user_email = ?`;
+          LEFT JOIN community_members cm ON cm.community_id = c.id AND cm.user_email = event_viewer.email`;
 }
 
-export async function GET(request: Request) {
+async function getCommunities(request: Request) {
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Toplulukları görmek için giriş yapmalısın.");
   const url = new URL(request.url);
@@ -150,13 +169,17 @@ export async function GET(request: Request) {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
     if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    const viewerValues = [identity.email, profile.public_id, profile.university_id];
+    const viewerCurrent = () => DB.prepare(`${EVENT_VIEWER_SQL} SELECT 1 FROM event_viewer`).bind(...viewerValues).first();
+    const changedResponse = () => Response.json({ error: "Hesap veya kampüs bilgisi değişti. Ekranı yenile." }, { status: 409 });
     if (id) {
       const community = await DB
         .prepare(`${baseSelect()} WHERE c.id = ? AND c.moderation_status = 'active' AND c.university_id = ?
           AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)
           AND (c.status = 'active' OR (cm.status = 'active' AND cm.role IN ('founder','admin','moderator'))) LIMIT 1`)
-        .bind(identity.email, id, profile.university_id, identity.email)
+        .bind(...viewerValues, id, profile.university_id, identity.email)
         .first<CommunityRow>();
+      if (!await viewerCurrent()) return changedResponse();
       if (!community) return Response.json({ error: "Topluluk bulunamadı." }, { status: 404 });
       const serialized = serialize(community);
       const canSeeMembers = serialized.joined || serialized.canManage;
@@ -184,6 +207,7 @@ export async function GET(request: Request) {
              WHERE cb.community_id = ? ORDER BY cb.created_at DESC LIMIT 100`,
           ).bind(id).all()
         : { results: [] };
+      if (!await viewerCurrent()) return changedResponse();
       return Response.json({ community: serialized, members: members.results.map(serializeMember), bans: bans.results });
     }
 
@@ -193,7 +217,7 @@ export async function GET(request: Request) {
       : sort === "members"
         ? "member_count DESC, last_activity_at DESC"
         : "CASE WHEN cm.status = 'active' THEN 0 ELSE 1 END, CASE WHEN c.course_id IN (SELECT sc.course_id FROM student_courses sc WHERE sc.user_email = ?) THEN 0 ELSE 1 END, last_activity_at DESC, member_count DESC";
-    const bindings: Array<string | number> = [identity.email, profile.university_id, identity.email, mine, category, category, needle, needle];
+    const bindings: Array<string | number> = [...viewerValues, profile.university_id, identity.email, mine, category, category, needle, needle];
     if (!['new', 'members'].includes(sort)) bindings.push(identity.email);
     const rows = await DB
       .prepare(`${baseSelect()}
@@ -206,22 +230,21 @@ export async function GET(request: Request) {
       .bind(...bindings)
       .all<CommunityRow>();
     const stats = await DB.prepare(
-      `SELECT COUNT(*) AS total,
+      `${accessibleEvents} SELECT COUNT(*) AS total,
         SUM(CASE WHEN datetime(c.created_at) >= datetime('now', '-7 days') THEN 1 ELSE 0 END) AS new_this_week,
-        SUM(CASE WHEN EXISTS (SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = ? AND cm.status = 'active') THEN 1 ELSE 0 END) AS joined,
-        (SELECT COUNT(*) FROM community_events ce JOIN communities cx ON cx.id = ce.community_id
-          WHERE cx.university_id = ? AND cx.status = 'active' AND cx.moderation_status = 'active' AND ce.status = 'active' AND datetime(ce.starts_at) >= datetime('now')
-            AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = cx.id AND cb.user_email = ?)) AS upcoming_events
-       FROM communities c WHERE c.university_id = ? AND c.status = 'active' AND c.moderation_status = 'active'
-         AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = ?)` ,
-    ).bind(identity.email, profile.university_id, identity.email, profile.university_id, identity.email).first<Record<string, number>>();
+        SUM(CASE WHEN EXISTS (SELECT 1 FROM community_members cm WHERE cm.community_id = c.id AND cm.user_email = event_viewer.email AND cm.status = 'active') THEN 1 ELSE 0 END) AS joined,
+        (SELECT COUNT(*) FROM accessible_events) AS upcoming_events
+       FROM communities c CROSS JOIN event_viewer WHERE c.university_id = event_viewer.university_id AND c.status = 'active' AND c.moderation_status = 'active'
+         AND NOT EXISTS (SELECT 1 FROM community_bans cb WHERE cb.community_id = c.id AND cb.user_email = event_viewer.email)` ,
+    ).bind(...viewerValues).first<Record<string, number>>();
+    if (!await viewerCurrent()) return changedResponse();
     return Response.json({ communities: rows.results.map(serialize), stats: { total: Number(stats?.total ?? 0), joined: Number(stats?.joined ?? 0), newThisWeek: Number(stats?.new_this_week ?? 0), upcomingEvents: Number(stats?.upcoming_events ?? 0) } });
-  } catch (error) {
-    return unavailableResponse(error, "Topluluklara şu anda ulaşılamıyor.");
+  } catch {
+    return Response.json({ error: "Topluluklara şu anda ulaşılamıyor." }, { status: 503 });
   }
 }
 
-export async function POST(request: Request) {
+async function createCommunity(request: Request) {
   if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan topluluk isteği reddedildi." }, { status: 403 });
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Topluluk kurmak için giriş yapmalısın.");
@@ -271,7 +294,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+async function updateCommunity(request: Request) {
   if (!sameOriginRequest(request)) return Response.json({ error: "Güvenli olmayan topluluk isteği reddedildi." }, { status: 403 });
   const identity = await requireIdentity();
   if (!identity) return signInResponse("Topluluk işlemi için giriş yapmalısın.");

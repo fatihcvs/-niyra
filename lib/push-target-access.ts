@@ -1,3 +1,4 @@
+import { communityEventVisibleSql } from "./community-event-access";
 import { notificationHref } from "./workspace-navigation";
 
 const viewerSql = `WITH viewer AS (SELECT user.email, profile.university_id FROM users user
@@ -60,8 +61,7 @@ export async function pushTargetHref(db: D1Database, email: string, type: string
   } else if (type === "community") {
     query = `SELECT community.id FROM communities community CROSS JOIN viewer WHERE community.id = ? AND ${communityVisible("community.id")}`;
   } else if (type === "community-event" || type === "community_event") {
-    query = `SELECT event.id FROM community_events event JOIN users owner ON owner.email = event.creator_email AND owner.status = 'active'
-      CROSS JOIN viewer WHERE event.id = ? AND event.status IN ('active','cancelled') AND ${communityVisible("event.community_id")} AND ${unblocked("event.creator_email")}`;
+    query = `SELECT event.id FROM community_events event CROSS JOIN viewer WHERE event.id = ? AND ${communityEventVisibleSql()}`;
   } else if (type === "user") {
     target = actorId || id;
     query = `SELECT user.public_id FROM users user CROSS JOIN viewer WHERE user.public_id = ? AND user.status = 'active' AND ${unblocked("user.email")}`;

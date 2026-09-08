@@ -1,5 +1,6 @@
 import { activeActor, ActiveActorError, ACTIVE_ACTOR_SQL } from "../../../lib/active-actor";
 import { sameOriginRequest } from "../../../lib/app-auth";
+import { communityEventVisibleSql, EVENT_VIEWER_SQL } from "../../../lib/community-event-access";
 import {
   cleanText,
   enforceRateLimit,
@@ -46,20 +47,26 @@ function serialize(row: EventRow) {
 }
 
 export async function GET(request: Request) {
+  const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "cache-control": "private, no-store" } });
   const identity = await requireIdentity();
-  if (!identity) return signInResponse("Topluluk etkinliklerini görmek için giriş yapmalısın.");
+  if (!identity) return json({ error: "Topluluk etkinliklerini görmek için giriş yapmalısın." }, 401);
   const url = new URL(request.url);
   let communityId = cleanText(url.searchParams.get("communityId"), 80);
   const eventId = cleanText(url.searchParams.get("id"), 80);
   const past = url.searchParams.get("past") === "1";
-  if (!communityId && !eventId) return Response.json({ error: "Topluluk zorunludur." }, { status: 400 });
+  if (!communityId && !eventId) return json({ error: "Topluluk zorunludur." }, 400);
   try {
     const { DB } = await getRuntime();
     const profile = await requireProfile(DB, identity.email);
-    if (!profile) return Response.json({ error: "Önce akademik profilini tamamlamalısın." }, { status: 409 });
+    if (!profile) return json({ error: "Önce akademik profilini tamamlamalısın." }, 409);
+    const viewerValues = [identity.email, profile.public_id, profile.university_id];
     if (eventId) {
-      const parent = await DB.prepare(`SELECT ce.community_id FROM community_events ce JOIN communities c ON c.id = ce.community_id WHERE ce.id = ? AND ce.status IN ('active','cancelled') AND c.university_id = ? AND c.status = 'active' AND c.moderation_status = 'active' LIMIT 1`).bind(eventId, profile.university_id).first<{ community_id: string }>();
-      if (!parent || (communityId && parent.community_id !== communityId)) return Response.json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, { status: 404 });
+      const parent = await DB.prepare(`${EVENT_VIEWER_SQL} SELECT ce.community_id FROM community_events ce
+        JOIN communities c ON c.id=ce.community_id CROSS JOIN event_viewer
+        WHERE ce.id=? AND ce.status IN ('active','cancelled') AND c.university_id=event_viewer.university_id
+          AND c.status='active' AND c.moderation_status='active' LIMIT 1`)
+        .bind(...viewerValues, eventId).first<{ community_id: string }>();
+      if (!parent || (communityId && parent.community_id !== communityId)) return json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, 404);
       communityId = parent.community_id;
     }
     const access = await DB.prepare(
@@ -68,24 +75,25 @@ export async function GET(request: Request) {
        WHERE c.id = ? AND c.university_id = ? AND c.status = 'active' AND c.moderation_status = 'active'
        AND NOT EXISTS (SELECT 1 FROM community_bans b WHERE b.community_id = c.id AND b.user_email = ?) LIMIT 1`,
     ).bind(identity.email, communityId, profile.university_id, identity.email).first<{ join_policy: string; membership_status: string | null }>();
-    if (!access) return Response.json({ error: "Topluluk bulunamadı." }, { status: 404 });
-    if (access.membership_status === "banned") return Response.json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, { status: 404 });
-    if (access.join_policy !== "open" && access.membership_status !== "active") return Response.json({ error: "Etkinlikleri görmek için katılımın onaylanmalı." }, { status: 403 });
+    if (!access) return json({ error: "Topluluk bulunamadı." }, 404);
+    if (access.membership_status === "banned") return json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, 404);
+    if (access.join_policy !== "open" && access.membership_status !== "active") return json({ error: "Etkinlikleri görmek için katılımın onaylanmalı." }, 403);
     const rows = await DB.prepare(
-      `SELECT ce.id, ce.title, ce.description, ce.location, ce.starts_at, ce.ends_at, ce.capacity, ce.status,
+      `${EVENT_VIEWER_SQL} SELECT ce.id, ce.title, ce.description, ce.location, ce.starts_at, ce.ends_at, ce.capacity, ce.status,
               u.public_id AS creator_id, u.display_name AS creator_name,
               (SELECT COUNT(*) FROM community_event_attendees cea WHERE cea.event_id = ce.id AND cea.status = 'going') AS attendee_count,
               EXISTS(SELECT 1 FROM community_event_attendees own WHERE own.event_id = ce.id AND own.user_email = ? AND own.status = 'going') AS going
-       FROM community_events ce JOIN users u ON u.email = ce.creator_email
-       WHERE ce.community_id = ? AND ce.status IN ('active','cancelled')
+       FROM community_events ce JOIN users u ON u.email = ce.creator_email CROSS JOIN event_viewer
+       WHERE ce.community_id = ? AND ${communityEventVisibleSql("ce", "event_viewer.email", "event_viewer.university_id")}
          AND (? = '' OR ce.id = ?)
          AND (? <> '' OR (${past ? "datetime(ce.starts_at) < datetime('now')" : "datetime(ce.starts_at) >= datetime('now', '-2 hours')"}))
        ORDER BY CASE ce.status WHEN 'active' THEN 0 ELSE 1 END, ce.starts_at ${past ? "DESC" : "ASC"} LIMIT 30`,
-    ).bind(identity.email, communityId, eventId, eventId, eventId).all<EventRow>();
-    if (eventId && !rows.results.length) return Response.json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, { status: 404 });
-    return Response.json({ events: rows.results.map(serialize), ...(eventId ? { communityId, event: serialize(rows.results[0]) } : {}) });
-  } catch (error) {
-    return unavailableResponse(error, "Topluluk etkinliklerine ulaşılamıyor.");
+    ).bind(...viewerValues, identity.email, communityId, eventId, eventId, eventId).all<EventRow>();
+    if (!await DB.prepare(`${EVENT_VIEWER_SQL} SELECT 1 FROM event_viewer`).bind(...viewerValues).first()) return json({ error: "Hesap veya kampüs bilgisi değişti. Ekranı yenile." }, 409);
+    if (eventId && !rows.results.length) return json({ error: "Etkinlik bulunamadı veya erişim iznin yok." }, 404);
+    return json({ events: rows.results.map(serialize), ...(eventId ? { communityId, event: serialize(rows.results[0]) } : {}) });
+  } catch {
+    return json({ error: "Topluluk etkinliklerine ulaşılamıyor." }, 503);
   }
 }
 

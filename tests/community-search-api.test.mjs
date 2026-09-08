@@ -10,7 +10,7 @@ import { createMobileQualityFixtures } from "../scripts/mobile-quality/fixtures.
 
 const root = new URL("../", import.meta.url);
 const fixture = createMobileQualityFixtures();
-const files = ["lib/server-api.ts", "lib/profile.ts", "lib/platform-settings.ts", "lib/search-query.ts", "lib/app-auth.ts", "lib/active-actor.ts", "app/api/search/route.ts", "app/api/communities/route.ts", "app/api/community-posts/route.ts", "app/api/community-events/route.ts", "app/api/messages/route.ts"];
+const files = ["lib/server-api.ts", "lib/profile.ts", "lib/platform-settings.ts", "lib/search-query.ts", "lib/app-auth.ts", "lib/active-actor.ts", "lib/community-event-access.ts", "app/api/search/route.ts", "app/api/communities/route.ts", "app/api/community-posts/route.ts", "app/api/community-events/route.ts", "app/api/messages/route.ts"];
 const sources = Object.fromEntries(await Promise.all(files.map(async (name) => [name, await readFile(new URL(name, root), "utf8")])));
 function load(name, dependencies = {}, code = sources[name]) {
   dependencies = { "./app-auth": appAuthModule, ...dependencies };
@@ -41,6 +41,7 @@ function setup(t) {
   const server = load("lib/server-api.ts", { "../app/chatgpt-auth": { getChatGPTUser: async () => identity } });
   const dependencies = { "../../../lib/app-auth": auth, "../../../lib/profile": load("lib/profile.ts"), "../../../lib/search-query": load("lib/search-query.ts"), "../../../lib/platform-settings": load("lib/platform-settings.ts"), "../../../lib/server-api": { ...server, getRuntime: async () => ({ DB }), unavailableResponse(error) { throw error; } } };
   dependencies["../../../lib/active-actor"] = load("lib/active-actor.ts");
+  dependencies["../../../lib/community-event-access"] = load("lib/community-event-access.ts");
   const routes = Object.fromEntries(["search","communities","community-posts","community-events","messages"].map((name) => [name, load(`app/api/${name}/route.ts`, dependencies)]));
   const request = async (route, method = "GET", payload = null, params = {}) => routes[route][method](new Request(`https://example.invalid/api/${route}?${new URLSearchParams(params)}`, { method, headers: { "content-type":"application/json", origin:"https://example.invalid" }, ...(payload ? { body: JSON.stringify(payload) } : {}) }));
   const create = async (joinPolicy = "open", name = "[SYNTHETIC] IĞDIR ÇALIŞMA TOPLULUĞU") => {

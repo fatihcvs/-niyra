@@ -11,7 +11,7 @@ import webPush from "web-push";
 const require = createRequire(import.meta.url);
 const migrationDirectory = new URL("../drizzle/", import.meta.url);
 const migrations = await Promise.all((await readdir(migrationDirectory)).filter((name) => /^\d+.*\.sql$/.test(name)).sort().map((name) => readFile(new URL(name, migrationDirectory), "utf8")));
-const sourceFiles = ["lib/app-auth.ts", "lib/workspace-navigation.ts", "lib/push-config.ts", "lib/push-target-access.ts", "lib/push-subscriptions.ts", "lib/push-delivery.ts", "app/api/push-subscriptions/route.ts"];
+const sourceFiles = ["lib/app-auth.ts", "lib/workspace-navigation.ts", "lib/push-config.ts", "lib/community-event-access.ts", "lib/push-target-access.ts", "lib/push-subscriptions.ts", "lib/push-delivery.ts", "app/api/push-subscriptions/route.ts"];
 const sources = new Map(await Promise.all(sourceFiles.map(async (path) => [path, ts.transpileModule(await readFile(new URL(`../${path}`, import.meta.url), "utf8"), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
 }).outputText])));
