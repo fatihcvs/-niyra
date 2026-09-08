@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,543 programda ders kaydı · 1,640 programda ders listesi eksik.
-Toplam 1,514,754 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,584 programda ders kaydı · 1,599 programda ders listesi eksik.
+Toplam 1,517,605 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,439
+- Resmî program eşleşmesi eksik: 1,398
 - Okunabilir ders listesi bulunamadı: 149
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 20
@@ -98,7 +98,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Hasan Kalyoncu Üniversitesi | 41 | 33 | 8 | 5,156 | 5 | [Kaynak 1](https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.hku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hatay Mustafa Kemal Üniversitesi | 113 | 109 | 4 | 7,876 | 10 | [Kaynak 1](https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mku.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Hitit Üniversitesi | 92 | 89 | 3 | 6,288 | 9 | [Kaynak 1](https://ubys.hitit.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
-| Iğdır Üniversitesi | 76 | 33 | 43 | 4,138 | 6 | [Kaynak 1](https://ebp.igdir.edu.tr/DereceProgramlari/1) |
+| Iğdır Üniversitesi | 76 | 74 | 2 | 6,989 | 6 | [Kaynak 1](https://ebp.igdir.edu.tr/DereceProgramlari/1) · [Kaynak 2](https://ebp.igdir.edu.tr/DereceProgramlari/0) |
 | Isparta Uygulamalı Bilimler Üniversitesi | 133 | 124 | 9 | 7,400 | 10 | [Kaynak 1](https://akts.isparta.edu.tr/Public/EctsIndex.aspx) |
 | Işık Üniversitesi | 33 | 32 | 1 | 1,084 | 10 | [Kaynak 1](https://www.isikun.edu.tr/ogrenci/bolumler) |
 | İbn Haldun Üniversitesi | 11 | 10 | 1 | 791 | 10 | [Kaynak 1](https://obs.ihu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.ihu.edu.tr/oibs/bologna/index.aspx) |

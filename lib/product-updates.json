@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-ninth-expansion",
+    "releasedAt": "2026-09-08T04:48:52Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Iğdır Üniversitesinde 41 programın ders planı eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.584’e, program-ders kaydı sayısı 1.517.605’e ulaştı.",
+    "highlights": [
+      "Iğdır Üniversitesinin eksik 41 ön lisans programına 2.851 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 33’ten 74’e, toplam kayıt 4.138’den 6.989’a çıktı.",
+      "Resmî ön lisans dizinindeki 71 yayımlanmış plan; program adı, ön lisans derecesi ve dört meslek yüksekokulundaki akademik birimle güncel ÖSYM envanterine bağlandı.",
+      "Her planın kurum içi birim ve program numarası kaynak kanıtında saklandı. Üniversite sunucusunun aralıklı erişim hataları için sayfalar sıralı ve yeniden denemeli biçimde toplandı.",
+      "Iğdır’ın 12 haneli sayısal ders kodları, dönem ve zorunlu/seçmeli bilgileri korunarak aktarıldı. Daha önce yayımlanmış 13.543 programın ders içeriği değişmeden korundu.",
+      "Resmî ön lisans dizininde bulunmayan Fotoğrafçılık ve Kameramanlık ile Kimya Teknolojisi açık eksik bırakıldı. Türkiye genelinde eksik ders listesi sayısı 1.599’a düştü."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-eighth-expansion",
     "releasedAt": "2026-09-08T04:13:41Z",
     "category": "İyileştirme",

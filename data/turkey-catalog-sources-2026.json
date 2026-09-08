@@ -1284,6 +1284,12 @@
         "checkedAt": "2026-09-05",
         "sourceHash": "74b0cf7c373a6910e52f26fe7f79358754eeae28d92d4a4a284c597a6c8545e7",
         "evidence": "matched-programme-directory"
+      },
+      {
+        "url": "https://ebp.igdir.edu.tr/DereceProgramlari/0",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "1755ddc13004c24500063513982e14ae465ed5cade01f46cc65224a21f169744",
+        "evidence": "matched-programme-directory"
       }
     ],
     "status": "catalogue-checked"

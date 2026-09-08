@@ -22,6 +22,7 @@
     "catalog:akdeniz": "node scripts/academic-catalog/augment-akdeniz-curricula-2026.mjs",
     "catalog:cukurova": "node scripts/academic-catalog/augment-cukurova-curricula-2026.mjs",
     "catalog:mugla": "python -X utf8 scripts/academic-catalog/collect_turkey_mugla_catalog.py",
+    "catalog:igdir": "python -X utf8 scripts/academic-catalog/collect_turkey_igdir_catalog.py",
     "catalog:logos": "node scripts/university-logos/sync-university-logos.mjs",
     "catalog:campus:build": "node scripts/campus-catalog/build-campus-place-catalog.mjs",
     "install:ci": "bash scripts/install-ci.sh",
