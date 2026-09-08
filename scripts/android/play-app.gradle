@@ -1,0 +1,76 @@
+plugins { id 'com.android.application' }
+
+def firebasePath = providers.gradleProperty('firebaseConfig').orNull
+def signingFile = providers.environmentVariable('KAMPIRA_UPLOAD_KEYSTORE').orNull
+def signingPassword = providers.environmentVariable('KAMPIRA_UPLOAD_PASSWORD').orNull
+if ((signingFile == null) != (signingPassword == null)) throw new GradleException('Supply both upload signing environment values or neither.')
+
+android {
+    namespace 'app.kampira.preview'
+    compileSdk 36
+    buildToolsVersion '36.0.0'
+    defaultConfig {
+        applicationId 'app.kampira.mobile'
+        minSdk 23
+        targetSdk 36
+        versionCode 3
+        versionName '1.8.1'
+        buildConfigField 'String', 'PREVIEW_ORIGIN', '"https://kampira.net"'
+        buildConfigField 'boolean', 'FIREBASE_CONFIGURED', (firebasePath != null).toString()
+    }
+    buildFeatures { buildConfig true }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    if (signingFile) {
+        signingConfigs {
+            upload {
+                storeFile file(signingFile)
+                storePassword signingPassword
+                keyAlias 'kampira-upload'
+                keyPassword signingPassword
+            }
+        }
+    }
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+            if (signingFile) signingConfig signingConfigs.upload
+        }
+    }
+    sourceSets.main.res.srcDir(layout.buildDirectory.dir('generated/play-res'))
+    lint { abortOnError true }
+}
+androidComponents { beforeVariants(selector().all()) { variant -> if (variant.buildType != 'release') variant.enable = false } }
+
+dependencies {
+    // Firebase's transitive AndroidX baseline is older than Play recommends.
+    implementation 'androidx.fragment:fragment:1.9.0'
+    implementation 'androidx.activity:activity:1.13.0'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'androidx.work:work-runtime:2.11.2'
+    implementation 'com.google.firebase:firebase-messaging:25.0.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.json:json:20240303'
+}
+
+def generateFirebaseConfig = tasks.register('generatePlayFirebaseConfig') {
+    if (firebasePath) inputs.file(firebasePath)
+    inputs.property('configured', firebasePath != null)
+    def output = layout.buildDirectory.file('generated/play-res/values/firebase.xml')
+    outputs.file(output)
+    doLast {
+        def target = output.get().asFile
+        target.parentFile.mkdirs()
+        def entries = [:]
+        if (firebasePath) {
+            def config = new groovy.json.JsonSlurper().parse(new File(firebasePath))
+            def client = config.client.find { it.client_info.android_client_info.package_name == 'app.kampira.mobile' }
+            if (!client || config.project_info.project_id != 'kampira-ac5a2' || !client.api_key[0].current_key) throw new GradleException('Firebase must match the Kampira project and Play package.')
+            entries = [google_app_id:client.client_info.mobilesdk_app_id, google_api_key:client.api_key[0].current_key, gcm_defaultSenderId:config.project_info.project_number, project_id:config.project_info.project_id]
+            if (entries.values().any { !(it instanceof String) || !(it ==~ /[A-Za-z0-9_:\-.]+/) }) throw new GradleException('Invalid Firebase config fields.')
+        }
+        target.text = '<?xml version="1.0" encoding="utf-8"?><resources>' + entries.collect { key, value -> "<string name=\"${key}\" translatable=\"false\">${value}</string>" }.join('') + '</resources>'
+    }
+}
+tasks.configureEach { task -> if (task.name == 'preReleaseBuild') task.dependsOn(generateFirebaseConfig) }

@@ -1,9 +1,9 @@
 {
-  "origin": "https://web-production-da44f.up.railway.app",
+  "origin": "https://kampira.net",
   "packageId": "app.kampira.mobile",
-  "packageIdProvisional": true,
-  "appVersionName": "1.8.0",
-  "appVersionCode": 1,
+  "packageIdProvisional": false,
+  "appVersionName": "1.8.1",
+  "appVersionCode": 3,
   "minSdkVersion": 23,
   "requiredTargetSdkVersion": 36,
   "bubblewrapVersion": "1.25.0"

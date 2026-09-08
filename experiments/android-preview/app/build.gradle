@@ -36,6 +36,9 @@ android {
 }
 
 dependencies {
+    // Keep preview and Play on the same supported AndroidX lifecycle libraries.
+    implementation 'androidx.fragment:fragment:1.9.0'
+    implementation 'androidx.activity:activity:1.13.0'
     implementation 'androidx.webkit:webkit:1.14.0'
     implementation 'androidx.work:work-runtime:2.11.2'
     implementation 'com.google.firebase:firebase-messaging:25.0.1'
