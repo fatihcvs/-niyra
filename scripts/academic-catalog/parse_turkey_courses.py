@@ -350,7 +350,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -409,7 +409,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)

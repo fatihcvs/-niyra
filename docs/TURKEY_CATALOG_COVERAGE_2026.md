@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,490 programda ders kaydı · 1,693 programda ders listesi eksik.
-Toplam 1,510,947 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,543 programda ders kaydı · 1,640 programda ders listesi eksik.
+Toplam 1,514,754 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,492
+- Resmî program eşleşmesi eksik: 1,439
 - Okunabilir ders listesi bulunamadı: 149
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 20
@@ -170,7 +170,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Milli Savunma Üniversitesi | 47 | 0 | 47 | 0 | 5 | Doğrulanmış giriş yok |
 | Mimar Sinan Güzel Sanatlar Üniversitesi | 19 | 0 | 19 | 0 | 20 | Doğrulanmış giriş yok |
 | Mudanya Üniversitesi | 39 | 39 | 0 | 4,609 | 5 | [Kaynak 1](https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/L/menu_id/3_20/ln/tr) · [Kaynak 2](https://ois.mudanya.edu.tr/bilgipaketi/eobsakts/akademik/tip/OL/menu_id/3_19/ln/tr) |
-| Muğla Sıtkı Koçman Üniversitesi | 162 | 106 | 56 | 9,790 | 25 | [Kaynak 1](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
+| Muğla Sıtkı Koçman Üniversitesi | 162 | 159 | 3 | 13,597 | 25 | [Kaynak 1](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.mu.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Munzur Üniversitesi | 57 | 48 | 9 | 3,115 | 5 | [Kaynak 1](https://ubys.munzur.edu.tr/AIS/OutcomeBasedLearning/Home/Index) |
 | Muş Alparslan Üniversitesi | 79 | 72 | 7 | 6,873 | 10 | [Kaynak 1](https://obs.alparslan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.alparslan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Necmettin Erbakan Üniversitesi | 125 | 119 | 6 | 6,236 | 20 | [Kaynak 1](https://obs.erbakan.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.erbakan.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-eighth-expansion",
+    "releasedAt": "2026-09-08T04:13:41Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Muğla Sıtkı Koçman Üniversitesinde 53 programın ders planı eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.543’e, program-ders kaydı sayısı 1.514.754’e ulaştı.",
+    "highlights": [
+      "Muğla Sıtkı Koçman Üniversitesinin eksik 53 programına 3.807 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 106’dan 159’a, toplam kayıt 9.790’dan 13.597’ye çıktı.",
+      "Resmî Bologna lisans ve önlisans dizinleri program adı, derece, akademik birim ve kurum içi program kimliğiyle eşleştirildi. Dizin adında kalan İKMEP eki yalnız aynı okul ve derecedeki tekil güncel ÖSYM programına bağlandı.",
+      "Dizin adında dil etiketi bulunmayan altı mühendislik programının İngilizce olduğu, her programın resmî profilindeki Dili alanı ve İngilizce ders planıyla ayrıca doğrulandı.",
+      "Mahkeme Büro Hizmetleri için kurumun çoğaltılma aşamasında olarak işaretlediği ikinci kayıt dışarıda bırakıldı; seçili güncel planı bulunan ana kayıt kullanıldı. Tıp ve Veteriner programları resmî derece başlıklarıyla doğrulandı.",
+      "Üç M.T.O.K. yerleştirme varyantı için ayrı resmî plan yayımlanmadığından açık eksik bırakıldı. Daha önce yayımlanmış 13.490 programın ders içeriği değişmeden korundu; Türkiye genelinde eksik ders listesi sayısı 1.640’a düştü."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-seventh-expansion",
     "releasedAt": "2026-09-08T03:47:06Z",
     "category": "İyileştirme",
@@ -53,7 +68,7 @@
     "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.319’a, program-ders kaydı sayısı 1.502.925’e ulaştı.",
     "highlights": [
       "Ankara Üniversitesinin eksik 69 programına 5.198 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 133’ten 202’ye, toplam kayıt 58.164’ten 63.362’ye çıktı.",
-      "Resmî Bologna API program adı, lisans/ön lisans derecesi, akademik birim ve açık/uzaktan öğretim niteliğiyle eşleştirildi. Yeni kayıtların 52’sinde 2026-2027, güncel yanıtı boş olan 17’sinde son okunabilir 2025-2026 planı seçildi; boş denemeler kanıtta tutuldu.",
+      "Resmî Bologna sistemi program adı, lisans/ön lisans derecesi, akademik birim ve açık/uzaktan öğretim niteliğiyle eşleştirildi. Yeni kayıtların 52’sinde 2026-2027, güncel yanıtı boş olan 17’sinde son okunabilir 2025-2026 planı seçildi; boş denemeler kanıtta tutuldu.",
       "KTO-Karatay’da 20, Sağlık Bilimleri Üniversitesinde 16, Kırklareli’nde 9, İnönü’de 8, Acıbadem ve Ankara Hacı Bayram Veli’de beşer, Kahramanmaraş İstiklal’de 3, OSTİM Teknikte 2; Adana Alparslan Türkeş, Adıyaman, İstanbul Okan ve Lokman Hekim’de birer program daha resmî ders planıyla eşleştirildi.",
       "Yeni 141 programda toplam 15.158 program-ders kaydı yayımlandı. Daha önce yayımlanan programların ders içeriği korunarak yeniden üretim sırasında incelenmemiş değişiklik yapılması engellendi.",
       "Ankara’da birebir açık kaynak bulunmayan üç program ve Türkiye genelindeki diğer açıklar görünür bırakıldı. 204 kurumun 29’unda bütün güncel programlar yapılandırıldı; 1.864 programın ders listesi hâlâ eksik ve 193 kurumda en az bir doğrulanmış ders planı bulunuyor."

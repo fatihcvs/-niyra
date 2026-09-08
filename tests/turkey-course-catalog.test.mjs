@@ -514,11 +514,61 @@ test("Dokuz Eylul publishes the separate official associate catalog", () => {
   assert.equal(efesFood.sourceUrl, "https://debis.deu.edu.tr/ders-katalog/2025-2026/tr/bolum_10147_tr.html");
 });
 
+test("Mugla publishes reviewed official aliases and excludes the duplicate draft plan", () => {
+  const uid = "tr-mugla-sitki-kocman-universitesi";
+  const programmes = Object.values(shards[uid]);
+  const universityCoverage = coverage.universities.find((value) => value.universityId === uid);
+
+  assert.equal(programmes.length, 159);
+  assert.equal(programmes.reduce((total, value) => total + value.courses.length, 0), 13597);
+  assert.deepEqual({
+    structuredProgramCount: universityCoverage.structuredProgramCount,
+    courseCount: universityCoverage.courseCount,
+    missingProgramIds: [...universityCoverage.missingProgramIds].sort(),
+  }, {
+    structuredProgramCount: 159,
+    courseCount: 13597,
+    missingProgramIds: [
+      "program-osym-107690290",
+      "program-osym-107690291",
+      "program-osym-107690292",
+    ],
+  });
+
+  const computer = shards[uid][`${uid}:program-osym-107610364`];
+  assert.equal(computer.courses.length, 67);
+  assert.equal(computer.sourceSelection.language, "İngilizce");
+  assert.equal(computer.sourceSelection.aliasType, "official-language-profile");
+  assert.match(computer.sourceSelection.identityEvidenceHash, /^[a-f0-9]{64}$/);
+  assert.deepEqual(computer.courses[0], {
+    code: "CENG1007",
+    name: "Introduction to Computer Science",
+    semester: 1,
+    kind: "required",
+  });
+
+  const medicine = shards[uid][`${uid}:program-osym-107610416`];
+  assert.equal(medicine.courses.length, 104);
+  assert.equal(medicine.sourceSelection.aliasType, "official-degree-title");
+  assert.equal(medicine.sourceSelection.sourceTitle, "Tıp Fakültesi");
+
+  const accounting = shards[uid][`${uid}:program-osym-107650672`];
+  assert.equal(accounting.courses.length, 70);
+  assert.match(accounting.sourceSelection.sourceTitle, /İKMEP/);
+  assert.equal(accounting.sourceSelection.curSunit, "401");
+
+  const courtOffice = shards[uid][`${uid}:program-osym-107690361`];
+  assert.equal(courtOffice.courses.length, 58);
+  assert.equal(courtOffice.sourceSelection.curSunit, "4476");
+  assert.equal(courtOffice.sourceSelection.excludedCurSunit, "4675");
+  assert.equal(courtOffice.sourceSelection.aliasType, "official-duplicate-draft-excluded");
+});
+
 test("the built API loads the requested university shard and keeps other programme IDs isolated", async () => {
   const { default: worker } = await import(new URL("../dist/server/index.js", import.meta.url));
   const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
   const context = { waitUntil() {}, passThroughOnException() {} };
-  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi", "tr-ankara-universitesi", "tr-cukurova-universitesi", "tr-anadolu-universitesi", "tr-dokuz-eylul-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
+  const chosen = ["tr-izmir-yuksek-teknoloji-enstitusu", "tr-kocaeli-universitesi", "tr-ordu-universitesi", "tr-recep-tayyip-erdogan-universitesi", "tr-isparta-uygulamali-bilimler-universitesi", "tr-karadeniz-teknik-universitesi", "tr-izmir-katip-celebi-universitesi", "tr-izmir-ekonomi-universitesi", "tr-istanbul-medipol-universitesi", "tr-cankiri-karatekin-universitesi", "tr-istanbul-bilgi-universitesi", "tr-afyonkarahisar-saglik-bilimleri-universitesi", "tr-atilim-universitesi", "tr-bahcesehir-universitesi", "tr-yalova-universitesi", "tr-istanbul-beykent-universitesi", "tr-istanbul-kultur-universitesi", "tr-ankara-medipol-universitesi", "tr-munzur-universitesi", "tr-abdullah-gul-universitesi", "tr-istanbul-sabahattin-zaim-universitesi", "tr-altinbas-universitesi", "tr-kastamonu-universitesi"].concat(["tr-kocaeli-saglik-ve-teknoloji-universitesi", "tr-istanbul-29-mayis-universitesi", "tr-istanbul-nisantasi-universitesi", "tr-gaziantep-islam-bilim-ve-teknoloji-universitesi", "tr-piri-reis-universitesi", "tr-cag-universitesi", "tr-cankaya-universitesi", "tr-ardahan-universitesi", "tr-tarsus-universitesi", "tr-isik-universitesi", "tr-ozyegin-universitesi", "tr-istanbul-aydin-universitesi", "tr-turk-hava-kurumu-universitesi", "tr-yasar-universitesi", "tr-istanbul-rumeli-universitesi", "tr-iskenderun-teknik-universitesi", "tr-halic-universitesi", "tr-istanbul-universitesi-cerrahpasa", "tr-bayburt-universitesi", "omu", "tr-marmara-universitesi", "tr-ankara-universitesi", "tr-cukurova-universitesi", "tr-anadolu-universitesi", "tr-dokuz-eylul-universitesi", "tr-mugla-sitki-kocman-universitesi"]).map((uid) => Object.values(shards[uid])[0]);
   for (const record of chosen) {
     const url = `http://localhost/api/course-catalog?universityId=${record.universityId}&programId=${record.programId}`;
     const response = await worker.fetch(new Request(url), env, context);
