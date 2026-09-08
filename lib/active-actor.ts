@@ -1,5 +1,7 @@
-/** Bind the authenticated account generation, independently of a shared container's creator. */
-export const ACTIVE_ACTOR_SQL = "EXISTS (SELECT 1 FROM users active_actor WHERE active_actor.email = ? AND active_actor.public_id = ? AND active_actor.status = 'active')";
+import { APP_ACCOUNT_ACCESS_SQL } from "./app-auth";
+
+/** Bind the authenticated account generation and current beta access at the write boundary. */
+export const ACTIVE_ACTOR_SQL = `EXISTS (SELECT 1 FROM users active_actor WHERE active_actor.email = ? AND active_actor.public_id = ? AND active_actor.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL.replace(/\bu\./g, "active_actor.")})`;
 
 export class ActiveActorError extends Error {
   constructor() { super("Hesap durumu değişti. İşlem tamamlanmadı."); this.name = "ActiveActorError"; }

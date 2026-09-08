@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
@@ -12,6 +13,7 @@ async function compiled(path) { return ts.transpileModule(await readFile(new URL
 const serverCode = await compiled("lib/server-api.ts"), routeCode = await compiled("app/api/safety/route.ts");
 const activeActorCode = await compiled("lib/active-actor.ts");
 function load(code, dependencies) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(code, { exports, Response, URL, crypto, require(name) { assert.ok(name in dependencies, name); return dependencies[name]; } });
   return exports;

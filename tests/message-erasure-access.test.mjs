@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
@@ -36,7 +37,7 @@ function fixture(t, erased = true) {
     cleanText: (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "", relativeTime: () => "şimdi", enforceRateLimit: async () => ({ allowed: true }),
     signInResponse: () => Response.json({ error: "auth" }, { status: 401 }),
     unavailableResponse: (error) => Response.json({ error: error.message }, { status: 503 }), rateLimitResponse: () => Response.json({}, { status: 429 }) };
-  const active = {}; runInNewContext(activeSource, { exports: active, crypto });
+  const active = {}; runInNewContext(activeSource, { exports: active, crypto, require(name) { assert.equal(name, "./app-auth"); return appAuthModule; } });
   const exports = {}; runInNewContext(source, { exports, crypto, URL, Headers, Response, Date, Intl, require(name) {
     if (name.endsWith("/active-actor")) return active;
     if (name.endsWith("/server-api")) return server;

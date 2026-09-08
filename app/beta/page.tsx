@@ -4,8 +4,8 @@ import styles from "./beta.module.css";
 import { BetaApplyLink } from "./apply-link";
 
 export const metadata = {
-  title: "Kampira Android kapalı test · İlk deneyenlerden ol",
-  description: "Ders notları, topluluklar ve etkinlikler. Kampira’nın 18 yaş ve üzeri Android kullanıcıları için kapalı testine başvur.",
+  title: "Kampira web ve Android beta · İlk deneyenlerden ol",
+  description: "Kampira’yı web veya Android’de dene. 18 yaş ve üzeri katılımcılar için beta başvurusu ve test hesabı erişimi.",
   alternates: { canonical: "https://kampira.net/beta" },
 };
 
@@ -17,9 +17,9 @@ export default function BetaPage() {
     </header>
     <section className={styles.hero} aria-labelledby="beta-title">
       <div className={styles.copy}>
-        <span className={styles.eyebrow}>ANDROID KAPALI TEST</span>
+        <span className={styles.eyebrow}>WEB VE ANDROID BETA</span>
         <h1 id="beta-title">Kampüsün tek yerde.<br/><em>İlk deneyenlerden ol.</em></h1>
-        <p>Ders notlarını paylaş, topluluklarını bul, kampüsündeki etkinlikleri keşfet. Kampira’nın Android deneyimini birlikte geliştirelim.</p>
+        <p>Ders notlarını paylaş, topluluklarını bul, kampüsündeki etkinlikleri keşfet. Kampira’yı tarayıcıda veya Android’de birlikte geliştirelim.</p>
         <BetaApplyLink/>
         <p className={styles.hint}>Kısa formu doldur; başvurunu ve yanıtları kişisel takip sayfandan izle. <Link href="/beta/takip">Başvurumu takip et</Link></p>
       </div>
@@ -31,16 +31,16 @@ export default function BetaPage() {
     <section className={styles.steps} aria-labelledby="steps-title">
       <div className={styles.sectionHead}><span className={styles.eyebrow}>BİRLİKTE GELİŞTİRELİM</span><h2 id="steps-title">Üç adımda teste katıl</h2></div>
       <div className={styles.grid}>
-        <article><span>01</span><h3>Başvurunu gönder</h3><p>Google Play’de kullandığın Google hesabının e-posta adresini yaz. Android telefon veya tabletin olsun; 18 yaş ve üzerinde olmalısın.</p></article>
-        <article><span>02</span><h3>Davetini bekle</h3><p>Test erişimin açıldığında katılım bağlantısını paylaşacağız. Listeye eklenmenin ardından bağlantıdan teste ayrıca katılman gerekir.</p></article>
-        <article><span>03</span><h3>Dene, bize anlat</h3><p>14 gün boyunca testte kalıp uygulamayı doğal biçimde kullanmanı bekliyoruz. Hataları, eksikleri ve beğendiğin şeyleri paylaş; her görüş değerli.</p></article>
+        <article><span>01</span><h3>Başvurunu gönder</h3><p>Web, Android veya her ikisini seç ve e-postanı yaz. 18 yaş ve üzerinde olmalısın. Android için Google Play’de kullandığın hesabın adresini belirt.</p></article>
+        <article><span>02</span><h3>Hesabını etkinleştir</h3><p>E-posta ile iletilecek güvenli bağlantıyı aç ve kendi parolanı oluştur. Android seçtiysen Google Play test listesine eklenme ve katılım bağlantısı ayrı olarak takip edilir.</p></article>
+        <article><span>03</span><h3>Dene, bize anlat</h3><p>Uygulamayı doğal biçimde kullan; hataları, eksikleri ve önerilerini paylaş. Android kapalı testinde 14 günlük katılım beklenir; yalnız web testinde bu koşul yoktur.</p></article>
       </div>
     </section>
     <section className={styles.faq} aria-labelledby="questions-title">
       <h2 id="questions-title">Katılmadan önce</h2>
-      <details><summary>Uygulama şu anda herkese açık mı?</summary><p>Bu bir Android kapalı test başvurusudur. Herkese açık Google Play yayını değildir. İndirme, test erişimi açılıp Google hesabın listeye eklendiğinde mümkün olur.</p></details>
-      <details><summary>Hangi bilgileri paylaşmalıyım?</summary><p>Google Play hesabının e-postasını, Android cihaz modelini ve katılım koşullarına uygunluğunu belirt. Adın, üniversiten ve Android sürümü isteğe bağlıdır. Şifreni, kimlik belgeni veya ödeme bilgini gönderme.</p></details>
-      <details><summary>E-posta adresim nasıl kullanılacak?</summary><p>Başvurunu yanıtlamak ve Play Console’da test erişimini tanımlamak için kullanılır. Reklam listesine otomatik olarak eklenmezsin. Ayrılmak veya başvuru bilgilerini sildirmek için destek@kampira.net adresine yazabilirsin. <Link href="/legal#privacy">Gizlilik açıklamasını oku.</Link></p></details>
+      <details><summary>Uygulama şu anda herkese açık mı?</summary><p>Yeni katılımcılar test hesabıyla erişir; mevcut Kampira hesapları kullanılmaya devam eder. Web testi tarayıcıda çalışır. Android sürümü Google Play kapalı testindedir; indirme için Google hesabının test listesine eklenmesi ve katılım bağlantısından teste katılman gerekir.</p></details>
+      <details><summary>Hangi bilgileri paylaşmalıyım?</summary><p>E-posta adresini, denemek istediğin platformu ve 18 yaş üzerinde olduğunu belirt. Android seçersen cihaz modeli ve 14 günlük katılım beyanı da gerekir. Adın, üniversiten ve Android sürümü isteğe bağlıdır. Şifreni, kimlik belgeni veya ödeme bilgini gönderme.</p></details>
+      <details><summary>E-posta adresim nasıl kullanılacak?</summary><p>Test hesabını hazırlamak, kendi parolanı oluşturacağın etkinleştirme bağlantısını iletmek ve başvurunu yanıtlamak için kullanılır. Android seçersen Play Console test erişiminde de kullanılır. Reklam listesine otomatik olarak eklenmezsin. Ayrılmak veya başvuru bilgilerini sildirmek için destek@kampira.net adresine yazabilirsin. <Link href="/legal#beta">Gizlilik açıklamasını oku.</Link></p></details>
       <details><summary>Hata ve önerilerimi nereye göndereceğim?</summary><p><Link href="/geri-bildirim">Geri bildirim ve destek formunu</Link> kullanabilirsin. Gönderimden sonra kişisel takip kodunla ekibin yanıtını görür, ek bilgi paylaşabilirsin. E-posta tercih edersen destek@kampira.net adresine yazabilirsin.</p></details>
     </section>
     <footer className={styles.footer}><p>Kampira · Kampüsün tek yerde.</p><div><Link href="/legal">Gizlilik ve ilkeler</Link><a href="mailto:destek@kampira.net">destek@kampira.net</a></div></footer>

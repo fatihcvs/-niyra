@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getSessionIdentity, isTrustedPlatformHost } from "../lib/app-auth";
+import { appAccountAllowed, getSessionIdentity, isTrustedPlatformHost } from "../lib/app-auth";
 
 export type ChatGPTUser = {
   displayName: string;
@@ -25,10 +25,9 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
     try {
       const { env } = await import("cloudflare:workers");
       if (!env.DB) return null;
-      const account = await env.DB.prepare(`SELECT status FROM users WHERE email = ? LIMIT 1`).bind(email).first<{ status: string }>();
       // A retained platform session cannot recreate an erased local account.
       // New accounts enter through the explicit registration flow.
-      if (account?.status !== "active") return null;
+      if (!await appAccountAllowed(env.DB, email)) return null;
     } catch {
       return null;
     }

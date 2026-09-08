@@ -30,11 +30,11 @@ async function openCoursePicker(ui, classYear = 1) {
   await ui.until(() => ui.host.querySelector(".official-course-picker, .course-catalog-unavailable"));
 }
 
-async function setup(fetch) {
+async function setup(fetch, { platformConfig = { registrationOpen: true, betaAccessOnly: false } } = {}) {
   const ui = await createMobileDom();
   // jsdom has no layout engine; only semantic focus is asserted, not scroll geometry.
   ui.window.HTMLElement.prototype.scrollIntoView = () => {};
-  const context = { exports: {}, require: createRequire(import.meta.url), useEffect, useMemo, useRef, useState, document: ui.document, window: ui.window, FormData: ui.window.FormData, AbortController, Error, fetch, universities, getUniversityById: (id) => universities.find((university) => university.id === id), degreeLabels: { bachelor: "Lisans" }, ...ui.load("lib/course-catalog-display.ts"), Logo: () => h("span", null, "Kampira"), UniversityMark: ({ university }) => h("span", { "aria-hidden": true }, university.shortName), Icon: () => h("span", { "aria-hidden": true }) };
+  const context = { exports: {}, require: createRequire(import.meta.url), useEffect, useMemo, useRef, useState, document: ui.document, window: ui.window, FormData: ui.window.FormData, AbortController, Error, fetch: (url, options) => url === "/api/platform-config" && platformConfig ? Promise.resolve(response(platformConfig)) : fetch(url, options), universities, getUniversityById: (id) => universities.find((university) => university.id === id), degreeLabels: { bachelor: "Lisans" }, ...ui.load("lib/course-catalog-display.ts"), Logo: () => h("span", null, "Kampira"), UniversityMark: ({ university }) => h("span", { "aria-hidden": true }, university.shortName), Icon: () => h("span", { "aria-hidden": true }) };
   runInNewContext(code, context);
   const button = (label) => [...ui.host.querySelectorAll("button")].find((element) => element.textContent === label);
   const click = async (target) => ui.click(typeof target === "string" ? button(target) : target);
@@ -150,6 +150,43 @@ test("academic save is single-flight, 400 keeps draft, 401 requests session reco
     assert.equal(saves[2].options.signal.aborted, true);
     await act(async () => saves[2].resolve(response({ profile })));
     assert.equal(completed, 0);
+  } finally { await ui.close(); }
+});
+
+test("public registration fails closed until settings are verified, and beta access keeps existing email login", async () => {
+  const requests = [];
+  const ui = await setup((url, options) => { const task = deferred(); requests.push({ url, options, ...task }); return task.promise; }, { platformConfig: null });
+  try {
+    await ui.renderAuth();
+    assert.equal(ui.button("Kayıt ol"), undefined);
+    assert.equal(ui.host.querySelector('[name="displayName"]'), null);
+    assert.equal(ui.host.querySelector('a[href="/beta/basvur"]').textContent, "Teste başvur");
+    const config = requests.findLast(item => item.url === "/api/platform-config");
+    assert.equal(config.options.cache, "no-store");
+    await act(async () => config.resolve(response({ registrationOpen: true, betaAccessOnly: true })));
+    assert.match(ui.host.textContent, /Test hesabınla giriş yap/);
+    assert.equal(ui.button("Kayıt ol"), undefined);
+    await ui.fill(ui.host.querySelector('[name="email"]'), "existing@example.invalid");
+    await ui.fill(ui.host.querySelector('[name="password"]'), "existing-password");
+    await ui.submit(true);
+    assert.equal(requests.filter(item => item.url === "/api/auth/session").length, 1);
+    assert.equal(requests.some(item => item.url === "/api/auth/register"), false);
+  } finally { await ui.close(); }
+});
+
+test("invalid public config never opens signup and retry can restore explicitly open registration", async () => {
+  let configCalls = 0;
+  const ui = await setup(async (url) => {
+    assert.equal(url, "/api/platform-config");
+    return response(++configCalls <= 2 ? { maintenanceMode: false } : { registrationOpen: true, betaAccessOnly: false });
+  }, { platformConfig: null });
+  try {
+    await ui.renderAuth();
+    assert.equal(ui.button("Kayıt ol"), undefined);
+    assert.match(ui.host.textContent, /Yeni hesap erişimi doğrulanamadı/);
+    await ui.click("Yeniden dene");
+    assert.ok(ui.button("Kayıt ol"));
+    assert.ok(ui.host.querySelector('[name="displayName"]'));
   } finally { await ui.close(); }
 });
 

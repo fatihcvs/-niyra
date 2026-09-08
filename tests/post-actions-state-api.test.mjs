@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
@@ -15,6 +16,7 @@ const sources = Object.fromEntries(await Promise.all(files.map(async (file) => [
 const migrationDirectory = new URL("drizzle/", root);
 const migrations = await Promise.all((await readdir(migrationDirectory)).filter((file) => /^\d+.*\.sql$/.test(file)).sort().map((file) => readFile(new URL(file, migrationDirectory), "utf8")));
 function load(file, dependencies = {}, text = sources[file]) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(ts.transpileModule(text, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText, {
     exports, crypto: webcrypto, Request, Response, Headers, URL, Error,

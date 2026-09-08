@@ -3,6 +3,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { DatabaseSync } from 'node:sqlite';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
+import { appAuthModule } from './app-auth-module.mjs';
 
 const root = new URL('../../', import.meta.url);
 const migrations = await Promise.all((await readdir(new URL('drizzle/', root))).filter(name => /^\d+.*\.sql$/.test(name)).sort().map(name => readFile(new URL(`drizzle/${name}`, root), 'utf8')));
@@ -49,7 +50,7 @@ export function fixture(t) {
       require(name) {
         if(name==='cloudflare:workers')return {env:{DB,FILES}};
         if(name.endsWith('/chatgpt-auth'))return {getChatGPTUser:async()=>({email:`${identity}@test.local`,displayName:identity})};
-        if(name.endsWith('/app-auth'))return {sameOriginRequest:()=>true};
+        if(name.endsWith('/app-auth'))return appAuthModule;
         if(name.endsWith('/platform-settings'))return {getBooleanPlatformSetting:async()=>true};
         if(name.endsWith('/campus-place-catalog'))return {getCuratedCampusPlaces:()=>[]};
         if(name.endsWith('/file-response'))return {fileContentDisposition:()=>''};
@@ -66,6 +67,8 @@ export function fixture(t) {
     identity(id){identity=id;}, beforeSql(value){beforeSql=value;},afterSql(value){afterSql=value;},beforePut(value){beforePut=value;},afterPut(value){afterPut=value;},
     freeze(){database.exec(`UPDATE users SET status='deleting' WHERE email='actor@test.local'`);},
     changeGeneration(){database.exec(`UPDATE users SET public_id='actor-new-generation' WHERE email='actor@test.local'`);},
+    revokeTestAccount(){database.exec("INSERT INTO test_accounts(id,user_email,kind,status) VALUES('actor-beta','actor@test.local','generated','revoked')");},
+    restrictToTestAccounts(){database.exec("UPDATE platform_settings SET value_json='true' WHERE key='betaAccessOnly'");},
     count(table,where='1=1'){return database.prepare(`SELECT count(*) AS n FROM ${table} WHERE ${where}`).get().n;},
     request(route,method,payload){return modules.get(`app/api/${route}/route.ts`)[method](new Request(`https://kampira.test/api/${route}`,{method,
       headers:payload instanceof FormData?{}:{'content-type':'application/json'},body:payload instanceof FormData?payload:JSON.stringify(payload)}));},

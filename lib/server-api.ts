@@ -1,4 +1,5 @@
 import { getChatGPTUser, type ChatGPTUser } from "../app/chatgpt-auth";
+import { APP_ACCOUNT_ACCESS_SQL } from "./app-auth";
 
 export type RuntimeBindings = {
   DB: D1Database;
@@ -56,7 +57,7 @@ export async function requireProfile(db: D1Database, email: string) {
               u.display_name, u.handle
        FROM student_profiles sp
        JOIN users u ON u.email = sp.user_email
-       WHERE sp.user_email = ? AND sp.onboarding_completed = 1 AND u.status = 'active'
+       WHERE sp.user_email = ? AND sp.onboarding_completed = 1 AND u.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL}
        LIMIT 1`,
     )
     .bind(email)

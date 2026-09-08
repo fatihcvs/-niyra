@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
@@ -12,6 +13,7 @@ const fixture = createMobileQualityFixtures();
 const files = ["lib/server-api.ts", "lib/profile.ts", "lib/platform-settings.ts", "lib/search-query.ts", "lib/app-auth.ts", "lib/active-actor.ts", "app/api/search/route.ts", "app/api/communities/route.ts", "app/api/community-posts/route.ts", "app/api/community-events/route.ts", "app/api/messages/route.ts"];
 const sources = Object.fromEntries(await Promise.all(files.map(async (name) => [name, await readFile(new URL(name, root), "utf8")])));
 function load(name, dependencies = {}, code = sources[name]) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, { exports, crypto: webcrypto, Request, Response, Headers, URL, Error, require(specifier) { assert.ok(specifier in dependencies, `Unexpected import ${specifier}`); return dependencies[specifier]; } });
   return exports;

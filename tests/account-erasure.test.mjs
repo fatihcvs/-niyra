@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { DatabaseSync } from 'node:sqlite';
@@ -10,6 +11,7 @@ const migrations = await Promise.all((await readdir(new URL('drizzle/', root))).
 const paths = ['lib/account-deletion.ts','lib/account-erasure.ts','lib/account-erasure-inventory.ts','lib/app-auth.ts','lib/staff-auth.ts','lib/server-api.ts','app/api/admin/account-deletion/route.ts'];
 const sources = Object.fromEntries(await Promise.all(paths.map(async path => [path, ts.transpileModule(await readFile(new URL(path, root),'utf8'), {compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText])));
 function load(path,deps={}) {
+  deps = { "./app-auth": appAuthModule, ...deps };
  const exports={}; runInNewContext(sources[path],{exports,crypto,Response,Request,Headers,URL,TextEncoder,TextDecoder,Uint8Array,btoa,atob,require(name){assert.ok(name in deps,`Unexpected dependency ${name}`);return deps[name];}}); return exports;
 }
 const deletion=load('lib/account-deletion.ts');

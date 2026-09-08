@@ -4,6 +4,7 @@ import { foreignKey, index, integer, primaryKey, real, sqliteTable, text, unique
 // Public recruitment/support records are independent of an application account.
 export const betaRequests = sqliteTable("beta_requests", {
   id: text("id").primaryKey(), kind: text("kind").notNull(), accessHash: text("access_hash").notNull().unique(),
+  platform: text("platform").notNull().default("android"),
   submissionHash: text("submission_hash").notNull(), email: text("email").notNull().default(""),
   displayName: text("display_name").notNull().default(""), university: text("university").notNull().default(""),
   deviceModel: text("device_model").notNull().default(""), androidVersion: text("android_version").notNull().default(""),
@@ -1082,6 +1083,32 @@ export const staffSessions = sqliteTable(
     index("staff_sessions_expiry_idx").on(table.expiresAt),
   ],
 );
+
+export const testAccounts = sqliteTable("test_accounts", {
+  id: text("id").primaryKey(), userEmail: text("user_email").notNull().unique().references(() => users.email, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), status: text("status").notNull(), recipientHash: text("recipient_hash").unique(), issuanceNonce: text("issuance_nonce"),
+  sourceApplicationId: text("source_application_id").unique().references(() => betaRequests.id, { onDelete: "set null" }),
+  createdByStaffId: text("created_by_staff_id").references(() => staffAccounts.id, { onDelete: "set null" }),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, table => [index("test_accounts_created_idx").on(table.createdAt, table.id)]);
+export const testAccountOperations = sqliteTable("test_account_operations", {
+  id: text("id").primaryKey(), accountId: text("account_id").references(() => testAccounts.id, { onDelete: "set null" }),
+  action: text("action").notNull(), requestHash: text("request_hash").notNull(), operationNonce: text("operation_nonce").notNull(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+export const testAccountOutbox = sqliteTable("test_account_outbox", {
+  id: text("id").primaryKey(), accountId: text("account_id").notNull().references(() => testAccounts.id, { onDelete: "cascade" }),
+  applicationId: text("application_id").notNull().unique().references(() => betaRequests.id, { onDelete: "cascade" }),
+  recipientEmail: text("recipient_email").notNull(), tokenNonce: text("token_nonce").notNull(), state: text("state").notNull().default("pending"),
+  leaseHash: text("lease_hash"), leaseExpiresAt: text("lease_expires_at"), attempts: integer("attempts").notNull().default(0), providerMessageId: text("provider_message_id"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), sentAt: text("sent_at"),
+  expiresAt: text("expires_at").notNull().default(sql`(datetime('now','+3 days'))`),
+}, table => [index("test_account_outbox_queue_idx").on(table.state, table.createdAt, table.id)]);
+export const testAccountActivations = sqliteTable("test_account_activations", {
+  accountId: text("account_id").primaryKey().references(() => testAccounts.id, { onDelete: "cascade" }),
+  outboxId: text("outbox_id").notNull().unique().references(() => testAccountOutbox.id, { onDelete: "cascade" }), tokenHash: text("token_hash").unique(),
+  expiresAt: text("expires_at").notNull().default(sql`(datetime('now','+3 days'))`), consumedAt: text("consumed_at"),
+});
 
 export const platformSettings = sqliteTable("platform_settings", {
   key: text("key").primaryKey(),

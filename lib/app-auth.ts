@@ -1,5 +1,13 @@
 export const SESSION_COOKIE_NAME = "uniyra_session";
 
+// Existing users receive explicit beta markers during migration; records and statuses are preserved.
+export const APP_ACCOUNT_ACCESS_SQL = `(NOT EXISTS(SELECT 1 FROM test_accounts denied WHERE denied.user_email=u.email AND denied.status!='active')
+  AND (NOT EXISTS(SELECT 1 FROM platform_settings WHERE key='betaAccessOnly' AND value_json!='false')
+  OR EXISTS(SELECT 1 FROM test_accounts ta WHERE ta.user_email=u.email AND ta.status='active')))`;
+export async function appAccountAllowed(db: D1Database, email: string) {
+  return Boolean(await db.prepare(`SELECT 1 AS allowed FROM users u WHERE u.email=? AND u.status='active' AND ${APP_ACCOUNT_ACCESS_SQL}`).bind(email).first());
+}
+
 const PASSWORD_ITERATIONS = 310_000;
 const PASSWORD_KEY_BYTES = 32;
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -72,7 +80,7 @@ export async function createSession(db: D1Database, email: string, request: Requ
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000).toISOString();
   const insert = db.prepare(
       `INSERT INTO user_sessions (token_hash, user_email, expires_at)
-       SELECT ?, email, ? FROM users WHERE email = ? AND status = 'active'`,
+       SELECT ?, u.email, ? FROM users u WHERE u.email = ? AND u.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL}`,
     )
     .bind(tokenHash, expiresAt, email);
   const previousToken = readSessionToken(request.headers);
@@ -84,7 +92,7 @@ export async function createSession(db: D1Database, email: string, request: Requ
       db.prepare("DELETE FROM user_sessions WHERE token_hash = ? AND EXISTS (SELECT 1 FROM user_sessions WHERE token_hash = ?)").bind(await sha256(previousToken), tokenHash),
     ]);
   } else await insert.run();
-  const created = await db.prepare("SELECT 1 AS found FROM user_sessions s JOIN users u ON u.email = s.user_email WHERE s.token_hash = ? AND u.status = 'active'").bind(tokenHash).first();
+  const created = await db.prepare(`SELECT 1 AS found FROM user_sessions s JOIN users u ON u.email = s.user_email WHERE s.token_hash = ? AND u.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL}`).bind(tokenHash).first();
   if (!created) throw new Error("Active account required for session creation");
   return {
     cookie: serializeSessionCookie(token, request, SESSION_MAX_AGE_SECONDS),
@@ -110,7 +118,7 @@ export async function getSessionIdentity(db: D1Database, headers: HeaderReader):
       `SELECT u.email, u.display_name
        FROM user_sessions s
        JOIN users u ON u.email = s.user_email
-       WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active'
+       WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL}
        LIMIT 1`,
     )
     .bind(await sha256(token))
@@ -126,7 +134,7 @@ export async function getActiveSessionContext(db: D1Database, headers: HeaderRea
   const tokenHash = await sha256(token);
   const row = await db.prepare(`SELECT u.email, u.public_id FROM user_sessions s
     JOIN users u ON u.email = s.user_email
-    WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active'
+    WHERE s.token_hash = ? AND datetime(s.expires_at) > CURRENT_TIMESTAMP AND u.status = 'active' AND ${APP_ACCOUNT_ACCESS_SQL}
     LIMIT 1`).bind(tokenHash).first<{ email: string; public_id: string }>();
   return row ? { email: row.email, publicId: row.public_id, tokenHash } : null;
 }

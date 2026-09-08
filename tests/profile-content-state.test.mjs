@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
@@ -327,6 +328,7 @@ test("cache trimming preserves the actual route cursor and resumes without skipp
   }; } }; } };
   const sources = Object.fromEntries(await Promise.all(["lib/server-api.ts", "lib/profile.ts", "lib/post-media.ts", "app/api/profile/content/route.ts"].map(async (path) => [path, await compile(path)])));
   function load(path, dependencies = {}) {
+    dependencies = { "./app-auth": appAuthModule, ...dependencies };
     const exports = {};
     runInNewContext(sources[path], { exports, URL, URLSearchParams, Response, Uint8Array, DataView, TextDecoder, require(name) { assert.ok(name in dependencies, `Unexpected import ${name}`); return dependencies[name]; } });
     return exports;

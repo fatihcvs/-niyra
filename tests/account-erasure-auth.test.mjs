@@ -51,7 +51,7 @@ test('new session issuance to a frozen account fails without revoking the browse
 test('profile and cookie identity stop authorizing a frozen account', async (t) => {
   const f = fixture(t);
   f.database.exec("INSERT INTO universities(id,name,short_name,city) VALUES('campus','Campus','C','Test'); INSERT INTO faculties(id,university_id,name,short_name) VALUES('faculty','campus','Faculty','F'); INSERT INTO departments(id,faculty_id,name) VALUES('department','faculty','Department'); INSERT INTO student_profiles(user_email,university_id,department_id,class_year,onboarding_completed) VALUES('first@example.invalid','campus','department',1,1)");
-  const server = load('lib/server-api.ts', { '../app/chatgpt-auth': { getChatGPTUser: async () => null } });
+  const server = load('lib/server-api.ts', { '../app/chatgpt-auth': { getChatGPTUser: async () => null }, './app-auth': auth });
   const session = await auth.createSession(f.DB, 'first@example.invalid', new Request('https://kampira.test'));
   const headers = new Headers({ cookie: session.cookie.split(';')[0] });
   assert.equal((await server.requireProfile(f.DB, 'first@example.invalid')).public_id, 'first');

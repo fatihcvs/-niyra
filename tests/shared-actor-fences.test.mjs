@@ -33,7 +33,7 @@ const cases=[
   {route:'library-occupancy',method:'PATCH',payload:{action:'check-out',areaId:'area'},setup(f){f.database.exec("INSERT INTO library_checkins(id,area_id,user_email,expires_at) VALUES('actor-checkin','area','actor@test.local','2099-01-01T00:00:00Z')");}},
   {route:'library-occupancy',method:'PATCH',payload:{action:'archive-area',areaId:'area'}},
 ];
-for(const c of cases)for(const boundary of ['active','freeze','changeGeneration'])test(`${c.route} ${c.payload.action??'create'}: ${boundary} at mutation commit`,async t=>{
+for(const c of cases)for(const boundary of ['active','freeze','changeGeneration','revokeTestAccount','restrictToTestAccounts'])test(`${c.route} ${c.payload.action??'create'}: ${boundary} at mutation commit`,async t=>{
   const f=sharedFixture(t);c.setup?.(f);const before=snapshot(f);let fenced=false;
   if(boundary!=='active')f.beforeSql(sql=>{if(!fenced&&(sql==='BATCH'||(/^\s*(INSERT|UPDATE|DELETE)/.test(sql)&&sql.includes('active_actor.public_id')))){fenced=true;f[boundary]();}});
   const response=await f.request(c.route,c.method,c.payload);const body=await response.json();

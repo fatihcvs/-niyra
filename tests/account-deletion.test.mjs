@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
@@ -15,6 +16,7 @@ const sources = Object.fromEntries(await Promise.all(paths.map(async (path) => [
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React },
 }).outputText])));
 function load(path, dependencies = {}) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(sources[path], { exports, crypto, Response, Request, Headers, URL, TextEncoder, TextDecoder, Uint8Array, btoa, atob, React,
     require(name) { assert.ok(name in dependencies, `Unexpected dependency ${name}`); return dependencies[name]; },

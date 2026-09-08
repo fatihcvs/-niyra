@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
@@ -14,6 +15,7 @@ const root = new URL("../", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 const compile = (code) => ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
 const load = (code, dependencies = {}) => {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(compile(code), { exports, crypto: webcrypto, Response, Request, Headers, URL, Error, require(name) { assert.ok(name in dependencies, `Unexpected import: ${name}`); return dependencies[name]; } });
   return exports;

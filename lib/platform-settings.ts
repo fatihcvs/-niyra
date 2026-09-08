@@ -1,5 +1,6 @@
 export const PLATFORM_SETTING_DEFAULTS = {
   registrationOpen: true,
+  betaAccessOnly: false,
   noteUploadsOpen: true,
   communityCreationOpen: true,
   housingContributionsOpen: true,
@@ -10,6 +11,7 @@ export const PLATFORM_SETTING_DEFAULTS = {
 export type PlatformSettingKey = keyof typeof PLATFORM_SETTING_DEFAULTS;
 export type PlatformSettings = {
   registrationOpen: boolean;
+  betaAccessOnly: boolean;
   noteUploadsOpen: boolean;
   communityCreationOpen: boolean;
   housingContributionsOpen: boolean;

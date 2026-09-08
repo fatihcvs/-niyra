@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
@@ -66,6 +67,7 @@ function fixture(t) {
   };
   const server = {};
   runInNewContext(serverSource, { ...globals, exports: server, require(path) {
+    if (path === "./app-auth") return appAuthModule;
     assert.equal(path, "../app/chatgpt-auth");
     return { getChatGPTUser: async () => identity ? { email: `${identity}@test.local` } : null };
   } });

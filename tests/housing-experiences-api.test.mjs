@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
@@ -10,7 +11,10 @@ const root = new URL("../", import.meta.url), directory = new URL("drizzle/", ro
 const migrations = await Promise.all((await readdir(directory)).filter((name) => /^\d+.*\.sql$/.test(name)).sort().map((name) => readFile(new URL(name, directory), "utf8")));
 const compile = async (name) => ts.transpileModule(await readFile(new URL(name, root), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const serverCode = await compile("lib/server-api.ts"), routeCode = await compile("app/api/housing/route.ts");
-function load(source, dependencies) { const exports = {}; runInNewContext(source, { exports, Response, URL, crypto: webcrypto, require(name) { assert.ok(name in dependencies, name); return dependencies[name]; } }); return exports; }
+function load(source, dependencies) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
+  const exports = {}; runInNewContext(source, { exports, Response, URL, crypto: webcrypto, require(name) { assert.ok(name in dependencies, name); return dependencies[name]; } }); return exports;
+}
 function setup(t) {
   const database = new DatabaseSync(":memory:"); t.after(() => database.close());
   database.exec("PRAGMA foreign_keys=ON"); migrations.forEach((migration) => database.exec(migration));

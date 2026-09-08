@@ -6,10 +6,11 @@ export async function GET() {
     const { DB } = await getRuntime();
     const settings = await getPlatformSettings(DB);
     return Response.json(
-      { maintenanceMode: settings.maintenanceMode, maintenanceMessage: settings.maintenanceMessage },
-      { headers: { "cache-control": "public, max-age=30" } },
+      { maintenanceMode: settings.maintenanceMode, maintenanceMessage: settings.maintenanceMessage,
+        betaAccessOnly: settings.betaAccessOnly, registrationOpen: settings.registrationOpen && !settings.betaAccessOnly },
+      { headers: { "cache-control": "no-store" } },
     );
   } catch {
-    return Response.json({ maintenanceMode: false, maintenanceMessage: "" }, { headers: { "cache-control": "no-store" } });
+    return Response.json({ maintenanceMode: false, maintenanceMessage: "", betaAccessOnly: false, registrationOpen: false }, { status: 503, headers: { "cache-control": "no-store" } });
   }
 }

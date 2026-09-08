@@ -19,6 +19,7 @@ export const ERASURE_USER_RELATIONS = [
   ["post_saves", "user_email"], ["posts", "author_email"], ["product_events", "user_email"], ["product_feedback", "user_email"],
   ["profile_media", "user_email"], ["push_subscriptions", "owner_email"], ["student_courses", "user_email"],
   ["student_profiles", "user_email"], ["student_social_profiles", "user_email"], ["user_blocks", "blocked_email", "blocker_email"],
+  ["test_accounts", "user_email"],
   ["user_credentials", "user_email"], ["user_follows", "following_email", "follower_email"],
   ["user_mutes", "muted_email", "muter_email"], ["user_sessions", "user_email"],
 ] as const;

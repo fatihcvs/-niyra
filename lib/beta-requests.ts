@@ -2,6 +2,7 @@ import { sameOriginRequest, sha256 } from "./app-auth";
 import { enforceRateLimit } from "./server-api";
 import { BETA_CATEGORIES, BETA_STATUS, type BetaMessage, type BetaRequest, type BetaStatus } from "./beta-types";
 import { purgeExpiredBetaRequests } from "./beta-retention";
+import { prepareApplicantAccount } from "./test-accounts";
 
 export class BetaError extends Error { constructor(public status: number, message: string) { super(message); } }
 export const betaJson = (body: unknown, status = 200) => Response.json(body, { status, headers: { "cache-control": "private, no-store", "referrer-policy": "no-referrer" } });
@@ -36,7 +37,7 @@ export async function limitBeta(db: D1Database, request: Request, scope: string,
   const result = await enforceRateLimit(db, `beta:${await sha256(ip.slice(0, 200))}`, scope, limit, 3600);
   if (!result.allowed) throw new BetaError(429, "Çok sık istek gönderildi. Bir süre sonra yeniden dene.");
 }
-const select = `SELECT id,kind,email,display_name AS displayName,university,device_model AS deviceModel,
+const select = `SELECT id,kind,email,platform,display_name AS displayName,university,device_model AS deviceModel,
   android_version AS androidVersion,category,subject,message,status,priority,internal_note AS internalNote,play_url AS playUrl,
   revision,created_at AS createdAt,updated_at AS updatedAt,expires_at AS expiresAt,
   adult_confirmed AS adultConfirmed,android_confirmed AS androidConfirmed,participation_confirmed AS participationConfirmed FROM beta_requests`;
@@ -46,22 +47,25 @@ export async function submitBetaRequest(db: D1Database, request: Request, input:
   if (input.website) throw new BetaError(422, "Form gönderilemedi. Sayfayı yenileyip yeniden dene.");
   const token = betaToken(input.token), accessHash = await sha256(token);
   const kind = input.kind; if (kind !== "application" && kind !== "feedback") throw new BetaError(422, "Form türü geçerli değil.");
+  const platform = input.platform ?? "android";
+  if (typeof platform !== "string" || !["web", "android", "both"].includes(platform)) throw new BetaError(422, "Test platformunu seç.");
   if (input.consent !== true) throw new BetaError(422, "Başvuru bilgisi açıklamasını onaylamalısın.");
   const email = betaText(input.email ?? "", 254).toLowerCase();
   if ((kind === "application" || email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new BetaError(422, "Geçerli bir e-posta adresi yaz.");
   const adult = input.adult === true, android = input.android === true, participation = input.participation === true;
-  if (kind === "application" && (!adult || !android || !participation)) throw new BetaError(422, "Test için 18 yaş ve üzeri olmalı, Android cihaz kullanmalı ve 14 gün katılabilmelisin.");
+  const mobile = platform === "android" || platform === "both";
+  if (kind === "application" && (!adult || (mobile && (!android || !participation)))) throw new BetaError(422, mobile ? "Test için 18 yaş ve üzeri olmalı, Android cihaz kullanmalı ve 14 gün katılabilmelisin." : "Test için 18 yaş ve üzeri olmalısın.");
   const category = kind === "application" ? "application" : betaText(input.category, 20, 1);
   if (kind === "feedback" && !Object.hasOwn(BETA_CATEGORIES, category)) throw new BetaError(422, "Geri bildirim türünü seç.");
   const fields = { kind, email, displayName: betaText(input.displayName ?? "", 80), university: betaText(input.university ?? "", 120),
-    deviceModel: betaText(input.deviceModel ?? "", 120, kind === "application" ? 2 : 0), androidVersion: betaText(input.androidVersion ?? "", 30),
-    category, subject: kind === "application" ? "Android kapalı test başvurusu" : betaText(input.subject, 160, 5),
+    deviceModel: betaText(input.deviceModel ?? "", 120, kind === "application" && mobile ? 2 : 0), androidVersion: betaText(input.androidVersion ?? "", 30),
+    category, subject: kind === "application" ? platform === "web" ? "Web test başvurusu" : platform === "both" ? "Web ve Android test başvurusu" : "Android kapalı test başvurusu" : betaText(input.subject, 160, 5),
     message: betaText(input.message ?? "", 3000, kind === "feedback" ? 10 : 0), adult, android, participation };
-  const submissionHash = await sha256(JSON.stringify(fields));
+  const submissionHash = await sha256(JSON.stringify({ ...fields, platform })), legacyHash = input.platform === undefined ? await sha256(JSON.stringify(fields)) : null;
   const previous = await db.prepare("SELECT id,submission_hash FROM beta_requests WHERE access_hash=? AND expires_at>CURRENT_TIMESTAMP").bind(accessHash).first<{ id: string; submission_hash: string }>();
   if (previous) {
-    if (previous.submission_hash !== submissionHash) throw new BetaError(409, "Bu gönderim daha önce farklı bilgilerle alındı. Takip sayfasından ek bilgi gönderebilirsin.");
-    return { id: previous.id, received: true };
+    if (previous.submission_hash !== submissionHash && previous.submission_hash !== legacyHash) throw new BetaError(409, "Bu gönderim daha önce farklı bilgilerle alındı. Takip sayfasından ek bilgi gönderebilirsin.");
+    return { id: previous.id, received: true, ...(kind === "application" ? { accountDelivery: "email" } : {}) };
   }
   if (email) {
     const rate = await enforceRateLimit(db, `beta-email:${await sha256(email)}`, "beta-submit", 5, 86400);
@@ -72,14 +76,15 @@ export async function submitBetaRequest(db: D1Database, request: Request, input:
     const value = (input.source as Record<string, unknown>)[key]; if (typeof value === "string" && /^[\w.-]{1,100}$/.test(value)) source[key] = value;
   }
   const id = crypto.randomUUID();
-  await db.prepare(`INSERT INTO beta_requests(id,kind,access_hash,submission_hash,email,display_name,university,device_model,android_version,
-    category,subject,message,adult_confirmed,android_confirmed,participation_confirmed,consent_version,source_json)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'beta-2026-09-08-mail',?) ON CONFLICT(access_hash) DO NOTHING`)
+  const issuance = kind === "application" ? await prepareApplicantAccount(db, { id, email, displayName: fields.displayName }) : [];
+  await db.batch([db.prepare(`INSERT INTO beta_requests(id,kind,access_hash,submission_hash,email,display_name,university,device_model,android_version,
+    category,subject,message,adult_confirmed,android_confirmed,participation_confirmed,consent_version,source_json,platform)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'beta-2026-09-08-test-account-v1',?,?) ON CONFLICT(access_hash) DO NOTHING`)
     .bind(id, kind, accessHash, submissionHash, email, fields.displayName, fields.university, fields.deviceModel, fields.androidVersion,
-      category, fields.subject, fields.message, Number(adult), Number(android), Number(participation), JSON.stringify(source)).run();
+      category, fields.subject, fields.message, Number(adult), Number(android), Number(participation), JSON.stringify(source), platform), ...issuance]);
   const saved = await db.prepare("SELECT id,submission_hash FROM beta_requests WHERE access_hash=?").bind(accessHash).first<{ id: string; submission_hash: string }>();
   if (!saved || saved.submission_hash !== submissionHash) throw new BetaError(409, "Gönderim bilgileri değişti. Takip kodunu kullanarak kontrol et.");
-  return { id: saved.id, received: true };
+  return { id: saved.id, received: true, ...(kind === "application" ? { accountDelivery: "email" } : {}) };
 }
 
 export async function readBetaStatus(db: D1Database, token: unknown) {
@@ -87,7 +92,7 @@ export async function readBetaStatus(db: D1Database, token: unknown) {
   if (!row) throw new BetaError(404, "Takip kodu bulunamadı veya süresi doldu.");
   const messages = await db.prepare(`SELECT id,author_kind AS authorKind,content,created_at AS createdAt FROM beta_request_messages
     WHERE request_id=? ORDER BY created_at,id LIMIT 100`).bind(row.id).all<BetaMessage>();
-  const publicRequest = { id: row.id, kind: row.kind, status: row.status, subject: row.subject, message: row.message,
+  const publicRequest = { id: row.id, kind: row.kind, platform: row.platform, status: row.status, subject: row.subject, message: row.message,
     displayName: row.displayName, deviceModel: row.deviceModel, playUrl: row.playUrl, revision: row.revision,
     createdAt: row.createdAt, updatedAt: row.updatedAt, expiresAt: row.expiresAt };
   return { request: publicRequest, messages: messages.results };
@@ -104,7 +109,7 @@ export async function betaFollowup(db: D1Database, input: Record<string, unknown
       db.prepare("DELETE FROM beta_request_messages WHERE request_id=?").bind(current.id),
     ]);
   } else if (input.action === "joined") {
-    await db.prepare(`UPDATE beta_requests SET status='testing',revision=revision+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND kind='application' AND status='invited'`).bind(current.id).run();
+    await db.prepare(`UPDATE beta_requests SET status='testing',revision=revision+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND kind='application' AND platform!='web' AND status='invited'`).bind(current.id).run();
   } else if (input.action === "message") {
     const message = betaText(input.message, 3000, 5), id = betaText(input.requestId, 80, 8);
     if (!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(id)) throw new BetaError(422, "Mesaj tekrar anahtarı geçerli değil.");
@@ -144,7 +149,7 @@ export async function reviewBetaRequest(db: D1Database, input: Record<string, un
   const status = betaText(input.status, 30, 1) as BetaStatus;
   const allowed = current.kind === "application" ? ["new", "needs_info", "ready", "invited", "testing", "completed", "declined"] : ["new", "needs_info", "triaged", "in_progress", "resolved"];
   if (!allowed.includes(status)) throw new BetaError(422, "Bu kayıt için durum geçerli değil.");
-  if (status === "ready" && (!current.adultConfirmed || !current.androidConfirmed || !current.participationConfirmed)) throw new BetaError(422, "Test katılım koşulları eksik.");
+  if (status === "ready" && (!current.adultConfirmed || (current.platform !== "web" && (!current.androidConfirmed || !current.participationConfirmed)))) throw new BetaError(422, "Test katılım koşulları eksik.");
   if (actor.automated && (current.status !== "new" || !(current.kind === "application" ? ["ready", "needs_info"] : ["triaged", "needs_info"]).includes(status))) throw new BetaError(403, "Otomasyon yalnız yeni başvuruları ön değerlendirebilir.");
   const note = betaText(input.internalNote ?? current.internalNote, 3000), reply = betaText(input.reply ?? "", 3000);
   const priority = input.priority ?? current.priority; if (!["normal", "high", "urgent"].includes(String(priority))) throw new BetaError(422, "Öncelik geçerli değil.");
@@ -155,7 +160,7 @@ export async function reviewBetaRequest(db: D1Database, input: Record<string, un
       if (url.protocol !== "https:" || url.hostname !== "play.google.com" || url.pathname !== "/apps/testing/app.kampira.mobile" || Boolean(url.port) || url.username || url.password) throw new BetaError(422, "Kampira kapalı test katılım bağlantısını kullan.");
     }
   }
-  if (status === "invited" && (!playUrl || (current.status !== "invited" && input.accessConfirmed !== true))) throw new BetaError(422, "Google hesabının Play Console listesine eklendiğini ve kapalı test bağlantısını doğrula.");
+  if (status === "invited" && current.platform !== "web" && (!playUrl || (current.status !== "invited" && input.accessConfirmed !== true))) throw new BetaError(422, "Google hesabının Play Console listesine eklendiğini ve kapalı test bağlantısını doğrula.");
   const result = await db.batch([
     db.prepare(`UPDATE beta_requests SET status=?,priority=?,internal_note=?,play_url=?,revision=revision+1,updated_at=CURRENT_TIMESTAMP
       WHERE id=? AND revision=? AND status!='withdrawn' AND expires_at>CURRENT_TIMESTAMP AND ${actor.guard}`)

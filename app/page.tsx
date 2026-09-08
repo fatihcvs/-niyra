@@ -643,13 +643,31 @@ function ProfileBoot() {
 }
 
 function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) => void }) {
-  const [mode, setMode] = useState<"register" | "login">("register");
+  const [requestedMode, setMode] = useState<"register" | "login">("register");
+  const [access, setAccess] = useState({ loaded: false, betaAccessOnly: false, registrationOpen: false });
+  const [accessError, setAccessError] = useState(false);
+  const [accessRevision, setAccessRevision] = useState(0);
+  const registrationOpen = access.loaded && access.registrationOpen && !access.betaAccessOnly;
+  const mode = registrationOpen ? requestedMode : "login";
   const [fields, setFields] = useState({ displayName: "", email: "", password: "", passwordConfirmation: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const authRequest = useRef({ pending: false, generation: 0, controller: null as AbortController | null });
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/platform-config", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const payload = await response.json() as { registrationOpen?: boolean; betaAccessOnly?: boolean };
+        if (controller.signal.aborted) return;
+        if (!response.ok || typeof payload.registrationOpen !== "boolean" || typeof payload.betaAccessOnly !== "boolean") throw new Error("Erişim ayarları yüklenemedi.");
+        setAccess({ loaded: true, registrationOpen: payload.registrationOpen, betaAccessOnly: payload.betaAccessOnly });
+        setAccessError(false);
+      })
+      .catch(() => { if (!controller.signal.aborted) { setAccess({ loaded: false, registrationOpen: false, betaAccessOnly: false }); setAccessError(true); } });
+    return () => controller.abort();
+  }, [accessRevision]);
   useEffect(() => {
     const request = authRequest.current;
     return () => { request.generation++; request.pending = false; request.controller?.abort(); };
@@ -669,7 +687,7 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
   }
 
   function switchAuthMode(nextMode: "register" | "login") {
-    if (authRequest.current.pending) return;
+    if (authRequest.current.pending || (nextMode === "register" && !registrationOpen)) return;
     setMode(nextMode);
     setShowPassword(false);
     setAttempted(false);
@@ -726,11 +744,12 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: (displayName: string) 
     <main className="auth-shell">
       <section className="auth-card" aria-labelledby="auth-title">
         <div className="auth-brand"><Logo/></div>
-        <div className="auth-copy"><span>ÖĞRENCİ AĞIN</span><h1 id="auth-title">{mode === "register" ? "Kampira hesabını oluştur." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabın anında açılır. Davet kodu veya yönetici onayı gerekmez." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
-        <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
+        <div className="auth-copy"><span>{access.betaAccessOnly ? "KAPALI BETA" : "ÖĞRENCİ AĞIN"}</span><h1 id="auth-title">{mode === "register" ? "Kampira hesabını oluştur." : access.betaAccessOnly ? "Test hesabınla giriş yap." : "Kampüsüne geri dön."}</h1><p>{mode === "register" ? "Hesabını oluşturup kampüsünü seçebilirsin." : access.betaAccessOnly ? "Test hesabının e-postası ve parolasıyla giriş yap. Mevcut Kampira hesabını da kullanabilirsin." : "E-posta adresin ve parolanla kaldığın yerden devam et."}</p></div>
+        {registrationOpen ? <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
           <button className={mode === "register" ? "active" : ""} type="button" role="tab" disabled={busy} aria-selected={mode === "register"} onClick={() => switchAuthMode("register")}>Kayıt ol</button>
           <button className={mode === "login" ? "active" : ""} type="button" role="tab" disabled={busy} aria-selected={mode === "login"} onClick={() => switchAuthMode("login")}>Giriş yap</button>
-        </div>
+        </div> : <p className="auth-terms">Hesabın yok mu? <a href="/beta/basvur">Teste başvur</a>; erişimin hazır olduğunda kendi parolanı oluştur.</p>}
+        {accessError && <p className="auth-error" role="status">Yeni hesap erişimi doğrulanamadı. Mevcut hesabınla giriş yapabilirsin. <button type="button" onClick={() => setAccessRevision((value) => value + 1)}>Yeniden dene</button></p>}
         <form className="auth-form" aria-busy={busy} noValidate onSubmit={(event) => void submit(event)}>
           {mode === "register" && <label><span>Adın ve soyadın</span><input disabled={busy} name="displayName" value={fields.displayName} onChange={(event) => updateAuthField("displayName", event.target.value)} autoComplete="name" minLength={2} maxLength={60} required aria-invalid={attempted && fields.displayName.trim().length < 2} aria-describedby="auth-requirements" placeholder="Deniz Öztürk"/></label>}
           <label><span>E-posta adresin</span><input disabled={busy} name="email" type="email" value={fields.email} onChange={(event) => updateAuthField("email", event.target.value)} autoComplete="email" maxLength={254} required aria-invalid={attempted && !emailIsValid} aria-describedby="auth-requirements" placeholder="ogrenci@universite.edu.tr"/></label>

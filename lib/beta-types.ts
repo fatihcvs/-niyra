@@ -9,6 +9,7 @@ export const BETA_CATEGORIES = { bug: "Hata bildirimi", suggestion: "Öneri", su
 export type BetaMessage = { id: string; authorKind: "applicant" | "staff" | "automation"; content: string; createdAt: string };
 export type BetaRequest = {
   id: string; kind: "application" | "feedback"; email: string; displayName: string; university: string;
+  platform: "web" | "android" | "both";
   deviceModel: string; androidVersion: string; category: string; subject: string; message: string;
   status: BetaStatus; priority: "normal" | "high" | "urgent"; internalNote: string; playUrl: string;
   revision: number; createdAt: string; updatedAt: string; expiresAt: string;

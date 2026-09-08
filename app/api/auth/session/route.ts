@@ -1,5 +1,6 @@
 import {
   authRateLimitKey,
+  appAccountAllowed,
   clearSessionCookie,
   createSession,
   deleteSession,
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
       ? await verifyPassword(password, credential.password_salt, credential.password_iterations, credential.password_hash)
       : false;
     if (!credential || !valid) return Response.json({ error: "E-posta veya parola hatalı." }, { status: 401 });
+    if (!await appAccountAllowed(DB, credential.email)) return Response.json({ error: "Giriş şu anda test hesaplarına açık. Test başvurusu yapabilir veya destek isteyebilirsin." }, { status: 403, headers: { "cache-control": "no-store" } });
 
     await DB.prepare("DELETE FROM user_sessions WHERE datetime(expires_at) <= CURRENT_TIMESTAMP").run();
     const session = await createSession(DB, credential.email, request);

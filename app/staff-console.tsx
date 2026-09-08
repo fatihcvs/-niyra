@@ -18,6 +18,7 @@ import { PRODUCT_UPDATES } from "../lib/product-updates";
 import { CourseCatalogCoverage } from "./course-catalog-coverage";
 import { AccountDeletionReview } from "./account-deletion-review";
 import { BetaReview } from "./beta-review";
+import { TestAccounts } from "./test-accounts";
 import styles from "./staff-console.module.css";
 import {
   StaffDialog,
@@ -66,6 +67,7 @@ const ownerTabs = [
   ["audit", "İşlem günlüğü", "≡"],
   ["account-deletion", "Hesap silme talepleri", "♙"],
   ["beta", "Test ve geri bildirim", "✦"],
+  ["test-accounts", "Test hesapları", "♙"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
 
@@ -76,6 +78,7 @@ const adminTabs = [
   ["users", "Kullanıcılar", "♙"],
   ["account-deletion", "Hesap silme talepleri", "♙"],
   ["beta", "Test ve geri bildirim", "✦"],
+  ["test-accounts", "Test hesapları", "♙"],
   ["decisions", "Karar geçmişi", "≡"],
   ["updates", "Güncellemeler", "✦"],
 ] as const;
@@ -662,6 +665,7 @@ function OwnerContent({
   onDirtyChange,
 }: ContentProps) {
   if (tab === "beta") return <BetaReview onAccessChanged={reload}/>;
+  if (tab === "test-accounts") return <TestAccounts onAccessChanged={reload}/>;
   if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "admins")
     return <OwnerAdmins data={data} reload={reload} setMessage={setMessage} />;
@@ -1288,7 +1292,12 @@ function OwnerSettings({
     [
       "registrationOpen",
       "Yeni öğrenci kaydı",
-      "Yeni hesap oluşturma erişimini yönetir. Mevcut öğrencilerin girişini etkilemez.",
+      "Genel hesap oluşturma erişimini yönetir. Kapalı beta açıkken genel kayıt kapalı kalır; mevcut hesapların girişi korunur.",
+    ],
+    [
+      "betaAccessOnly",
+      "Kapalı beta erişimi",
+      "Yeni katılımcılar başvuru veya yönetimin oluşturduğu test hesabıyla erişir. Mevcut hesaplar korunur.",
     ],
     [
       "noteUploadsOpen",
@@ -1429,6 +1438,7 @@ function AdminContent({
   onNavigate,
 }: ContentProps) {
   if (tab === "beta") return <BetaReview onAccessChanged={reload}/>;
+  if (tab === "test-accounts") return <TestAccounts onAccessChanged={reload}/>;
   if (tab === "account-deletion") return <AccountDeletionReview onAccessChanged={reload}/>;
   if (tab === "reports")
     return <ReportQueue data={data} reload={reload} setMessage={setMessage} />;
@@ -2765,6 +2775,7 @@ function StaffNavIcon({ section }: { section: string }) {
     users: Users,
     decisions: ClockCounterClockwise,
     "account-deletion": Users,
+    "test-accounts": Users,
     beta: Sparkle,
   };
   const Icon = icons[section as keyof typeof icons] ?? House;

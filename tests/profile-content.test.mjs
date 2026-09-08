@@ -1,3 +1,4 @@
+import { appAuthModule } from "./helpers/app-auth-module.mjs";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
@@ -15,6 +16,7 @@ const sources = Object.fromEntries(await Promise.all([
 }).outputText])));
 
 function loadModule(path, dependencies = {}) {
+  dependencies = { "./app-auth": appAuthModule, ...dependencies };
   const exports = {};
   runInNewContext(sources[path], {
     exports, URL, URLSearchParams, Response, Uint8Array, DataView, TextDecoder,

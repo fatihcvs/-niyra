@@ -1,7 +1,7 @@
 export type StaffRecord = Record<string, unknown>;
 export const staffSections = {
-  owner: ["overview", "admins", "settings", "audit", "account-deletion", "beta", "updates"],
-  admin: ["overview", "reports", "content", "users", "account-deletion", "beta", "decisions", "updates"],
+  owner: ["overview", "admins", "settings", "audit", "account-deletion", "beta", "test-accounts", "updates"],
+  admin: ["overview", "reports", "content", "users", "account-deletion", "beta", "test-accounts", "decisions", "updates"],
 } as const;
 
 export function staffTabFromSearch(mode: "owner" | "admin", search: string) {

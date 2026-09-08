@@ -37,8 +37,8 @@ export async function POST(request: Request) {
 
   try {
     const { DB } = await getRuntime();
-    if (!(await getBooleanPlatformSetting(DB, "registrationOpen"))) {
-      return Response.json({ error: "Yeni kayıtlar owner tarafından geçici olarak durduruldu." }, { status: 503 });
+    if (!(await getBooleanPlatformSetting(DB, "registrationOpen")) || await getBooleanPlatformSetting(DB, "betaAccessOnly")) {
+      return Response.json({ error: "Giriş test hesaplarına açık. Test başvurusuyla hesap isteyebilirsin." }, { status: 403, headers: { "cache-control": "no-store" } });
     }
     const limit = await enforceRateLimit(DB, await authRateLimitKey(request, email), "auth-register", 5, 3600);
     if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
@@ -62,13 +62,15 @@ export async function POST(request: Request) {
     await DB.batch([
       DB.prepare(
         `INSERT INTO users (email, public_id, display_name, handle)
-         VALUES (?, ?, ?, ?)`,
+         SELECT ?, ?, ?, ? WHERE NOT EXISTS(SELECT 1 FROM platform_settings WHERE key='registrationOpen' AND value_json!='true')
+           AND NOT EXISTS(SELECT 1 FROM platform_settings WHERE key='betaAccessOnly' AND value_json!='false')`,
       ).bind(email, publicId, displayName, handle),
       DB.prepare(
         `INSERT INTO user_credentials (user_email, password_hash, password_salt, password_iterations)
-         VALUES (?, ?, ?, ?)`,
-      ).bind(email, password.hash, password.salt, password.iterations),
+         SELECT ?, ?, ?, ? WHERE EXISTS(SELECT 1 FROM users WHERE public_id=?)`,
+      ).bind(email, password.hash, password.salt, password.iterations, publicId),
     ]);
+    if (!await DB.prepare("SELECT 1 FROM users WHERE public_id=?").bind(publicId).first()) return Response.json({ error: "Yeni kayıtlar kapalı. Test başvurusuyla hesap isteyebilirsin." }, { status: 403, headers: { "cache-control": "no-store" } });
     const session = await createSession(DB, email, request);
     await audit(DB, email, "account.registered", "user", publicId, { source: "self-service" });
 
