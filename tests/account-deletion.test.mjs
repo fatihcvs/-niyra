@@ -260,5 +260,8 @@ test("public page renders an accessible login and explains that requesting delet
   assert.match(html, /name="email"/);
   assert.match(html, /autoComplete="current-password"/);
   assert.match(html, /hesabın ve verilerin hemen silinmez/);
-  assert.doesNotMatch(html, /Hesabın silindi|24 saat|30 gün/);
+  assert.doesNotMatch(html, /Hesabın silindi|24 saat/);
+  assert.match(html, /30 gün içinde tamamlamayı hedefleriz/);
+  assert.match(html, /href="\/legal#retention"/);
+  assert.match(html, /href="mailto:destek@kampira.net/);
 });

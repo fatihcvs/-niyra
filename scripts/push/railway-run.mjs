@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, chmod, writeFile, rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { startBackupRetention } from "../backup-retention.mjs";
 
 const providerNames = ["PUSH_VAPID_SUBJECT", "PUSH_VAPID_PUBLIC_KEY", "PUSH_VAPID_PRIVATE_KEY", "FCM_PROJECT_ID", "FCM_CLIENT_EMAIL", "FCM_PRIVATE_KEY"];
 
@@ -66,9 +67,10 @@ export async function runRailway(environment = process.env, { spawnImpl = spawn,
   await mkdir(dataRoot, { recursive: true });
   const privateDirectory = await mkdtemp(path.join(dataRoot, ".push-runtime-"));
   const environmentFile = path.join(privateDirectory, ".env");
-  let child, stopPump = () => {}, killTimer;
+  let child, stopPump = () => {}, stopRetention = () => {}, killTimer;
   const shutdown = () => {
     stopPump();
+    stopRetention();
     child?.kill("SIGTERM");
     killTimer ??= setTimeout(() => child?.kill("SIGKILL"), 10000);
     killTimer.unref();
@@ -76,6 +78,7 @@ export async function runRailway(environment = process.env, { spawnImpl = spawn,
   try {
     await chmod(privateDirectory, 0o700);
     await writeFile(environmentFile, serializeSecrets(values), { mode: 0o600 });
+    stopRetention = startBackupRetention(path.join(dataRoot, "backups"));
     processObject.once("SIGTERM", shutdown); processObject.once("SIGINT", shutdown);
     child = spawnImpl(process.execPath, [path.join(projectRoot, "node_modules/wrangler/bin/wrangler.js"), "dev",
       "--config", "wrangler.railway.jsonc", "--local", "--no-bundle", "--persist-to", dataRoot,
@@ -91,6 +94,7 @@ export async function runRailway(environment = process.env, { spawnImpl = spawn,
     });
   } finally {
     stopPump(); clearTimeout(killTimer);
+    stopRetention();
     processObject.removeListener("SIGTERM", shutdown); processObject.removeListener("SIGINT", shutdown);
     // This exact private directory was created by this invocation under dataRoot.
     await rm(privateDirectory, { recursive: true, force: true });

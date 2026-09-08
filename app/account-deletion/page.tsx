@@ -26,10 +26,12 @@ export default async function AccountDeletionPage() {
       <h2 id="deletion-scope">Talep ve silme ayrı adımlardır</h2>
       <p>Bu form talebini kayda alır; hesabın ve verilerin hemen silinmez. Yetkili kişi silmeyi başlatana kadar talebini iptal edebilirsin. Silme başladığında tüm oturumların kapanır ve işlem geri alınamaz.</p>
       <p>Talebin; hesap ve profil bilgilerini, paylaşımlarını, mesajlarını ve yüklediğin dosyaları kapsar. Bu alanlardaki işlemler tamamlanmadan hesabının silindiği bildirilmez.</p>
-      <p>Diğer kullanıcıların mesajları ve ortak alanlardaki içerikleri korunur; silinen hesabın yerine genel bir hesap adı görünür. İşlem başladıktan sonra bu hesaba giriş yapıp durum takibi yapamazsın. Yedekler, dış hizmetler ve saklama sürelerine ilişkin operasyon koşulları henüz yayımlanmadı.</p>
-      <Link href="/legal#privacy">Mevcut gizlilik açıklaması</Link>
+      <p>Diğer kullanıcıların kendi mesajları ve ortak alanlardaki kendi içerikleri korunur; silinen hesabın yerine genel bir hesap adı görünür. İşlem başladıktan sonra bu hesaba giriş yapıp durum takibi yapamazsın.</p>
+      <p>Doğrulanmış taleplerin canlı sistemdeki işlemlerini en geç 30 gün içinde tamamlamayı hedefleriz. İşletim yedekleri 30 günlük döngüyle yönetilir; silinen bilgiler bu süre dolana kadar yedeklerde kalabilir. Somut hukuki veya güvenlik gerekçesiyle daha uzun saklanması gereken sınırlı kayıtlar ve sağlayıcıların teknik kayıtları ayrıca değerlendirilir.</p>
+      <p>Hesabının tamamı yerine belirli verilerinin silinmesini istemek için destek@kampira.net adresine hesap e-postanı, ilgili içerik bağlantısını ve talebini yazabilirsin. Hesap sahipliği doğrulandıktan sonra aynı işlem hedefi uygulanır.</p>
+      <Link href="/legal#retention">Saklama, silme ve sağlayıcı açıklamaları</Link>
     </section>
     <AccountDeletionPanel initialAccount={identity ? { email: identity.email, displayName: identity.displayName } : null}/>
-    <footer className={styles.footer}><Link href="/legal#help">Yardım ve veri talepleri</Link><p>Giriş yapamadığın veya askıya alınmış hesaplar için ayrı kimlik doğrulama ve destek yolu henüz kullanıma açılmadı.</p></footer>
+    <footer className={styles.footer}><Link href="/legal#help">Yardım ve veri talepleri</Link><p>Giriş yapamıyorsan veya hesabın askıya alındıysa <a href="mailto:destek@kampira.net?subject=Kampira%20hesap%20ve%20veri%20silme%20talebi">destek@kampira.net</a> adresine hesap e-postan ve talebinle yazabilirsin. Parolanı veya doğrulama kodlarını paylaşma. Hesapla ilgili işlemden önce hesap sahipliği ayrıca doğrulanır.</p></footer>
   </main>;
 }
