@@ -27,6 +27,7 @@ from parse_turkey_bayburt_courses import parse_bayburt
 from parse_turkey_ktun_courses import parse_ktun
 from parse_turkey_duzce_courses import parse_duzce
 from parse_turkey_maltepe_courses import parse_maltepe_direct, parse_maltepe_mubis
+from parse_turkey_koc_courses import parse_koc_curriculum, parse_koc_medicine, parse_koc_nursing
 from collect_turkey_omu_ubys_catalog import (
     BASE_THEOLOGY_ID, MTOK_THEOLOGY_ID, programme_title,
     source_unit_identity, target_unit_identity,
@@ -52,6 +53,7 @@ MARMARA_PARSER_VERSION = 'fc2655eba249'
 KTUN_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_ktun_courses.py').read_bytes()).hexdigest()[:12]
 DUZCE_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_duzce_courses.py').read_bytes()).hexdigest()[:12]
 MALTEPE_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_maltepe_courses.py').read_bytes()).hexdigest()[:12]
+KOC_PARSER_VERSION = hashlib.sha256((Path(__file__).parent / 'parse_turkey_koc_courses.py').read_bytes()).hexdigest()[:12]
 
 
 def course_code(value):
@@ -269,6 +271,12 @@ def _parse_source(source):
         return parse_maltepe_mubis(CACHE / source['file'], course_code)
     if source.get('family') == 'maltepe-direct-2026':
         return parse_maltepe_direct(soup(source), course_code)
+    if source.get('family') == 'koc-curriculum-2026':
+        return parse_koc_curriculum(soup(source), course_code)
+    if source.get('family') == 'koc-nursing-2026':
+        return parse_koc_nursing(soup(source), course_code)
+    if source.get('family') == 'koc-medicine-2026':
+        return parse_koc_medicine(read(CACHE / source['file']), CACHE, course_code)
     if source.get('family') in ['ubys', 'omu-ubys-2026']:
         result = []
         data = read(CACHE / source['file'])
@@ -330,7 +338,10 @@ def parse_source(source):
                 'ktun-reviewed-2026': KTUN_PARSER_VERSION,
                 'duzce-reviewed-2026': DUZCE_PARSER_VERSION,
                 'maltepe-mubis-2026': MALTEPE_PARSER_VERSION,
-                'maltepe-direct-2026': MALTEPE_PARSER_VERSION}
+                'maltepe-direct-2026': MALTEPE_PARSER_VERSION,
+                'koc-curriculum-2026': KOC_PARSER_VERSION,
+                'koc-nursing-2026': KOC_PARSER_VERSION,
+                'koc-medicine-2026': KOC_PARSER_VERSION}
                .get(source.get('family'), LEGACY_PARSER_VERSION))
     file = CACHE / (source['file'] + '.' + version + '.' + parse_identity(source) + '.parsed.json')
     if file.exists():
@@ -368,7 +379,7 @@ def main():
     academic = read(ROOT / 'data/academic-catalog-2026.json')['universities']
     sources = []
     inputs={}
-    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses']:
+    for name in ['known', 'hydrated', 'discovered-courses', 'ubys-courses', 'additional-courses', 'ecatalog-courses', 'previous-plan-courses', 'refined-courses', 'institution-courses', 'more-courses', 'expanded-courses', 'kocaeli-courses', 'istanbul-courses', 'language-courses', 'iau-courses', 'thk-courses', 'yasar-courses', 'rumeli-courses', 'iste-courses', 'halic-courses', 'iuc-courses', 'bayburt-courses', 'omu-ubys-courses', 'marmara-reviewed-courses', 'ankara-reviewed-courses', 'mugla-reviewed-courses', 'igdir-reviewed-courses', 'ege-associate-reviewed-courses', 'ataturk-open-reviewed-courses', 'ktun-reviewed-courses', 'duzce-reviewed-courses', 'maltepe-reviewed-courses', 'koc-reviewed-courses']:
         file = CACHE / (name + '.json')
         if file.exists():
             inputs[file.name]=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -384,7 +395,10 @@ def main():
               'ktun-reviewed-2026':KTUN_PARSER_VERSION,
               'duzce-reviewed-2026':DUZCE_PARSER_VERSION,
               'maltepe-mubis-2026':MALTEPE_PARSER_VERSION,
-              'maltepe-direct-2026':MALTEPE_PARSER_VERSION}
+              'maltepe-direct-2026':MALTEPE_PARSER_VERSION,
+              'koc-curriculum-2026':KOC_PARSER_VERSION,
+              'koc-nursing-2026':KOC_PARSER_VERSION,
+              'koc-medicine-2026':KOC_PARSER_VERSION}
     write(CACHE/'parse-receipt.json',{'complete':False,'inputs':inputs,'parserVersion':PARSER_VERSION,'parserVersions':versions})
     records, issues = {}, []
     # Deduplicate response bodies before workers write their parse caches.
@@ -431,7 +445,7 @@ def main():
                 record['curriculumPeriod'] = source.get('curriculumPeriod', source.get('period'))
             if source.get('selection'): record['sourceSelection'] = source['selection']
             key = f'{uid}:{pid}'
-            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026']: records[key] = record
+            if key not in records or source.get('family') in ['iste-2026','iuc-print','bayburt-reviewed','omu-ubys-2026','marmara-reviewed-2026','ankara-reviewed-2026','mugla-reviewed-2026','igdir-reviewed-2026','ege-associate-reviewed-2026','ataturk-open-reviewed-2026','ktun-reviewed-2026','duzce-reviewed-2026','koc-curriculum-2026','koc-nursing-2026','koc-medicine-2026']: records[key] = record
         if number%1000==0:
             write(CACHE / 'turkey-course-candidates.json', records)
             print('parsed',number,'/',len(sources),'programmes',len(records),flush=True)

@@ -1,14 +1,14 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,750 programda ders kaydı · 1,433 programda ders listesi eksik.
-Toplam 1,529,085 program-ders kaydı. 191 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,772 programda ders kaydı · 1,411 programda ders listesi eksik.
+Toplam 1,531,704 program-ders kaydı. 192 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,226
+- Resmî program eşleşmesi eksik: 1,204
 - Okunabilir ders listesi bulunamadı: 157
 - Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 18
@@ -153,7 +153,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Kilis 7 Aralık Üniversitesi | 52 | 52 | 0 | 4,681 | 10 | [Kaynak 1](https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.kilis.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Kocaeli Sağlık ve Teknoloji Üniversitesi | 26 | 25 | 1 | 773 | 5 | [Kaynak 1](https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=1&lang=tr-TR&academicYear=2025) · [Kaynak 2](https://ebs.kocaelisaglik.edu.tr/Pages/Units.aspx?diplomaDegreeId=2&lang=tr-TR&academicYear=2025) |
 | Kocaeli Üniversitesi | 146 | 141 | 5 | 9,464 | 25 | [Kaynak 1](https://ects.kocaeli.edu.tr/) |
-| Koç Üniversitesi | 22 | 0 | 22 | 0 | 9 | Doğrulanmış giriş yok |
+| Koç Üniversitesi | 22 | 22 | 0 | 2,619 | 9 | [Kaynak 1](https://apply.ku.edu.tr/courses) · [Kaynak 2](https://cssh.ku.edu.tr/en/programs/archaeology-and-history-of-art/curriculum/) · [Kaynak 3](https://science.ku.edu.tr/en/programs/physics/undergraduate-programs/curriculum/) · [Kaynak 4](https://eng.ku.edu.tr/en/computer-engineering/undergraduate/curriculum/) · [Kaynak 5](https://case.ku.edu.tr/en/programs/economics/curriculum/) · [Kaynak 6](https://law.ku.edu.tr/egitim/ders-plani/) · [Kaynak 7](https://nursing.ku.edu.tr/en/education/undergraduate/courses/) · [Kaynak 8](https://medicine.ku.edu.tr/en/education/undergraduate-medical-education/academic-program/) |
 | Konya Gıda ve Tarım Üniversitesi | 9 | 9 | 0 | 661 | 5 | [Kaynak 1](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.gidatarim.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Konya Teknik Üniversitesi | 34 | 33 | 1 | 3,205 | 10 | [Kaynak 1](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cPptmSx3j3Pqo/tq1kIppg==) · [Kaynak 2](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=cLKZUXuWfWaKoCWsu8017Q==) · [Kaynak 3](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=rZQAI7MaAX0C4modp2TgIQ==) · [Kaynak 4](https://www.ktun.edu.tr/tr/Birim/Bolumler/?brm=1ZFlmVUo8qZzS+Jlbjvslw==) |
 | KTO-Karatay Üniversitesi | 50 | 50 | 0 | 9,406 | 5 | [Kaynak 1](https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.karatay.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

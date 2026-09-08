@@ -963,4 +963,75 @@ class MaltepeCatalogTests(unittest.TestCase):
         })
 
 
+class KocCatalogTests(unittest.TestCase):
+    def test_curriculum_tables_keep_terms_kinds_and_explicit_pool_courses(self):
+        from parse_turkey_koc_courses import parse_koc_curriculum
+
+        document = html('''<div id="accordionCurriculum">
+          <div class="accordion-item">
+            <h2 class="accordion-header">Freshman Semester 1</h2>
+            <table><tbody>
+              <tr><td>COMP 100</td><td>Introduction to Computing</td><td>Required Area</td></tr>
+            </tbody></table>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">Sophomore Semester 2</h2>
+            <table><tbody>
+              <tr><td><span>AREA</span><ul><li>COMP Area Electives<ul>
+                <li>COMP 303: Computer Architecture</li>
+                <li>OR COMP 317: Embedded Systems</li>
+              </ul></li></ul></td><td></td><td>Area Elective</td></tr>
+            </tbody></table>
+          </div>
+        </div>''')
+        courses, conflicts = parse_koc_curriculum(document, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(courses, [
+            {'code': 'COMP100', 'name': 'Introduction to Computing', 'semester': 1, 'kind': 'required'},
+            {'code': 'COMP303', 'name': 'Computer Architecture', 'semester': 4, 'kind': 'elective'},
+            {'code': 'COMP317', 'name': 'Embedded Systems', 'semester': 4, 'kind': 'elective'},
+        ])
+
+    def test_nursing_and_medical_cards_keep_only_explicit_codes(self):
+        import tempfile
+        from parse_turkey_koc_courses import parse_koc_medicine, parse_koc_nursing
+
+        nursing, conflicts = parse_koc_nursing(html('''
+          <a class="elementor-toggle-title">NURS 101 / Introduction to Nursing</a>
+          <a class="elementor-toggle-title">Course without a code</a>
+        '''), course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(nursing, [
+            {'code': 'NURS101', 'name': 'Introduction to Nursing', 'semester': None, 'kind': None},
+        ])
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'year-one.html').write_text('''
+              <div class="e-n-accordion-item-title-text">MEDI 101* Scientific Basis of Medicine I</div>
+            ''', encoding='utf-8')
+            (root / 'year-six.html').write_text('''
+              <a class="elementor-toggle-title">IMED 600 Internal Medicine</a>
+            ''', encoding='utf-8')
+            medicine, conflicts = parse_koc_medicine({'sources': [
+                {'file': 'year-one.html', 'year': 1},
+                {'file': 'year-six.html', 'year': 6},
+            ]}, root, course_code)
+        self.assertEqual(conflicts, [])
+        self.assertEqual(medicine, [
+            {'code': 'MEDI101', 'name': 'Scientific Basis of Medicine I', 'semester': None, 'year': 1, 'kind': None},
+            {'code': 'IMED600', 'name': 'Internal Medicine', 'semester': None, 'year': 6, 'kind': None},
+        ])
+
+    def test_reviewed_counts_and_known_reused_topic_code_are_locked(self):
+        from collect_turkey_koc_catalog import EXPECTED_CONFLICTS, EXPECTED_COUNTS, EXPECTED_TOTAL
+
+        self.assertEqual(len(EXPECTED_COUNTS), 22)
+        self.assertEqual(sum(EXPECTED_COUNTS.values()), EXPECTED_TOTAL)
+        self.assertEqual(EXPECTED_TOTAL, 2619)
+        self.assertEqual(EXPECTED_CONFLICTS, {
+            'program-osym-203910327': ['INTL350'],
+        })
+
+
 if __name__=='__main__':unittest.main()

@@ -3431,57 +3431,11 @@
       "universityId": "tr-koc-universitesi",
       "name": "Koç Üniversitesi",
       "programCount": 22,
-      "structuredProgramCount": 0,
-      "courseCount": 0,
-      "linkedProgramCount": 0,
-      "missingProgramIds": [
-        "program-osym-203910018",
-        "program-osym-203910036",
-        "program-osym-203910829",
-        "program-osym-203910715",
-        "program-osym-203910124",
-        "program-osym-203910169",
-        "program-osym-203910187",
-        "program-osym-203910699",
-        "program-osym-203910054",
-        "program-osym-203910099",
-        "program-osym-203910115",
-        "program-osym-203910557",
-        "program-osym-203910845",
-        "program-osym-203910354",
-        "program-osym-203910381",
-        "program-osym-203910415",
-        "program-osym-203910442",
-        "program-osym-203910478",
-        "program-osym-203910787",
-        "program-osym-203910266",
-        "program-osym-203910327",
-        "program-osym-203910293"
-      ],
-      "missingReasons": {
-        "program-osym-203910018": "programme-source-not-matched",
-        "program-osym-203910036": "programme-source-not-matched",
-        "program-osym-203910829": "programme-source-not-matched",
-        "program-osym-203910715": "programme-source-not-matched",
-        "program-osym-203910124": "programme-source-not-matched",
-        "program-osym-203910169": "programme-source-not-matched",
-        "program-osym-203910187": "programme-source-not-matched",
-        "program-osym-203910699": "programme-source-not-matched",
-        "program-osym-203910054": "programme-source-not-matched",
-        "program-osym-203910099": "programme-source-not-matched",
-        "program-osym-203910115": "programme-source-not-matched",
-        "program-osym-203910557": "programme-source-not-matched",
-        "program-osym-203910845": "programme-source-not-matched",
-        "program-osym-203910354": "programme-source-not-matched",
-        "program-osym-203910381": "programme-source-not-matched",
-        "program-osym-203910415": "programme-source-not-matched",
-        "program-osym-203910442": "programme-source-not-matched",
-        "program-osym-203910478": "programme-source-not-matched",
-        "program-osym-203910787": "programme-source-not-matched",
-        "program-osym-203910266": "programme-source-not-matched",
-        "program-osym-203910327": "programme-source-not-matched",
-        "program-osym-203910293": "programme-source-not-matched"
-      }
+      "structuredProgramCount": 22,
+      "courseCount": 2619,
+      "linkedProgramCount": 22,
+      "missingProgramIds": [],
+      "missingReasons": {}
     },
     {
       "universityId": "tr-konya-gida-ve-tarim-universitesi",
@@ -5259,8 +5213,8 @@
     }
   ],
   "research": {
-    "sourceCount": 28799,
-    "parserVersion": "ada62b593ecd",
+    "sourceCount": 28821,
+    "parserVersion": "c2c4a39ba566",
     "parserVersions": {
       "default": "dfab660ddd5d",
       "esogu-docx": "b04a8d91a72f",
@@ -5274,11 +5228,14 @@
       "bayburt-reviewed": "8267e724e759",
       "omu-ubys-2026": "381f380f3844",
       "marmara-reviewed-2026": "fc2655eba249",
-      "ankara-reviewed-2026": "ada62b593ecd",
+      "ankara-reviewed-2026": "c2c4a39ba566",
       "ktun-reviewed-2026": "993b37183e56",
       "duzce-reviewed-2026": "6009248a932a",
       "maltepe-mubis-2026": "96e4cbc0f403",
-      "maltepe-direct-2026": "96e4cbc0f403"
+      "maltepe-direct-2026": "96e4cbc0f403",
+      "koc-curriculum-2026": "13e763812ccb",
+      "koc-nursing-2026": "13e763812ccb",
+      "koc-medicine-2026": "13e763812ccb"
     },
     "manifestHashes": {
       "known.json": "566be5480c39027e28d0be81acdc51903896de5cd2cc256ad20056971f4f43c0",
@@ -5312,7 +5269,8 @@
       "ataturk-open-reviewed-courses.json": "4787a47c2d8f917972f5f9e84a22a5bad2d36908092fd5dea36ad080b6b0e9fe",
       "ktun-reviewed-courses.json": "1d12c4b3a68cc25f60f634f38c85045419d29acc767a16bc0c0550b6bbbe0874",
       "duzce-reviewed-courses.json": "d88ddece92d6c5ecd5a0eeb38f5d23e5286d3e31f9c08082e0c35d9e9861843e",
-      "maltepe-reviewed-courses.json": "14ab320281cd0e444f798635cbac7edafa72583750331f0e41e6049374547c30"
+      "maltepe-reviewed-courses.json": "14ab320281cd0e444f798635cbac7edafa72583750331f0e41e6049374547c30",
+      "koc-reviewed-courses.json": "c603a68f4ec42a74320031a778d85b7e82136276be5ef6900d3faa1a4e199f09"
     }
   }
 }

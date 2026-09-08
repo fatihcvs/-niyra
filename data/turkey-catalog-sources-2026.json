@@ -2133,8 +2133,57 @@
     "status": "catalogue-checked"
   },
   "tr-koc-universitesi": {
-    "catalogs": [],
-    "status": "no-verified-entry"
+    "catalogs": [
+      {
+        "url": "https://apply.ku.edu.tr/courses",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "60249a3905b9a7108d497eb7714b15498817ba2cd2620ca709dffafd45bb1e40",
+        "evidence": "official-undergraduate-programme-directory"
+      },
+      {
+        "url": "https://cssh.ku.edu.tr/en/programs/archaeology-and-history-of-art/curriculum/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "6d1e2726270af56db4a77c23b8559124c7159aca2185ea1c68113ba78d4921ea",
+        "evidence": "official-programme-curriculum"
+      },
+      {
+        "url": "https://science.ku.edu.tr/en/programs/physics/undergraduate-programs/curriculum/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "59d8095b774664dbda5a6a508d54f47eeb02f5c1b0b3a4cee03d38b582c4c6d9",
+        "evidence": "official-programme-curriculum"
+      },
+      {
+        "url": "https://eng.ku.edu.tr/en/computer-engineering/undergraduate/curriculum/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "6ad762398ca8ea86e33ba6381acfdff0766ca7af13dbe624ba9835177d198035",
+        "evidence": "official-programme-curriculum"
+      },
+      {
+        "url": "https://case.ku.edu.tr/en/programs/economics/curriculum/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "4a6a404cadb7120e1682641014aa2537d7905991a99648404c112ff08f751a4e",
+        "evidence": "official-programme-curriculum"
+      },
+      {
+        "url": "https://law.ku.edu.tr/egitim/ders-plani/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "2a88f679fb5d562f01d30fefe61ed67d29f2b165425efe3375cd91dd2ab125db",
+        "evidence": "official-programme-curriculum"
+      },
+      {
+        "url": "https://nursing.ku.edu.tr/en/education/undergraduate/courses/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "1fc6b0af886368f117dd4726216ab47e67f9c819cf3554636af162c4724467cf",
+        "evidence": "official-undergraduate-course-cards"
+      },
+      {
+        "url": "https://medicine.ku.edu.tr/en/education/undergraduate-medical-education/academic-program/",
+        "checkedAt": "2026-09-08",
+        "sourceHash": "21bbc198c7b4f0e41a7fe67d110e218146ab6b5a66ecede213b441b93c4f7b81",
+        "evidence": "official-six-year-medical-programme-directory"
+      }
+    ],
+    "status": "official-programme-curricula-reviewed"
   },
   "tr-konya-gida-ve-tarim-universitesi": {
     "catalogs": [
