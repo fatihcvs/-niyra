@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { register } from "node:module";
+import { DatabaseSync } from "node:sqlite";
 import test, { after } from "node:test";
 
 async function builtWorker() {
@@ -9,11 +10,23 @@ async function builtWorker() {
   return builtModule.default;
 }
 
+const identityDb = new DatabaseSync(":memory:");
+identityDb.exec(`
+  CREATE TABLE users(email TEXT PRIMARY KEY, status TEXT NOT NULL);
+  CREATE TABLE test_accounts(user_email TEXT PRIMARY KEY, status TEXT NOT NULL);
+  CREATE TABLE platform_settings(key TEXT PRIMARY KEY, value_json TEXT NOT NULL);
+  INSERT INTO users VALUES('student@omu.edu.tr','active'),('revoked@omu.edu.tr','active');
+  INSERT INTO test_accounts VALUES('student@omu.edu.tr','active'),('revoked@omu.edu.tr','revoked');
+  INSERT INTO platform_settings VALUES('betaAccessOnly','true');
+`);
 const runtimeEnv = {
-  // Trusted platform identity now also needs an existing active local account.
-  // All application data queries remain unavailable in this validation fixture.
+  // Run the built application's actual account-access SQL against SQLite.
+  // All unrelated application data queries remain unavailable in this fixture.
   DB: { prepare(sql) {
-    if (sql === "SELECT status FROM users WHERE email = ? LIMIT 1") return { bind() { return { first: async () => ({ status: "active" }) }; } };
+    if (sql.startsWith("SELECT 1 AS allowed FROM users u WHERE u.email=? AND u.status='active' AND ")) {
+      const statement = identityDb.prepare(sql);
+      return { bind(...values) { return { first: async () => statement.get(...values) ?? null }; } };
+    }
     throw new Error("Application database unavailable in validation fixture");
   } },
   ASSETS: {
@@ -23,11 +36,11 @@ const runtimeEnv = {
 
 // Node cannot load the Worker-only cloudflare:workers module. Supply only that
 // host binding here; the built application's identity and request validation run
-// unchanged. Database calls beyond the explicit account-status read still fail.
+// unchanged. Database calls beyond the explicit account-access read still fail.
 const fixtureKey = Symbol.for("kampira.api-auth.worker-bindings");
 globalThis[fixtureKey] = runtimeEnv;
 register(new URL("./helpers/worker-bindings-loader.mjs", import.meta.url));
-after(() => { delete globalThis[fixtureKey]; });
+after(() => { delete globalThis[fixtureKey]; identityDb.close(); });
 
 const runtimeContext = {
   waitUntil() {},
@@ -65,6 +78,20 @@ test("Railway-style requests cannot spoof platform identity headers", async () =
     runtimeContext,
   );
 
+  assert.equal(response.status, 401);
+});
+
+test("trusted platform identity cannot bypass revoked test access", async () => {
+  const worker = await builtWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...platformHeaders, "oai-authenticated-user-email": "revoked@omu.edu.tr" },
+      body: JSON.stringify({ displayName: "A" }),
+    }),
+    runtimeEnv,
+    runtimeContext,
+  );
   assert.equal(response.status, 401);
 });
 
