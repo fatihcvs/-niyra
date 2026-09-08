@@ -1,5 +1,20 @@
 [
   {
+    "id": "turkey-course-catalogs-twenty-fifth-expansion",
+    "releasedAt": "2026-09-08T02:52:10Z",
+    "category": "İyileştirme",
+    "area": "Akademik katalog",
+    "title": "Çukurova Üniversitesinde 65 programın ders planı eklendi",
+    "summary": "Türkiye kataloğunda ders listesi bulunan program sayısı 13.384’e, program-ders kaydı sayısı 1.505.663’e ulaştı.",
+    "highlights": [
+      "Çukurova Üniversitesinin eksik 65 ön lisans programına 2.738 resmî program-ders kaydı eklendi. Kurumda yapılandırılmış program sayısı 69’dan 134’e, toplam kayıt 5.671’den 8.409’a çıktı.",
+      "Resmî EOBS dizinindeki 73 ön lisans ve 91 lisans programı; program adı, derece ve akademik birim birlikte doğrulanarak ÖSYM programlarıyla tekil eşleştirildi.",
+      "Uzaktan eğitim/öğretim, Emlak ve Emlak Yönetimi/Emlak Yönetimi, Gaz ve Tesisatı/Doğalgaz ve Tesisatı ile Maden/Madencilik başlık farkları yalnız aynı birim ve derecedeki resmî karşılıklarla açık eşleme olarak işlendi.",
+      "Yeni planların tamamı kurumun 2026-2027 ders planı sayfalarından alındı. Daha önce yayımlanmış 13.319 programın ders içeriği değişmeden korundu.",
+      "Resmî dizinde birebir program karşılığı bulunmayan Gastronomi ve Mutfak Sanatları, Grafik Tasarımı ve İlahiyat (M.T.O.K.) açık eksik bırakıldı. Türkiye genelinde 1.799 programın ders listesi hâlâ eksik; 204 kurumun 29’u tamamen yapılandırıldı ve 193 kurumda en az bir doğrulanmış ders planı bulunuyor."
+    ]
+  },
+  {
     "id": "turkey-course-catalogs-twenty-fourth-expansion",
     "releasedAt": "2026-09-08T02:28:22Z",
     "category": "İyileştirme",
@@ -11,7 +26,7 @@
       "Resmî Bologna API program adı, lisans/ön lisans derecesi, akademik birim ve açık/uzaktan öğretim niteliğiyle eşleştirildi. Yeni kayıtların 52’sinde 2026-2027, güncel yanıtı boş olan 17’sinde son okunabilir 2025-2026 planı seçildi; boş denemeler kanıtta tutuldu.",
       "KTO-Karatay’da 20, Sağlık Bilimleri Üniversitesinde 16, Kırklareli’nde 9, İnönü’de 8, Acıbadem ve Ankara Hacı Bayram Veli’de beşer, Kahramanmaraş İstiklal’de 3, OSTİM Teknikte 2; Adana Alparslan Türkeş, Adıyaman, İstanbul Okan ve Lokman Hekim’de birer program daha resmî ders planıyla eşleştirildi.",
       "Yeni 141 programda toplam 15.158 program-ders kaydı yayımlandı. Daha önce yayımlanan programların ders içeriği korunarak yeniden üretim sırasında incelenmemiş değişiklik yapılması engellendi.",
-      "Ankara’da birebir açık kaynak bulunmayan üç program ve Türkiye genelindeki diğer açıklar görünür bırakıldı. 204 kurumun 29’unda bütün güncel programlar yapılandırıldı; 1.864 programın ders listesi hâlâ eksik ve 190 kurumda doğrulanmış katalog girişi bulunuyor."
+      "Ankara’da birebir açık kaynak bulunmayan üç program ve Türkiye genelindeki diğer açıklar görünür bırakıldı. 204 kurumun 29’unda bütün güncel programlar yapılandırıldı; 1.864 programın ders listesi hâlâ eksik ve 193 kurumda en az bir doğrulanmış ders planı bulunuyor."
     ]
   },
   {

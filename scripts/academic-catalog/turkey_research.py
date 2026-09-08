@@ -138,13 +138,21 @@ def collect(mode):
         for uid, u in universities.items():
             for p in u['programs']:
                 for url in p.get('curriculumUrls', []):
-                    tasks.setdefault(url, []).append({'universityId': uid, 'programId': p['id'], 'name': p['name']})
+                    reference = {'universityId': uid, 'programId': p['id'], 'name': p['name']}
+                    if p.get('curriculumPeriod'):
+                        reference['curriculumPeriod'] = p['curriculumPeriod']
+                    tasks.setdefault(url, []).append(reference)
     output = []
     with ThreadPoolExecutor(10) as pool:
         futures = {pool.submit(fetch, url): refs for url, refs in fair_tasks(tasks)}
         for future in as_completed(futures):
             source = future.result()
-            source = {**source, 'programs': futures[future]}
+            references = futures[future]
+            source = {**source, 'programs': references}
+            periods = {reference.get('curriculumPeriod') for reference in references
+                       if reference.get('curriculumPeriod')}
+            if len(periods) == 1:
+                source['curriculumPeriod'] = periods.pop()
             if mode == 'homepages' and source['status'] == 200:
                 source['catalogLinks'] = linked_sources(soup(source), source.get('finalUrl', source['url']))
             output.append(source)

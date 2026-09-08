@@ -1,17 +1,17 @@
 # Türkiye katalog kapsamı — 2026-09-08
 
-204 kurum · 15,183 program · 13,319 programda ders kaydı · 1,864 programda ders listesi eksik.
-Toplam 1,502,925 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
+204 kurum · 15,183 program · 13,384 programda ders kaydı · 1,799 programda ders listesi eksik.
+Toplam 1,505,663 program-ders kaydı. 190 kurumda doğrulanmış katalog girişi.
 199 kurum çevresinde 2,169 kaynaklı yakın bölge kaydı. 5 kurumun doğrulanmış konumu bulunmadığı için yakın bölge eklenemedi.
 
 Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya ülke genelinde tekil ders sayısı iddiası taşımaz. [Yöntem ve tekrar üretme](./TURKEY_CATALOG_2026.md).
 
 ## Eksik listelerin nedenleri
 
-- Resmî program eşleşmesi eksik: 1,689
-- Okunabilir ders listesi bulunamadı: 136
+- Resmî program eşleşmesi eksik: 1,599
+- Okunabilir ders listesi bulunamadı: 147
+- Kaynakta program ayrımı doğrulanamadı: 32
 - Ders kaynağına erişilemedi: 21
-- Kaynakta program ayrımı doğrulanamadı: 18
 
 ## Kurumlar
 
@@ -69,7 +69,7 @@ Yeni listelerin tamamı kısmi kapsamlıdır. Bu rapor eksiksiz müfredat veya �
 | Çanakkale Onsekiz Mart Üniversitesi | 184 | 151 | 33 | 15,005 | 16 | [Kaynak 1](https://ubys.comu.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=tr-TR) |
 | Çankaya Üniversitesi | 25 | 25 | 0 | 3,953 | 11 | [Kaynak 1](https://bilgipaketi.cankaya.edu.tr/associate) · [Kaynak 2](https://bilgipaketi.cankaya.edu.tr/bachelors) |
 | Çankırı Karatekin Üniversitesi | 79 | 73 | 6 | 32,633 | 8 | [Kaynak 1](https://cakubologna.karatekin.edu.tr/tr/programlar/5367) · [Kaynak 2](https://cakubologna.karatekin.edu.tr/tr/programlar/5368) |
-| Çukurova Üniversitesi | 137 | 69 | 68 | 5,671 | 22 | [Kaynak 1](https://ebs.cu.edu.tr) · [Kaynak 2](https://eobs.cu.edu.tr) |
+| Çukurova Üniversitesi | 137 | 134 | 3 | 8,409 | 22 | [Kaynak 1](https://ebs.cu.edu.tr) · [Kaynak 2](https://eobs.cu.edu.tr) |
 | Demiroğlu Bilim Üniversitesi | 20 | 17 | 3 | 1,160 | 5 | [Kaynak 1](https://akts.demiroglu.bilim.edu.tr/?txtCulture=tr-TR&secim=1) · [Kaynak 2](https://akts.demiroglu.bilim.edu.tr/?txtCulture=tr-TR&secim=4) |
 | Dicle Üniversitesi | 110 | 94 | 16 | 5,779 | 15 | [Kaynak 1](https://obs.dicle.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.dicle.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |
 | Doğuş Üniversitesi | 75 | 75 | 0 | 7,786 | 15 | [Kaynak 1](https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=lis&lang=tr) · [Kaynak 2](https://obs.dogus.edu.tr/oibs/bologna/unitSelection.aspx?type=myo&lang=tr) |

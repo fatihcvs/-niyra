@@ -11,7 +11,7 @@ const headers = { "user-agent": "KampiraAcademicCatalog/1.0 (+https://github.com
 const source = {
   id: "cukurova-ebs-curricula-2026",
   authority,
-  title: "Eğitim Bilgi Sistemi 2026-2027 lisans programları ve ders planları",
+  title: "Eğitim Bilgi Sistemi 2026-2027 ön lisans ve lisans programları ile ders planları",
   url: indexUrl,
 };
 
@@ -31,7 +31,14 @@ const cleanText = (value) => value
   .replace(/\s+/gu, " ")
   .trim();
 
-const officialNameAliases = new Map();
+const officialNameAliases = new Map([
+  ["Adana Meslek Yüksekokulu|Bilgisayar Programcılığı (Uzaktan Öğretim)", "Bilgisayar Programcılığı (Uzaktan Eğitim)"],
+  ["Adana Meslek Yüksekokulu|Emlak Yönetimi", "Emlak ve Emlak Yönetimi"],
+  ["Adana Meslek Yüksekokulu|Muhasebe ve Vergi Uygulamaları (Uzaktan Öğretim)", "Muhasebe ve Vergi Uyg. (Uzaktan Eğitim)"],
+  ["Tufanbeyli Meslek Yüksekokulu|Elektrik Enerjisi Üretim, İletim ve Dağıtımı (Tufanbeyli)", "Elektrik Enerjisi Üretim, İletim ve Dağıtımı"],
+  ["İmamoğlu Meslek Yüksekokulu|Doğalgaz ve Tesisatı Teknolojisi", "Gaz ve Tesisatı Teknolojisi"],
+  ["Aladağ Meslek Yüksekokulu|Madencilik Teknolojisi", "Maden Teknolojisi"],
+]);
 
 const expectedUnlinked = [
   "Gastronomi ve Mutfak Sanatları",
@@ -42,46 +49,55 @@ const expectedUnlinked = [
 const indexResponse = await fetch(indexUrl, { headers });
 if (!indexResponse.ok) throw new Error(`Çukurova lisans dizini alınamadı: HTTP ${indexResponse.status}`);
 const indexHtml = await indexResponse.text();
+const associateStart = indexHtml.search(/<div>\s*(?:Ö|&#xD6;|&#214;)n Lisans\s*<\/div>/iu);
 const bachelorStart = indexHtml.search(/<div>\s*Lisans\s*<\/div>/iu);
 const graduateStart = indexHtml.search(/<div>\s*Y(?:ü|&#xFC;|&#252;)ksek Lisans\s*<\/div>/iu);
-if (indexHtml.length < 100_000 || bachelorStart < 0 || graduateStart <= bachelorStart) {
-  throw new Error(`Çukurova lisans dizini eksik: ${indexHtml.length} bayt`);
+if (indexHtml.length < 100_000 || associateStart < 0 || bachelorStart <= associateStart
+  || graduateStart <= bachelorStart) {
+  throw new Error(`Çukurova ön lisans/lisans dizini eksik: ${indexHtml.length} bayt`);
 }
-const bachelorHtml = indexHtml.slice(bachelorStart, graduateStart);
+
+const degreeSections = [
+  { degreeLevel: "associate", html: indexHtml.slice(associateStart, bachelorStart) },
+  { degreeLevel: "bachelor", html: indexHtml.slice(bachelorStart, graduateStart) },
+];
 
 const officialProgrammes = [];
-for (const unitMatch of bachelorHtml.matchAll(
-  /<li\b[^>]*class=["'][^"']*menu-item[^"']*["'][^>]*>\s*<a\b[^>]*href=["']#["'][^>]*>\s*<div>([\s\S]*?)<\/div>\s*<\/a>\s*<ul\b[^>]*class=["'][^"']*sub-menu-container[^"']*["'][^>]*>([\s\S]*?)<\/ul>\s*<\/li>/giu,
-)) {
-  const unit = cleanText(unitMatch[1]);
-  for (const programmeMatch of unitMatch[2].matchAll(
-    /<a\b[^>]*href=["']\/Program\/GenelBilgi\/(\d+)["'][^>]*>\s*<div>([\s\S]*?)<\/div>\s*<\/a>/giu,
+for (const section of degreeSections) {
+  for (const unitMatch of section.html.matchAll(
+    /<li\b[^>]*class=["'][^"']*menu-item[^"']*["'][^>]*>\s*<a\b[^>]*href=["']#["'][^>]*>\s*<div>([\s\S]*?)<\/div>\s*<\/a>\s*<ul\b[^>]*class=["'][^"']*sub-menu-container[^"']*["'][^>]*>([\s\S]*?)<\/ul>\s*<\/li>/giu,
   )) {
-    const id = programmeMatch[1];
-    let name = cleanText(programmeMatch[2]);
-    if (!name && unit === "Güzel Sanatlar Fakültesi" && id === "332") name = "Gastronomi ve Mutfak Sanatları";
-    if (name) officialProgrammes.push({ unit, id, name });
+    const unit = cleanText(unitMatch[1]);
+    for (const programmeMatch of unitMatch[2].matchAll(
+      /<a\b[^>]*href=["']\/Program\/GenelBilgi\/(\d+)["'][^>]*>\s*<div>([\s\S]*?)<\/div>\s*<\/a>/giu,
+    )) {
+      const id = programmeMatch[1];
+      let name = cleanText(programmeMatch[2]);
+      if (!name && unit === "Güzel Sanatlar Fakültesi" && id === "332") name = "Gastronomi ve Mutfak Sanatları";
+      if (name) officialProgrammes.push({ degreeLevel: section.degreeLevel, unit, id, name });
+    }
   }
 }
-if (officialProgrammes.length < 90) {
-  throw new Error(`Çukurova yayımlanmış lisans programı dizini eksik: ${officialProgrammes.length}`);
+if (officialProgrammes.length < 150) {
+  throw new Error(`Çukurova yayımlanmış ön lisans/lisans programı dizini eksik: ${officialProgrammes.length}`);
 }
 
 const university = catalog.universities[universityId];
 if (!university) throw new Error("Çukurova Üniversitesi katalog kaydı bulunamadı.");
-const bachelorProgrammes = university.programs.filter((item) => item.degreeLevel === "bachelor");
-if (bachelorProgrammes.length !== 72) {
-  throw new Error(`Çukurova katalog lisans sayısı beklenmiyor: ${bachelorProgrammes.length}`);
+const degreeProgrammes = university.programs.filter((item) => ["associate", "bachelor"].includes(item.degreeLevel));
+if (degreeProgrammes.length !== 137) {
+  throw new Error(`Çukurova katalog ön lisans/lisans sayısı beklenmiyor: ${degreeProgrammes.length}`);
 }
 const unitById = new Map(university.units.map((unit) => [unit.id, unit]));
 
-const mappings = bachelorProgrammes
+const mappings = degreeProgrammes
   .filter((programme) => !expectedUnlinked.includes(programme.name))
   .map((programme) => {
     const unit = unitById.get(programme.unitId);
     const officialName = officialNameAliases.get(`${unit?.name}|${programme.name}`) ?? programme.name;
     const candidates = officialProgrammes.filter((item) => (
-      normalizeName(item.unit) === normalizeName(unit?.name ?? "")
+      item.degreeLevel === programme.degreeLevel
+      && normalizeName(item.unit) === normalizeName(unit?.name ?? "")
       && normalizeName(item.name) === normalizeName(officialName)
     ));
     if (candidates.length !== 1) {
@@ -132,13 +148,15 @@ for (const { programme, plan } of mappings) {
   programme.curriculumPeriod = plan.period;
 }
 
-const unlinkedBachelorProgrammes = bachelorProgrammes.filter((program) => !program.curriculumUrls?.length);
-if (unlinkedBachelorProgrammes.length !== expectedUnlinked.length
-  || !expectedUnlinked.every((name) => unlinkedBachelorProgrammes.some((program) => program.name === name))) {
-  throw new Error(`Çukurova bağlantısız lisans listesi beklenmiyor: ${unlinkedBachelorProgrammes.map((program) => program.name).join(", ")}`);
+const unlinkedProgrammes = degreeProgrammes.filter((program) => !program.curriculumUrls?.length);
+if (unlinkedProgrammes.length !== expectedUnlinked.length
+  || !expectedUnlinked.every((name) => unlinkedProgrammes.some((program) => program.name === name))) {
+  throw new Error(`Çukurova bağlantısız program listesi beklenmiyor: ${unlinkedProgrammes.map((program) => program.name).join(", ")}`);
 }
 
-if (!catalog.meta.sources.some((item) => item.id === source.id)) catalog.meta.sources.push(source);
+const existingSource = catalog.meta.sources.find((item) => item.id === source.id);
+if (existingSource) Object.assign(existingSource, source);
+else catalog.meta.sources.push(source);
 
 const universities = Object.values(catalog.universities);
 catalog.meta.version = "2026.19";

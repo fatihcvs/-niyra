@@ -411,11 +411,12 @@ test("Akdeniz programmes link only to populated official Bologna course plans", 
 
 test("Cukurova programmes link only to populated current EBS course plans", () => {
   const cukurova = catalog.universities["tr-cukurova-universitesi"];
-  const bachelorPrograms = cukurova.programs.filter((program) => program.degreeLevel === "bachelor");
-  const curriculumPrograms = bachelorPrograms.filter((program) => program.curriculumUrls?.length);
+  const degreePrograms = cukurova.programs.filter((program) => ["associate", "bachelor"].includes(program.degreeLevel));
+  const curriculumPrograms = degreePrograms.filter((program) => program.curriculumUrls?.length);
 
-  assert.equal(bachelorPrograms.length, 72);
-  assert.equal(curriculumPrograms.length, 69);
+  assert.equal(degreePrograms.length, 137);
+  assert.equal(curriculumPrograms.length, 134);
+  assert.equal(curriculumPrograms.filter((program) => program.degreeLevel === "associate").length, 65);
   assert.ok(curriculumPrograms.every((program) => program.curriculumAuthority === "Çukurova Üniversitesi"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumPeriod === "2026-2027"));
   assert.ok(curriculumPrograms.every((program) => program.curriculumUrls.every((url) => {
@@ -430,7 +431,7 @@ test("Cukurova programmes link only to populated current EBS course plans", () =
   ));
   assert.ok(business.curriculumUrls[0].endsWith("/Program/DersPlan/216/2026"));
 
-  const unlinked = bachelorPrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
+  const unlinked = degreePrograms.filter((program) => !program.curriculumUrls?.length).map((program) => program.name).sort();
   assert.deepEqual(unlinked, [
     "Gastronomi ve Mutfak Sanatları",
     "Grafik Tasarımı",
